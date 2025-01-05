@@ -28,7 +28,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-6xl font-semibold text-nino-primary"
+          className="text-6xl font-medium text-nino-primary"
           style={{ fontFamily: "'SF Pro Display', sans-serif" }}
         >
           Welcome to Nino
