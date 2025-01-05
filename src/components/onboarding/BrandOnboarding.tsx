@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
+import BrandDetailsStep from "./brand/BrandDetailsStep";
+import BrandSocialStep from "./brand/BrandSocialStep";
 import AccountManagersStep from "./brand/AccountManagersStep";
 
 interface AccountManager {
@@ -14,12 +16,13 @@ interface AccountManager {
 
 const BrandOnboarding = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<'basic' | 'managers'>('basic');
+  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social'>('basic');
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState({
     brandName: "",
     brandEmail: "",
     brandBio: "",
+    homeLocation: "",
     instagram: "",
     website: "",
     location: "",
@@ -31,7 +34,68 @@ const BrandOnboarding = () => {
   };
 
   const getStepProgress = () => {
-    return currentStep === 'basic' ? 'w-1/2' : 'w-full';
+    switch (currentStep) {
+      case 'basic':
+        return 'w-1/3';
+      case 'details':
+        return 'w-2/3';
+      case 'social':
+        return 'w-full';
+      default:
+        return 'w-1/3';
+    }
+  };
+
+  const getCurrentStep = () => {
+    switch (currentStep) {
+      case 'basic':
+        return (
+          <BrandBasicInfoStep
+            profileImage={profileImage}
+            brandData={brandData}
+            onUpdateField={updateField}
+            onUpdateImage={setProfileImage}
+          />
+        );
+      case 'details':
+        return (
+          <BrandDetailsStep
+            brandData={brandData}
+            onUpdateField={updateField}
+          />
+        );
+      case 'social':
+        return (
+          <BrandSocialStep
+            brandData={brandData}
+            accountManagers={accountManagers}
+            onUpdateField={updateField}
+            onUpdateManagers={setAccountManagers}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const handleNext = () => {
+    if (currentStep === 'basic') {
+      setCurrentStep('details');
+    } else if (currentStep === 'details') {
+      setCurrentStep('social');
+    } else {
+      navigate("/");
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep === 'social') {
+      setCurrentStep('details');
+    } else if (currentStep === 'details') {
+      setCurrentStep('basic');
+    } else {
+      navigate("/onboarding");
+    }
   };
 
   return (
@@ -49,41 +113,22 @@ const BrandOnboarding = () => {
         </div>
 
         {/* Steps */}
-        {currentStep === 'basic' ? (
-          <BrandBasicInfoStep
-            profileImage={profileImage}
-            onUpdateField={updateField}
-            onUpdateImage={setProfileImage}
-          />
-        ) : (
-          <AccountManagersStep
-            accountManagers={accountManagers}
-            onUpdateManagers={setAccountManagers}
-          />
-        )}
+        {getCurrentStep()}
 
         {/* Navigation */}
         <div className="flex justify-between pt-6">
           <Button
-            onClick={() => 
-              currentStep === 'basic' 
-                ? navigate("/onboarding")
-                : setCurrentStep('basic')
-            }
+            onClick={handleBack}
             variant="outline"
             className="text-nino-gray hover:bg-gray-50"
           >
             Back
           </Button>
           <Button
-            onClick={() => 
-              currentStep === 'basic'
-                ? setCurrentStep('managers')
-                : navigate("/")
-            }
+            onClick={handleNext}
             className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
           >
-            {currentStep === 'basic' ? 'Next' : 'Complete Profile'}
+            {currentStep === 'social' ? 'Complete Profile' : 'Next'}
           </Button>
         </div>
       </motion.div>
