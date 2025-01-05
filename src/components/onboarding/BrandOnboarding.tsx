@@ -12,6 +12,7 @@ interface AccountManager {
   name: string;
   email: string;
   role: string;
+  permissions: string[];
 }
 
 const BrandOnboarding = () => {
