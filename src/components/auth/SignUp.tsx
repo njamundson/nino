@@ -15,22 +15,6 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const [password, setPassword] = useState("");
   const { toast } = useToast();
 
-  const getPasswordStrength = (pass: string) => {
-    if (pass.length === 0) return 0;
-    if (pass.length < 6) return 1;
-    if (pass.length < 10) return 2;
-    return 3;
-  };
-
-  const strengthColors = [
-    "bg-transparent",
-    "bg-red-500",
-    "bg-yellow-500",
-    "bg-green-500",
-  ];
-
-  const strengthTexts = ["", "Weak", "Medium", "Strong"];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -40,7 +24,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     
     toast({
       title: "Account created!",
-      description: "Welcome to NINO. Please check your email to verify your account.",
+      description: "Welcome to NINO.",
     });
     
     setLoading(false);
@@ -76,7 +60,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           required
         />
 
-        <div className="space-y-2 relative">
+        <div className="relative">
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
@@ -96,33 +80,6 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
               <Eye className="h-4 w-4" />
             )}
           </button>
-
-          {password && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-2"
-            >
-              <div className="flex space-x-2 h-1">
-                {[1, 2, 3].map((index) => (
-                  <div
-                    key={index}
-                    className={`flex-1 rounded-full transition-colors duration-300 ${
-                      strengthColors[
-                        getPasswordStrength(password) >= index
-                          ? getPasswordStrength(password)
-                          : 0
-                      ]
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="text-xs text-nino-gray mt-1">
-                Password strength:{" "}
-                {strengthTexts[getPasswordStrength(password)]}
-              </p>
-            </motion.div>
-          )}
         </div>
 
         <Button
