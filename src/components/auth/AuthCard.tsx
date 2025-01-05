@@ -18,7 +18,7 @@ const AuthCard = () => {
           <motion.img
             src="/lovable-uploads/b6aee870-d05a-4e6f-b275-48d95b773ac9.png"
             alt="NINO"
-            className="h-12" // Increased from h-8 to h-12
+            className="h-12"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}

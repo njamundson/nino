@@ -41,7 +41,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           <Input
             type="email"
             placeholder="Email address"
-            className="h-12 bg-[#F9F6F2] border-0 focus-visible:ring-1 focus-visible:ring-nino-primary/30 transition-all duration-300"
+            className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 transition-all duration-300"
             required
           />
 
@@ -49,7 +49,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="h-12 bg-[#F9F6F2] border-0 focus-visible:ring-1 focus-visible:ring-nino-primary/30 pr-10 transition-all duration-300"
+              className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 pr-10 transition-all duration-300"
               required
             />
             <button
@@ -77,7 +77,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
         <Button
           type="submit"
-          className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white transition-all duration-300 rounded-lg h-12"
+          className="w-full bg-nino-primary hover:opacity-90 text-white transition-all duration-300 rounded-xl h-12 shadow-sm"
           disabled={loading}
         >
           {loading ? (
