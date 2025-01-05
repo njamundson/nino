@@ -39,47 +39,54 @@ const ProfessionalInfoStep = ({
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="space-y-2">
-        <Label>Creator Type</Label>
-        <Select
-          value={creatorType}
-          onValueChange={(value) => onUpdateField("creatorType", value)}
-        >
-          <SelectTrigger className="bg-nino-bg border-transparent focus:border-nino-primary">
-            <SelectValue placeholder="Select your creator type" />
-          </SelectTrigger>
-          <SelectContent>
-            {creatorTypes.map((type) => (
-              <SelectItem key={type} value={type.toLowerCase()}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className="space-y-8 animate-fadeIn">
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-medium text-nino-text">Professional Details</h1>
+        <p className="text-nino-gray text-lg">Tell us about your expertise</p>
       </div>
 
-      <div className="space-y-4">
-        <Label>Skills</Label>
-        <div className="flex flex-wrap gap-2">
-          {availableSkills.map((skill) => (
-            <Button
-              key={skill}
-              variant="outline"
-              onClick={() => toggleSkill(skill)}
-              className={`
-                transition-all duration-200
-                ${
-                  skills.includes(skill)
-                    ? "bg-nino-primary text-white hover:bg-nino-primary/90"
-                    : "bg-nino-bg border-transparent hover:border-nino-primary"
-                }
-              `}
-            >
-              {skill}
-              {skills.includes(skill) && <X className="w-4 h-4 ml-2" />}
-            </Button>
-          ))}
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label className="text-base">Creator Type</Label>
+          <Select
+            value={creatorType}
+            onValueChange={(value) => onUpdateField("creatorType", value)}
+          >
+            <SelectTrigger className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base">
+              <SelectValue placeholder="Select your creator type" />
+            </SelectTrigger>
+            <SelectContent>
+              {creatorTypes.map((type) => (
+                <SelectItem key={type} value={type.toLowerCase()}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-4">
+          <Label className="text-base">Skills</Label>
+          <div className="flex flex-wrap gap-3">
+            {availableSkills.map((skill) => (
+              <Button
+                key={skill}
+                variant="outline"
+                onClick={() => toggleSkill(skill)}
+                className={`
+                  rounded-full px-6 py-3 h-auto text-base transition-all duration-200
+                  ${
+                    skills.includes(skill)
+                      ? "bg-nino-primary text-white hover:bg-nino-primary/90 border-transparent"
+                      : "bg-nino-bg border-transparent hover:border-nino-primary text-nino-text"
+                  }
+                `}
+              >
+                {skill}
+                {skills.includes(skill) && <X className="w-4 h-4 ml-2" />}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

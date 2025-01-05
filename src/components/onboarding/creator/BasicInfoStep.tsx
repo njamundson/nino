@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,20 +33,27 @@ const BasicInfoStep = ({
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="relative group">
-          <Avatar className="w-24 h-24 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20">
+    <div className="space-y-8 animate-fadeIn">
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-medium text-nino-text">
+          Complete your creator profile
+        </h1>
+        <p className="text-nino-gray text-lg">Tell us more about yourself</p>
+      </div>
+
+      <div className="flex flex-col items-center space-y-4 mb-8">
+        <div className="relative group cursor-pointer">
+          <Avatar className="w-32 h-32 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20">
             <AvatarImage src={profileImage || ""} />
             <AvatarFallback className="bg-nino-bg">
-              <Camera className="w-8 h-8 text-nino-gray" />
+              <Camera className="w-12 h-12 text-nino-gray" />
             </AvatarFallback>
           </Avatar>
           <label
             htmlFor="photo-upload"
-            className="absolute bottom-0 right-0 p-2 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors"
+            className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors"
           >
-            <Camera className="w-4 h-4 text-white" />
+            <Camera className="w-5 h-5 text-white" />
           </label>
           <input
             type="file"
@@ -62,35 +68,35 @@ const BasicInfoStep = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="firstName">First Name</Label>
+          <Label htmlFor="firstName" className="text-base">First Name</Label>
           <Input
             id="firstName"
             value={firstName}
             onChange={(e) => onUpdateField("firstName", e.target.value)}
             placeholder="Enter your first name"
-            className="bg-nino-bg border-transparent focus:border-nino-primary"
+            className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="lastName">Last Name</Label>
+          <Label htmlFor="lastName" className="text-base">Last Name</Label>
           <Input
             id="lastName"
             value={lastName}
             onChange={(e) => onUpdateField("lastName", e.target.value)}
             placeholder="Enter your last name"
-            className="bg-nino-bg border-transparent focus:border-nino-primary"
+            className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bio">Bio</Label>
+        <Label htmlFor="bio" className="text-base">Bio</Label>
         <Textarea
           id="bio"
           value={bio}
           onChange={(e) => onUpdateField("bio", e.target.value)}
           placeholder="Tell us about yourself..."
-          className="h-24 bg-nino-bg border-transparent focus:border-nino-primary resize-none"
+          className="bg-nino-bg border-transparent focus:border-nino-primary resize-none min-h-[120px] text-base"
         />
       </div>
     </div>
