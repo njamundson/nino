@@ -47,10 +47,10 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-semibold text-nino-text">Create account</h1>
-        <p className="text-nino-gray">Sign up to get started</p>
+        <h1 className="text-2xl font-medium text-nino-text">Create account</h1>
+        <p className="text-nino-gray text-sm">Sign up to get started</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,13 +58,13 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           <Input
             type="text"
             placeholder="First Name"
-            className="bg-white border-nino-gray/20 focus:border-nino-primary transition-all duration-300"
+            className="h-12 bg-[#F9F6F2] border-0 focus-visible:ring-1 focus-visible:ring-nino-primary/30 transition-all duration-300"
             required
           />
           <Input
             type="text"
             placeholder="Last Name"
-            className="bg-white border-nino-gray/20 focus:border-nino-primary transition-all duration-300"
+            className="h-12 bg-[#F9F6F2] border-0 focus-visible:ring-1 focus-visible:ring-nino-primary/30 transition-all duration-300"
             required
           />
         </div>
@@ -72,7 +72,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         <Input
           type="email"
           placeholder="Email address"
-          className="bg-white border-nino-gray/20 focus:border-nino-primary transition-all duration-300"
+          className="h-12 bg-[#F9F6F2] border-0 focus-visible:ring-1 focus-visible:ring-nino-primary/30 transition-all duration-300"
           required
         />
 
@@ -82,7 +82,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-white border-nino-gray/20 focus:border-nino-primary pr-10 transition-all duration-300"
+            className="h-12 bg-[#F9F6F2] border-0 focus-visible:ring-1 focus-visible:ring-nino-primary/30 pr-10 transition-all duration-300"
             required
           />
           <button
