@@ -6,6 +6,7 @@ import { CreatorProfile, OnboardingStep } from "@/types/creator";
 import BasicInfoStep from "./creator/BasicInfoStep";
 import SocialLinksStep from "./creator/SocialLinksStep";
 import ProfessionalInfoStep from "./creator/ProfessionalInfoStep";
+import PaymentStep from "./creator/PaymentStep";
 
 const CreatorOnboarding = () => {
   const navigate = useNavigate();
@@ -37,10 +38,11 @@ const CreatorOnboarding = () => {
     basic: "Basic Information",
     social: "Social Links",
     professional: "Professional Details",
+    payment: "Choose Plan",
   };
 
   const getStepProgress = () => {
-    const stepOrder: OnboardingStep[] = ["basic", "social", "professional"];
+    const stepOrder: OnboardingStep[] = ["basic", "social", "professional", "payment"];
     const currentIndex = stepOrder.indexOf(currentStep);
     return ((currentIndex + 1) / stepOrder.length) * 100;
   };
@@ -48,11 +50,13 @@ const CreatorOnboarding = () => {
   const handleNext = () => {
     if (currentStep === "basic") setCurrentStep("social");
     else if (currentStep === "social") setCurrentStep("professional");
+    else if (currentStep === "professional") setCurrentStep("payment");
     else navigate("/");
   };
 
   const handleBack = () => {
-    if (currentStep === "professional") setCurrentStep("social");
+    if (currentStep === "payment") setCurrentStep("professional");
+    else if (currentStep === "professional") setCurrentStep("social");
     else if (currentStep === "social") setCurrentStep("basic");
     else navigate("/onboarding");
   };
@@ -106,6 +110,8 @@ const CreatorOnboarding = () => {
               onUpdateSkills={updateSkills}
             />
           )}
+
+          {currentStep === "payment" && <PaymentStep />}
         </div>
 
         <div className="flex justify-between pt-4">
@@ -120,7 +126,7 @@ const CreatorOnboarding = () => {
             onClick={handleNext}
             className="bg-nino-primary hover:bg-nino-primary/90 text-white"
           >
-            {currentStep === "professional" ? "Complete Profile" : "Next"}
+            {currentStep === "payment" ? "Complete Profile" : "Next"}
           </Button>
         </div>
       </motion.div>

@@ -9,4 +9,4 @@ export interface CreatorProfile {
   skills: string[];
 }
 
-export type OnboardingStep = 'basic' | 'social' | 'professional';
+export type OnboardingStep = 'basic' | 'social' | 'professional' | 'payment';
