@@ -4,6 +4,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SignUpProps {
   onToggleAuth: () => void;
@@ -15,6 +16,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +36,13 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     
     toast({
-      title: "Account created!",
-      description: "Welcome to NINO.",
+      title: "Welcome to NINO",
     });
     
     setLoading(false);
+    
+    // Redirect to onboarding
+    navigate("/onboarding");
   };
 
   return (
