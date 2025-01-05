@@ -49,12 +49,12 @@ const ResetPassword = ({ isOpen, onClose }: ResetPasswordProps) => {
           <Input
             type="email"
             placeholder="Email address"
-            className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 transition-all duration-300"
+            className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
             required
           />
           <Button
             type="submit"
-            className="w-full bg-nino-primary hover:opacity-90 text-white transition-all duration-300 rounded-xl h-12 shadow-sm"
+            className="w-full bg-nino-primary hover:opacity-90 text-white transition-all duration-300 rounded-xl h-12 shadow-sm focus-visible:ring-2 focus-visible:ring-[#A55549] focus-visible:ring-offset-2"
             disabled={loading}
           >
             {loading ? (
