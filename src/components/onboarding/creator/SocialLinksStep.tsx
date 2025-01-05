@@ -16,8 +16,8 @@ const SocialLinksStep = ({
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-medium text-nino-text">Social Links</h1>
-        <p className="text-nino-gray text-lg">Connect your online presence</p>
+        <h1 className="text-2xl font-medium text-nino-text">Social Links</h1>
+        <p className="text-nino-gray text-sm">Connect your online presence</p>
       </div>
 
       <div className="space-y-6">

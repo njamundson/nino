@@ -35,10 +35,10 @@ const BasicInfoStep = ({
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-medium text-nino-text">
-          Complete your creator profile
+        <h1 className="text-2xl font-medium text-nino-text">
+          Complete your profile
         </h1>
-        <p className="text-nino-gray text-lg">Tell us more about yourself</p>
+        <p className="text-nino-gray text-sm">Tell us more about yourself</p>
       </div>
 
       <div className="flex flex-col items-center space-y-4 mb-8">

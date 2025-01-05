@@ -41,8 +41,8 @@ const ProfessionalInfoStep = ({
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-medium text-nino-text">Professional Details</h1>
-        <p className="text-nino-gray text-lg">Tell us about your expertise</p>
+        <h1 className="text-2xl font-medium text-nino-text">Professional Details</h1>
+        <p className="text-nino-gray text-sm">Tell us about your expertise</p>
       </div>
 
       <div className="space-y-6">
