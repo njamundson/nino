@@ -4,12 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface AccountManager {
   id: string;
   name: string;
   email: string;
   role: string;
+  permissions: string[];
 }
 
 interface AccountManagersStepProps {
@@ -22,6 +24,7 @@ const AccountManagersStep = ({
   onUpdateManagers,
 }: AccountManagersStepProps) => {
   const [showAddManager, setShowAddManager] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
   const addAccountManager = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,14 +35,26 @@ const AccountManagersStep = ({
       name: formData.get("managerName") as string,
       email: formData.get("managerEmail") as string,
       role: formData.get("managerRole") as string,
+      permissions: selectedPermissions,
     };
     onUpdateManagers([...accountManagers, newManager]);
     setShowAddManager(false);
+    setSelectedPermissions([]);
     form.reset();
   };
 
   const removeManager = (id: string) => {
     onUpdateManagers(accountManagers.filter(manager => manager.id !== id));
+  };
+
+  const updateManagerPermissions = (managerId: string, permissions: string[]) => {
+    onUpdateManagers(
+      accountManagers.map(manager =>
+        manager.id === managerId
+          ? { ...manager, permissions }
+          : manager
+      )
+    );
   };
 
   return (
@@ -91,11 +106,48 @@ const AccountManagersStep = ({
               required
               className="bg-white border-transparent focus:border-nino-primary h-12"
             />
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Permissions</Label>
+              <ToggleGroup
+                type="multiple"
+                value={selectedPermissions}
+                onValueChange={setSelectedPermissions}
+                className="flex flex-wrap gap-2"
+              >
+                <ToggleGroupItem
+                  value="edit_content"
+                  className="data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+                >
+                  Edit Content
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="manage_team"
+                  className="data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+                >
+                  Manage Team
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="view_analytics"
+                  className="data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+                >
+                  View Analytics
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="publish_content"
+                  className="data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+                >
+                  Publish Content
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
             <div className="flex justify-end space-x-2">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setShowAddManager(false)}
+                onClick={() => {
+                  setShowAddManager(false);
+                  setSelectedPermissions([]);
+                }}
                 className="hover:bg-gray-100 h-12"
               >
                 Cancel
@@ -118,10 +170,47 @@ const AccountManagersStep = ({
               animate={{ opacity: 1 }}
               className="flex items-center justify-between p-4 bg-nino-bg rounded-xl hover:bg-nino-bg/80 transition-colors"
             >
-              <div>
+              <div className="space-y-1">
                 <p className="font-medium text-nino-text">{manager.name}</p>
                 <p className="text-sm text-nino-gray">{manager.email}</p>
                 <p className="text-xs text-nino-primary">{manager.role}</p>
+                <div className="mt-2">
+                  <ToggleGroup
+                    type="multiple"
+                    value={manager.permissions}
+                    onValueChange={(value) => updateManagerPermissions(manager.id, value)}
+                    className="flex flex-wrap gap-1"
+                  >
+                    <ToggleGroupItem
+                      value="edit_content"
+                      size="sm"
+                      className="text-xs data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+                    >
+                      Edit Content
+                    </ToggleGroupItem>
+                    <ToggleGroupItem
+                      value="manage_team"
+                      size="sm"
+                      className="text-xs data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+                    >
+                      Manage Team
+                    </ToggleGroupItem>
+                    <ToggleGroupItem
+                      value="view_analytics"
+                      size="sm"
+                      className="text-xs data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+                    >
+                      View Analytics
+                    </ToggleGroupItem>
+                    <ToggleGroupItem
+                      value="publish_content"
+                      size="sm"
+                      className="text-xs data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+                    >
+                      Publish Content
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                </div>
               </div>
               <Button
                 variant="ghost"
