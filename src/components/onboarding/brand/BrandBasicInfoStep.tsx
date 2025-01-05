@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Camera } from "lucide-react";
+import { Camera, Instagram, Globe } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,8 +30,8 @@ const BrandBasicInfoStep = ({
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-medium text-nino-text">Brand Profile</h1>
-        <p className="text-nino-gray text-lg">Tell us about your brand</p>
+        <h1 className="text-2xl font-medium text-nino-text">Brand Profile</h1>
+        <p className="text-nino-gray text-sm">Tell us about your brand</p>
       </div>
 
       <div className="space-y-6">
@@ -80,6 +80,32 @@ const BrandBasicInfoStep = ({
               className="h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
               onChange={(e) => onUpdateField("brandEmail", e.target.value)}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="instagram" className="text-base">Instagram</Label>
+            <div className="relative">
+              <Instagram className="absolute left-4 top-3.5 w-5 h-5 text-nino-gray" />
+              <Input
+                id="instagram"
+                placeholder="Instagram handle"
+                className="pl-12 h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
+                onChange={(e) => onUpdateField("instagram", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="website" className="text-base">Website</Label>
+            <div className="relative">
+              <Globe className="absolute left-4 top-3.5 w-5 h-5 text-nino-gray" />
+              <Input
+                id="website"
+                placeholder="Website URL"
+                className="pl-12 h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
+                onChange={(e) => onUpdateField("website", e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
