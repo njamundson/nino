@@ -61,6 +61,16 @@ const AccountManagersStep = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm"
       >
+        {/* Progress bar */}
+        <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-nino-primary rounded-full"
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 0.5 }}
+          />
+        </div>
+
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-medium text-nino-text">
             Account Managers
