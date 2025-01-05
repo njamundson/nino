@@ -52,7 +52,7 @@ const CreatorOnboarding = () => {
     if (currentStep === "basic") setCurrentStep("social");
     else if (currentStep === "social") setCurrentStep("professional");
     else if (currentStep === "professional") setCurrentStep("payment");
-    else navigate("/");
+    else navigate("/welcome");
   };
 
   const handleBack = () => {
