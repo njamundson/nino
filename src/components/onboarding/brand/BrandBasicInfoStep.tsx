@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Camera, Instagram, Globe } from "lucide-react";
+import { Camera, Instagram, Globe, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,6 +80,19 @@ const BrandBasicInfoStep = ({
               className="h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
               onChange={(e) => onUpdateField("brandEmail", e.target.value)}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="location" className="text-base">Location</Label>
+            <div className="relative">
+              <MapPin className="absolute left-4 top-3.5 w-5 h-5 text-nino-gray" />
+              <Input
+                id="location"
+                placeholder="Enter brand location"
+                className="pl-12 h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
+                onChange={(e) => onUpdateField("location", e.target.value)}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

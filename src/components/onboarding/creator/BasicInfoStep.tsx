@@ -9,6 +9,7 @@ interface BasicInfoStepProps {
   firstName: string;
   lastName: string;
   bio: string;
+  location: string;
   onUpdateField: (field: string, value: string) => void;
   onUpdateImage: (image: string | null) => void;
 }
@@ -18,6 +19,7 @@ const BasicInfoStep = ({
   firstName,
   lastName,
   bio,
+  location,
   onUpdateField,
   onUpdateImage,
 }: BasicInfoStepProps) => {
@@ -87,6 +89,17 @@ const BasicInfoStep = ({
             className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="location" className="text-base">Location</Label>
+        <Input
+          id="location"
+          value={location}
+          onChange={(e) => onUpdateField("location", e.target.value)}
+          placeholder="Enter your location"
+          className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
+        />
       </div>
 
       <div className="space-y-2">

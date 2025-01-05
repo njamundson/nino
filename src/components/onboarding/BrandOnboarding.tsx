@@ -22,6 +22,7 @@ const BrandOnboarding = () => {
     brandBio: "",
     instagram: "",
     website: "",
+    location: "",
   });
   const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
 

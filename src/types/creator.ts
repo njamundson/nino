@@ -7,6 +7,7 @@ export interface CreatorProfile {
   website: string;
   creatorType: string;
   skills: string[];
+  location: string;
 }
 
 export type OnboardingStep = 'basic' | 'social' | 'professional' | 'payment';

@@ -20,6 +20,7 @@ const CreatorOnboarding = () => {
     website: "",
     creatorType: "",
     skills: [],
+    location: "",
   });
 
   const updateField = (field: keyof CreatorProfile, value: string) => {
@@ -89,6 +90,7 @@ const CreatorOnboarding = () => {
               firstName={profile.firstName}
               lastName={profile.lastName}
               bio={profile.bio}
+              location={profile.location}
               onUpdateField={updateField}
               onUpdateImage={updateImage}
             />
