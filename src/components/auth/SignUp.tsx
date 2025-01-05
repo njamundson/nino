@@ -88,7 +88,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-nino-gray hover:text-[#8B5CF6] transition-colors duration-300"
           >
             {showPassword ? (
               <EyeOff className="h-4 w-4" />
@@ -127,7 +127,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
         <Button
           type="submit"
-          className="w-full bg-nino-primary hover:opacity-90 text-white transition-all duration-300 rounded-xl h-12 shadow-sm"
+          className="w-full bg-nino-primary hover:bg-[#8B5CF6] text-white transition-all duration-300 rounded-xl h-12 shadow-sm"
           disabled={loading}
         >
           {loading ? (
@@ -149,7 +149,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           <button
             type="button"
             onClick={onToggleAuth}
-            className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+            className="text-nino-primary hover:text-[#8B5CF6] transition-colors duration-300"
           >
             Sign in
           </button>
