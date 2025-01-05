@@ -5,7 +5,11 @@ import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 
-const SignIn = () => {
+interface SignInProps {
+  onToggleAuth: () => void;
+}
+
+const SignIn = ({ onToggleAuth }: SignInProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -14,7 +18,7 @@ const SignIn = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API call
+    // Simulate API call - will be replaced with Supabase
     await new Promise((resolve) => setTimeout(resolve, 1000));
     
     toast({
@@ -26,94 +30,82 @@ const SignIn = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Input
-          type="email"
-          placeholder="Email"
-          className="bg-white/50 border-nino-gray/20 focus:border-nino-primary transition-all duration-300"
-          required
-        />
+    <div className="space-y-4">
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl font-semibold text-nino-text">Welcome back</h1>
+        <p className="text-nino-gray">Sign in to continue</p>
       </div>
 
-      <div className="space-y-2 relative">
-        <Input
-          type={showPassword ? "text" : "password"}
-          placeholder="Password"
-          className="bg-white/50 border-nino-gray/20 focus:border-nino-primary pr-10 transition-all duration-300"
-          required
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
-        >
-          {showPassword ? (
-            <EyeOff className="h-4 w-4" />
-          ) : (
-            <Eye className="h-4 w-4" />
-          )}
-        </button>
-      </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
+          <Input
+            type="email"
+            placeholder="Email address"
+            className="bg-white border-nino-gray/20 focus:border-nino-primary transition-all duration-300"
+            required
+          />
 
-      <div className="flex items-center justify-between text-sm">
-        <label className="flex items-center space-x-2 text-nino-gray">
-          <input type="checkbox" className="rounded border-nino-gray/20" />
-          <span>Remember me</span>
-        </label>
-        <button
-          type="button"
-          className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
-        >
-          Forgot password?
-        </button>
-      </div>
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="bg-white border-nino-gray/20 focus:border-nino-primary pr-10 transition-all duration-300"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+        </div>
 
-      <Button
-        type="submit"
-        className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white transition-all duration-300"
-        disabled={loading}
-      >
-        {loading ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center space-x-2"
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="text-sm text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
           >
-            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            <span>Signing in...</span>
-          </motion.div>
-        ) : (
-          "Sign In"
-        )}
-      </Button>
-
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-nino-gray/20"></div>
+            Forgot password?
+          </button>
         </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-nino-gray">Or continue with</span>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-4">
         <Button
-          type="button"
-          variant="outline"
-          className="border-nino-gray/20 hover:bg-nino-primary/5 transition-all duration-300"
+          type="submit"
+          className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white transition-all duration-300 rounded-lg h-12"
+          disabled={loading}
         >
-          Google
+          {loading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center space-x-2"
+            >
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Signing in...</span>
+            </motion.div>
+          ) : (
+            "Sign In"
+          )}
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="border-nino-gray/20 hover:bg-nino-primary/5 transition-all duration-300"
-        >
-          Apple
-        </Button>
-      </div>
-    </form>
+
+        <div className="text-center text-sm text-nino-gray">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            onClick={onToggleAuth}
+            className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+          >
+            Create one
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
