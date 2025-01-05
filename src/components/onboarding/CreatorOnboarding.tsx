@@ -13,11 +13,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Instagram, Globe } from "lucide-react";
+import { Camera, Instagram, Globe, X } from "lucide-react";
 
 const CreatorOnboarding = () => {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
   const creatorTypes = ["Solo", "Couple", "Family", "Group"];
   const skills = [
@@ -39,12 +40,20 @@ const CreatorOnboarding = () => {
     }
   };
 
+  const toggleSkill = (skill: string) => {
+    setSelectedSkills((prev) =>
+      prev.includes(skill)
+        ? prev.filter((s) => s !== skill)
+        : [...prev, skill]
+    );
+  };
+
   return (
     <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-2xl space-y-8 bg-white p-8 rounded-xl shadow-sm"
+        className="w-full max-w-2xl space-y-8"
       >
         {/* Progress indicator */}
         <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
@@ -58,11 +67,11 @@ const CreatorOnboarding = () => {
           <p className="text-nino-gray">Tell us more about yourself</p>
         </div>
 
-        <div className="space-y-6">
+        <div className="bg-white p-8 rounded-xl shadow-sm space-y-8">
           {/* Profile Photo Upload */}
           <div className="flex flex-col items-center space-y-4">
-            <div className="relative">
-              <Avatar className="w-24 h-24">
+            <div className="relative group">
+              <Avatar className="w-24 h-24 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20">
                 <AvatarImage src={profileImage || ""} />
                 <AvatarFallback className="bg-nino-bg">
                   <Camera className="w-8 h-8 text-nino-gray" />
@@ -70,7 +79,7 @@ const CreatorOnboarding = () => {
               </Avatar>
               <label
                 htmlFor="photo-upload"
-                className="absolute bottom-0 right-0 p-1 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors"
+                className="absolute bottom-0 right-0 p-2 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors"
               >
                 <Camera className="w-4 h-4 text-white" />
               </label>
@@ -86,14 +95,22 @@ const CreatorOnboarding = () => {
           </div>
 
           {/* Name Fields */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" placeholder="Enter your first name" />
+              <Input 
+                id="firstName" 
+                placeholder="Enter your first name"
+                className="bg-nino-bg border-transparent focus:border-nino-primary" 
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" placeholder="Enter your last name" />
+              <Input 
+                id="lastName" 
+                placeholder="Enter your last name"
+                className="bg-nino-bg border-transparent focus:border-nino-primary" 
+              />
             </div>
           </div>
 
@@ -103,7 +120,7 @@ const CreatorOnboarding = () => {
             <Textarea
               id="bio"
               placeholder="Tell us about yourself..."
-              className="h-24"
+              className="h-24 bg-nino-bg border-transparent focus:border-nino-primary resize-none"
             />
           </div>
 
@@ -113,14 +130,14 @@ const CreatorOnboarding = () => {
               <Instagram className="absolute left-3 top-3 w-5 h-5 text-nino-gray" />
               <Input
                 placeholder="Instagram username"
-                className="pl-10"
+                className="pl-10 bg-nino-bg border-transparent focus:border-nino-primary"
               />
             </div>
             <div className="relative">
               <Globe className="absolute left-3 top-3 w-5 h-5 text-nino-gray" />
               <Input
                 placeholder="Website URL"
-                className="pl-10"
+                className="pl-10 bg-nino-bg border-transparent focus:border-nino-primary"
               />
             </div>
           </div>
@@ -129,7 +146,7 @@ const CreatorOnboarding = () => {
           <div className="space-y-2">
             <Label>Creator Type</Label>
             <Select>
-              <SelectTrigger>
+              <SelectTrigger className="bg-nino-bg border-transparent focus:border-nino-primary">
                 <SelectValue placeholder="Select your creator type" />
               </SelectTrigger>
               <SelectContent>
@@ -143,16 +160,26 @@ const CreatorOnboarding = () => {
           </div>
 
           {/* Skills */}
-          <div className="space-y-2">
+          <div className="space-y-4">
             <Label>Skills</Label>
             <div className="flex flex-wrap gap-2">
               {skills.map((skill) => (
                 <Button
                   key={skill}
                   variant="outline"
-                  className="hover:bg-nino-primary hover:text-white transition-colors"
+                  onClick={() => toggleSkill(skill)}
+                  className={`
+                    transition-all duration-200
+                    ${selectedSkills.includes(skill)
+                      ? "bg-nino-primary text-white hover:bg-nino-primary/90"
+                      : "bg-nino-bg border-transparent hover:border-nino-primary"
+                    }
+                  `}
                 >
                   {skill}
+                  {selectedSkills.includes(skill) && (
+                    <X className="w-4 h-4 ml-2" />
+                  )}
                 </Button>
               ))}
             </div>
@@ -163,7 +190,7 @@ const CreatorOnboarding = () => {
           <Button
             onClick={() => navigate("/onboarding")}
             variant="outline"
-            className="text-nino-gray"
+            className="text-nino-gray hover:bg-white"
           >
             Back
           </Button>
