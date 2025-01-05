@@ -4,6 +4,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import ResetPassword from "./ResetPassword";
 
 interface SignInProps {
   onToggleAuth: () => void;
@@ -12,6 +13,7 @@ interface SignInProps {
 const SignIn = ({ onToggleAuth }: SignInProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,6 +71,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         <div className="flex justify-end">
           <button
             type="button"
+            onClick={() => setShowResetPassword(true)}
             className="text-sm text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
           >
             Forgot password?
@@ -105,6 +108,11 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           </button>
         </div>
       </form>
+
+      <ResetPassword 
+        isOpen={showResetPassword} 
+        onClose={() => setShowResetPassword(false)} 
+      />
     </div>
   );
 };
