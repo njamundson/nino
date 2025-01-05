@@ -62,7 +62,7 @@ const CreatorOnboarding = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-2xl space-y-8"
+        className="w-full max-w-md space-y-6"
       >
         <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
           <div
@@ -78,7 +78,7 @@ const CreatorOnboarding = () => {
           <p className="text-nino-gray">Complete your creator profile</p>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm">
+        <div className="bg-white p-6 rounded-xl shadow-sm">
           {currentStep === "basic" && (
             <BasicInfoStep
               profileImage={profile.profileImage}
@@ -108,7 +108,7 @@ const CreatorOnboarding = () => {
           )}
         </div>
 
-        <div className="flex justify-between pt-6">
+        <div className="flex justify-between pt-4">
           <Button
             onClick={handleBack}
             variant="outline"
