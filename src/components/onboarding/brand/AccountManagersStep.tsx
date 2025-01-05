@@ -44,21 +44,21 @@ const AccountManagersStep = ({
 
   return (
     <div className="space-y-8 animate-fadeIn">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-medium text-nino-text">Account Managers</h1>
-        <p className="text-nino-gray text-lg">Add team members to your brand account</p>
+      <div className="text-center space-y-4">
+        <h1 className="text-[40px] font-medium text-nino-text">Account Managers</h1>
+        <p className="text-nino-gray text-xl">Add team members to your brand account</p>
       </div>
 
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <Label className="text-base">Team Members</Label>
+          <Label className="text-2xl font-medium text-nino-text">Team Members</Label>
           <Button
             type="button"
             variant="outline"
             onClick={() => setShowAddManager(true)}
-            className="text-nino-primary border-nino-primary hover:bg-nino-primary hover:text-white"
+            className="border-2 border-nino-primary text-nino-primary hover:bg-nino-primary hover:text-white px-8 py-6 text-lg h-auto"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="w-5 h-5 mr-2" />
             Add Team Member
           </Button>
         </div>
@@ -75,34 +75,34 @@ const AccountManagersStep = ({
                 name="managerName"
                 placeholder="Name"
                 required
-                className="bg-white border-transparent focus:border-nino-primary"
+                className="bg-white border-transparent focus:border-nino-primary h-12"
               />
               <Input
                 name="managerEmail"
                 type="email"
                 placeholder="Email"
                 required
-                className="bg-white border-transparent focus:border-nino-primary"
+                className="bg-white border-transparent focus:border-nino-primary h-12"
               />
             </div>
             <Input
               name="managerRole"
               placeholder="Role (e.g., Admin, Editor)"
               required
-              className="bg-white border-transparent focus:border-nino-primary"
+              className="bg-white border-transparent focus:border-nino-primary h-12"
             />
             <div className="flex justify-end space-x-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowAddManager(false)}
-                className="hover:bg-gray-100"
+                className="hover:bg-gray-100 h-12"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="bg-nino-primary hover:bg-nino-primary/90 text-white"
+                className="bg-nino-primary hover:bg-nino-primary/90 text-white h-12"
               >
                 Add Member
               </Button>
