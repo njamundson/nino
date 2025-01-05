@@ -2,15 +2,6 @@ import { motion } from "framer-motion";
 import { Instagram, Globe } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AccountManagersStep from "./AccountManagersStep";
-
-interface AccountManager {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  permissions: string[];
-}
 
 interface BrandSocialStepProps {
   brandData: {
@@ -18,22 +9,18 @@ interface BrandSocialStepProps {
     website: string;
     [key: string]: string;
   };
-  accountManagers: AccountManager[];
   onUpdateField: (field: string, value: string) => void;
-  onUpdateManagers: (managers: AccountManager[]) => void;
 }
 
 const BrandSocialStep = ({
   brandData,
-  accountManagers,
   onUpdateField,
-  onUpdateManagers,
 }: BrandSocialStepProps) => {
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-medium text-nino-text">Social & Contact</h1>
-        <p className="text-nino-gray text-sm">Connect your social media and add team members</p>
+        <p className="text-nino-gray text-sm">Connect your social media accounts</p>
       </div>
 
       <div className="space-y-6">
@@ -64,11 +51,6 @@ const BrandSocialStep = ({
             />
           </div>
         </div>
-
-        <AccountManagersStep
-          accountManagers={accountManagers}
-          onUpdateManagers={onUpdateManagers}
-        />
       </div>
     </div>
   );

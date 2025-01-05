@@ -5,7 +5,6 @@ import { useState } from "react";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
-import AccountManagersStep from "./brand/AccountManagersStep";
 
 interface AccountManager {
   id: string;
@@ -28,7 +27,6 @@ const BrandOnboarding = () => {
     website: "",
     location: "",
   });
-  const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
 
   const updateField = (field: string, value: string) => {
     setBrandData(prev => ({ ...prev, [field]: value }));
@@ -69,9 +67,7 @@ const BrandOnboarding = () => {
         return (
           <BrandSocialStep
             brandData={brandData}
-            accountManagers={accountManagers}
             onUpdateField={updateField}
-            onUpdateManagers={setAccountManagers}
           />
         );
       default:
@@ -85,7 +81,7 @@ const BrandOnboarding = () => {
     } else if (currentStep === 'details') {
       setCurrentStep('social');
     } else {
-      navigate("/");
+      navigate("/onboarding/brand/managers");
     }
   };
 
@@ -129,7 +125,7 @@ const BrandOnboarding = () => {
             onClick={handleNext}
             className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
           >
-            {currentStep === 'social' ? 'Complete Profile' : 'Next'}
+            {currentStep === 'social' ? 'Add Team Members' : 'Next'}
           </Button>
         </div>
       </motion.div>

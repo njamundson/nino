@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import UserTypeSelection from "./components/onboarding/UserTypeSelection";
 import CreatorOnboarding from "./components/onboarding/CreatorOnboarding";
 import BrandOnboarding from "./components/onboarding/BrandOnboarding";
+import AccountManagersStep from "./components/onboarding/brand/AccountManagersStep";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/onboarding" element={<UserTypeSelection />} />
           <Route path="/onboarding/creator" element={<CreatorOnboarding />} />
           <Route path="/onboarding/brand" element={<BrandOnboarding />} />
+          <Route path="/onboarding/brand/managers" element={<AccountManagersStep />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
