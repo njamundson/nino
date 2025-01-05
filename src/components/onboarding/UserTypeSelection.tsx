@@ -15,7 +15,7 @@ const UserTypeSelection = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md space-y-8"
+        className="w-full max-w-2xl space-y-8"
       >
         {/* Progress indicator */}
         <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
