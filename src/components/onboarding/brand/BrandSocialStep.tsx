@@ -9,6 +9,7 @@ interface AccountManager {
   name: string;
   email: string;
   role: string;
+  permissions: string[];
 }
 
 interface BrandSocialStepProps {
