@@ -21,7 +21,7 @@ const ManagerForm = ({
     <motion.form
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 p-6 border rounded-xl bg-nino-bg"
+      className="space-y-4 p-4 border rounded-lg bg-nino-bg"
       onSubmit={onSubmit}
     >
       <div className="grid grid-cols-2 gap-4">
@@ -29,21 +29,21 @@ const ManagerForm = ({
           name="managerName"
           placeholder="Name"
           required
-          className="bg-white border-transparent focus:border-nino-primary h-12"
+          className="bg-white border-transparent focus:border-nino-primary h-10"
         />
         <Input
           name="managerEmail"
           type="email"
           placeholder="Email"
           required
-          className="bg-white border-transparent focus:border-nino-primary h-12"
+          className="bg-white border-transparent focus:border-nino-primary h-10"
         />
       </div>
       <Input
         name="managerRole"
         placeholder="Role (e.g., Admin, Editor)"
         required
-        className="bg-white border-transparent focus:border-nino-primary h-12"
+        className="bg-white border-transparent focus:border-nino-primary h-10"
       />
       <div className="space-y-2">
         <Label className="text-sm font-medium">Permissions</Label>
@@ -55,25 +55,25 @@ const ManagerForm = ({
         >
           <ToggleGroupItem
             value="edit_content"
-            className="data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+            className="text-sm data-[state=on]:bg-nino-primary data-[state=on]:text-white"
           >
             Edit Content
           </ToggleGroupItem>
           <ToggleGroupItem
             value="manage_team"
-            className="data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+            className="text-sm data-[state=on]:bg-nino-primary data-[state=on]:text-white"
           >
             Manage Team
           </ToggleGroupItem>
           <ToggleGroupItem
             value="view_analytics"
-            className="data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+            className="text-sm data-[state=on]:bg-nino-primary data-[state=on]:text-white"
           >
             View Analytics
           </ToggleGroupItem>
           <ToggleGroupItem
             value="publish_content"
-            className="data-[state=on]:bg-nino-primary data-[state=on]:text-white"
+            className="text-sm data-[state=on]:bg-nino-primary data-[state=on]:text-white"
           >
             Publish Content
           </ToggleGroupItem>
@@ -84,13 +84,13 @@ const ManagerForm = ({
           type="button"
           variant="outline"
           onClick={onCancel}
-          className="hover:bg-gray-100 h-12"
+          className="hover:bg-gray-100 h-9"
         >
           Cancel
         </Button>
         <Button
           type="submit"
-          className="bg-nino-primary hover:bg-nino-primary/90 text-white h-12"
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white h-9"
         >
           Add Member
         </Button>

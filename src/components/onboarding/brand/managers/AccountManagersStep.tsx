@@ -59,29 +59,29 @@ const AccountManagersStep = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-2xl space-y-8 bg-white p-6 rounded-xl shadow-sm"
+        className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm"
       >
         <div className="text-center space-y-4">
-          <h1 className="text-[40px] font-medium text-nino-text">
+          <h1 className="text-2xl font-medium text-nino-text">
             Account Managers
           </h1>
-          <p className="text-nino-gray text-xl">
+          <p className="text-nino-gray">
             Add team members to your brand account
           </p>
         </div>
 
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <Label className="text-2xl font-medium text-nino-text">
+            <Label className="text-lg font-medium text-nino-text">
               Team Members
             </Label>
             <Button
               type="button"
               variant="outline"
               onClick={() => setShowAddManager(true)}
-              className="border-2 border-nino-primary text-nino-primary hover:bg-nino-primary hover:text-white px-8 py-6 text-lg h-auto"
+              className="border-2 border-nino-primary text-nino-primary hover:bg-nino-primary hover:text-white"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <Plus className="w-4 h-4 mr-2" />
               Add Team Member
             </Button>
           </div>
@@ -105,7 +105,7 @@ const AccountManagersStep = () => {
           />
         </div>
 
-        <div className="flex justify-between pt-6">
+        <div className="flex justify-between pt-4">
           <Button
             onClick={() => navigate("/onboarding/brand")}
             variant="outline"
@@ -115,7 +115,7 @@ const AccountManagersStep = () => {
           </Button>
           <Button
             onClick={handleComplete}
-            className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
+            className="bg-nino-primary hover:bg-nino-primary/90 text-white"
           >
             Complete Setup
           </Button>

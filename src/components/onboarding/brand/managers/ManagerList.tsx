@@ -23,18 +23,18 @@ const ManagerList = ({
   onRemoveManager,
 }: ManagerListProps) => {
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {managers.map((manager, index) => (
         <motion.div
           key={manager.id}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: index * 0.1 }}
-          className="flex items-center justify-between p-4 bg-nino-bg rounded-xl hover:bg-nino-bg/80 transition-colors"
+          className="flex items-center justify-between p-3 bg-nino-bg rounded-lg hover:bg-nino-bg/80 transition-colors"
         >
           <div className="space-y-1">
-            <p className="font-medium text-nino-text">{manager.name}</p>
-            <p className="text-sm text-nino-gray">{manager.email}</p>
+            <p className="font-medium text-sm text-nino-text">{manager.name}</p>
+            <p className="text-xs text-nino-gray">{manager.email}</p>
             <p className="text-xs text-nino-primary">{manager.role}</p>
             <div className="mt-2">
               <ToggleGroup
