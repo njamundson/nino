@@ -117,19 +117,23 @@ const CreatorOnboarding = () => {
         </div>
 
         <div className="flex justify-between pt-4">
-          <Button
-            onClick={handleBack}
-            variant="outline"
-            className="text-nino-gray hover:bg-white"
-          >
-            Back
-          </Button>
-          <Button
-            onClick={handleNext}
-            className="bg-nino-primary hover:bg-nino-primary/90 text-white"
-          >
-            {currentStep === "payment" ? "Complete Profile" : "Next"}
-          </Button>
+          {currentStep !== "payment" && (
+            <Button
+              onClick={handleBack}
+              variant="outline"
+              className="text-nino-gray hover:bg-white"
+            >
+              Back
+            </Button>
+          )}
+          {currentStep !== "payment" && (
+            <Button
+              onClick={handleNext}
+              className="bg-nino-primary hover:bg-nino-primary/90 text-white"
+            >
+              Next
+            </Button>
+          )}
         </div>
       </motion.div>
     </div>
