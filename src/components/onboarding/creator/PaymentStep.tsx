@@ -1,7 +1,61 @@
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const PaymentStep = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleSubscribe = async () => {
+    try {
+      setIsLoading(true);
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          variant: "destructive",
+          title: "Authentication required",
+          description: "Please sign in to continue.",
+        });
+        navigate("/");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      const { url, error } = await response.json();
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to start checkout process",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
@@ -41,9 +95,13 @@ const PaymentStep = () => {
         </div>
       </div>
 
-      <Button className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white">
+      <Button 
+        className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
+        onClick={handleSubscribe}
+        disabled={isLoading}
+      >
         <CreditCard className="w-4 h-4 mr-2" />
-        Subscribe Now
+        {isLoading ? "Processing..." : "Subscribe Now"}
       </Button>
     </div>
   );
