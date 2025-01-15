@@ -44,10 +44,7 @@ const UserTypeSelection = () => {
                 <Star className="h-6 w-6 text-nino-primary" />
               </div>
               <div>
-                <h3 className="font-medium text-nino-text mb-1">Creator</h3>
-                <p className="text-sm text-nino-gray">
-                  I want to collaborate with brands and grow my audience
-                </p>
+                <h3 className="font-medium text-nino-text">Creator</h3>
               </div>
             </div>
           </motion.button>
@@ -62,10 +59,7 @@ const UserTypeSelection = () => {
                 <Briefcase className="h-6 w-6 text-nino-primary" />
               </div>
               <div>
-                <h3 className="font-medium text-nino-text mb-1">Brand</h3>
-                <p className="text-sm text-nino-gray">
-                  I want to connect with creators and expand my reach
-                </p>
+                <h3 className="font-medium text-nino-text">Brand</h3>
               </div>
             </div>
           </motion.button>
