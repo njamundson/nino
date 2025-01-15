@@ -9,6 +9,7 @@ import CreatorOnboarding from "./components/onboarding/CreatorOnboarding";
 import BrandOnboarding from "./components/onboarding/BrandOnboarding";
 import AccountManagersStep from "./components/onboarding/brand/managers/AccountManagersStep";
 import Welcome from "./pages/Welcome";
+import ProtectedCreatorRoute from "./components/auth/ProtectedCreatorRoute";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +28,14 @@ const App = () => (
             path="/onboarding/brand/managers"
             element={<AccountManagersStep />}
           />
-          <Route path="/welcome" element={<Welcome />} />
+          <Route 
+            path="/welcome" 
+            element={
+              <ProtectedCreatorRoute>
+                <Welcome />
+              </ProtectedCreatorRoute>
+            } 
+          />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
