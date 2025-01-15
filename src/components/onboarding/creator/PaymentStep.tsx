@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,9 +14,11 @@ const PaymentStep = () => {
     try {
       setIsLoading(true);
       
-      const { data: { session } } = await supabase.auth.getSession();
+      // Get the current session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (!session) {
+      if (sessionError || !session) {
+        // If there's no session, redirect to sign in
         toast({
           variant: "destructive",
           title: "Authentication required",
@@ -26,6 +28,7 @@ const PaymentStep = () => {
         return;
       }
 
+      // Make the request to create checkout session
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`,
         {
@@ -42,6 +45,7 @@ const PaymentStep = () => {
         throw new Error(error);
       }
 
+      // Redirect to Stripe checkout if URL is received
       if (url) {
         window.location.href = url;
       }
