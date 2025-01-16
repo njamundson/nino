@@ -23,16 +23,16 @@ const BrandDashboard = () => {
     }
   });
 
-  const { data: brand, isLoading: brandLoading } = useQuery({
+  const { data: brand } = useQuery({
     queryKey: ['brand'],
+    enabled: !!profile?.id,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!profile?.id) return null;
 
       const { data, error } = await supabase
         .from('brands')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', profile.id)
         .maybeSingle();
 
       if (error) throw error;
