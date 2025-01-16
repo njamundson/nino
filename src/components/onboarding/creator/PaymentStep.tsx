@@ -18,7 +18,6 @@ const PaymentStep = () => {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError || !session) {
-        // If there's no session, redirect to sign in
         toast({
           variant: "destructive",
           title: "Authentication required",
@@ -59,8 +58,7 @@ const PaymentStep = () => {
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-medium text-nino-text">Choose Your Plan</h1>
-        <p className="text-nino-gray text-sm">Get started with Nino today</p>
+        <h1 className="text-2xl font-medium text-nino-text">Join Nino Today!</h1>
       </div>
 
       <div className="bg-nino-bg rounded-xl p-6 space-y-6">
@@ -70,7 +68,7 @@ const PaymentStep = () => {
             <p className="text-sm text-nino-gray">Monthly subscription</p>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-semibold text-nino-text">$10</div>
+            <div className="text-2xl font-semibold text-nino-text">$25</div>
             <div className="text-sm text-nino-gray">/month</div>
           </div>
         </div>
@@ -78,19 +76,15 @@ const PaymentStep = () => {
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm text-nino-text">
             <Check className="w-4 h-4 text-nino-primary" />
-            <span>Access to all Nino features</span>
+            <span>Access to All Nino Jobs</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-nino-text">
             <Check className="w-4 h-4 text-nino-primary" />
-            <span>Priority support</span>
+            <span>Unlimited Collaborations</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-nino-text">
             <Check className="w-4 h-4 text-nino-primary" />
-            <span>Analytics dashboard</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-nino-text">
-            <Check className="w-4 h-4 text-nino-primary" />
-            <span>Unlimited collaborations</span>
+            <span>Direct Messaging with Brands</span>
           </div>
         </div>
       </div>
