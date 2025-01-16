@@ -17,7 +17,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         .from("brands")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       return brand;
     },
