@@ -24,17 +24,17 @@ const SuccessModal = ({ isOpen, onOpenChange }: SuccessModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[400px] p-0 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg animate-fadeIn">
+      <DialogContent className="sm:max-w-[400px] p-0 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg animate-fade-in">
         <div className="flex flex-col items-center justify-center space-y-6 p-10">
           <div className="relative">
             <div className="absolute inset-0 bg-green-100 rounded-full blur-sm opacity-50"></div>
-            <CheckCircle2 className="h-16 w-16 text-green-500 relative animate-fadeIn" />
+            <CheckCircle2 className="h-16 w-16 text-green-500 relative animate-scale-in" />
           </div>
           <div className="space-y-2 text-center">
-            <h2 className="text-3xl font-medium tracking-tight text-gray-900">
-              Campaign Created
+            <h2 className="text-2xl font-medium tracking-tight text-gray-900">
+              Campaign Created Successfully
             </h2>
-            <p className="text-gray-500 text-lg leading-relaxed">
+            <p className="text-gray-500 text-base leading-relaxed">
               Invite creators to apply!
             </p>
           </div>
