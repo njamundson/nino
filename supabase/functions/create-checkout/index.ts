@@ -15,7 +15,13 @@ serve(async (req) => {
   try {
     const { returnUrl } = await req.json();
     if (!returnUrl) {
-      throw new Error('Return URL is required');
+      return new Response(
+        JSON.stringify({ error: 'Return URL is required' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      )
     }
 
     const supabaseClient = createClient(

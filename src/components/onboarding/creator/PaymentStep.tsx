@@ -16,7 +16,6 @@ const PaymentStep = () => {
     try {
       setIsLoading(true);
       
-      // Get the current session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError || !session) {
@@ -39,11 +38,9 @@ const PaymentStep = () => {
         return;
       }
 
-      // Make the request to create checkout session
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { returnUrl: window.location.origin },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
+        body: { 
+          returnUrl: window.location.origin 
         },
       });
 
