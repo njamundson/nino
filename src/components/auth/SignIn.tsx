@@ -5,6 +5,8 @@ import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import ResetPassword from "./ResetPassword";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 interface SignInProps {
   onToggleAuth: () => void;
@@ -14,21 +16,48 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API call - will be replaced with Supabase
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Welcome back!",
-      description: "You have successfully signed in.",
-    });
-    
-    setLoading(false);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Check if user has a creator profile
+      const { data: creator } = await supabase
+        .from('creators')
+        .select('*')
+        .single();
+
+      if (creator) {
+        navigate('/dashboard');
+      } else {
+        navigate('/onboarding');
+      }
+
+      toast({
+        title: "Welcome back!",
+      });
+    } catch (error: any) {
+      console.error("Sign in error:", error);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,6 +72,8 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           <Input
             type="email"
             placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
             required
           />
@@ -51,6 +82,8 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
             <Input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-10 transition-all duration-300"
               required
             />
