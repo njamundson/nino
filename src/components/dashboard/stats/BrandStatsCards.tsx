@@ -11,7 +11,7 @@ const BrandStatsCards = () => {
         .from('brands')
         .select('id')
         .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
+        .maybeSingle();
 
       if (!brand) return 0;
 
@@ -32,7 +32,7 @@ const BrandStatsCards = () => {
         .from('brands')
         .select('id')
         .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
+        .maybeSingle();
 
       if (!brand) return 0;
 

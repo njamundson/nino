@@ -18,7 +18,7 @@ const BrandDashboard = () => {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data;
@@ -35,7 +35,7 @@ const BrandDashboard = () => {
         .from('brands')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
