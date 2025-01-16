@@ -35,6 +35,7 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
+    // Check if user already has an active subscription
     const customers = await stripe.customers.list({
       email: email,
       limit: 1
@@ -46,12 +47,17 @@ serve(async (req) => {
       const subscriptions = await stripe.subscriptions.list({
         customer: customers.data[0].id,
         status: 'active',
-        price: 'price_1QQsszENnsaw1LqJp3UNpI8d',
         limit: 1
       })
 
       if (subscriptions.data.length > 0) {
-        throw new Error("Already subscribed")
+        return new Response(
+          JSON.stringify({ error: "Already subscribed" }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400 
+          }
+        )
       }
     }
 
@@ -72,15 +78,11 @@ serve(async (req) => {
 
     console.log('Checkout session created:', session.id)
     
-    // Return a properly formatted JSON response
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        },
-        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200 
       }
     )
   } catch (error) {
@@ -88,11 +90,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        },
-        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500 
       }
     )
   }
