@@ -8,7 +8,6 @@ import { Camera, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import CreatorTypeSelect from "../onboarding/creator/professional-info/CreatorTypeSelect";
 import SkillsSelection from "../onboarding/creator/professional-info/SkillsSelection";
 
 const ProfileSettings = () => {
@@ -21,9 +20,7 @@ const ProfileSettings = () => {
     location: "",
     instagram: "",
     website: "",
-    creatorType: "",
     skills: [] as string[],
-    profileImage: null as string | null,
   });
   const { toast } = useToast();
 
@@ -58,9 +55,7 @@ const ProfileSettings = () => {
           location: creatorData.location || "",
           instagram: creatorData.instagram || "",
           website: creatorData.website || "",
-          creatorType: creatorData.creator_type || "",
           skills: creatorData.specialties || [],
-          profileImage: creatorData.profile_image || null,
         });
       }
     } catch (error) {
@@ -119,53 +114,6 @@ const ProfileSettings = () => {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
-
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${user.id}-${Date.now()}.${fileExt}`;
-
-      // Upload image
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      // Update creator profile with new image URL
-      await supabase
-        .from('creators')
-        .update({ profile_image: publicUrl })
-        .eq('user_id', user.id);
-
-      setProfileData(prev => ({ ...prev, profileImage: publicUrl }));
-      toast({
-        title: "Success",
-        description: "Profile photo updated successfully",
-      });
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast({
-        title: "Error",
-        description: "Failed to upload image",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm">
       <div className="flex items-center justify-between mb-6">
@@ -184,27 +132,11 @@ const ProfileSettings = () => {
       <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <Avatar className="w-20 h-20">
-            <AvatarImage src={profileData.profileImage || ""} />
             <AvatarFallback>
               {profileData.firstName.charAt(0)}
               {profileData.lastName.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          {isEditing && (
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={loading}
-              />
-              <Button variant="outline" size="sm" className="flex items-center" disabled={loading}>
-                <Camera className="w-4 h-4 mr-2" />
-                Change Photo
-              </Button>
-            </label>
-          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -275,21 +207,12 @@ const ProfileSettings = () => {
         </div>
 
         {isEditing && (
-          <>
-            <div className="space-y-2">
-              <CreatorTypeSelect
-                creatorType={profileData.creatorType}
-                onUpdateField={(_, value) => setProfileData(prev => ({ ...prev, creatorType: value }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <SkillsSelection
-                skills={profileData.skills}
-                onUpdateSkills={(skills) => setProfileData(prev => ({ ...prev, skills }))}
-              />
-            </div>
-          </>
+          <div className="space-y-2">
+            <SkillsSelection
+              skills={profileData.skills}
+              onUpdateSkills={(skills) => setProfileData(prev => ({ ...prev, skills }))}
+            />
+          </div>
         )}
 
         {isEditing && (
