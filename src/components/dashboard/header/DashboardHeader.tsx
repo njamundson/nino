@@ -21,16 +21,27 @@ const DashboardHeader = () => {
   });
 
   return (
-    <div className="flex justify-end items-center space-x-4 mb-8">
-      <button className="p-2 hover:bg-nino-white rounded-full transition-colors">
-        <Bell className="w-6 h-6 text-nino-gray hover:text-nino-primary transition-colors" />
-      </button>
-      <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20">
-        <AvatarImage src="" alt="Profile" />
-        <AvatarFallback className="bg-nino-primary text-nino-white">
-          {profile?.first_name?.[0]}{profile?.last_name?.[0]}
-        </AvatarFallback>
-      </Avatar>
+    <div className="bg-white rounded-[20px] p-6 mb-6 flex justify-between items-center">
+      <div className="flex flex-col">
+        <h1 className="text-2xl font-semibold text-nino-text">
+          {profile?.first_name} {profile?.last_name}
+        </h1>
+        <p className="text-nino-gray">
+          {profile?.email}
+        </p>
+      </div>
+      
+      <div className="flex items-center space-x-4">
+        <button className="p-2 hover:bg-nino-bg rounded-full transition-colors">
+          <Bell className="w-6 h-6 text-nino-gray hover:text-nino-primary transition-colors" />
+        </button>
+        <Avatar className="w-10 h-10 bg-black text-white">
+          <AvatarImage src="" alt="Profile" />
+          <AvatarFallback>
+            {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+          </AvatarFallback>
+        </Avatar>
+      </div>
     </div>
   );
 };
