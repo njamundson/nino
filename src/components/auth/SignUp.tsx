@@ -2,9 +2,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SignUpProps {
   onToggleAuth: () => void;
@@ -13,8 +14,11 @@ interface SignUpProps {
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -32,17 +36,44 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     
     setLoading(true);
     
-    // Simulate API call - will be replaced with Supabase
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Welcome to NINO",
-    });
-    
-    setLoading(false);
-    
-    // Redirect to onboarding
-    navigate("/onboarding");
+    try {
+      // Sign up the user
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
+        },
+      });
+
+      if (signUpError) throw signUpError;
+
+      // Sign in the user immediately after signup
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) throw signInError;
+
+      toast({
+        title: "Welcome to NINO",
+      });
+      
+      // Redirect to onboarding
+      navigate("/onboarding");
+    } catch (error: any) {
+      toast({
+        title: "Error creating account",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,12 +88,16 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           <Input
             type="text"
             placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
             className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
             required
           />
           <Input
             type="text"
             placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
             className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
             required
           />
@@ -71,6 +106,8 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         <Input
           type="email"
           placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
           required
         />
