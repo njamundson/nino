@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import CreatorProfile from "./modal/CreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
+import { toast } from "sonner";
 
 interface Creator {
   id: string;
@@ -40,7 +41,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
         .from('brands')
         .select('id')
         .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
+        .maybeSingle();
 
       if (!brand) return [];
 
@@ -59,19 +60,34 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
   const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
 
   const handleInvite = async (opportunityId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You must be logged in to invite creators");
+        return;
+      }
 
-    await supabase
-      .from('applications')
-      .insert({
-        opportunity_id: opportunityId,
-        creator_id: creator.id,
-        status: 'invited'
-      });
+      const { error } = await supabase
+        .from('applications')
+        .insert({
+          opportunity_id: opportunityId,
+          creator_id: creator.id,
+          status: 'invited'
+        });
 
-    setShowCampaigns(false);
-    onClose();
+      if (error) {
+        console.error("Error inviting creator:", error);
+        toast.error("Failed to invite creator");
+        return;
+      }
+
+      toast.success("Creator invited successfully!");
+      setShowCampaigns(false);
+      onClose();
+    } catch (error) {
+      console.error("Error in handleInvite:", error);
+      toast.error("An unexpected error occurred");
+    }
   };
 
   return (
