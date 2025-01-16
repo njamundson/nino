@@ -11,7 +11,7 @@ const StatsCards = () => {
         .from('creators')
         .select('id')
         .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .maybeSingle();  // Changed from .single() to .maybeSingle()
+        .single();
 
       if (!creator) return 0;
 
@@ -32,7 +32,7 @@ const StatsCards = () => {
         .from('creators')
         .select('id')
         .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .maybeSingle();  // Changed from .single() to .maybeSingle()
+        .single();
 
       if (!creator) return 0;
 

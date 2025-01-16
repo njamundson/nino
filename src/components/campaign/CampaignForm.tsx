@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "@/hooks/use-toast";
 import BasicInfo from "./steps/BasicInfo";
 import Requirements from "./steps/Requirements";
 import Compensation from "./steps/Compensation";
@@ -32,7 +30,6 @@ const steps: Step[] = [
 ];
 
 const CampaignForm = () => {
-  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     title: "",
@@ -63,18 +60,6 @@ const CampaignForm = () => {
 
   const handleSubmit = () => {
     console.log("Form submitted:", formData);
-    
-    // Show success toast
-    toast({
-      title: "Campaign Created Successfully! 🎉",
-      description: "Invite creators to apply!",
-      duration: 4000, // 4 seconds
-    });
-
-    // Navigate to creators page after 4 seconds
-    setTimeout(() => {
-      navigate("/brand/creators");
-    }, 4000);
   };
 
   return (
