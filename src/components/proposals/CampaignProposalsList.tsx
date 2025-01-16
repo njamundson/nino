@@ -30,7 +30,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
             instagram,
             website,
             user_id,
-            profile:profiles (
+            user:profiles!creators_user_id_fkey (
               first_name,
               last_name
             )
@@ -99,7 +99,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-lg font-semibold">
-                  {proposal.creator?.profile?.first_name} {proposal.creator?.profile?.last_name}
+                  {proposal.creator?.user?.first_name} {proposal.creator?.user?.last_name}
                 </h3>
                 {proposal.creator?.location && (
                   <p className="text-sm text-gray-500">{proposal.creator.location}</p>
@@ -109,7 +109,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleChat(proposal.creator?.id)}
+                  onClick={() => handleChat(proposal.creator?.user_id || '')}
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Chat
