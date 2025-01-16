@@ -7,10 +7,13 @@ const BrandStatsCards = () => {
   const { data: activeOpportunities } = useQuery({
     queryKey: ['active-opportunities'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
       const { data: brand } = await supabase
         .from('brands')
         .select('id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (!brand) return 0;
@@ -28,10 +31,13 @@ const BrandStatsCards = () => {
   const { data: totalApplications } = useQuery({
     queryKey: ['total-applications'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
       const { data: brand } = await supabase
         .from('brands')
         .select('id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (!brand) return 0;

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import StatsCards from "./stats/BrandStatsCards";
+import BrandStatsCards from "./stats/BrandStatsCards";
 import RecentMessages from "./messages/RecentMessages";
 import QuickNotes from "./notes/QuickNotes";
 import DashboardHeader from "./header/DashboardHeader";
@@ -69,7 +69,7 @@ const BrandDashboard = () => {
         />
       )}
 
-      <StatsCards />
+      <BrandStatsCards />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <RecentMessages />
