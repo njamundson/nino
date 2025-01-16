@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import StatsCards from "./stats/StatsCards";
+import StatsCards from "./stats/BrandStatsCards";
 import RecentMessages from "./messages/RecentMessages";
 import QuickNotes from "./notes/QuickNotes";
 import DashboardHeader from "./header/DashboardHeader";
