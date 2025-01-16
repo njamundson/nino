@@ -102,6 +102,9 @@ serve(async (req) => {
       }
     }
 
+    // Get the current URL from the request headers
+    const origin = req.headers.get('origin') || ''
+
     console.log('Creating checkout session...')
     const session = await stripe.checkout.sessions.create({
       customer: customer_id,
@@ -113,8 +116,8 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/welcome`,
-      cancel_url: `${req.headers.get('origin')}/onboarding/creator`,
+      success_url: `${origin}/welcome#access_token=${token}`,
+      cancel_url: `${origin}/onboarding/creator`,
     })
 
     console.log('Checkout session created:', session.id)
