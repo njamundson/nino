@@ -1,13 +1,9 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "@/lib/utils";
 
 interface ProjectCardProps {
   opportunity: {
@@ -30,31 +26,72 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
   const navigate = useNavigate();
   
   return (
-    <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all hover:shadow-md">
+    <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       <div className="relative aspect-[3/4]">
         <img
           src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80"
           alt={opportunity.title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+        
+        <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-medium text-white/90 mb-1">
+                {opportunity.brand.company_name}
+              </p>
+              <h3 className="text-2xl font-semibold leading-tight">
+                {opportunity.title}
+              </h3>
+            </div>
+
+            <div className="space-y-2">
+              {opportunity.location && (
+                <p className="text-sm text-white/80 flex items-center gap-1">
+                  📍 {opportunity.location}
+                </p>
+              )}
+              
+              {opportunity.start_date && (
+                <p className="text-sm text-white/80">
+                  🗓️ {formatDate(opportunity.start_date)}
+                </p>
+              )}
+
+              {opportunity.perks && opportunity.perks.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {opportunity.perks.slice(0, 2).map((perk, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="bg-white/20 hover:bg-white/30 text-white border-0"
+                    >
+                      {perk}
+                    </Badge>
+                  ))}
+                  {opportunity.perks.length > 2 && (
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 hover:bg-white/30 text-white border-0"
+                    >
+                      +{opportunity.perks.length - 2} more
+                    </Badge>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         <Button
           size="icon"
           variant="secondary"
-          className="absolute bottom-4 right-4 rounded-full bg-white/90 hover:bg-white"
+          className="absolute bottom-6 right-6 rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105"
           onClick={() => navigate(`/projects/${opportunity.id}`)}
         >
           <Plus className="h-4 w-4 text-nino-text" />
         </Button>
-      </div>
-
-      <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-        <p className="text-sm font-medium opacity-90">
-          {opportunity.brand.company_name}
-        </p>
-        <h3 className="mt-1 text-xl font-semibold leading-tight">
-          {opportunity.title}
-        </h3>
       </div>
     </Card>
   );
