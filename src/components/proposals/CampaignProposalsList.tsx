@@ -5,39 +5,87 @@ import { useNavigate } from "react-router-dom";
 import ProposalItem from "./ProposalItem";
 import EmptyProposals from "./EmptyProposals";
 
-// Dummy data for UI development
+// Dummy data for UI development covering different scenarios
 const dummyProposals = [
   {
     id: '1',
     creator: {
       id: 'c1',
-      bio: 'Lifestyle and travel content creator',
+      bio: 'Lifestyle and travel content creator with 5+ years of experience',
       location: 'Los Angeles, CA',
-      instagram: '@creator1',
-      website: 'creator1.com',
+      instagram: '@travelwithsarah',
+      website: 'www.travelwithsarah.com',
       user_id: 'u1',
       profile: {
-        first_name: 'John',
-        last_name: 'Doe'
+        first_name: 'Sarah',
+        last_name: 'Johnson'
       }
     },
-    cover_letter: "I'm excited to work on this campaign and bring my unique perspective to your brand."
+    cover_letter: "I'm excited about this opportunity! With my experience in lifestyle photography and a following of over 50k engaged followers, I believe I can create authentic content that resonates with your brand's message."
   },
   {
     id: '2',
     creator: {
       id: 'c2',
-      bio: 'Fashion and beauty influencer',
+      bio: 'Professional photographer specializing in product photography',
       location: 'New York, NY',
-      instagram: '@creator2',
-      website: 'creator2.com',
+      instagram: '@mikevisuals',
+      website: 'www.mikephotography.com',
       user_id: 'u2',
       profile: {
-        first_name: 'Jane',
+        first_name: 'Mike',
         last_name: 'Smith'
       }
     },
-    cover_letter: "With my experience in fashion photography, I believe I can create amazing content for your brand."
+    cover_letter: "Having worked with several fashion brands, I understand the importance of showcasing products in their best light. My portfolio demonstrates my ability to create high-quality, commercial-ready content."
+  },
+  {
+    id: '3',
+    creator: {
+      id: 'c3',
+      bio: 'Food and lifestyle blogger',
+      location: 'Chicago, IL',
+      instagram: '@foodiemaria',
+      website: 'www.mariaeats.com',
+      user_id: 'u3',
+      profile: {
+        first_name: 'Maria',
+        last_name: 'Garcia'
+      }
+    },
+    cover_letter: "As a food enthusiast and content creator, I specialize in creating mouthwatering content that tells a story. I'd love to bring your brand's culinary vision to life!"
+  },
+  {
+    id: '4',
+    creator: {
+      id: 'c4',
+      bio: 'Fitness and wellness influencer',
+      location: 'Miami, FL',
+      instagram: '@fitwithalex',
+      website: 'www.alexfitness.com',
+      user_id: 'u4',
+      profile: {
+        first_name: 'Alex',
+        last_name: 'Thompson'
+      }
+    },
+    cover_letter: "With a background in personal training and 3 years of content creation experience, I create engaging fitness content that motivates and inspires. Let's work together to promote a healthy lifestyle!"
+  },
+  {
+    id: '5',
+    creator: {
+      id: 'c5',
+      bio: 'Tech reviewer and digital content creator',
+      location: 'San Francisco, CA',
+      instagram: '@techwithjames',
+      website: 'www.jamestech.com',
+      user_id: 'u5',
+      profile: {
+        first_name: 'James',
+        last_name: 'Lee'
+      }
+    },
+    cover_letter: "I specialize in creating detailed, engaging tech content that educates and entertains. My audience trusts my honest reviews and recommendations."
   }
 ];
 
