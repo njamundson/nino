@@ -9,6 +9,11 @@ interface ProtectedCreatorRouteProps {
 }
 
 const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
+  // In development mode, bypass authentication checks
+  if (import.meta.env.DEV) {
+    return <>{children}</>;
+  }
+
   const { toast } = useToast();
 
   const { data: creator, isLoading } = useQuery({
