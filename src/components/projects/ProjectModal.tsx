@@ -53,7 +53,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
         .from("creators")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -63,8 +63,8 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
   const handleApply = async () => {
     if (!creator) {
       toast({
-        title: "Not authenticated",
-        description: "Please sign in as a creator to apply for projects.",
+        title: "Creator profile required",
+        description: "Please complete your creator profile to apply for projects.",
         variant: "destructive",
       });
       navigate("/onboarding");
