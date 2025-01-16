@@ -17,6 +17,9 @@ interface ProjectCardProps {
     end_date: string | null;
     perks: string[] | null;
     requirements: string[] | null;
+    payment_details: string | null;
+    compensation_details: string | null;
+    deliverables: string[] | null;
     brand: {
       company_name: string;
       brand_type: string;
@@ -101,7 +104,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
               navigate(`/projects/${opportunity.id}`);
             }}
           >
-            <Plus className="h-4 w-4 text-nino-text" />
+            <Plus className="h-4 w-4 text-primary" />
           </Button>
         </div>
       </Card>
