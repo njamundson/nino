@@ -6,9 +6,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDate } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
+import { useToast } from "@/components/ui/use-toast";
 
 const Proposals = () => {
-  const { data: applications, isLoading } = useQuery({
+  const { toast } = useToast();
+  const { data: applications, isLoading, error } = useQuery({
     queryKey: ['applications'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -44,6 +46,13 @@ const Proposals = () => {
 
       if (error) throw error;
       return data;
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to load your proposals. Please try again.",
+        variant: "destructive",
+      });
     }
   });
 
@@ -60,23 +69,15 @@ const Proposals = () => {
     }
   };
 
-  if (isLoading) {
+  if (error) {
     return (
-      <div className="p-8 max-w-7xl mx-auto space-y-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-nino-text">Proposals</h1>
-        </div>
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="p-6">
-              <div className="space-y-4">
-                <Skeleton className="h-6 w-1/3" />
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-20 w-full" />
-              </div>
-            </Card>
-          ))}
-        </div>
+      <div className="p-8 max-w-7xl mx-auto">
+        <Card className="p-8 bg-red-50 border-red-100">
+          <div className="text-center text-red-800">
+            <p className="font-medium">Failed to load proposals</p>
+            <p className="mt-1 text-sm">Please try refreshing the page</p>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -89,10 +90,22 @@ const Proposals = () => {
       />
       
       <ScrollArea className="h-[calc(100vh-12rem)]">
-        {applications && applications.length > 0 ? (
+        {isLoading ? (
+          <div className="space-y-4 pr-4">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="p-6">
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-1/3" />
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-20 w-full" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : applications && applications.length > 0 ? (
           <div className="space-y-4 pr-4">
             {applications.map((application) => (
-              <Card key={application.id} className="p-6 space-y-4">
+              <Card key={application.id} className="p-6 space-y-4 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-lg font-semibold">
