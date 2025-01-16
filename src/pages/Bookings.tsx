@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import PageHeader from "@/components/shared/PageHeader";
 
 const Bookings = () => {
   const { data: bookings, isLoading } = useQuery({
@@ -60,9 +61,10 @@ const Bookings = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-nino-text">Bookings</h1>
-      </div>
+      <PageHeader
+        title="Bookings"
+        description="View and manage your confirmed bookings"
+      />
 
       <Card className="p-8">
         <ScrollArea className="h-[600px] pr-4">

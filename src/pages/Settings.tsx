@@ -4,13 +4,15 @@ import ProfileSettings from "@/components/settings/ProfileSettings";
 import NotificationSettings from "@/components/settings/NotificationSettings";
 import AccountSettings from "@/components/settings/AccountSettings";
 import { User, Bell, Settings as SettingsIcon } from "lucide-react";
+import PageHeader from "@/components/shared/PageHeader";
 
 const Settings = () => {
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-nino-text">Settings</h1>
-      </div>
+      <PageHeader
+        title="Settings"
+        description="Manage your account preferences and profile"
+      />
       
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="bg-white/50 backdrop-blur-xl w-full justify-start space-x-2 h-12 p-1">

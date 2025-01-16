@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDate } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import PageHeader from "@/components/shared/PageHeader";
 
 const Proposals = () => {
   const { data: applications, isLoading } = useQuery({
@@ -82,9 +83,10 @@ const Proposals = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-nino-text">Proposals</h1>
-      </div>
+      <PageHeader
+        title="Proposals"
+        description="Track the status of your submitted proposals"
+      />
       
       <ScrollArea className="h-[calc(100vh-12rem)]">
         {applications && applications.length > 0 ? (

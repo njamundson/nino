@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Send } from "lucide-react";
+import PageHeader from "@/components/shared/PageHeader";
 
 interface Message {
   id: string;
@@ -49,7 +50,12 @@ const Messages = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-4rem)]">
-      <div className="flex h-full gap-6">
+      <PageHeader
+        title="Messages"
+        description="Chat with brands and manage your conversations"
+      />
+      
+      <div className="flex h-full gap-6 mt-8">
         {/* Conversations List */}
         <Card className="w-80 bg-white/80 backdrop-blur-xl border-0 shadow-sm">
           <div className="p-4 border-b">
