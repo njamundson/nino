@@ -2,7 +2,6 @@ import { Navigate } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
 
 interface ProtectedCreatorRouteProps {
   children: React.ReactNode;
@@ -12,13 +11,6 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const { data, isLoading, error } = useSubscription();
   const { toast } = useToast();
 
-  // Commenting out subscription checks for testing purposes
-  useEffect(() => {
-    if (error) {
-      console.log("Subscription verification error:", error);
-    }
-  }, [error]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -27,7 +19,24 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     );
   }
 
-  // Temporarily returning children directly for testing
+  if (error) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description: "Failed to verify subscription status. Please try again.",
+    });
+    return <Navigate to="/onboarding/creator" replace />;
+  }
+
+  if (!data?.subscribed) {
+    toast({
+      variant: "destructive",
+      title: "Subscription Required",
+      description: "Please subscribe to access creator features.",
+    });
+    return <Navigate to="/onboarding/creator" replace />;
+  }
+
   return <>{children}</>;
 };
 
