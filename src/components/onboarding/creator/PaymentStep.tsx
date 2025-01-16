@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, CreditCard, Loader2 } from "lucide-react";
+import { Check, CreditCard } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -13,12 +13,12 @@ const PaymentStep = () => {
   const handleSubscribe = async () => {
     try {
       setIsLoading(true);
-      console.log("Starting subscription process...");
       
+      // Get the current session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError || !session) {
-        console.error("Session error:", sessionError);
+        // If there's no session, redirect to sign in
         toast({
           variant: "destructive",
           title: "Authentication required",
@@ -28,32 +28,28 @@ const PaymentStep = () => {
         return;
       }
 
-      console.log("Creating checkout session...");
+      // Make the request to create checkout session
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
           },
         }
       );
 
-      const data = await response.json();
-      console.log("Checkout response:", data);
+      const { url, error } = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
+      if (error) {
+        throw new Error(error);
       }
 
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL received');
+      // Redirect to Stripe checkout if URL is received
+      if (url) {
+        window.location.href = url;
       }
     } catch (error) {
-      console.error("Subscription error:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -108,17 +104,8 @@ const PaymentStep = () => {
         onClick={handleSubscribe}
         disabled={isLoading}
       >
-        {isLoading ? (
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Processing...</span>
-          </div>
-        ) : (
-          <>
-            <CreditCard className="w-4 h-4 mr-2" />
-            Subscribe Now
-          </>
-        )}
+        <CreditCard className="w-4 h-4 mr-2" />
+        {isLoading ? "Processing..." : "Subscribe Now"}
       </Button>
     </div>
   );

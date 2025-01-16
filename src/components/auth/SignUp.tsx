@@ -24,24 +24,6 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     
     try {
       console.log("Starting sign up process...");
-      
-      // First check if user exists
-      const { data: existingUser } = await supabase
-        .from('auth.users')
-        .select('email')
-        .eq('email', email)
-        .single();
-
-      if (existingUser) {
-        toast({
-          title: "Account exists",
-          description: "An account with this email already exists. Please sign in instead.",
-          variant: "destructive",
-        });
-        onToggleAuth(); // Switch to sign in form
-        return;
-      }
-
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -85,8 +67,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             errorMessage = "Network error. Please check your connection and try again.";
             break;
           case "User already registered":
-            errorMessage = "An account with this email already exists. Please sign in instead.";
-            onToggleAuth(); // Switch to sign in form
+            errorMessage = "An account with this email already exists.";
             break;
           default:
             errorMessage = error.message;

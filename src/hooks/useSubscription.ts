@@ -5,10 +5,10 @@ export const useSubscription = () => {
   return useQuery({
     queryKey: ["subscription"],
     queryFn: async () => {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (sessionError || !session) {
-        throw new Error("Authentication required");
+      if (!session) {
+        return { subscribed: false };
       }
 
       const response = await fetch(
@@ -21,14 +21,11 @@ export const useSubscription = () => {
       );
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to check subscription status");
+        throw new Error("Failed to check subscription status");
       }
 
-      const data = await response.json();
-      return data;
+      return response.json();
     },
-    retry: 1,
-    refetchOnWindowFocus: false,
+    retry: false,
   });
 };
