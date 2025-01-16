@@ -68,10 +68,10 @@ const CampaignForm = () => {
   return (
     <div className="space-y-10">
       <div className="space-y-2">
-        <h2 className="text-3xl font-medium tracking-tight text-gray-900">
+        <h2 className="text-3xl font-semibold tracking-tight text-gray-900">
           {steps[currentStep].title}
         </h2>
-        <p className="text-gray-500 text-lg">
+        <p className="text-lg text-gray-500">
           {steps[currentStep].description}
         </p>
       </div>
@@ -85,7 +85,7 @@ const CampaignForm = () => {
         />
       </div>
 
-      <div className="flex justify-between pt-6 border-t">
+      <div className="flex justify-between pt-6 border-t border-gray-100">
         <Button
           variant="ghost"
           onClick={handleBack}

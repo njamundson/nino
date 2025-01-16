@@ -23,7 +23,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="space-y-4">
-        <Label htmlFor="title" className="text-base">Project Title</Label>
+        <Label htmlFor="title" className="text-base font-medium text-gray-900">Project Title</Label>
         <Input
           id="title"
           placeholder="Enter the title of your campaign"
@@ -31,16 +31,16 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
           onChange={(e) =>
             setFormData({ ...formData, title: e.target.value })
           }
-          className="h-12 text-lg"
+          className="h-12 text-base border-gray-200 focus:border-gray-300 focus:ring-gray-300"
         />
       </div>
 
       <div className="space-y-4">
-        <Label htmlFor="description" className="text-base">Project Description</Label>
+        <Label htmlFor="description" className="text-base font-medium text-gray-900">Project Description</Label>
         <Textarea
           id="description"
           placeholder="Describe your campaign in detail"
-          className="min-h-[160px] text-lg leading-relaxed resize-none"
+          className="min-h-[160px] text-base leading-relaxed resize-none border-gray-200 focus:border-gray-300 focus:ring-gray-300"
           value={formData.description}
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
@@ -49,7 +49,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
       </div>
 
       <div className="space-y-4">
-        <Label htmlFor="location" className="text-base">Location</Label>
+        <Label htmlFor="location" className="text-base font-medium text-gray-900">Location</Label>
         <Input
           id="location"
           placeholder="Where will this project take place?"
@@ -57,13 +57,13 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
           onChange={(e) =>
             setFormData({ ...formData, location: e.target.value })
           }
-          className="h-12 text-lg"
+          className="h-12 text-base border-gray-200 focus:border-gray-300 focus:ring-gray-300"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-4">
-          <Label className="text-base">Start Date</Label>
+          <Label className="text-base font-medium text-gray-900">Start Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -93,7 +93,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
         </div>
 
         <div className="space-y-4">
-          <Label className="text-base">End Date</Label>
+          <Label className="text-base font-medium text-gray-900">End Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button

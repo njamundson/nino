@@ -9,9 +9,9 @@ interface CompensationProps {
 
 const Compensation = ({ formData, setFormData }: CompensationProps) => {
   return (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="space-y-2">
-        <Label htmlFor="paymentDetails">Payment Details</Label>
+    <div className="space-y-8 animate-fadeIn">
+      <div className="space-y-4">
+        <Label htmlFor="paymentDetails" className="text-base font-medium text-gray-900">Payment Details</Label>
         <Input
           id="paymentDetails"
           placeholder="e.g., $500 per post"
@@ -19,15 +19,16 @@ const Compensation = ({ formData, setFormData }: CompensationProps) => {
           onChange={(e) =>
             setFormData({ ...formData, paymentDetails: e.target.value })
           }
+          className="h-12 text-base border-gray-200 focus:border-gray-300 focus:ring-gray-300"
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="compensationDetails">Additional Compensation</Label>
+      <div className="space-y-4">
+        <Label htmlFor="compensationDetails" className="text-base font-medium text-gray-900">Additional Compensation</Label>
         <Textarea
           id="compensationDetails"
           placeholder="Describe any additional perks or compensation (e.g., free products, travel expenses)"
-          className="min-h-[120px]"
+          className="min-h-[160px] text-base leading-relaxed resize-none border-gray-200 focus:border-gray-300 focus:ring-gray-300"
           value={formData.compensationDetails}
           onChange={(e) =>
             setFormData({ ...formData, compensationDetails: e.target.value })
