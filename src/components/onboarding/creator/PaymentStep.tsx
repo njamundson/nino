@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const PaymentStep = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { data: subscriptionData, isLoading: isCheckingSubscription } = useSubscription();
 
   const handleSubscribe = async () => {
     try {
@@ -27,6 +29,16 @@ const PaymentStep = () => {
         return;
       }
 
+      // If already subscribed, redirect to welcome page
+      if (subscriptionData?.subscribed) {
+        toast({
+          title: "Already subscribed",
+          description: "You are already subscribed to Nino Pro. Redirecting to welcome page.",
+        });
+        navigate("/welcome");
+        return;
+      }
+
       // Make the request to create checkout session
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { returnUrl: window.location.origin },
@@ -37,6 +49,15 @@ const PaymentStep = () => {
 
       if (error) {
         console.error('Checkout error:', error);
+        // Handle the specific "already subscribed" error
+        if (error.message.includes("Already subscribed")) {
+          toast({
+            title: "Already subscribed",
+            description: "You are already subscribed to Nino Pro. Redirecting to welcome page.",
+          });
+          navigate("/welcome");
+          return;
+        }
         throw new Error(error.message);
       }
 
@@ -57,6 +78,21 @@ const PaymentStep = () => {
       setIsLoading(false);
     }
   };
+
+  // If checking subscription status, show loading state
+  if (isCheckingSubscription) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <div className="animate-pulse">Loading subscription status...</div>
+      </div>
+    );
+  }
+
+  // If already subscribed, show message and redirect
+  if (subscriptionData?.subscribed) {
+    navigate("/welcome");
+    return null;
+  }
 
   return (
     <div className="space-y-8 animate-fadeIn">
