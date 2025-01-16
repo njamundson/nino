@@ -97,7 +97,6 @@ const ProfileSettings = () => {
           location: profileData.location,
           instagram: profileData.instagram,
           website: profileData.website,
-          creator_type: profileData.creatorType,
           specialties: profileData.skills,
           updated_at: new Date().toISOString(),
         })
