@@ -244,7 +244,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      application_status: "pending" | "accepted" | "rejected"
       brand_type: "hotel" | "resort" | "travel_agency"
+      opportunity_status: "draft" | "open" | "closed" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
