@@ -5,11 +5,11 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, description }: PageHeaderProps) => {
   return (
-    <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-2xl font-medium text-nino-text tracking-tight">{title}</h1>
-        <p className="text-nino-gray mt-1">{description}</p>
-      </div>
+    <div className="space-y-2">
+      <h1 className="text-4xl font-medium tracking-tight text-gray-900">
+        {title}
+      </h1>
+      <p className="text-xl text-gray-500">{description}</p>
     </div>
   );
 };

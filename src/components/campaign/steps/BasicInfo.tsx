@@ -21,9 +21,9 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="space-y-2">
-        <Label htmlFor="title">Project Title</Label>
+    <div className="space-y-8 animate-fadeIn">
+      <div className="space-y-4">
+        <Label htmlFor="title" className="text-base">Project Title</Label>
         <Input
           id="title"
           placeholder="Enter the title of your campaign"
@@ -31,15 +31,16 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
           onChange={(e) =>
             setFormData({ ...formData, title: e.target.value })
           }
+          className="h-12 text-lg"
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Project Description</Label>
+      <div className="space-y-4">
+        <Label htmlFor="description" className="text-base">Project Description</Label>
         <Textarea
           id="description"
           placeholder="Describe your campaign in detail"
-          className="min-h-[120px]"
+          className="min-h-[160px] text-lg leading-relaxed resize-none"
           value={formData.description}
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
@@ -47,8 +48,8 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="location">Location</Label>
+      <div className="space-y-4">
+        <Label htmlFor="location" className="text-base">Location</Label>
         <Input
           id="location"
           placeholder="Where will this project take place?"
@@ -56,30 +57,31 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
           onChange={(e) =>
             setFormData({ ...formData, location: e.target.value })
           }
+          className="h-12 text-lg"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Start Date</Label>
+      <div className="grid grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <Label className="text-base">Start Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !formData.startDate && "text-muted-foreground"
+                  "w-full h-12 justify-start text-left font-normal border-gray-200",
+                  !formData.startDate && "text-gray-400"
                 )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
+                <CalendarIcon className="mr-3 h-5 w-5 text-gray-400" />
                 {formData.startDate ? (
-                  format(new Date(formData.startDate), "PPP")
+                  format(new Date(formData.startDate), "MMMM d, yyyy")
                 ) : (
                   <span>Pick a date</span>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={formData.startDate ? new Date(formData.startDate) : undefined}
@@ -90,26 +92,26 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
           </Popover>
         </div>
 
-        <div className="space-y-2">
-          <Label>End Date</Label>
+        <div className="space-y-4">
+          <Label className="text-base">End Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !formData.endDate && "text-muted-foreground"
+                  "w-full h-12 justify-start text-left font-normal border-gray-200",
+                  !formData.endDate && "text-gray-400"
                 )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
+                <CalendarIcon className="mr-3 h-5 w-5 text-gray-400" />
                 {formData.endDate ? (
-                  format(new Date(formData.endDate), "PPP")
+                  format(new Date(formData.endDate), "MMMM d, yyyy")
                 ) : (
                   <span>Pick a date</span>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={formData.endDate ? new Date(formData.endDate) : undefined}
