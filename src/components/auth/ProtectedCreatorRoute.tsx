@@ -12,25 +12,12 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const { data, isLoading, error } = useSubscription();
   const { toast } = useToast();
 
+  // Commenting out subscription checks for testing purposes
   useEffect(() => {
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to verify subscription status. Please try again.",
-      });
+      console.log("Subscription verification error:", error);
     }
-  }, [error, toast]);
-
-  useEffect(() => {
-    if (!isLoading && !error && !data?.subscribed) {
-      toast({
-        variant: "destructive",
-        title: "Subscription Required",
-        description: "Please subscribe to access creator features.",
-      });
-    }
-  }, [data?.subscribed, isLoading, error, toast]);
+  }, [error]);
 
   if (isLoading) {
     return (
@@ -40,10 +27,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     );
   }
 
-  if (error || !data?.subscribed) {
-    return <Navigate to="/onboarding/creator" replace />;
-  }
-
+  // Temporarily returning children directly for testing
   return <>{children}</>;
 };
 
