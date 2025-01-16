@@ -66,6 +66,7 @@ export const useBrandOnboarding = () => {
           description: "Your brand profile has been created.",
         });
 
+        // Redirect to brand dashboard after successful creation
         navigate("/brand/dashboard");
       } catch (error) {
         console.error("Error in brand creation:", error);
