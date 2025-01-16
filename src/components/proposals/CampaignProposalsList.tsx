@@ -30,7 +30,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
             instagram,
             website,
             user_id,
-            profile:profiles!creators_user_id_fkey (
+            profile:profiles (
               first_name,
               last_name
             )
