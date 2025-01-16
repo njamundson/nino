@@ -31,9 +31,8 @@ const Sidebar = () => {
             <img 
               src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
               alt="NINO" 
-              className="h-8"
+              className="h-12"
             />
-            <span className="text-sm text-gray-500">Creator Portal</span>
           </Link>
         </div>
 
