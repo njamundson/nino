@@ -1,41 +1,34 @@
 import { motion } from "framer-motion";
 import { Bell, Calendar, FileText, MessageSquare, Users } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 const CreatorDashboard = () => {
-  const { data: stats } = useQuery({
-    queryKey: ['creator-stats'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+  // Mock data for development
+  const stats = {
+    activeProjects: 3,
+    upcomingShoots: 2,
+    newProposals: 5
+  };
 
-      // Fetch active projects, upcoming shoots, and new proposals
-      // For now returning placeholder data
-      return {
-        activeProjects: 0,
-        upcomingShoots: 0,
-        newProposals: 0
-      };
+  const mockMessages = [
+    {
+      id: '1',
+      brandName: 'Fashion Brand Co.',
+      timeAgo: '2h ago',
+      content: 'Hey! We loved your portfolio and would like to discuss a potential collaboration.',
     },
-  });
-
-  const { data: messages } = useQuery({
-    queryKey: ['recent-messages'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const { data } = await supabase
-        .from('messages')
-        .select('*, sender:sender_id(*)')
-        .eq('receiver_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      return data;
+    {
+      id: '2',
+      brandName: 'Beauty Co.',
+      timeAgo: '5h ago',
+      content: 'Thanks for your quick response. Let's schedule a call next week.',
     },
-  });
+    {
+      id: '3',
+      brandName: 'Lifestyle Brand',
+      timeAgo: '1d ago',
+      content: 'Your recent work perfectly aligns with our upcoming campaign.',
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-[#FAF9F9]">
@@ -65,7 +58,7 @@ const CreatorDashboard = () => {
               <Users className="text-[#B4736E]" />
               <div>
                 <p className="text-gray-600">Active Projects</p>
-                <h3 className="text-2xl font-semibold">{stats?.activeProjects || 0}</h3>
+                <h3 className="text-2xl font-semibold">{stats.activeProjects}</h3>
               </div>
             </div>
           </motion.div>
@@ -80,7 +73,7 @@ const CreatorDashboard = () => {
               <Calendar className="text-[#B4736E]" />
               <div>
                 <p className="text-gray-600">Upcoming Shoots</p>
-                <h3 className="text-2xl font-semibold">{stats?.upcomingShoots || 0}</h3>
+                <h3 className="text-2xl font-semibold">{stats.upcomingShoots}</h3>
               </div>
             </div>
           </motion.div>
@@ -95,7 +88,7 @@ const CreatorDashboard = () => {
               <FileText className="text-[#B4736E]" />
               <div>
                 <p className="text-gray-600">New Proposals</p>
-                <h3 className="text-2xl font-semibold">{stats?.newProposals || 0}</h3>
+                <h3 className="text-2xl font-semibold">{stats.newProposals}</h3>
               </div>
             </div>
           </motion.div>
@@ -111,13 +104,13 @@ const CreatorDashboard = () => {
                 <span className="text-sm text-[#B4736E] font-medium">2 New</span>
               </div>
               <div className="space-y-4">
-                {messages?.map((message) => (
+                {mockMessages.map((message) => (
                   <div key={message.id} className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg">
                     <div className="w-10 h-10 rounded-full bg-gray-200" />
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-gray-900">Luxury Brand Co.</h3>
-                        <span className="text-sm text-gray-500">2h ago</span>
+                        <h3 className="font-medium text-gray-900">{message.brandName}</h3>
+                        <span className="text-sm text-gray-500">{message.timeAgo}</span>
                       </div>
                       <p className="text-gray-600 text-sm">{message.content}</p>
                     </div>
