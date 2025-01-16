@@ -1,14 +1,9 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { MessageCircle, Trash2, ExternalLink } from "lucide-react";
+import { MessageSquare } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-
-interface CampaignProposalsListProps {
-  campaignId: string;
-}
+import ProposalItem from "./ProposalItem";
+import EmptyProposals from "./EmptyProposals";
 
 // Dummy data for UI development
 const dummyProposals = [
@@ -46,10 +41,13 @@ const dummyProposals = [
   }
 ];
 
+interface CampaignProposalsListProps {
+  campaignId: string;
+}
+
 const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   
   const handleDelete = async (proposalId: string) => {
     toast({
@@ -62,75 +60,30 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
     navigate(`/messages?user=${creatorId}`);
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-6">
-            <div className="space-y-4">
-              <Skeleton className="h-6 w-2/3" />
-              <Skeleton className="h-4 w-1/3" />
-            </div>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      {dummyProposals.map((proposal) => (
-        <Card key={proposal.id} className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {proposal.creator.profile.first_name} {proposal.creator.profile.last_name}
-                </h3>
-                {proposal.creator.location && (
-                  <p className="text-sm text-gray-500">{proposal.creator.location}</p>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleChat(proposal.creator.user_id)}
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Chat
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => window.open(`/creators/${proposal.creator.id}`, '_blank')}
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  View Profile
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(proposal.id)}
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete
-                </Button>
-              </div>
-            </div>
-            
-            {proposal.cover_letter && (
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Cover Letter</h4>
-                <p className="text-sm text-gray-600 whitespace-pre-line">
-                  {proposal.cover_letter}
-                </p>
-              </div>
-            )}
-          </div>
-        </Card>
-      ))}
-    </div>
+    <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
+      <CardContent className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-semibold text-nino-text">Recent Messages</h3>
+          <button className="p-2 hover:bg-nino-bg rounded-full transition-colors">
+            <MessageSquare className="w-5 h-5 text-nino-primary" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          {dummyProposals.map((proposal) => (
+            <ProposalItem
+              key={proposal.id}
+              proposal={proposal}
+              onDelete={handleDelete}
+              onChat={handleChat}
+            />
+          ))}
+
+          {(!dummyProposals || dummyProposals.length === 0) && <EmptyProposals />}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
