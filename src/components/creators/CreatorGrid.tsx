@@ -19,9 +19,9 @@ const CreatorGrid = () => {
   const creators: Creator[] = [
     {
       id: "1",
-      bio: "Travel and lifestyle photographer specializing in outdoor adventures and cultural experiences.",
+      bio: "Travel and lifestyle content creator specializing in outdoor adventures and cultural experiences.",
       location: "New York, USA",
-      specialties: ["Photography", "Travel"],
+      specialties: ["UGC", "Photography"],
       profile: {
         first_name: "Sarah",
         last_name: "Johnson"
@@ -32,7 +32,7 @@ const CreatorGrid = () => {
       id: "2",
       bio: "Fashion and beauty content creator with a passion for sustainable style.",
       location: "London, UK",
-      specialties: ["Fashion", "Beauty"],
+      specialties: ["Model/Talent", "Photography"],
       profile: {
         first_name: "Michael",
         last_name: "Chen"
@@ -41,9 +41,9 @@ const CreatorGrid = () => {
     },
     {
       id: "3",
-      bio: "Food photographer and recipe developer.",
+      bio: "Food and lifestyle content creator.",
       location: "Paris, France",
-      specialties: ["Food", "Styling"],
+      specialties: ["UGC", "Videography"],
       profile: {
         first_name: "Emma",
         last_name: "Rodriguez"
@@ -52,9 +52,9 @@ const CreatorGrid = () => {
     },
     {
       id: "4",
-      bio: "Tech reviewer and digital lifestyle content creator.",
+      bio: "Tech and lifestyle content creator.",
       location: "Tokyo, Japan",
-      specialties: ["Tech", "Video"],
+      specialties: ["Videography", "Public Relations"],
       profile: {
         first_name: "Alex",
         last_name: "Tanaka"
@@ -63,9 +63,9 @@ const CreatorGrid = () => {
     },
     {
       id: "5",
-      bio: "Fitness and wellness influencer helping people achieve their health goals.",
+      bio: "Fitness and wellness content creator helping people achieve their health goals.",
       location: "Sydney, Australia",
-      specialties: ["Fitness", "Wellness"],
+      specialties: ["Model/Talent", "UGC"],
       profile: {
         first_name: "Jordan",
         last_name: "Smith"
