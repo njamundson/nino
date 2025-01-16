@@ -35,7 +35,7 @@ const DashboardHeader = () => {
         <div className="flex items-center gap-4">
           <Avatar className="w-12 h-12 ring-2 ring-nino-primary/20">
             <AvatarImage src="" alt="Profile" />
-            <AvatarFallback className="bg-nino-primary text-nino-white text-lg">
+            <AvatarFallback className="bg-nino-primary text-nino-white">
               {profile?.first_name?.[0]}{profile?.last_name?.[0]}
             </AvatarFallback>
           </Avatar>
@@ -54,7 +54,7 @@ const DashboardHeader = () => {
             <Bell className="w-6 h-6 text-nino-gray hover:text-nino-primary transition-colors" />
           </button>
           <div className="w-10 h-10 bg-black rounded-full ml-4 flex items-center justify-center text-white">
-            AB
+            {profile?.first_name?.[0]}{profile?.last_name?.[0]}
           </div>
         </div>
       </div>
