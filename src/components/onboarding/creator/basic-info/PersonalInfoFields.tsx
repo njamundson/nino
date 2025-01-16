@@ -17,31 +17,27 @@ const PersonalInfoFields = ({
   location,
   onUpdateField,
 }: PersonalInfoFieldsProps) => {
+  const handleFullNameChange = (value: string) => {
+    const names = value.split(' ');
+    const firstNameValue = names[0] || '';
+    const lastNameValue = names.slice(1).join(' ') || '';
+    
+    onUpdateField("firstName", firstNameValue);
+    onUpdateField("lastName", lastNameValue);
+  };
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-base">First Name *</Label>
-          <Input
-            id="firstName"
-            value={firstName}
-            onChange={(e) => onUpdateField("firstName", e.target.value)}
-            placeholder="Enter your first name"
-            className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-base">Last Name *</Label>
-          <Input
-            id="lastName"
-            value={lastName}
-            onChange={(e) => onUpdateField("lastName", e.target.value)}
-            placeholder="Enter your last name"
-            className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
-            required
-          />
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="fullName" className="text-base">Full Name or Family Name *</Label>
+        <Input
+          id="fullName"
+          value={`${firstName} ${lastName}`.trim()}
+          onChange={(e) => handleFullNameChange(e.target.value)}
+          placeholder="Enter your full name"
+          className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
+          required
+        />
       </div>
 
       <div className="space-y-2">
