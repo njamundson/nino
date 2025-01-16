@@ -3,13 +3,10 @@ import { MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { BrandData } from "@/types/brand";
 
 interface BrandDetailsStepProps {
-  brandData: {
-    brandBio: string;
-    homeLocation: string;
-    [key: string]: string;
-  };
+  brandData: BrandData;
   onUpdateField: (field: string, value: string) => void;
 }
 

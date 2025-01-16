@@ -5,14 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { BrandData } from "@/types/brand";
 
 interface BrandBasicInfoStepProps {
   profileImage: string | null;
-  brandData: {
-    brandName: string;
-    brandEmail: string;
-    [key: string]: string;
-  };
+  brandData: BrandData;
   onUpdateField: (field: string, value: string) => void;
   onUpdateImage: (image: string | null) => void;
 }

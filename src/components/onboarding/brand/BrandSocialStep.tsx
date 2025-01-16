@@ -2,13 +2,10 @@ import { motion } from "framer-motion";
 import { Instagram, Globe } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BrandData } from "@/types/brand";
 
 interface BrandSocialStepProps {
-  brandData: {
-    instagram: string;
-    website: string;
-    [key: string]: string;
-  };
+  brandData: BrandData;
   onUpdateField: (field: string, value: string) => void;
 }
 
