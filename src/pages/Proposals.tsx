@@ -114,12 +114,12 @@ const Proposals = () => {
       />
       
       <Tabs defaultValue="received" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-          <TabsTrigger value="received" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 lg:w-[400px] p-1 rounded-full bg-nino-bg">
+          <TabsTrigger value="received" className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300">
             <Inbox className="w-4 h-4" />
             Received Proposals
           </TabsTrigger>
-          <TabsTrigger value="sent" className="flex items-center gap-2">
+          <TabsTrigger value="sent" className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300">
             <Send className="w-4 h-4" />
             Sent Invites
           </TabsTrigger>
