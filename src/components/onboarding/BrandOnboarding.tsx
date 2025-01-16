@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
@@ -16,6 +18,7 @@ interface AccountManager {
 
 const BrandOnboarding = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social'>('basic');
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState({
@@ -30,6 +33,59 @@ const BrandOnboarding = () => {
 
   const updateField = (field: string, value: string) => {
     setBrandData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleNext = async () => {
+    if (currentStep === 'basic') {
+      setCurrentStep('details');
+    } else if (currentStep === 'details') {
+      setCurrentStep('social');
+    } else {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast({
+            title: "Error",
+            description: "No authenticated user found.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const { error: brandError } = await supabase.from('brands').insert({
+          user_id: user.id,
+          company_name: brandData.brandName,
+          description: brandData.brandBio,
+          website: brandData.website,
+          instagram: brandData.instagram,
+          location: brandData.location,
+        });
+
+        if (brandError) {
+          console.error("Error creating brand:", brandError);
+          toast({
+            title: "Error",
+            description: "Failed to create brand profile. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        toast({
+          title: "Success!",
+          description: "Your brand profile has been created.",
+        });
+
+        navigate("/brand/dashboard");
+      } catch (error) {
+        console.error("Error in brand creation:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const getStepProgress = () => {
@@ -75,16 +131,6 @@ const BrandOnboarding = () => {
     }
   };
 
-  const handleNext = () => {
-    if (currentStep === 'basic') {
-      setCurrentStep('details');
-    } else if (currentStep === 'details') {
-      setCurrentStep('social');
-    } else {
-      navigate("/onboarding/brand/managers");
-    }
-  };
-
   const handleBack = () => {
     if (currentStep === 'social') {
       setCurrentStep('details');
@@ -125,7 +171,7 @@ const BrandOnboarding = () => {
             onClick={handleNext}
             className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
           >
-            {currentStep === 'social' ? 'Add Team Members' : 'Next'}
+            {currentStep === 'social' ? 'Complete Setup' : 'Next'}
           </Button>
         </div>
       </motion.div>

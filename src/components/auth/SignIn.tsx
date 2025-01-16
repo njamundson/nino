@@ -59,15 +59,15 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       }
 
       if (signInData.user) {
-        // Check if user has a creator profile
-        const { data: creator, error: creatorError } = await supabase
-          .from('creators')
+        // Check if user has a brand profile
+        const { data: brand, error: brandError } = await supabase
+          .from('brands')
           .select('*')
           .eq('user_id', signInData.user.id)
           .single();
 
-        if (creatorError && creatorError.code !== 'PGRST116') {
-          console.error("Error fetching creator profile:", creatorError);
+        if (brandError && brandError.code !== 'PGRST116') {
+          console.error("Error fetching brand profile:", brandError);
           toast({
             title: "Error",
             description: "Failed to fetch user profile. Please try again.",
@@ -76,12 +76,24 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           return;
         }
 
-        if (creator) {
-          console.log("Creator profile found, redirecting to dashboard");
-          navigate('/dashboard');
+        if (brand) {
+          console.log("Brand profile found, redirecting to dashboard");
+          navigate('/brand/dashboard');
         } else {
-          console.log("No creator profile found, redirecting to onboarding");
-          navigate('/onboarding');
+          // Check if user has a creator profile
+          const { data: creator, error: creatorError } = await supabase
+            .from('creators')
+            .select('*')
+            .eq('user_id', signInData.user.id)
+            .single();
+
+          if (creator) {
+            console.log("Creator profile found, redirecting to creator dashboard");
+            navigate('/creator/dashboard');
+          } else {
+            console.log("No profile found, redirecting to onboarding");
+            navigate('/onboarding');
+          }
         }
 
         toast({
