@@ -8,22 +8,35 @@ interface ProtectedBrandRouteProps {
 }
 
 const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
+  const { data: session } = useQuery({
+    queryKey: ["auth-session"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session;
+    },
+  });
+
   const { data: brand, isLoading, error } = useQuery({
     queryKey: ["brand-profile"],
+    enabled: !!session?.user,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!session?.user) return null;
 
       const { data, error } = await supabase
         .from("brands")
         .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+        .eq("user_id", session.user.id)
+        .single();
 
       if (error) throw error;
       return data;
     },
   });
+
+  // If there's no session, redirect to root
+  if (!session) {
+    return <Navigate to="/" />;
+  }
 
   if (isLoading) {
     return (
@@ -39,6 +52,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     return <Navigate to="/onboarding" />;
   }
 
+  // If authenticated but no brand profile exists, redirect to onboarding
   if (!brand) {
     return <Navigate to="/onboarding" />;
   }
