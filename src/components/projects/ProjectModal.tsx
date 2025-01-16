@@ -9,11 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { formatDate } from "@/lib/utils";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import BrandInfo from "./modal/BrandInfo";
+import ProjectDetails from "./modal/ProjectDetails";
+import ApplicationForm from "./modal/ApplicationForm";
+import SuccessModal from "./modal/SuccessModal";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -39,11 +40,9 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isApplying, setIsApplying] = useState(false);
-  const [coverLetter, setCoverLetter] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Get current creator's profile
   const { data: creator, isLoading: isLoadingCreator } = useQuery({
     queryKey: ["creator"],
     queryFn: async () => {
@@ -61,7 +60,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
     },
   });
 
-  const handleApply = async () => {
+  const handleApply = async (coverLetter: string) => {
     if (!creator) {
       toast({
         title: "Creator profile required",
@@ -86,7 +85,6 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
       setShowSuccessModal(true);
       setIsApplying(false);
-      setCoverLetter("");
     } catch (error) {
       console.error("Error submitting application:", error);
       toast({
@@ -101,32 +99,13 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
   if (showSuccessModal) {
     return (
-      <Dialog open={true} onOpenChange={() => {
-        setShowSuccessModal(false);
-        onClose();
-      }}>
-        <DialogContent className="max-w-md text-center">
-          <div className="flex flex-col items-center gap-4 py-6">
-            <CheckCircle2 className="w-16 h-16 text-green-500" />
-            <DialogTitle className="text-2xl font-semibold">
-              Application Submitted!
-            </DialogTitle>
-            <p className="text-muted-foreground">
-              Your application has been sent to {opportunity.brand.company_name}. 
-              You'll be notified when they review your application.
-            </p>
-            <Button 
-              onClick={() => {
-                setShowSuccessModal(false);
-                onClose();
-              }}
-              className="mt-4"
-            >
-              View Other Opportunities
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SuccessModal
+        companyName={opportunity.brand.company_name}
+        onClose={() => {
+          setShowSuccessModal(false);
+          onClose();
+        }}
+      />
     );
   }
 
@@ -152,126 +131,36 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Brand Info */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium text-nino-primary">
-              {opportunity.brand.company_name}
-            </h3>
-            <div className="flex items-center gap-4 text-sm text-nino-gray">
-              {opportunity.location && (
-                <span className="flex items-center gap-1">
-                  📍 {opportunity.location}
-                </span>
-              )}
-              {opportunity.brand.brand_type && (
-                <Badge variant="secondary">
-                  {opportunity.brand.brand_type}
-                </Badge>
-              )}
+          <BrandInfo
+            companyName={opportunity.brand.company_name}
+            brandType={opportunity.brand.brand_type}
+            location={opportunity.location}
+          />
+
+          <ProjectDetails
+            description={opportunity.description}
+            startDate={opportunity.start_date}
+            endDate={opportunity.end_date}
+            requirements={opportunity.requirements}
+            perks={opportunity.perks}
+          />
+
+          {isApplying ? (
+            <ApplicationForm
+              onSubmit={handleApply}
+              onCancel={() => setIsApplying(false)}
+              isSubmitting={isSubmitting}
+            />
+          ) : (
+            <div className="pt-4">
+              <Button
+                className="w-full"
+                onClick={() => setIsApplying(true)}
+              >
+                Apply for this Project
+              </Button>
             </div>
-          </div>
-
-          {/* Project Details */}
-          <div className="space-y-4">
-            <div className="prose prose-sm max-w-none">
-              <p>{opportunity.description}</p>
-            </div>
-
-            {/* Dates */}
-            {(opportunity.start_date || opportunity.end_date) && (
-              <div className="space-y-2">
-                <h4 className="font-medium">Project Timeline</h4>
-                <div className="flex gap-4 text-sm">
-                  {opportunity.start_date && (
-                    <div>
-                      <span className="text-nino-gray">Start Date:</span>{" "}
-                      {formatDate(opportunity.start_date)}
-                    </div>
-                  )}
-                  {opportunity.end_date && (
-                    <div>
-                      <span className="text-nino-gray">End Date:</span>{" "}
-                      {formatDate(opportunity.end_date)}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Requirements */}
-            {opportunity.requirements && opportunity.requirements.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="font-medium">Requirements</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm">
-                  {opportunity.requirements.map((requirement, index) => (
-                    <li key={index}>{requirement}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Perks */}
-            {opportunity.perks && opportunity.perks.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="font-medium">Perks</h4>
-                <div className="flex flex-wrap gap-2">
-                  {opportunity.perks.map((perk, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="bg-nino-primary/10 text-nino-primary hover:bg-nino-primary/20"
-                    >
-                      {perk}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Application Form */}
-            {isApplying ? (
-              <div className="space-y-4 pt-4">
-                <h4 className="font-medium">Your Application</h4>
-                <Textarea
-                  placeholder="Write a cover letter explaining why you're a great fit for this opportunity..."
-                  value={coverLetter}
-                  onChange={(e) => setCoverLetter(e.target.value)}
-                  className="min-h-[200px]"
-                />
-                <div className="flex gap-2 justify-end">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsApplying(false)}
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleApply}
-                    disabled={!coverLetter.trim() || isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      "Submit Application"
-                    )}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="pt-4">
-                <Button
-                  className="w-full"
-                  onClick={() => setIsApplying(true)}
-                >
-                  Apply for this Project
-                </Button>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
