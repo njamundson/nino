@@ -53,7 +53,7 @@ const AccountManagersStep = () => {
   };
 
   const handleComplete = () => {
-    navigate("/brand/welcome");
+    navigate("/brand/dashboard"); // Updated navigation path
   };
 
   return (
