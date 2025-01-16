@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Campaign {
   id: string;
@@ -14,6 +15,12 @@ interface CampaignSelectionProps {
 }
 
 const CampaignSelection = ({ campaigns, onBack, onSelect }: CampaignSelectionProps) => {
+  const navigate = useNavigate();
+
+  const handleCreateCampaign = () => {
+    navigate('/brand/campaigns/new');
+  };
+
   return (
     <div className="p-8 space-y-6">
       <Button
@@ -48,7 +55,7 @@ const CampaignSelection = ({ campaigns, onBack, onSelect }: CampaignSelectionPro
         <div className="text-center py-12 bg-white/50 rounded-xl border-2 border-white">
           <p className="text-nino-gray mb-6">No active campaigns found</p>
           <Button
-            onClick={() => window.location.href = '/brand/campaigns/new'}
+            onClick={handleCreateCampaign}
             className="gap-2 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-xl"
           >
             <Plus className="w-4 h-4" />
