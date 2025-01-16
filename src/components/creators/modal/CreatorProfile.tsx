@@ -28,7 +28,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
     <div className="w-full max-w-4xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
         <div className="relative w-full">
-          <div className="aspect-square rounded-2xl overflow-hidden shadow-lg bg-white">
+          <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
             <img
               src={creator.imageUrl}
               alt={fullName}
