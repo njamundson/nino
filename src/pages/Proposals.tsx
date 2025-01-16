@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDate } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Proposals = () => {
   const { toast } = useToast();
@@ -47,14 +47,20 @@ const Proposals = () => {
       if (error) throw error;
       return data;
     },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to load your proposals. Please try again.",
-        variant: "destructive",
-      });
-    }
+    meta: {
+      errorMessage: "Failed to load your proposals. Please try again."
+    },
+    retry: 1
   });
+
+  // Handle query errors
+  if (error) {
+    toast({
+      title: "Error",
+      description: "Failed to load your proposals. Please try again.",
+      variant: "destructive",
+    });
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
