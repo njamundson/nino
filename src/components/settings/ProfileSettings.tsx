@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Camera, Loader2 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import SkillsSelection from "../onboarding/creator/professional-info/SkillsSelection";
+import ProfileHeader from "./profile/ProfileHeader";
+import ProfileAvatar from "./profile/ProfileAvatar";
+import ProfileForm from "./profile/ProfileForm";
+import SaveButton from "./profile/SaveButton";
 
 const ProfileSettings = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -114,118 +111,37 @@ const ProfileSettings = () => {
     }
   };
 
+  const handleUpdateField = (field: string, value: string) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-nino-text">Profile Information</h3>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsEditing(!isEditing)}
-          disabled={loading}
-          className="text-nino-primary"
-        >
-          {isEditing ? "Cancel" : "Edit"}
-        </Button>
-      </div>
+      <ProfileHeader 
+        isEditing={isEditing}
+        loading={loading}
+        onEditToggle={() => setIsEditing(!isEditing)}
+      />
 
       <div className="space-y-6">
-        <div className="flex items-center space-x-4">
-          <Avatar className="w-20 h-20">
-            <AvatarFallback>
-              {profileData.firstName.charAt(0)}
-              {profileData.lastName.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-        </div>
+        <ProfileAvatar
+          firstName={profileData.firstName}
+          lastName={profileData.lastName}
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First Name</Label>
-            <Input
-              id="firstName"
-              value={profileData.firstName}
-              onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
-              disabled={!isEditing || loading}
-              className="bg-white/50"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name</Label>
-            <Input
-              id="lastName"
-              value={profileData.lastName}
-              onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
-              disabled={!isEditing || loading}
-              className="bg-white/50"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
-          <Textarea
-            id="bio"
-            value={profileData.bio}
-            onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
-            disabled={!isEditing || loading}
-            className="bg-white/50 resize-none h-32"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="location">Location</Label>
-          <Input
-            id="location"
-            value={profileData.location}
-            onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))}
-            disabled={!isEditing || loading}
-            className="bg-white/50"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="instagram">Instagram Username</Label>
-          <Input
-            id="instagram"
-            value={profileData.instagram}
-            onChange={(e) => setProfileData(prev => ({ ...prev, instagram: e.target.value }))}
-            disabled={!isEditing || loading}
-            className="bg-white/50"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="website">Website</Label>
-          <Input
-            id="website"
-            value={profileData.website}
-            onChange={(e) => setProfileData(prev => ({ ...prev, website: e.target.value }))}
-            disabled={!isEditing || loading}
-            className="bg-white/50"
-          />
-        </div>
+        <ProfileForm
+          isEditing={isEditing}
+          loading={loading}
+          profileData={profileData}
+          onUpdateField={handleUpdateField}
+          onUpdateSkills={(skills) => setProfileData(prev => ({ ...prev, skills }))}
+        />
 
         {isEditing && (
-          <div className="space-y-2">
-            <SkillsSelection
-              skills={profileData.skills}
-              onUpdateSkills={(skills) => setProfileData(prev => ({ ...prev, skills }))}
-            />
-          </div>
-        )}
-
-        {isEditing && (
-          <div className="flex justify-end">
-            <Button 
-              onClick={handleSave}
-              disabled={loading}
-              className="bg-nino-primary hover:bg-nino-primary/90"
-            >
-              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Save Changes
-            </Button>
-          </div>
+          <SaveButton
+            loading={loading}
+            onSave={handleSave}
+          />
         )}
       </div>
     </Card>
