@@ -1,4 +1,6 @@
+import { useState } from "react";
 import CreatorCard from "./CreatorCard";
+import CreatorFilters from "./CreatorFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 
@@ -15,6 +17,8 @@ interface Creator {
 }
 
 const CreatorGrid = () => {
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+
   // Dummy data for development
   const creators: Creator[] = [
     {
@@ -74,6 +78,22 @@ const CreatorGrid = () => {
     }
   ];
 
+  const handleSpecialtyChange = (specialty: string) => {
+    setSelectedSpecialties(prev =>
+      prev.includes(specialty)
+        ? prev.filter(s => s !== specialty)
+        : [...prev, specialty]
+    );
+  };
+
+  const filteredCreators = selectedSpecialties.length > 0
+    ? creators.filter(creator =>
+        creator.specialties?.some(specialty =>
+          selectedSpecialties.includes(specialty)
+        )
+      )
+    : creators;
+
   const isLoading = false;
 
   if (isLoading) {
@@ -97,10 +117,16 @@ const CreatorGrid = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {creators.map((creator) => (
-        <CreatorCard key={creator.id} creator={creator} />
-      ))}
+    <div className="space-y-8">
+      <CreatorFilters
+        selectedSpecialties={selectedSpecialties}
+        onSpecialtyChange={handleSpecialtyChange}
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredCreators.map((creator) => (
+          <CreatorCard key={creator.id} creator={creator} />
+        ))}
+      </div>
     </div>
   );
 };
