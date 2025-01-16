@@ -8,6 +8,11 @@ interface ProtectedCreatorRouteProps {
 }
 
 const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
+  // Temporarily disable auth checks for development
+  return <>{children}</>;
+
+  // Original authentication logic commented out for now
+  /*
   const navigate = useNavigate();
 
   const { data: session } = useQuery({
@@ -47,6 +52,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   }
 
   return <>{children}</>;
+  */
 };
 
 export default ProtectedCreatorRoute;

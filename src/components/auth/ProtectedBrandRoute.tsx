@@ -8,6 +8,11 @@ interface ProtectedBrandRouteProps {
 }
 
 const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
+  // Temporarily disable auth checks for development
+  return <>{children}</>;
+
+  // Original authentication logic commented out for now
+  /*
   const { data: session } = useQuery({
     queryKey: ["auth-session"],
     queryFn: async () => {
@@ -33,7 +38,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     },
   });
 
-  // If there's no session, redirect to root
   if (!session) {
     return <Navigate to="/" />;
   }
@@ -52,12 +56,12 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     return <Navigate to="/onboarding" />;
   }
 
-  // If authenticated but no brand profile exists, redirect to onboarding
   if (!brand) {
     return <Navigate to="/onboarding" />;
   }
 
   return <>{children}</>;
+  */
 };
 
 export default ProtectedBrandRoute;
