@@ -77,6 +77,16 @@ const App = () => {
                 } 
               />
               <Route 
+                path="/brand/campaigns" 
+                element={
+                  <ProtectedBrandRoute>
+                    <BrandLayout>
+                      <div>My Campaigns Page</div>
+                    </BrandLayout>
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
                 path="/brand/creators" 
                 element={
                   <ProtectedBrandRoute>

@@ -7,7 +7,8 @@ import {
   Calendar,
   MessageSquare,
   Settings,
-  LogOut
+  LogOut,
+  List
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,7 @@ const Sidebar = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/brand/dashboard" },
     { icon: PlusCircle, label: "New Campaign", path: "/brand/campaign/new" },
+    { icon: List, label: "My Campaigns", path: "/brand/campaigns" },
     { icon: Users, label: "View Creators", path: "/brand/creators" },
     { icon: FileText, label: "Proposals", path: "/brand/proposals" },
     { icon: Calendar, label: "Bookings", path: "/brand/bookings" },
