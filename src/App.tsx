@@ -57,16 +57,6 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/creator/dashboard" 
-                element={
-                  <ProtectedCreatorRoute>
-                    <CreatorLayout>
-                      <Dashboard />
-                    </CreatorLayout>
-                  </ProtectedCreatorRoute>
-                } 
-              />
-              <Route 
                 path="/brand/dashboard" 
                 element={
                   <ProtectedBrandRoute>
@@ -74,6 +64,76 @@ const App = () => {
                       <Dashboard />
                     </BrandLayout>
                   </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
+                path="/brand/campaign/new" 
+                element={
+                  <ProtectedBrandRoute>
+                    <BrandLayout>
+                      <div>New Campaign Page</div>
+                    </BrandLayout>
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
+                path="/brand/creators" 
+                element={
+                  <ProtectedBrandRoute>
+                    <BrandLayout>
+                      <div>View Creators Page</div>
+                    </BrandLayout>
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
+                path="/brand/proposals" 
+                element={
+                  <ProtectedBrandRoute>
+                    <BrandLayout>
+                      <Proposals />
+                    </BrandLayout>
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
+                path="/brand/bookings" 
+                element={
+                  <ProtectedBrandRoute>
+                    <BrandLayout>
+                      <Bookings />
+                    </BrandLayout>
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
+                path="/brand/messages" 
+                element={
+                  <ProtectedBrandRoute>
+                    <BrandLayout>
+                      <Messages />
+                    </BrandLayout>
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
+                path="/brand/settings" 
+                element={
+                  <ProtectedBrandRoute>
+                    <BrandLayout>
+                      <Settings />
+                    </BrandLayout>
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
+                path="/creator/dashboard" 
+                element={
+                  <ProtectedCreatorRoute>
+                    <CreatorLayout>
+                      <Dashboard />
+                    </CreatorLayout>
+                  </ProtectedCreatorRoute>
                 } 
               />
               <Route 

@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
-  Briefcase,
+  PlusCircle,
+  Users,
   FileText,
   Calendar,
   MessageSquare,
@@ -15,8 +16,9 @@ const Sidebar = () => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/brand/dashboard" },
-    { icon: Briefcase, label: "Opportunities", path: "/brand/opportunities" },
-    { icon: FileText, label: "Applications", path: "/brand/applications" },
+    { icon: PlusCircle, label: "New Campaign", path: "/brand/campaign/new" },
+    { icon: Users, label: "View Creators", path: "/brand/creators" },
+    { icon: FileText, label: "Proposals", path: "/brand/proposals" },
     { icon: Calendar, label: "Bookings", path: "/brand/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/brand/messages" },
     { icon: Settings, label: "Settings", path: "/brand/settings" },
