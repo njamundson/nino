@@ -24,22 +24,6 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     
     try {
       console.log("Starting sign up process...");
-      const { data: existingUser } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .single();
-
-      if (existingUser) {
-        toast({
-          title: "Account exists",
-          description: "An account with this email already exists. Please sign in instead.",
-          variant: "destructive",
-        });
-        onToggleAuth(); // Switch to sign in form
-        return;
-      }
-
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
