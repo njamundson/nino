@@ -3,6 +3,8 @@ import { Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface BrandBasicInfoStepProps {
   profileImage: string | null;
@@ -21,6 +23,17 @@ const BrandBasicInfoStep = ({
   onUpdateField,
   onUpdateImage,
 }: BrandBasicInfoStepProps) => {
+  useEffect(() => {
+    const setUserEmail = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        onUpdateField("brandEmail", user.email);
+      }
+    };
+    
+    setUserEmail();
+  }, [onUpdateField]);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
