@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import BasicInfo from "./steps/BasicInfo";
 import Requirements from "./steps/Requirements";
 import Compensation from "./steps/Compensation";
+import SuccessModal from "./SuccessModal";
 
 type Step = {
   title: string;
@@ -31,6 +32,7 @@ const steps: Step[] = [
 
 const CampaignForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -60,6 +62,7 @@ const CampaignForm = () => {
 
   const handleSubmit = () => {
     console.log("Form submitted:", formData);
+    setShowSuccessModal(true);
   };
 
   return (
@@ -108,6 +111,11 @@ const CampaignForm = () => {
           </Button>
         )}
       </div>
+
+      <SuccessModal 
+        isOpen={showSuccessModal} 
+        onOpenChange={setShowSuccessModal}
+      />
     </div>
   );
 };
