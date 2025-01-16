@@ -42,10 +42,19 @@ const BrandStatsCards = () => {
 
       if (!brand) return 0;
 
+      // First get all opportunities for this brand
+      const { data: opportunities } = await supabase
+        .from('opportunities')
+        .select('id')
+        .eq('brand_id', brand.id);
+
+      if (!opportunities || opportunities.length === 0) return 0;
+
+      // Then count applications for these opportunities
       const { count } = await supabase
         .from('applications')
         .select('*', { count: 'exact', head: true })
-        .eq('opportunity_id', brand.id);
+        .in('opportunity_id', opportunities.map(opp => opp.id));
 
       return count || 0;
     }
