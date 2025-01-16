@@ -17,7 +17,9 @@ import Bookings from "./pages/Bookings";
 import Messages from "./pages/Messages";
 import Settings from "./pages/Settings";
 import ProtectedCreatorRoute from "./components/auth/ProtectedCreatorRoute";
+import ProtectedBrandRoute from "./components/auth/ProtectedBrandRoute";
 import CreatorLayout from "./components/layouts/CreatorLayout";
+import BrandLayout from "./components/layouts/BrandLayout";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +49,14 @@ const App = () => {
                 } 
               />
               <Route 
+                path="/brand/welcome" 
+                element={
+                  <ProtectedBrandRoute>
+                    <Welcome />
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
                 path="/creator/dashboard" 
                 element={
                   <ProtectedCreatorRoute>
@@ -57,7 +67,17 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/creator/projects" 
+                path="/brand/dashboard" 
+                element={
+                  <ProtectedBrandRoute>
+                    <BrandLayout>
+                      <Dashboard />
+                    </BrandLayout>
+                  </ProtectedBrandRoute>
+                } 
+              />
+              <Route 
+                path="/projects" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -67,7 +87,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/creator/proposals" 
+                path="/proposals" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -77,7 +97,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/creator/bookings" 
+                path="/bookings" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -87,7 +107,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/creator/messages" 
+                path="/messages" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -97,7 +117,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/creator/settings" 
+                path="/settings" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>

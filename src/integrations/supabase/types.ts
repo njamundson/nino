@@ -54,6 +54,47 @@ export type Database = {
           },
         ]
       }
+      brand_managers: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          permissions: string[] | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          permissions?: string[] | null
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          permissions?: string[] | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_managers_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brands: {
         Row: {
           brand_type: Database["public"]["Enums"]["brand_type"]
