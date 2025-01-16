@@ -16,25 +16,25 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     },
   });
 
-  const { data: creator, isLoading: creatorLoading, error: creatorError } = useQuery({
+  const { data: creator, isLoading: creatorLoading } = useQuery({
     queryKey: ["creator-profile"],
     enabled: !!session?.user,
     queryFn: async () => {
       if (!session?.user) return null;
 
-      const { data, error } = await supabase
-        .from("creators")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .limit(1)
-        .maybeSingle();
-
-      if (error) {
+      try {
+        const { data } = await supabase
+          .from("creators")
+          .select("*")
+          .eq("user_id", session.user.id)
+          .limit(1)
+          .maybeSingle();
+        
+        return data;
+      } catch (error) {
         console.error("Error fetching creator:", error);
-        throw error;
+        return null;
       }
-
-      return data;
     },
   });
 
@@ -49,11 +49,6 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
   if (!session) {
     return <Navigate to="/" />;
-  }
-
-  if (creatorError) {
-    console.error("Error in ProtectedCreatorRoute:", creatorError);
-    return <Navigate to="/onboarding" />;
   }
 
   if (!creator) {
