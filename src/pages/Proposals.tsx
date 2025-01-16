@@ -31,7 +31,7 @@ const Proposals = () => {
   };
 
   const pendingApplications = applications?.filter(app => app.status === 'pending') || [];
-  const acceptedApplications = applications?.filter(app => app.status === 'accepted') || [];
+  const myInvites = applications?.filter(app => app.status === 'invited') || [];
   const rejectedApplications = applications?.filter(app => app.status === 'rejected') || [];
 
   return (
@@ -43,7 +43,7 @@ const Proposals = () => {
       
       <ProposalsTabs
         pendingApplications={pendingApplications}
-        acceptedApplications={acceptedApplications}
+        myInvites={myInvites}
         rejectedApplications={rejectedApplications}
         isLoading={isLoadingApplications}
         onUpdateStatus={handleUpdateApplicationStatus}

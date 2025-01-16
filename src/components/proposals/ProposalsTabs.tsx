@@ -4,7 +4,7 @@ import ProposalsList from "./ProposalsList";
 
 interface ProposalsTabsProps {
   pendingApplications: any[];
-  acceptedApplications: any[];
+  myInvites: any[];
   rejectedApplications: any[];
   isLoading: boolean;
   onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
@@ -12,7 +12,7 @@ interface ProposalsTabsProps {
 
 const ProposalsTabs = ({
   pendingApplications,
-  acceptedApplications,
+  myInvites,
   rejectedApplications,
   isLoading,
   onUpdateStatus
@@ -25,14 +25,14 @@ const ProposalsTabs = ({
           className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
         >
           <Inbox className="w-4 h-4" />
-          Pending
+          Pending Proposals
         </TabsTrigger>
         <TabsTrigger 
-          value="accepted" 
+          value="invites" 
           className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
         >
           <Send className="w-4 h-4" />
-          Accepted
+          My Invites
         </TabsTrigger>
         <TabsTrigger 
           value="rejected" 
@@ -51,9 +51,9 @@ const ProposalsTabs = ({
         />
       </TabsContent>
       
-      <TabsContent value="accepted" className="mt-6">
+      <TabsContent value="invites" className="mt-6">
         <ProposalsList
-          applications={acceptedApplications}
+          applications={myInvites}
           isLoading={isLoading}
           onUpdateStatus={onUpdateStatus}
         />
