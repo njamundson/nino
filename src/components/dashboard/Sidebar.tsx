@@ -10,14 +10,9 @@ import {
   LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
 
 const Sidebar = () => {
   const location = useLocation();
-  
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-  };
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -30,10 +25,10 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 bg-white border-r h-screen flex flex-col fixed">
+    <div className="w-64 bg-white border-r h-screen flex flex-col">
       <div className="p-6">
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-xl font-semibold text-[#B4736E]">NINO</span>
+          <span className="text-xl font-semibold text-nino-primary">NINO</span>
           <span className="text-sm text-gray-500">Creator Portal</span>
         </Link>
       </div>
@@ -46,7 +41,7 @@ const Sidebar = () => {
                 to={item.path}
                 className={cn(
                   "flex items-center gap-3 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50",
-                  location.pathname === item.path && "bg-gray-50 text-[#B4736E]"
+                  location.pathname === item.path && "bg-gray-50 text-nino-primary"
                 )}
               >
                 <item.icon className="w-5 h-5" />
@@ -59,7 +54,7 @@ const Sidebar = () => {
 
       <div className="p-4 mt-auto">
         <button
-          onClick={handleSignOut}
+          onClick={() => {}} // We'll implement logout later
           className="flex items-center gap-3 px-4 py-2 w-full text-gray-600 hover:bg-gray-50 rounded-lg"
         >
           <LogOut className="w-5 h-5" />
