@@ -28,23 +28,34 @@ const PaymentStep = () => {
       }
 
       // Make the request to create checkout session
-      const response = await supabase.functions.invoke('create-checkout', {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
 
-      if (response.error) {
+      if (error) {
+        console.error('Checkout error:', error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: response.error.message || "Failed to start checkout process",
+          description: error.message || "Failed to start checkout process",
         });
         return;
       }
 
-      if (response.data?.url) {
-        window.location.href = response.data.url;
+      if (data?.error) {
+        console.error('Checkout data error:', data.error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: data.error || "Failed to create checkout session",
+        });
+        return;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
       } else {
         toast({
           variant: "destructive",
@@ -53,6 +64,7 @@ const PaymentStep = () => {
         });
       }
     } catch (error) {
+      console.error('Subscribe error:', error);
       toast({
         variant: "destructive",
         title: "Error",

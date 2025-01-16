@@ -26,9 +26,10 @@ serve(async (req) => {
       )
     }
 
-    // Initialize Stripe first to fail fast if not configured
+    // Initialize Stripe
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeKey) {
+      console.error('Stripe key not found')
       return new Response(
         JSON.stringify({ error: 'Stripe configuration error' }),
         { 
@@ -53,6 +54,7 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token)
     
     if (userError || !user) {
+      console.error('Auth error:', userError)
       return new Response(
         JSON.stringify({ error: 'Authentication failed' }),
         { 
