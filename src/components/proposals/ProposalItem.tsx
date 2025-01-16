@@ -24,12 +24,13 @@ interface ProposalItemProps {
 }
 
 const ProposalItem = ({ proposal, onDelete, onChat }: ProposalItemProps) => {
+  const initials = `${proposal.creator.profile.first_name?.[0] || ''}${proposal.creator.profile.last_name?.[0] || ''}`;
+
   return (
     <div className="flex items-start gap-3 p-3 rounded-2xl bg-nino-bg/50">
       <Avatar className="w-8 h-8">
         <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-xs">
-          {proposal.creator.profile.first_name?.[0]}
-          {proposal.creator.profile.last_name?.[0]}
+          {initials}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
