@@ -20,7 +20,7 @@ const CreatorDashboard = () => {
       id: '2',
       brandName: 'Beauty Co.',
       timeAgo: '5h ago',
-      content: 'Thanks for your quick response. Let's schedule a call next week.',
+      content: "Thanks for your quick response. Let's schedule a call next week.",
     },
     {
       id: '3',
