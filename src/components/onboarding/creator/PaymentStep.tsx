@@ -29,25 +29,21 @@ const PaymentStep = () => {
       }
 
       // Make the request to create checkout session
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
-      );
-
-      const { url, error } = await response.json();
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
 
       if (error) {
-        throw new Error(error);
+        throw new Error(error.message);
       }
 
       // Redirect to Stripe checkout if URL is received
-      if (url) {
-        window.location.href = url;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
       }
     } catch (error) {
       toast({
