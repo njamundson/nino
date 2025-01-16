@@ -19,9 +19,9 @@ interface CreatorGridProps {
 const CreatorGrid = ({ creators, isLoading }: CreatorGridProps) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Skeleton key={i} className="h-48 w-full" />
+          <Skeleton key={i} className="h-[400px] w-full rounded-3xl" />
         ))}
       </div>
     );
@@ -29,7 +29,7 @@ const CreatorGrid = ({ creators, isLoading }: CreatorGridProps) => {
 
   if (!creators || creators.length === 0) {
     return (
-      <Card className="p-6">
+      <Card className="p-6 rounded-3xl">
         <div className="text-center text-muted-foreground">
           No verified creators found.
         </div>
@@ -38,7 +38,7 @@ const CreatorGrid = ({ creators, isLoading }: CreatorGridProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {creators.map((creator) => (
         <CreatorCard key={creator.id} creator={creator} />
       ))}
