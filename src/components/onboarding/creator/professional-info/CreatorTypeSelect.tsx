@@ -10,19 +10,22 @@ import { Label } from "@/components/ui/label";
 interface CreatorTypeSelectProps {
   creatorType: string;
   onUpdateField: (field: string, value: string) => void;
+  error?: string;
 }
 
-const CreatorTypeSelect = ({ creatorType, onUpdateField }: CreatorTypeSelectProps) => {
+const CreatorTypeSelect = ({ creatorType, onUpdateField, error }: CreatorTypeSelectProps) => {
   const creatorTypes = ["Solo", "Couple", "Family", "Group"];
 
   return (
     <div className="space-y-2">
-      <Label className="text-base">Creator Type</Label>
+      <Label className="text-base">Creator Type *</Label>
       <Select
         value={creatorType}
         onValueChange={(value) => onUpdateField("creatorType", value)}
       >
-        <SelectTrigger className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base">
+        <SelectTrigger className={`bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base ${
+          error ? "border-red-500" : ""
+        }`}>
           <SelectValue placeholder="Select your creator type" />
         </SelectTrigger>
         <SelectContent>
@@ -33,6 +36,9 @@ const CreatorTypeSelect = ({ creatorType, onUpdateField }: CreatorTypeSelectProp
           ))}
         </SelectContent>
       </Select>
+      {error && (
+        <p className="text-red-500 text-sm mt-1">{error}</p>
+      )}
     </div>
   );
 };
