@@ -16,7 +16,10 @@ const DashboardHeader = () => {
         .eq('id', user.id)
         .single();
       
-      return data;
+      return {
+        ...data,
+        email: user.email // Add email from auth user
+      };
     }
   });
 
