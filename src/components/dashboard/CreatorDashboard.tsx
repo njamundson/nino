@@ -1,16 +1,7 @@
 import { motion } from "framer-motion";
-import { Bell, Calendar, FileText, Users } from "lucide-react";
+import { Bell, Calendar, FileText, MessageSquare, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database } from "@/integrations/supabase/types";
-
-type Message = Database['public']['Tables']['messages']['Row'] & {
-  sender: {
-    id: string;
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
-};
 
 const CreatorDashboard = () => {
   const { data: stats } = useQuery({
@@ -29,27 +20,20 @@ const CreatorDashboard = () => {
     },
   });
 
-  const { data: messages } = useQuery<Message[]>({
+  const { data: messages } = useQuery({
     queryKey: ['recent-messages'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      if (!user) return null;
 
       const { data } = await supabase
         .from('messages')
-        .select(`
-          *,
-          sender:profiles!messages_sender_id_fkey(
-            id,
-            first_name,
-            last_name
-          )
-        `)
+        .select('*, sender:sender_id(*)')
         .eq('receiver_id', user.id)
         .order('created_at', { ascending: false })
         .limit(5);
 
-      return data || [];
+      return data;
     },
   });
 
@@ -132,9 +116,7 @@ const CreatorDashboard = () => {
                     <div className="w-10 h-10 rounded-full bg-gray-200" />
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-gray-900">
-                          {message.sender?.first_name} {message.sender?.last_name}
-                        </h3>
+                        <h3 className="font-medium text-gray-900">Luxury Brand Co.</h3>
                         <span className="text-sm text-gray-500">2h ago</span>
                       </div>
                       <p className="text-gray-600 text-sm">{message.content}</p>
