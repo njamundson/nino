@@ -28,7 +28,11 @@ const Sidebar = () => {
         {/* Logo */}
         <div className="p-6 border-b">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-semibold text-nino-primary">NINO</span>
+            <img 
+              src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
+              alt="NINO" 
+              className="h-8"
+            />
             <span className="text-sm text-gray-500">Creator Portal</span>
           </Link>
         </div>
