@@ -35,7 +35,7 @@ const DashboardHeader = () => {
         <div className="flex items-center gap-4">
           <Avatar className="w-12 h-12 ring-2 ring-nino-primary/20">
             <AvatarImage src="" alt="Profile" />
-            <AvatarFallback className="bg-nino-primary text-nino-white text-lg">
+            <AvatarFallback className="bg-nino-primary text-nino-white">
               {profile?.first_name?.[0]}{profile?.last_name?.[0]}
             </AvatarFallback>
           </Avatar>
