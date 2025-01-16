@@ -30,17 +30,17 @@ const DashboardHeader = () => {
   });
 
   return (
-    <Card className="bg-white shadow-sm rounded-3xl overflow-hidden mb-8">
-      <div className="p-6 flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20">
+    <Card className="bg-white shadow-sm rounded-[20px] overflow-hidden mb-8">
+      <div className="px-8 py-6 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Avatar className="w-12 h-12 ring-2 ring-nino-primary/20">
             <AvatarImage src="" alt="Profile" />
-            <AvatarFallback className="bg-nino-primary text-nino-white">
+            <AvatarFallback className="bg-nino-primary text-nino-white text-lg">
               {profile?.first_name?.[0]}{profile?.last_name?.[0]}
             </AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium text-nino-text">
+            <h3 className="font-semibold text-lg text-nino-text">
               {profile?.first_name} {profile?.last_name}
             </h3>
             <p className="text-sm text-nino-gray">
@@ -49,9 +49,14 @@ const DashboardHeader = () => {
           </div>
         </div>
         
-        <button className="p-2 hover:bg-nino-white rounded-full transition-colors">
-          <Bell className="w-6 h-6 text-nino-gray hover:text-nino-primary transition-colors" />
-        </button>
+        <div className="flex items-center">
+          <button className="p-2.5 hover:bg-gray-50 rounded-full transition-colors">
+            <Bell className="w-6 h-6 text-nino-gray hover:text-nino-primary transition-colors" />
+          </button>
+          <div className="w-10 h-10 bg-black rounded-full ml-4 flex items-center justify-center text-white">
+            AB
+          </div>
+        </div>
       </div>
     </Card>
   );
