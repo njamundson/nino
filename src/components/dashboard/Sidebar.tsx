@@ -31,7 +31,7 @@ const Sidebar = () => {
             <img 
               src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
               alt="NINO" 
-              className="h-12"
+              className="h-16"
             />
           </Link>
         </div>
