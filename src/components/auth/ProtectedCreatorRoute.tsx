@@ -22,20 +22,17 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     queryFn: async () => {
       if (!session?.user) return null;
 
-      try {
-        const { data } = await supabase
-          .from("creators")
-          .select("*")
-          .eq("user_id", session.user.id)
-          .limit(1)
-          .maybeSingle();
-        
-        return data;
-      } catch (error) {
-        console.error("Error fetching creator:", error);
-        return null;
-      }
+      const { data } = await supabase
+        .from("creators")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .single();
+      
+      return data;
     },
+    meta: {
+      errorBoundary: false
+    }
   });
 
   if (sessionLoading || creatorLoading) {

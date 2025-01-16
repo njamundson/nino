@@ -16,25 +16,23 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     },
   });
 
-  const { data: brand, isLoading: brandLoading, error: brandError } = useQuery({
+  const { data: brand, isLoading: brandLoading } = useQuery({
     queryKey: ["brand-profile"],
     enabled: !!session?.user,
     queryFn: async () => {
       if (!session?.user) return null;
 
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("brands")
         .select("*")
         .eq("user_id", session.user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error fetching brand:", error);
-        throw error;
-      }
-
+        .single();
+      
       return data;
     },
+    meta: {
+      errorBoundary: false
+    }
   });
 
   if (sessionLoading || brandLoading) {
@@ -48,11 +46,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
   if (!session) {
     return <Navigate to="/" />;
-  }
-
-  if (brandError) {
-    console.error("Error in ProtectedBrandRoute:", brandError);
-    return <Navigate to="/onboarding" />;
   }
 
   if (!brand) {
