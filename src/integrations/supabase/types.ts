@@ -9,6 +9,209 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      applications: {
+        Row: {
+          cover_letter: string | null
+          created_at: string
+          creator_id: string | null
+          id: string
+          opportunity_id: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          cover_letter?: string | null
+          created_at?: string
+          creator_id?: string | null
+          id?: string
+          opportunity_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cover_letter?: string | null
+          created_at?: string
+          creator_id?: string | null
+          id?: string
+          opportunity_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brands: {
+        Row: {
+          brand_type: Database["public"]["Enums"]["brand_type"]
+          company_name: string
+          created_at: string
+          description: string | null
+          id: string
+          instagram: string | null
+          location: string | null
+          updated_at: string
+          user_id: string | null
+          website: string | null
+        }
+        Insert: {
+          brand_type: Database["public"]["Enums"]["brand_type"]
+          company_name: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          instagram?: string | null
+          location?: string | null
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          brand_type?: Database["public"]["Enums"]["brand_type"]
+          company_name?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          instagram?: string | null
+          location?: string | null
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      creators: {
+        Row: {
+          bio: string | null
+          created_at: string
+          id: string
+          instagram: string | null
+          is_verified: boolean | null
+          location: string | null
+          specialties: string[] | null
+          updated_at: string
+          user_id: string | null
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          instagram?: string | null
+          is_verified?: boolean | null
+          location?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          instagram?: string | null
+          is_verified?: boolean | null
+          location?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read: boolean | null
+          receiver_id: string | null
+          sender_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read?: boolean | null
+          receiver_id?: string | null
+          sender_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read?: boolean | null
+          receiver_id?: string | null
+          sender_id?: string | null
+        }
+        Relationships: []
+      }
+      opportunities: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          description: string
+          end_date: string | null
+          id: string
+          location: string | null
+          perks: string[] | null
+          requirements: string[] | null
+          start_date: string | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          description: string
+          end_date?: string | null
+          id?: string
+          location?: string | null
+          perks?: string[] | null
+          requirements?: string[] | null
+          start_date?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          description?: string
+          end_date?: string | null
+          id?: string
+          location?: string | null
+          perks?: string[] | null
+          requirements?: string[] | null
+          start_date?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -41,7 +244,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      brand_type: "hotel" | "resort" | "travel_agency"
     }
     CompositeTypes: {
       [_ in never]: never

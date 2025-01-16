@@ -9,11 +9,16 @@ interface SkillsSelectionProps {
 
 const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
   const availableSkills = [
-    "UGC Creator",
-    "Videographer",
-    "Photographer",
-    "Model/Talent",
-    "Public Relations/Writer",
+    "Photography",
+    "Videography",
+    "Content Creation",
+    "Travel Writing",
+    "Social Media Management",
+    "Drone Photography",
+    "Travel Planning",
+    "Luxury Travel",
+    "Adventure Travel",
+    "Cultural Experience",
   ];
 
   const toggleSkill = (skill: string) => {
@@ -25,7 +30,7 @@ const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
 
   return (
     <div className="space-y-4">
-      <Label className="text-base">Skills</Label>
+      <Label className="text-base">Travel Content Specialties</Label>
       <div className="flex flex-wrap gap-3">
         {availableSkills.map((skill) => (
           <Button
