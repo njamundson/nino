@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -41,6 +41,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
   const [isApplying, setIsApplying] = useState(false);
   const [coverLetter, setCoverLetter] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Get current creator's profile
   const { data: creator, isLoading: isLoadingCreator } = useQuery({
@@ -83,12 +84,9 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
       if (error) throw error;
 
-      toast({
-        title: "Application submitted!",
-        description: "Your application has been sent to the brand.",
-      });
-      
-      onClose();
+      setShowSuccessModal(true);
+      setIsApplying(false);
+      setCoverLetter("");
     } catch (error) {
       console.error("Error submitting application:", error);
       toast({
@@ -100,6 +98,37 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
       setIsSubmitting(false);
     }
   };
+
+  if (showSuccessModal) {
+    return (
+      <Dialog open={true} onOpenChange={() => {
+        setShowSuccessModal(false);
+        onClose();
+      }}>
+        <DialogContent className="max-w-md text-center">
+          <div className="flex flex-col items-center gap-4 py-6">
+            <CheckCircle2 className="w-16 h-16 text-green-500" />
+            <DialogTitle className="text-2xl font-semibold">
+              Application Submitted!
+            </DialogTitle>
+            <p className="text-muted-foreground">
+              Your application has been sent to {opportunity.brand.company_name}. 
+              You'll be notified when they review your application.
+            </p>
+            <Button 
+              onClick={() => {
+                setShowSuccessModal(false);
+                onClose();
+              }}
+              className="mt-4"
+            >
+              View Other Opportunities
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   if (isLoadingCreator) {
     return (
