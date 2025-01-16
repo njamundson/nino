@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { formatDate } from "@/lib/utils";
 import ProjectModal from "./ProjectModal";
+import ProjectHeader from "./card/ProjectHeader";
+import ProjectMetadata from "./card/ProjectMetadata";
+import ProjectBadges from "./card/ProjectBadges";
 
 interface ProjectCardProps {
   opportunity: {
@@ -48,47 +49,21 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
           
           <div className="absolute inset-x-0 bottom-0 p-6 text-white">
             <div className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-white/90 mb-1">
-                  {opportunity.brand.company_name}
-                </p>
-                <h3 className="text-2xl font-semibold leading-tight">
-                  {opportunity.title}
-                </h3>
-              </div>
+              <ProjectHeader 
+                company_name={opportunity.brand.company_name}
+                title={opportunity.title}
+              />
 
               <div className="space-y-2">
-                {opportunity.location && (
-                  <p className="text-sm text-white/80 flex items-center gap-1">
-                    📍 {opportunity.location}
-                  </p>
-                )}
-                
-                {opportunity.start_date && (
-                  <p className="text-sm text-white/80">
-                    🗓️ {formatDate(opportunity.start_date)}
-                  </p>
-                )}
+                <ProjectMetadata 
+                  location={opportunity.location}
+                  start_date={opportunity.start_date}
+                />
 
-                <div className="space-y-1">
-                  {opportunity.payment_details && (
-                    <Badge
-                      variant="secondary"
-                      className="bg-white/20 hover:bg-white/30 text-white border-0"
-                    >
-                      💰 {opportunity.payment_details}
-                    </Badge>
-                  )}
-                  
-                  {opportunity.compensation_details && (
-                    <Badge
-                      variant="secondary"
-                      className="bg-white/20 hover:bg-white/30 text-white border-0 ml-2"
-                    >
-                      🎁 {opportunity.compensation_details}
-                    </Badge>
-                  )}
-                </div>
+                <ProjectBadges 
+                  payment_details={opportunity.payment_details}
+                  compensation_details={opportunity.compensation_details}
+                />
               </div>
             </div>
           </div>
