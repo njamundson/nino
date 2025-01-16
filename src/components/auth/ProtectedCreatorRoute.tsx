@@ -1,58 +1,61 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { Navigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProtectedCreatorRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
-  // Temporarily disable auth checks for development
-  return <>{children}</>;
-
-  // Original authentication logic commented out for now
-  /*
-  const navigate = useNavigate();
-
-  const { data: session } = useQuery({
-    queryKey: ['session'],
+  const { data: session, isLoading: sessionLoading } = useQuery({
+    queryKey: ['auth-session'],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       return session;
     },
   });
 
-  const { data: creator } = useQuery({
+  const { data: creator, isLoading: creatorLoading, error } = useQuery({
     queryKey: ['creator-profile'],
     enabled: !!session?.user,
     queryFn: async () => {
-      const { data } = await supabase
+      if (!session?.user) return null;
+
+      const { data, error } = await supabase
         .from('creators')
         .select('*')
-        .eq('user_id', session?.user.id)
-        .single();
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (error) throw error;
       return data;
     },
   });
 
-  useEffect(() => {
-    if (!session) {
-      navigate('/');
-      return;
-    }
+  if (sessionLoading || creatorLoading) {
+    return (
+      <div className="p-8 space-y-4">
+        <Skeleton className="h-12 w-3/4" />
+        <Skeleton className="h-8 w-1/2" />
+      </div>
+    );
+  }
 
-    if (session && !creator) {
-      navigate('/onboarding');
-    }
-  }, [session, creator, navigate]);
+  if (!session) {
+    return <Navigate to="/" />;
+  }
 
-  if (!session || !creator) {
-    return null;
+  if (error) {
+    console.error("Error in ProtectedCreatorRoute:", error);
+    return <Navigate to="/onboarding" />;
+  }
+
+  if (!creator) {
+    return <Navigate to="/onboarding" />;
   }
 
   return <>{children}</>;
-  */
 };
 
 export default ProtectedCreatorRoute;
