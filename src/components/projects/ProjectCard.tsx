@@ -70,27 +70,25 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
                   </p>
                 )}
 
-                {opportunity.perks && opportunity.perks.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {opportunity.perks.slice(0, 2).map((perk, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="bg-white/20 hover:bg-white/30 text-white border-0"
-                      >
-                        {perk}
-                      </Badge>
-                    ))}
-                    {opportunity.perks.length > 2 && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-white/20 hover:bg-white/30 text-white border-0"
-                      >
-                        +{opportunity.perks.length - 2} more
-                      </Badge>
-                    )}
-                  </div>
-                )}
+                <div className="space-y-1">
+                  {opportunity.payment_details && (
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 hover:bg-white/30 text-white border-0"
+                    >
+                      💰 {opportunity.payment_details}
+                    </Badge>
+                  )}
+                  
+                  {opportunity.compensation_details && (
+                    <Badge
+                      variant="secondary"
+                      className="bg-white/20 hover:bg-white/30 text-white border-0 ml-2"
+                    >
+                      🎁 {opportunity.compensation_details}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
           </div>
