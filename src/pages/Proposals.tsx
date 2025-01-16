@@ -23,6 +23,7 @@ const Proposals = () => {
 
       if (!brand) throw new Error("Brand profile not found");
 
+      // Modified query to handle the relationships correctly
       const { data, error } = await supabase
         .from('applications')
         .select(`
@@ -45,15 +46,32 @@ const Proposals = () => {
             instagram,
             website,
             location,
-            profile:profiles (
-              first_name,
-              last_name
-            )
+            user_id
           )
         `)
-        .eq('opportunities.brand_id', brand.id);
+        .eq('opportunity.brand_id', brand.id);
 
       if (error) throw error;
+
+      // Fetch profiles separately for creators
+      if (data) {
+        const creatorUserIds = data.map(app => app.creator?.user_id).filter(Boolean);
+        
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', creatorUserIds);
+
+        // Merge profile data with applications
+        return data.map(application => ({
+          ...application,
+          creator: {
+            ...application.creator,
+            profile: profiles?.find(p => p.id === application.creator?.user_id) || null
+          }
+        }));
+      }
+
       return data;
     },
     meta: {
