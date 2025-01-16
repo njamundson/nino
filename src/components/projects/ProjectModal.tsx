@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -5,7 +10,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -28,6 +36,83 @@ interface ProjectModalProps {
 }
 
 const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isApplying, setIsApplying] = useState(false);
+  const [coverLetter, setCoverLetter] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get current creator's profile
+  const { data: creator, isLoading: isLoadingCreator } = useQuery({
+    queryKey: ["creator"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("creators")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const handleApply = async () => {
+    if (!creator) {
+      toast({
+        title: "Not authenticated",
+        description: "Please sign in as a creator to apply for projects.",
+        variant: "destructive",
+      });
+      navigate("/onboarding");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("applications")
+        .insert({
+          opportunity_id: opportunity.id,
+          creator_id: creator.id,
+          cover_letter: coverLetter,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Application submitted!",
+        description: "Your application has been sent to the brand.",
+      });
+      
+      onClose();
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoadingCreator) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-2xl">
+          <div className="flex justify-center items-center min-h-[200px]">
+            <Loader2 className="w-8 h-8 animate-spin text-nino-primary" />
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -111,6 +196,50 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
                     </Badge>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Application Form */}
+            {isApplying ? (
+              <div className="space-y-4 pt-4">
+                <h4 className="font-medium">Your Application</h4>
+                <Textarea
+                  placeholder="Write a cover letter explaining why you're a great fit for this opportunity..."
+                  value={coverLetter}
+                  onChange={(e) => setCoverLetter(e.target.value)}
+                  className="min-h-[200px]"
+                />
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsApplying(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleApply}
+                    disabled={!coverLetter.trim() || isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      "Submit Application"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="pt-4">
+                <Button
+                  className="w-full"
+                  onClick={() => setIsApplying(true)}
+                >
+                  Apply for this Project
+                </Button>
               </div>
             )}
           </div>
