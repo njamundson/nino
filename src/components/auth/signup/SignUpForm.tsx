@@ -32,6 +32,19 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
       return;
     }
 
+    // Basic password validation
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
     onSubmit({ email, password, firstName, lastName });
   };
 
@@ -45,6 +58,7 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
           onChange={(e) => setFirstName(e.target.value)}
           className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
           required
+          disabled={loading}
         />
         <Input
           type="text"
@@ -53,6 +67,7 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
           onChange={(e) => setLastName(e.target.value)}
           className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
           required
+          disabled={loading}
         />
       </div>
 
@@ -63,6 +78,7 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
         onChange={(e) => setEmail(e.target.value)}
         className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
         required
+        disabled={loading}
       />
 
       <div className="relative">
@@ -73,11 +89,13 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
           onChange={(e) => setPassword(e.target.value)}
           className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-12 transition-all duration-300"
           required
+          disabled={loading}
         />
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
           className="absolute right-4 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
+          disabled={loading}
         >
           {showPassword ? (
             <EyeOff className="h-4 w-4" />
@@ -95,11 +113,13 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-12 transition-all duration-300"
           required
+          disabled={loading}
         />
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
           className="absolute right-4 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
+          disabled={loading}
         >
           {showPassword ? (
             <EyeOff className="h-4 w-4" />
