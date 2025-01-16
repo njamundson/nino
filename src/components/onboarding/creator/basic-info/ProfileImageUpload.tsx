@@ -4,9 +4,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 interface ProfileImageUploadProps {
   profileImage: string | null;
   onUpdateImage: (image: string | null) => void;
+  error?: string;  // Added error prop definition
 }
 
-const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadProps) => {
+const ProfileImageUpload = ({ profileImage, onUpdateImage, error }: ProfileImageUploadProps) => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -21,7 +22,9 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
   return (
     <div className="flex flex-col items-center space-y-4 mb-8">
       <div className="relative group cursor-pointer">
-        <Avatar className="w-32 h-32 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20">
+        <Avatar className={`w-32 h-32 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20 ${
+          error ? 'ring-red-500' : ''
+        }`}>
           <AvatarImage src={profileImage || ""} />
           <AvatarFallback className="bg-nino-bg">
             <Camera className="w-12 h-12 text-nino-gray" />
@@ -42,6 +45,9 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
         />
       </div>
       <p className="text-sm text-nino-gray">Upload your profile photo</p>
+      {error && (
+        <p className="text-red-500 text-sm">{error}</p>
+      )}
     </div>
   );
 };

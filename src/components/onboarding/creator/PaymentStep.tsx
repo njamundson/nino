@@ -35,40 +35,20 @@ const PaymentStep = () => {
       });
 
       if (error) {
-        console.error('Checkout error:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.message || "Failed to start checkout process",
-        });
-        return;
+        throw new Error(error.message);
       }
 
-      if (data?.error) {
-        console.error('Checkout data error:', data.error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: data.error || "Failed to create checkout session",
-        });
-        return;
-      }
-
+      // Redirect to Stripe checkout if URL is received
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "No checkout URL received",
-        });
+        throw new Error('No checkout URL received');
       }
     } catch (error) {
-      console.error('Subscribe error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        description: error.message || "Failed to start checkout process",
       });
     } finally {
       setIsLoading(false);

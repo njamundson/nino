@@ -2,15 +2,21 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import BrandBasicInfoStep from "./BrandBasicInfoStep";
-import BrandDetailsStep from "./BrandDetailsStep";
-import BrandSocialStep from "./BrandSocialStep";
+import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
+import BrandDetailsStep from "./brand/BrandDetailsStep";
+import BrandSocialStep from "./brand/BrandSocialStep";
 
-type BrandStep = 'basic' | 'details' | 'social';
+interface AccountManager {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  permissions: string[];
+}
 
-const BrandOnboardingFlow = () => {
+const BrandOnboarding = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<BrandStep>('basic');
+  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social'>('basic');
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState({
     brandName: "",
@@ -127,4 +133,4 @@ const BrandOnboardingFlow = () => {
   );
 };
 
-export default BrandOnboardingFlow;
+export default BrandOnboarding;

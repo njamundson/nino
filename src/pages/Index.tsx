@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import AuthFlow from "@/components/auth/AuthFlow";
+import AuthCard from "@/components/auth/AuthCard";
 
 const Index = () => {
   return (
@@ -9,7 +9,7 @@ const Index = () => {
       className="min-h-screen flex items-center justify-center bg-[#F9F6F2] p-4"
     >
       <div className="w-full max-w-md">
-        <AuthFlow />
+        <AuthCard />
       </div>
     </motion.div>
   );
