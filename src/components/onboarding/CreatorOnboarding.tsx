@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { CreatorProfile, OnboardingStep } from "@/types/creator";
@@ -8,6 +7,8 @@ import BasicInfoStep from "./creator/BasicInfoStep";
 import SocialLinksStep from "./creator/SocialLinksStep";
 import ProfessionalInfoStep from "./creator/ProfessionalInfoStep";
 import PaymentStep from "./creator/PaymentStep";
+import OnboardingProgress from "./creator/progress/OnboardingProgress";
+import OnboardingNavigation from "./creator/navigation/OnboardingNavigation";
 
 const CreatorOnboarding = () => {
   const navigate = useNavigate();
@@ -73,19 +74,6 @@ const CreatorOnboarding = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const steps: { [key in OnboardingStep]: string } = {
-    basic: "Basic Information",
-    social: "Social Links",
-    professional: "Professional Details",
-    payment: "Choose Plan",
-  };
-
-  const getStepProgress = () => {
-    const stepOrder: OnboardingStep[] = ["basic", "social", "professional", "payment"];
-    const currentIndex = stepOrder.indexOf(currentStep);
-    return ((currentIndex + 1) / stepOrder.length) * 100;
-  };
-
   const handleNext = () => {
     let isValid = false;
 
@@ -123,19 +111,7 @@ const CreatorOnboarding = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md space-y-6"
       >
-        <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-nino-primary rounded-full transition-all duration-300"
-            style={{ width: `${getStepProgress()}%` }}
-          />
-        </div>
-
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-medium text-nino-text">
-            {steps[currentStep]}
-          </h1>
-          <p className="text-nino-gray">Complete your creator profile</p>
-        </div>
+        <OnboardingProgress currentStep={currentStep} />
 
         <div className="bg-white p-6 rounded-xl shadow-sm">
           {currentStep === "basic" && (
@@ -173,23 +149,11 @@ const CreatorOnboarding = () => {
           {currentStep === "payment" && <PaymentStep />}
         </div>
 
-        <div className="flex justify-between pt-4">
-          <Button
-            onClick={handleBack}
-            variant="outline"
-            className="text-nino-gray hover:bg-white"
-          >
-            Back
-          </Button>
-          {currentStep !== "payment" && (
-            <Button
-              onClick={handleNext}
-              className="bg-nino-primary hover:bg-nino-primary/90 text-white"
-            >
-              Next
-            </Button>
-          )}
-        </div>
+        <OnboardingNavigation
+          currentStep={currentStep}
+          onBack={handleBack}
+          onNext={handleNext}
+        />
       </motion.div>
     </div>
   );
