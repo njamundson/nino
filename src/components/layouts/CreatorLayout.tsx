@@ -1,0 +1,19 @@
+import { ReactNode } from "react";
+import Sidebar from "../dashboard/Sidebar";
+
+interface CreatorLayoutProps {
+  children: ReactNode;
+}
+
+const CreatorLayout = ({ children }: CreatorLayoutProps) => {
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar />
+      <div className="flex-1">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+export default CreatorLayout;

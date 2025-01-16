@@ -12,6 +12,7 @@ import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import ProtectedCreatorRoute from "./components/auth/ProtectedCreatorRoute";
+import CreatorLayout from "./components/layouts/CreatorLayout";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +43,9 @@ const App = () => (
             path="/dashboard" 
             element={
               <ProtectedCreatorRoute>
-                <Dashboard />
+                <CreatorLayout>
+                  <Dashboard />
+                </CreatorLayout>
               </ProtectedCreatorRoute>
             } 
           />
@@ -50,7 +53,9 @@ const App = () => (
             path="/projects" 
             element={
               <ProtectedCreatorRoute>
-                <Projects />
+                <CreatorLayout>
+                  <Projects />
+                </CreatorLayout>
               </ProtectedCreatorRoute>
             } 
           />
