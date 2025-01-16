@@ -24,6 +24,22 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     
     try {
       console.log("Starting sign up process...");
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (existingUser) {
+        toast({
+          title: "Account exists",
+          description: "An account with this email already exists. Please sign in instead.",
+          variant: "destructive",
+        });
+        onToggleAuth(); // Switch to sign in form
+        return;
+      }
+
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -32,31 +48,48 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             first_name: firstName,
             last_name: lastName,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
       if (signUpError) {
         console.error("Sign up error:", signUpError);
-        throw signUpError;
+        let errorMessage = "Error creating account";
+        
+        if (signUpError.message.includes("User already registered")) {
+          errorMessage = "An account with this email already exists. Please sign in instead.";
+          onToggleAuth(); // Switch to sign in form
+        } else {
+          switch (signUpError.message) {
+            case "Failed to fetch":
+              errorMessage = "Network error. Please check your connection and try again.";
+              break;
+            case "Invalid email":
+              errorMessage = "Please enter a valid email address.";
+              break;
+            case "Weak password":
+              errorMessage = "Password is too weak. Please use a stronger password.";
+              break;
+            default:
+              errorMessage = signUpError.message;
+          }
+        }
+        
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        return;
       }
 
-      console.log("Sign up successful, attempting sign in...");
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        console.error("Sign in error:", signInError);
-        throw signInError;
+      if (signUpData) {
+        toast({
+          title: "Welcome to NINO",
+          description: "Your account has been created successfully.",
+        });
+        
+        navigate("/onboarding");
       }
-
-      toast({
-        title: "Welcome to NINO",
-      });
-      
-      navigate("/onboarding");
     } catch (error: any) {
       console.error("Authentication error:", error);
       let errorMessage = "Error creating account";
@@ -68,6 +101,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             break;
           case "User already registered":
             errorMessage = "An account with this email already exists.";
+            onToggleAuth(); // Switch to sign in form
             break;
           default:
             errorMessage = error.message;
