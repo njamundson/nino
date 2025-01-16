@@ -45,6 +45,7 @@ const UserTypeSelection = () => {
               </div>
               <div>
                 <h3 className="font-medium text-nino-text">Creator</h3>
+                <p className="text-sm text-nino-gray">Subscribe to start creating</p>
               </div>
             </div>
           </motion.button>
@@ -60,6 +61,7 @@ const UserTypeSelection = () => {
               </div>
               <div>
                 <h3 className="font-medium text-nino-text">Brand</h3>
+                <p className="text-sm text-nino-gray">Start hiring creators</p>
               </div>
             </div>
           </motion.button>
