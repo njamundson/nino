@@ -9,6 +9,8 @@ interface Creator {
   bio: string | null;
   location: string | null;
   specialties: string[] | null;
+  instagram: string | null;
+  website: string | null;
   profile: {
     first_name: string | null;
     last_name: string | null;
@@ -26,6 +28,8 @@ const CreatorGrid = () => {
       bio: "Travel and lifestyle content creator specializing in outdoor adventures and cultural experiences.",
       location: "New York, USA",
       specialties: ["UGC", "Photography"],
+      instagram: "sarahjohnson",
+      website: "https://sarahjohnson.com",
       profile: {
         first_name: "Sarah",
         last_name: "Johnson"
@@ -37,6 +41,8 @@ const CreatorGrid = () => {
       bio: "Fashion and beauty content creator with a passion for sustainable style.",
       location: "London, UK",
       specialties: ["Model/Talent", "Photography"],
+      instagram: "michaelchen",
+      website: "https://michaelchen.co",
       profile: {
         first_name: "Michael",
         last_name: "Chen"
@@ -48,6 +54,8 @@ const CreatorGrid = () => {
       bio: "Food and lifestyle content creator.",
       location: "Paris, France",
       specialties: ["UGC", "Videography"],
+      instagram: "emmarodriguez",
+      website: null,
       profile: {
         first_name: "Emma",
         last_name: "Rodriguez"
@@ -59,6 +67,8 @@ const CreatorGrid = () => {
       bio: "Tech and lifestyle content creator.",
       location: "Tokyo, Japan",
       specialties: ["Videography", "Public Relations"],
+      instagram: "alextanaka",
+      website: "https://alextanaka.dev",
       profile: {
         first_name: "Alex",
         last_name: "Tanaka"
@@ -70,6 +80,8 @@ const CreatorGrid = () => {
       bio: "Fitness and wellness content creator helping people achieve their health goals.",
       location: "Sydney, Australia",
       specialties: ["Model/Talent", "UGC"],
+      instagram: "jordansmith",
+      website: "https://jordansmith.fit",
       profile: {
         first_name: "Jordan",
         last_name: "Smith"
