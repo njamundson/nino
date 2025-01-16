@@ -14,17 +14,9 @@ const Dashboard = () => {
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (brand) return 'brand';
-
-      const { data: creator } = await supabase
-        .from('creators')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (creator) return 'creator';
 
       return null;
     }
