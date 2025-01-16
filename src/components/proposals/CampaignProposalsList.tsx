@@ -30,7 +30,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
             instagram,
             website,
             user_id,
-            user:profiles!creators_user_id_fkey (
+            profile:profiles (
               first_name,
               last_name
             )
@@ -99,7 +99,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-lg font-semibold">
-                  {proposal.creator?.user?.first_name} {proposal.creator?.user?.last_name}
+                  {proposal.creator?.profile?.first_name} {proposal.creator?.profile?.last_name}
                 </h3>
                 {proposal.creator?.location && (
                   <p className="text-sm text-gray-500">{proposal.creator.location}</p>
