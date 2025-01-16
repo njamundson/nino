@@ -28,38 +28,48 @@ const ProfileSettings = () => {
   const fetchProfileData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No user found. Please sign in.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // Fetch profile data
-      const { data: profileData } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (profileError) throw profileError;
 
       // Fetch creator data
-      const { data: creatorData } = await supabase
+      const { data: creatorData, error: creatorError } = await supabase
         .from('creators')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (profileData && creatorData) {
-        setProfileData({
-          firstName: profileData.first_name || "",
-          lastName: profileData.last_name || "",
-          bio: creatorData.bio || "",
-          location: creatorData.location || "",
-          instagram: creatorData.instagram || "",
-          website: creatorData.website || "",
-          skills: creatorData.specialties || [],
-        });
-      }
+      if (creatorError) throw creatorError;
+
+      // Set default values if no data is found
+      setProfileData({
+        firstName: profileData?.first_name || "",
+        lastName: profileData?.last_name || "",
+        bio: creatorData?.bio || "",
+        location: creatorData?.location || "",
+        instagram: creatorData?.instagram || "",
+        website: creatorData?.website || "",
+        skills: creatorData?.specialties || [],
+      });
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast({
         title: "Error",
-        description: "Failed to load profile data",
+        description: "Failed to load profile data. Please try again.",
         variant: "destructive",
       });
     }
@@ -72,7 +82,7 @@ const ProfileSettings = () => {
       if (!user) throw new Error("No user found");
 
       // Update profiles table
-      await supabase
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           first_name: profileData.firstName,
@@ -81,8 +91,10 @@ const ProfileSettings = () => {
         })
         .eq('id', user.id);
 
+      if (profileError) throw profileError;
+
       // Update creators table
-      await supabase
+      const { error: creatorError } = await supabase
         .from('creators')
         .update({
           bio: profileData.bio,
@@ -94,6 +106,8 @@ const ProfileSettings = () => {
         })
         .eq('user_id', user.id);
 
+      if (creatorError) throw creatorError;
+
       setIsEditing(false);
       toast({
         title: "Success",
@@ -103,7 +117,7 @@ const ProfileSettings = () => {
       console.error('Error updating profile:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile",
+        description: "Failed to update profile. Please try again.",
         variant: "destructive",
       });
     } finally {
