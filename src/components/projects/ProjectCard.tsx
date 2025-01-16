@@ -6,7 +6,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface ProjectCardProps {
@@ -28,59 +28,35 @@ interface ProjectCardProps {
 
 const ProjectCard = ({ opportunity }: ProjectCardProps) => {
   const navigate = useNavigate();
+  const defaultImage = "/lovable-uploads/0bd08fc1-3642-4557-b5b0-c5cf19d9f06c.png";
 
   return (
-    <Card className="hover:border-nino-primary/20 transition-colors">
-      <CardHeader className="space-y-4">
-        <div>
-          <Badge variant="secondary" className="mb-2">
-            {opportunity.brand.brand_type}
-          </Badge>
-          <h3 className="text-xl font-medium text-nino-text">
-            {opportunity.title}
-          </h3>
-          <p className="text-sm text-nino-gray">{opportunity.brand.company_name}</p>
-        </div>
-
-        {(opportunity.location || opportunity.brand.location) && (
-          <div className="flex items-center gap-2 text-sm text-nino-gray">
-            <MapPin className="w-4 h-4" />
-            <span>{opportunity.location || opportunity.brand.location}</span>
-          </div>
-        )}
-
-        {opportunity.start_date && (
-          <div className="flex items-center gap-2 text-sm text-nino-gray">
-            <Calendar className="w-4 h-4" />
-            <span>
-              Starts {new Date(opportunity.start_date).toLocaleDateString()}
-            </span>
-          </div>
-        )}
-      </CardHeader>
-
-      <CardContent>
-        <p className="text-nino-text line-clamp-3">{opportunity.description}</p>
-      </CardContent>
-
-      <CardFooter className="flex flex-col gap-4">
-        {opportunity.perks && opportunity.perks.length > 0 && (
-          <div className="flex flex-wrap gap-2 w-full">
-            {opportunity.perks.map((perk) => (
-              <Badge key={perk} variant="outline">
-                {perk}
-              </Badge>
-            ))}
-          </div>
-        )}
-        
-        <Button 
-          className="w-full" 
+    <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all hover:shadow-md">
+      <div className="relative aspect-[3/4]">
+        <img
+          src={defaultImage}
+          alt={opportunity.title}
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <Button
+          size="icon"
+          variant="secondary"
+          className="absolute bottom-4 right-4 rounded-full bg-white/90 hover:bg-white"
           onClick={() => navigate(`/projects/${opportunity.id}`)}
         >
-          View Details
+          <Plus className="h-4 w-4 text-nino-text" />
         </Button>
-      </CardFooter>
+      </div>
+
+      <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+        <p className="text-sm font-medium opacity-90">
+          {opportunity.brand.company_name}
+        </p>
+        <h3 className="mt-1 text-xl font-semibold leading-tight">
+          {opportunity.title}
+        </h3>
+      </div>
     </Card>
   );
 };
