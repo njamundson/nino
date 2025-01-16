@@ -5,9 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import { BrandRoutes } from "./routes/brandRoutes";
-import { CreatorRoutes } from "./routes/creatorRoutes";
-import { OnboardingRoutes } from "./routes/onboardingRoutes";
+import { brandRoutes } from "./routes/brandRoutes";
+import { creatorRoutes } from "./routes/creatorRoutes";
+import { onboardingRoutes } from "./routes/onboardingRoutes";
 
 const queryClient = new QueryClient();
 
@@ -21,9 +21,27 @@ const App = () => {
             <Sonner />
             <Routes>
               <Route path="/" element={<Index />} />
-              <OnboardingRoutes />
-              <BrandRoutes />
-              <CreatorRoutes />
+              {onboardingRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              {brandRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              {creatorRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
             </Routes>
           </TooltipProvider>
         </BrowserRouter>
