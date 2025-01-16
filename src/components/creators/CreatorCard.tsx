@@ -1,9 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface Creator {
   id: string;
   bio: string | null;
+  location: string | null;
+  specialties: string[] | null;
   profile: {
     first_name: string | null;
     last_name: string | null;
@@ -31,7 +34,21 @@ const CreatorCard = ({ creator }: CreatorCardProps) => {
             <h3 className="font-medium text-nino-text truncate">
               {fullName || 'Anonymous Creator'}
             </h3>
-            <p className="text-sm text-nino-gray mt-1 line-clamp-2">
+            {creator.location && (
+              <p className="text-sm text-nino-gray mt-1">
+                📍 {creator.location}
+              </p>
+            )}
+            {creator.specialties && creator.specialties.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {creator.specialties.map((specialty, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {specialty}
+                  </Badge>
+                ))}
+              </div>
+            )}
+            <p className="text-sm text-nino-gray mt-3 line-clamp-2">
               {creator.bio || 'No bio available'}
             </p>
           </div>
