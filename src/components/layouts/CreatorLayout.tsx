@@ -9,7 +9,7 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
   return (
     <div className="flex min-h-screen bg-nino-bg">
       <Sidebar />
-      <div className="flex-1">
+      <div className="flex-1 p-8">
         {children}
       </div>
     </div>
