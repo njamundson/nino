@@ -26,14 +26,18 @@ const CreatorGrid = () => {
           bio,
           location,
           specialties,
-          profile:profiles(
+          user_id,
+          profile:profiles!user_id(
             first_name,
             last_name
           )
         `)
         .eq('is_verified', true);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching creators:', error);
+        throw error;
+      }
       return data as Creator[];
     },
   });
