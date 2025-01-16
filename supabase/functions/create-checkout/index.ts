@@ -18,19 +18,60 @@ serve(async (req) => {
   )
 
   try {
-    const authHeader = req.headers.get('Authorization')!
-    const token = authHeader.replace('Bearer ', '')
-    const { data } = await supabaseClient.auth.getUser(token)
-    const user = data.user
-    const email = user?.email
+    // Validate authorization header
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      console.error('No authorization header')
+      return new Response(
+        JSON.stringify({ error: 'No authorization header' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401 
+        }
+      )
+    }
 
+    const token = authHeader.replace('Bearer ', '')
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token)
+    
+    if (userError || !userData.user) {
+      console.error('Auth error:', userError)
+      return new Response(
+        JSON.stringify({ error: 'Authentication failed' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401 
+        }
+      )
+    }
+
+    const email = userData.user.email
     if (!email) {
-      throw new Error('No email found')
+      console.error('No email found for user')
+      return new Response(
+        JSON.stringify({ error: 'No email found for user' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      )
     }
 
     console.log('Creating Stripe session for email:', email)
 
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
+    if (!stripeKey) {
+      console.error('Stripe key not configured')
+      return new Response(
+        JSON.stringify({ error: 'Stripe configuration error' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      )
+    }
+
+    const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
     })
 
@@ -50,8 +91,9 @@ serve(async (req) => {
       })
 
       if (subscriptions.data.length > 0) {
+        console.error('Customer already subscribed')
         return new Response(
-          JSON.stringify({ error: "Already subscribed" }),
+          JSON.stringify({ error: "Already subscribed to this plan" }),
           { 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400 
@@ -76,7 +118,6 @@ serve(async (req) => {
     })
 
     console.log('Checkout session created:', session.id)
-    
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
@@ -87,7 +128,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in create-checkout:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'An unexpected error occurred',
+        details: error instanceof Error ? error.stack : undefined
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
