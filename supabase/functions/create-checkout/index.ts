@@ -8,6 +8,7 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -27,6 +28,8 @@ serve(async (req) => {
     if (!email) {
       throw new Error('No email found')
     }
+
+    console.log('Creating Stripe session for email:', email)
 
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
@@ -52,6 +55,7 @@ serve(async (req) => {
       }
     }
 
+    console.log('Creating checkout session...')
     const session = await stripe.checkout.sessions.create({
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
@@ -66,18 +70,28 @@ serve(async (req) => {
       cancel_url: `${req.headers.get('origin')}/onboarding/creator`,
     })
 
+    console.log('Checkout session created:', session.id)
+    
+    // Return a properly formatted JSON response
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        },
         status: 200,
       }
     )
   } catch (error) {
+    console.error('Error in create-checkout:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        },
         status: 500,
       }
     )
