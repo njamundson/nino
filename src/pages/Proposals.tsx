@@ -23,7 +23,7 @@ const Proposals = () => {
 
       if (!brand) throw new Error("Brand profile not found");
 
-      // Modified query to handle the relationships correctly
+      // First, get applications with opportunity and creator data
       const { data, error } = await supabase
         .from('applications')
         .select(`
@@ -53,26 +53,31 @@ const Proposals = () => {
 
       if (error) throw error;
 
-      // Fetch profiles separately for creators
       if (data) {
-        const creatorUserIds = data.map(app => app.creator?.user_id).filter(Boolean);
-        
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, first_name, last_name')
-          .in('id', creatorUserIds);
+        // Get unique creator user IDs
+        const creatorUserIds = data
+          .map(app => app.creator?.user_id)
+          .filter((id): id is string => id != null);
 
-        // Merge profile data with applications
-        return data.map(application => ({
-          ...application,
-          creator: {
-            ...application.creator,
-            profile: profiles?.find(p => p.id === application.creator?.user_id) || null
-          }
-        }));
+        if (creatorUserIds.length > 0) {
+          // Fetch corresponding profiles
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, first_name, last_name')
+            .in('id', creatorUserIds);
+
+          // Merge profile data with applications
+          return data.map(application => ({
+            ...application,
+            creator: application.creator ? {
+              ...application.creator,
+              profile: profiles?.find(p => p.id === application.creator.user_id) || null
+            } : null
+          }));
+        }
       }
 
-      return data;
+      return data || [];
     },
     meta: {
       errorMessage: "Failed to load applications"
