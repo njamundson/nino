@@ -1,91 +1,11 @@
 import { List, Calendar, FilePlus } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 
 const BrandStatsCards = () => {
-  const { data: activeOpportunities } = useQuery({
-    queryKey: ['active-opportunities'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return 0;
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!brand) return 0;
-
-      const { count } = await supabase
-        .from('opportunities')
-        .select('*', { count: 'exact', head: true })
-        .eq('brand_id', brand.id)
-        .eq('status', 'open');
-
-      return count || 0;
-    }
-  });
-
-  const { data: upcomingShoots } = useQuery({
-    queryKey: ['upcoming-shoots'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return 0;
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!brand) return 0;
-
-      const today = new Date().toISOString();
-      const { count } = await supabase
-        .from('opportunities')
-        .select('*', { count: 'exact', head: true })
-        .eq('brand_id', brand.id)
-        .gte('start_date', today)
-        .order('start_date');
-
-      return count || 0;
-    }
-  });
-
-  const { data: newProposals } = useQuery({
-    queryKey: ['new-proposals'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return 0;
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!brand) return 0;
-
-      // First get all opportunities for this brand
-      const { data: opportunities } = await supabase
-        .from('opportunities')
-        .select('id')
-        .eq('brand_id', brand.id);
-
-      if (!opportunities || opportunities.length === 0) return 0;
-
-      // Then count pending applications for these opportunities
-      const { count } = await supabase
-        .from('applications')
-        .select('*', { count: 'exact', head: true })
-        .in('opportunity_id', opportunities.map(opp => opp.id))
-        .eq('status', 'pending');
-
-      return count || 0;
-    }
-  });
+  // Using placeholder data for now
+  const activeOpportunities = 0;
+  const upcomingShoots = 0;
+  const newProposals = 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -100,7 +20,7 @@ const BrandStatsCards = () => {
                 Active Projects
               </h3>
               <p className="text-4xl font-semibold text-nino-text">
-                {activeOpportunities ?? 0}
+                {activeOpportunities}
               </p>
             </div>
           </div>
@@ -118,7 +38,7 @@ const BrandStatsCards = () => {
                 Upcoming Shoots
               </h3>
               <p className="text-4xl font-semibold text-nino-text">
-                {upcomingShoots ?? 0}
+                {upcomingShoots}
               </p>
             </div>
           </div>
@@ -136,7 +56,7 @@ const BrandStatsCards = () => {
                 New Proposals
               </h3>
               <p className="text-4xl font-semibold text-nino-text">
-                {newProposals ?? 0}
+                {newProposals}
               </p>
             </div>
           </div>
