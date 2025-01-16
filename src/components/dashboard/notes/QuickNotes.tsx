@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 interface Note {
   id: number;
@@ -10,22 +12,38 @@ interface Note {
 
 const QuickNotes = () => {
   const [newNote, setNewNote] = useState('');
-  const [notes, setNotes] = useState<Note[]>([
-    { id: 1, text: "Meeting with Luxury Brand at 3 PM", completed: false },
-    { id: 2, text: "Prepare portfolio for Fashion Week", completed: false },
-    { id: 3, text: "Review contract terms", completed: false },
-    { id: 4, text: "Submit proposal for summer campaign", completed: true },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const { toast } = useToast();
+
+  // Load notes from localStorage on component mount
+  useEffect(() => {
+    const savedNotes = localStorage.getItem('creator-notes');
+    if (savedNotes) {
+      setNotes(JSON.parse(savedNotes));
+    }
+  }, []);
+
+  // Save notes to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('creator-notes', JSON.stringify(notes));
+  }, [notes]);
 
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newNote.trim()) return;
     
-    setNotes([
-      ...notes,
-      { id: Date.now(), text: newNote, completed: false }
-    ]);
+    const note = {
+      id: Date.now(),
+      text: newNote,
+      completed: false
+    };
+    
+    setNotes([...notes, note]);
     setNewNote('');
+    
+    toast({
+      description: "Note added successfully",
+    });
   };
 
   const toggleNote = (id: number) => {
@@ -36,6 +54,9 @@ const QuickNotes = () => {
 
   const deleteNote = (id: number) => {
     setNotes(notes.filter(note => note.id !== id));
+    toast({
+      description: "Note deleted successfully",
+    });
   };
 
   return (
@@ -43,7 +64,13 @@ const QuickNotes = () => {
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-nino-text">Quick Notes</h3>
-          <button className="p-2 hover:bg-nino-bg rounded-full transition-colors">
+          <button 
+            className="p-2 hover:bg-nino-bg rounded-full transition-colors"
+            onClick={() => {
+              setNewNote('');
+              document.querySelector<HTMLInputElement>('input[placeholder="Add a note..."]')?.focus();
+            }}
+          >
             <Plus className="w-5 h-5 text-nino-primary" />
           </button>
         </div>
@@ -92,6 +119,12 @@ const QuickNotes = () => {
               </button>
             </div>
           ))}
+
+          {notes.length === 0 && (
+            <div className="text-center py-4">
+              <p className="text-sm text-nino-gray">No notes yet. Add one to get started!</p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
