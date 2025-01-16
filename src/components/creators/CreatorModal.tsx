@@ -51,24 +51,24 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white rounded-3xl">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white rounded-[32px] shadow-[0_8px_40px_rgba(0,0,0,0.12)]">
         <div className="flex flex-col">
-          {/* Header Section with Image Background */}
-          <div className="relative h-64 md:h-80">
+          {/* Header Section with Image */}
+          <div className="relative h-[400px]">
             <div className="absolute inset-0">
               <img
                 src={creator.imageUrl}
                 alt={fullName}
                 className="object-cover w-full h-full"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1A1F2C]/90 via-[#1A1F2C]/40 to-transparent" />
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-8">
-              <h2 className="text-3xl font-semibold text-white mb-2">
+              <h2 className="text-4xl font-semibold text-white mb-3">
                 {fullName || 'Anonymous Creator'}
               </h2>
               {creator.location && (
-                <p className="text-white/90 text-lg">
+                <p className="text-[#fff] text-lg font-medium opacity-90">
                   📍 {creator.location}
                 </p>
               )}
@@ -76,11 +76,11 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           </div>
 
           {/* Content Section */}
-          <div className="p-8 space-y-6">
+          <div className="p-8 space-y-8 bg-[#F6F6F7]">
             {/* Bio Section */}
             {creator.bio && (
               <div className="prose max-w-none">
-                <p className="text-lg leading-relaxed text-gray-700">
+                <p className="text-lg leading-relaxed text-[#403E43]">
                   {creator.bio}
                 </p>
               </div>
@@ -88,15 +88,15 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
             {/* Specialties Section */}
             {creator.specialties && creator.specialties.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium text-[#8A898C] uppercase tracking-wider">
                   Specialties
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {creator.specialties.map((specialty, index) => (
                     <Badge 
                       key={index}
-                      className="px-4 py-2 bg-nino-bg text-nino-primary border-2 border-nino-primary/20 hover:border-nino-primary/40"
+                      className="px-4 py-2 bg-[#E5DEFF] text-[#6E59A5] hover:bg-[#D6BCFA] transition-colors duration-200"
                     >
                       {specialty}
                     </Badge>
@@ -110,7 +110,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
               <Button
                 onClick={handleInvite}
                 disabled={isInviting}
-                className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
+                className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white py-6 rounded-2xl transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 {isInviting ? "Sending invitation..." : "Invite to Campaign"}
@@ -120,10 +120,10 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
                 {creator.instagram && (
                   <Button
                     variant="outline"
-                    className="w-full py-6 rounded-2xl border-2 hover:bg-gray-50"
+                    className="w-full py-6 rounded-2xl border-[#E5DEFF] hover:bg-[#F1F0FB] transition-all duration-200"
                     onClick={() => window.open(`https://instagram.com/${creator.instagram}`, '_blank')}
                   >
-                    <Instagram className="w-5 h-5 mr-2" />
+                    <Instagram className="w-5 h-5 mr-2 text-[#6E59A5]" />
                     Instagram
                   </Button>
                 )}
@@ -131,10 +131,10 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
                 {creator.website && (
                   <Button
                     variant="outline"
-                    className="w-full py-6 rounded-2xl border-2 hover:bg-gray-50"
+                    className="w-full py-6 rounded-2xl border-[#E5DEFF] hover:bg-[#F1F0FB] transition-all duration-200"
                     onClick={() => window.open(creator.website!, '_blank')}
                   >
-                    <Globe className="w-5 h-5 mr-2" />
+                    <Globe className="w-5 h-5 mr-2 text-[#6E59A5]" />
                     Website
                   </Button>
                 )}
