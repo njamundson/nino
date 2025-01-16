@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Switch } from "@/components/ui/switch";
 import { motion } from "framer-motion";
 
 interface ManagerFormProps {
@@ -17,6 +17,14 @@ const ManagerForm = ({
   setSelectedPermissions,
   onCancel,
 }: ManagerFormProps) => {
+  const handlePermissionToggle = (permission: string) => {
+    setSelectedPermissions(
+      selectedPermissions.includes(permission)
+        ? selectedPermissions.filter((p) => p !== permission)
+        : [...selectedPermissions, permission]
+    );
+  };
+
   return (
     <motion.form
       initial={{ opacity: 0, y: -10 }}
@@ -45,39 +53,40 @@ const ManagerForm = ({
         required
         className="bg-white border-transparent focus:border-nino-primary h-10"
       />
-      <div className="space-y-2">
+      <div className="space-y-4">
         <Label className="text-sm font-medium">Permissions</Label>
-        <ToggleGroup
-          type="multiple"
-          value={selectedPermissions}
-          onValueChange={setSelectedPermissions}
-          className="flex flex-wrap gap-2"
-        >
-          <ToggleGroupItem
-            value="edit_content"
-            className="text-sm data-[state=on]:bg-nino-primary data-[state=on]:text-white"
-          >
-            Edit Content
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="manage_team"
-            className="text-sm data-[state=on]:bg-nino-primary data-[state=on]:text-white"
-          >
-            Manage Team
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="view_analytics"
-            className="text-sm data-[state=on]:bg-nino-primary data-[state=on]:text-white"
-          >
-            View Analytics
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="publish_content"
-            className="text-sm data-[state=on]:bg-nino-primary data-[state=on]:text-white"
-          >
-            Publish Content
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="post-projects" className="text-sm">
+              Post Projects
+            </Label>
+            <Switch
+              id="post-projects"
+              checked={selectedPermissions.includes("post_projects")}
+              onCheckedChange={() => handlePermissionToggle("post_projects")}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="message-creators" className="text-sm">
+              Message Creators
+            </Label>
+            <Switch
+              id="message-creators"
+              checked={selectedPermissions.includes("message_creators")}
+              onCheckedChange={() => handlePermissionToggle("message_creators")}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="add-admins" className="text-sm">
+              Add new Admins
+            </Label>
+            <Switch
+              id="add-admins"
+              checked={selectedPermissions.includes("add_admins")}
+              onCheckedChange={() => handlePermissionToggle("add_admins")}
+            />
+          </div>
+        </div>
       </div>
       <div className="flex justify-end space-x-2">
         <Button
