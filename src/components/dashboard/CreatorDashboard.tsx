@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Users } from 'lucide-react';
+import { Bell, Briefcase, FilePlus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Sidebar from './Sidebar';
@@ -44,7 +44,7 @@ const CreatorDashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-                  <Users className="w-6 h-6 text-nino-primary" />
+                  <Briefcase className="w-6 h-6 text-nino-primary" />
                 </div>
                 <div>
                   <h3 className="text-lg text-nino-gray font-medium mb-1">
@@ -62,7 +62,7 @@ const CreatorDashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-                  <Users className="w-6 h-6 text-nino-primary" />
+                  <FilePlus className="w-6 h-6 text-nino-primary" />
                 </div>
                 <div>
                   <h3 className="text-lg text-nino-gray font-medium mb-1">
