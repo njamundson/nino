@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Bell, Calendar, FileText, MessageSquare, Users } from "lucide-react";
+import { Bell, Calendar, FileText, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
@@ -33,13 +33,13 @@ const CreatorDashboard = () => {
     queryKey: ['recent-messages'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!user) return [];
 
       const { data } = await supabase
         .from('messages')
         .select(`
           *,
-          sender:sender_id(
+          sender:profiles!messages_sender_id_fkey(
             id,
             first_name,
             last_name
@@ -49,7 +49,7 @@ const CreatorDashboard = () => {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      return data;
+      return data || [];
     },
   });
 
