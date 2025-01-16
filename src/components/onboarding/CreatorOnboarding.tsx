@@ -7,9 +7,12 @@ import BasicInfoStep from "./creator/BasicInfoStep";
 import SocialLinksStep from "./creator/SocialLinksStep";
 import ProfessionalInfoStep from "./creator/ProfessionalInfoStep";
 import PaymentStep from "./creator/PaymentStep";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const CreatorOnboarding = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("basic");
   const [profile, setProfile] = useState<CreatorProfile>({
     firstName: "",
@@ -48,18 +51,71 @@ const CreatorOnboarding = () => {
     return ((currentIndex + 1) / stepOrder.length) * 100;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === "basic") setCurrentStep("social");
     else if (currentStep === "social") setCurrentStep("professional");
     else if (currentStep === "professional") setCurrentStep("payment");
-    else navigate("/welcome");
-  };
+    else {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not authenticated");
 
-  const handleBack = () => {
-    if (currentStep === "payment") setCurrentStep("professional");
-    else if (currentStep === "professional") setCurrentStep("social");
-    else if (currentStep === "social") setCurrentStep("basic");
-    else navigate("/onboarding");
+        // Create creator profile
+        const { error: creatorError } = await supabase
+          .from('creators')
+          .insert({
+            user_id: user.id,
+            bio: profile.bio,
+            instagram: profile.instagram,
+            website: profile.website,
+            location: profile.location,
+            specialties: profile.skills,
+          });
+
+        if (creatorError) {
+          console.error("Error creating creator profile:", creatorError);
+          toast({
+            title: "Error",
+            description: "Failed to create creator profile. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Update user profile
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            first_name: profile.firstName,
+            last_name: profile.lastName,
+          })
+          .eq('id', user.id);
+
+        if (profileError) {
+          console.error("Error updating profile:", profileError);
+          toast({
+            title: "Error",
+            description: "Failed to update profile information. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        toast({
+          title: "Success",
+          description: "Your creator profile has been created successfully!",
+        });
+        
+        navigate("/welcome");
+      } catch (error) {
+        console.error("Error in profile creation:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   return (
