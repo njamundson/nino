@@ -2,6 +2,15 @@ import { motion } from "framer-motion";
 import { Bell, Calendar, FileText, MessageSquare, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
+
+type Message = Database['public']['Tables']['messages']['Row'] & {
+  sender: {
+    id: string;
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
+};
 
 const CreatorDashboard = () => {
   const { data: stats } = useQuery({
@@ -20,7 +29,7 @@ const CreatorDashboard = () => {
     },
   });
 
-  const { data: messages } = useQuery({
+  const { data: messages } = useQuery<Message[]>({
     queryKey: ['recent-messages'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
