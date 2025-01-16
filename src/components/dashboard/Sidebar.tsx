@@ -27,13 +27,13 @@ const Sidebar = () => {
       <div className="h-full bg-white rounded-xl shadow-md flex flex-col">
         {/* Logo */}
         <div className="p-6 border-b">
-          <Link to="/" className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <img 
               src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
               alt="NINO" 
               className="h-16"
             />
-          </Link>
+          </div>
         </div>
 
         {/* Navigation */}
