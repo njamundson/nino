@@ -7,7 +7,7 @@ interface CreatorLayoutProps {
 
 const CreatorLayout = ({ children }: CreatorLayoutProps) => {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-nino-bg">
       <Sidebar />
       <div className="flex-1">
         {children}

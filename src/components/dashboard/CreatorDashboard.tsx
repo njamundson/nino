@@ -5,7 +5,7 @@ import RecentMessages from './messages/RecentMessages';
 
 const CreatorDashboard = () => {
   return (
-    <div className="flex-1 p-8 bg-nino-bg">
+    <div className="flex-1 p-8">
       <DashboardHeader />
       <StatsCards />
       
