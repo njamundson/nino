@@ -29,6 +29,7 @@ const BrandOnboarding = () => {
     instagram: "",
     website: "",
     location: "",
+    brandType: "hotel" as "hotel" | "resort" | "travel_agency", // Added default brand type
   });
 
   const updateField = (field: string, value: string) => {
@@ -59,6 +60,7 @@ const BrandOnboarding = () => {
           website: brandData.website,
           instagram: brandData.instagram,
           location: brandData.location,
+          brand_type: brandData.brandType, // Added brand_type field
         });
 
         if (brandError) {
