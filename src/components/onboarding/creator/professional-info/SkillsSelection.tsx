@@ -5,10 +5,9 @@ import { X } from "lucide-react";
 interface SkillsSelectionProps {
   skills: string[];
   onUpdateSkills: (skills: string[]) => void;
-  error?: string;
 }
 
-const SkillsSelection = ({ skills, onUpdateSkills, error }: SkillsSelectionProps) => {
+const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
   const availableSkills = [
     "UGC Creator",
     "Videographer",
@@ -26,7 +25,7 @@ const SkillsSelection = ({ skills, onUpdateSkills, error }: SkillsSelectionProps
 
   return (
     <div className="space-y-4">
-      <Label className="text-base">Skills *</Label>
+      <Label className="text-base">Skills</Label>
       <div className="flex flex-wrap gap-3">
         {availableSkills.map((skill) => (
           <Button
@@ -47,9 +46,6 @@ const SkillsSelection = ({ skills, onUpdateSkills, error }: SkillsSelectionProps
           </Button>
         ))}
       </div>
-      {error && (
-        <p className="text-red-500 text-sm mt-1">{error}</p>
-      )}
     </div>
   );
 };

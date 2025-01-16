@@ -18,12 +18,10 @@ serve(async (req) => {
   )
 
   try {
-    console.log('Starting checkout process...');
-    
     // Validate authorization header
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      console.error('No authorization header provided');
+      console.error('No authorization header')
       return new Response(
         JSON.stringify({ error: 'No authorization header' }),
         { 
@@ -34,14 +32,12 @@ serve(async (req) => {
     }
 
     const token = authHeader.replace('Bearer ', '')
-    console.log('Validating user token...');
-    
     const { data: userData, error: userError } = await supabaseClient.auth.getUser(token)
     
     if (userError || !userData.user) {
-      console.error('Auth error:', userError);
+      console.error('Auth error:', userError)
       return new Response(
-        JSON.stringify({ error: 'Authentication failed', details: userError }),
+        JSON.stringify({ error: 'Authentication failed' }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 401 
@@ -51,7 +47,7 @@ serve(async (req) => {
 
     const email = userData.user.email
     if (!email) {
-      console.error('No email found for user');
+      console.error('No email found for user')
       return new Response(
         JSON.stringify({ error: 'No email found for user' }),
         { 
@@ -61,11 +57,11 @@ serve(async (req) => {
       )
     }
 
-    console.log('Creating Stripe session for email:', email);
+    console.log('Creating Stripe session for email:', email)
 
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeKey) {
-      console.error('Stripe key not configured');
+      console.error('Stripe key not configured')
       return new Response(
         JSON.stringify({ error: 'Stripe configuration error' }),
         { 
@@ -95,7 +91,7 @@ serve(async (req) => {
       })
 
       if (subscriptions.data.length > 0) {
-        console.error('Customer already subscribed');
+        console.error('Customer already subscribed')
         return new Response(
           JSON.stringify({ error: "Already subscribed to this plan" }),
           { 
@@ -106,11 +102,7 @@ serve(async (req) => {
       }
     }
 
-    // Get the current URL from the request headers
-    const origin = req.headers.get('origin') || ''
-    console.log('Origin URL:', origin);
-
-    console.log('Creating checkout session...');
+    console.log('Creating checkout session...')
     const session = await stripe.checkout.sessions.create({
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
@@ -121,11 +113,11 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${origin}/welcome#access_token=${token}`,
-      cancel_url: `${origin}/onboarding/creator`,
+      success_url: `${req.headers.get('origin')}/welcome`,
+      cancel_url: `${req.headers.get('origin')}/onboarding/creator`,
     })
 
-    console.log('Checkout session created:', session.id);
+    console.log('Checkout session created:', session.id)
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
@@ -134,7 +126,7 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error('Error in create-checkout:', error);
+    console.error('Error in create-checkout:', error)
     return new Response(
       JSON.stringify({ 
         error: error instanceof Error ? error.message : 'An unexpected error occurred',

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -10,19 +10,6 @@ interface ProtectedCreatorRouteProps {
 
 const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const { toast } = useToast();
-  const location = useLocation();
-
-  useEffect(() => {
-    // Check for access token in URL hash
-    if (location.hash.includes('access_token=')) {
-      const token = location.hash.split('access_token=')[1];
-      // Set the session using the token
-      supabase.auth.setSession({
-        access_token: token,
-        refresh_token: '',
-      });
-    }
-  }, [location]);
 
   const { data: creator, isLoading } = useQuery({
     queryKey: ['creator-profile'],

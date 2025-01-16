@@ -18,7 +18,6 @@ const PaymentStep = () => {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError || !session) {
-        console.error('Session error:', sessionError);
         toast({
           variant: "destructive",
           title: "Authentication required",
@@ -28,8 +27,6 @@ const PaymentStep = () => {
         return;
       }
 
-      console.log('Creating checkout session with token:', session.access_token);
-
       // Make the request to create checkout session
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         headers: {
@@ -38,25 +35,16 @@ const PaymentStep = () => {
       });
 
       if (error) {
-        console.error('Checkout invoke error:', error);
-        throw new Error(error.message || 'Failed to start checkout process');
-      }
-
-      if (!data) {
-        console.error('No data received from checkout function');
-        throw new Error('No response received from checkout process');
+        throw new Error(error.message);
       }
 
       // Redirect to Stripe checkout if URL is received
       if (data?.url) {
-        console.log('Redirecting to checkout URL:', data.url);
         window.location.href = data.url;
       } else {
-        console.error('No checkout URL in response:', data);
         throw new Error('No checkout URL received');
       }
     } catch (error) {
-      console.error('Payment error:', error);
       toast({
         variant: "destructive",
         title: "Error",
