@@ -8,12 +8,7 @@ interface ProtectedBrandRouteProps {
 }
 
 const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
-  // Temporarily disable auth checks for development
-  return <>{children}</>;
-
-  // Original authentication logic commented out for now
-  /*
-  const { data: session } = useQuery({
+  const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ["auth-session"],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -21,7 +16,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     },
   });
 
-  const { data: brand, isLoading, error } = useQuery({
+  const { data: brand, isLoading: brandLoading, error } = useQuery({
     queryKey: ["brand-profile"],
     enabled: !!session?.user,
     queryFn: async () => {
@@ -31,24 +26,24 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         .from("brands")
         .select("*")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
     },
   });
 
-  if (!session) {
-    return <Navigate to="/" />;
-  }
-
-  if (isLoading) {
+  if (sessionLoading || brandLoading) {
     return (
       <div className="p-8 space-y-4">
         <Skeleton className="h-12 w-3/4" />
         <Skeleton className="h-8 w-1/2" />
       </div>
     );
+  }
+
+  if (!session) {
+    return <Navigate to="/" />;
   }
 
   if (error) {
@@ -61,7 +56,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   }
 
   return <>{children}</>;
-  */
 };
 
 export default ProtectedBrandRoute;
