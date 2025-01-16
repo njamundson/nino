@@ -3,6 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SignUpForm from "./signup/SignUpForm";
+import { AuthError } from "@supabase/supabase-js";
 
 interface SignUpProps {
   onToggleAuth: () => void;
@@ -22,6 +23,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     setLoading(true);
     
     try {
+      console.log("Starting sign up process...");
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -30,17 +32,25 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             first_name: firstName,
             last_name: lastName,
           },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        console.error("Sign up error:", signUpError);
+        throw signUpError;
+      }
 
+      console.log("Sign up successful, attempting sign in...");
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (signInError) throw signInError;
+      if (signInError) {
+        console.error("Sign in error:", signInError);
+        throw signInError;
+      }
 
       toast({
         title: "Welcome to NINO",
@@ -48,9 +58,25 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       
       navigate("/onboarding");
     } catch (error: any) {
+      console.error("Authentication error:", error);
+      let errorMessage = "Error creating account";
+      
+      if (error instanceof AuthError) {
+        switch (error.message) {
+          case "Failed to fetch":
+            errorMessage = "Network error. Please check your connection and try again.";
+            break;
+          case "User already registered":
+            errorMessage = "An account with this email already exists.";
+            break;
+          default:
+            errorMessage = error.message;
+        }
+      }
+      
       toast({
-        title: "Error creating account",
-        description: error.message,
+        title: "Error",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
