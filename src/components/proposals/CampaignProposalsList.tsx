@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,71 +10,48 @@ interface CampaignProposalsListProps {
   campaignId: string;
 }
 
+// Dummy data for UI development
+const dummyProposals = [
+  {
+    id: '1',
+    creator: {
+      id: 'c1',
+      bio: 'Lifestyle and travel content creator',
+      location: 'Los Angeles, CA',
+      instagram: '@creator1',
+      website: 'creator1.com',
+      user_id: 'u1',
+      profile: {
+        first_name: 'John',
+        last_name: 'Doe'
+      }
+    },
+    cover_letter: "I'm excited to work on this campaign and bring my unique perspective to your brand."
+  },
+  {
+    id: '2',
+    creator: {
+      id: 'c2',
+      bio: 'Fashion and beauty influencer',
+      location: 'New York, NY',
+      instagram: '@creator2',
+      website: 'creator2.com',
+      user_id: 'u2',
+      profile: {
+        first_name: 'Jane',
+        last_name: 'Smith'
+      }
+    },
+    cover_letter: "With my experience in fashion photography, I believe I can create amazing content for your brand."
+  }
+];
+
 const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   
-  const { data: proposals, isLoading } = useQuery({
-    queryKey: ['campaign-proposals', campaignId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('applications')
-        .select(`
-          *,
-          creator:creators (
-            id,
-            bio,
-            location,
-            instagram,
-            website,
-            user_id
-          )
-        `)
-        .eq('opportunity_id', campaignId);
-
-      if (error) throw error;
-
-      // Fetch profiles separately since we need to join through user_id
-      if (data) {
-        const creatorUserIds = data
-          .map(app => app.creator?.user_id)
-          .filter((id): id is string => id != null);
-
-        if (creatorUserIds.length > 0) {
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('id, first_name, last_name')
-            .in('id', creatorUserIds);
-
-          return data.map(application => ({
-            ...application,
-            creator: application.creator ? {
-              ...application.creator,
-              profile: profiles?.find(p => p.id === application.creator.user_id) || null
-            } : null
-          }));
-        }
-      }
-
-      return data || [];
-    },
-  });
-
   const handleDelete = async (proposalId: string) => {
-    const { error } = await supabase
-      .from('applications')
-      .delete()
-      .eq('id', proposalId);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete proposal. Please try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     toast({
       title: "Success",
       description: "Proposal deleted successfully.",
@@ -102,25 +77,17 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
     );
   }
 
-  if (!proposals || proposals.length === 0) {
-    return (
-      <Card className="p-6">
-        <p className="text-center text-gray-500">No proposals found for this campaign.</p>
-      </Card>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {proposals.map((proposal) => (
+      {dummyProposals.map((proposal) => (
         <Card key={proposal.id} className="p-6">
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-lg font-semibold">
-                  {proposal.creator?.profile?.first_name} {proposal.creator?.profile?.last_name}
+                  {proposal.creator.profile.first_name} {proposal.creator.profile.last_name}
                 </h3>
-                {proposal.creator?.location && (
+                {proposal.creator.location && (
                   <p className="text-sm text-gray-500">{proposal.creator.location}</p>
                 )}
               </div>
@@ -128,7 +95,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleChat(proposal.creator?.user_id || '')}
+                  onClick={() => handleChat(proposal.creator.user_id)}
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Chat
@@ -136,7 +103,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => window.open(`/creators/${proposal.creator?.id}`, '_blank')}
+                  onClick={() => window.open(`/creators/${proposal.creator.id}`, '_blank')}
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View Profile
