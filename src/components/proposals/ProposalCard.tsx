@@ -2,14 +2,15 @@ import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, X, Clock, Building2, MapPin, CalendarDays, ExternalLink } from "lucide-react";
+import { Check, X, Clock, User, MapPin, CalendarDays, ExternalLink } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface ProposalCardProps {
-  application: any; // We'll keep the any type since it's coming from the parent
-  onWithdraw: (applicationId: string) => void;
+  application: any;
+  onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
 }
 
-const ProposalCard = ({ application, onWithdraw }: ProposalCardProps) => {
+const ProposalCard = ({ application, onUpdateStatus }: ProposalCardProps) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
@@ -36,18 +37,33 @@ const ProposalCard = ({ application, onWithdraw }: ProposalCardProps) => {
     }
   };
 
+  const creatorName = application.creator?.profile?.first_name && application.creator?.profile?.last_name
+    ? `${application.creator.profile.first_name} ${application.creator.profile.last_name}`
+    : "Anonymous Creator";
+
+  const creatorInitials = creatorName
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase();
+
   return (
     <Card className="p-6 hover:shadow-md transition-shadow duration-200">
       <div className="space-y-6">
         <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <h3 className="text-xl font-semibold text-gray-900">
-              {application.opportunity?.title}
-            </h3>
-            <p className="text-sm text-gray-500 flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              {application.opportunity?.brand?.company_name}
-            </p>
+          <div className="flex items-start gap-4">
+            <Avatar className="h-12 w-12">
+              <AvatarFallback>{creatorInitials}</AvatarFallback>
+            </Avatar>
+            <div className="space-y-1">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {application.opportunity?.title}
+              </h3>
+              <p className="text-sm text-gray-500 flex items-center gap-2">
+                <User className="w-4 h-4" />
+                {creatorName}
+              </p>
+            </div>
           </div>
           <Badge 
             variant="secondary"
@@ -59,10 +75,10 @@ const ProposalCard = ({ application, onWithdraw }: ProposalCardProps) => {
         </div>
 
         <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-          {application.opportunity?.location && (
+          {application.creator?.location && (
             <div className="flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
-              {application.opportunity.location}
+              {application.creator.location}
             </div>
           )}
           {application.opportunity?.start_date && (
@@ -108,13 +124,26 @@ const ProposalCard = ({ application, onWithdraw }: ProposalCardProps) => {
             </Button>
             
             {application.status === 'pending' && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => onWithdraw(application.id)}
-              >
-                Withdraw Application
-              </Button>
+              <>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => onUpdateStatus(application.id, 'accepted')}
+                  className="gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  Accept
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onUpdateStatus(application.id, 'rejected')}
+                  className="gap-2"
+                >
+                  <X className="w-4 h-4" />
+                  Reject
+                </Button>
+              </>
             )}
           </div>
         </div>

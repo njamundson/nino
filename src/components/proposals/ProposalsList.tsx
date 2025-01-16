@@ -5,10 +5,10 @@ import ProposalCard from "./ProposalCard";
 interface ProposalsListProps {
   applications: any[] | undefined;
   isLoading: boolean;
-  onWithdraw: (applicationId: string) => void;
+  onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
 }
 
-const ProposalsList = ({ applications, isLoading, onWithdraw }: ProposalsListProps) => {
+const ProposalsList = ({ applications, isLoading, onUpdateStatus }: ProposalsListProps) => {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -33,10 +33,10 @@ const ProposalsList = ({ applications, isLoading, onWithdraw }: ProposalsListPro
       <Card className="p-12">
         <div className="text-center">
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No proposals submitted yet
+            No proposals received yet
           </h3>
           <p className="text-gray-500">
-            When you submit proposals to opportunities, they will appear here.
+            When creators submit proposals to your opportunities, they will appear here.
           </p>
         </div>
       </Card>
@@ -49,7 +49,7 @@ const ProposalsList = ({ applications, isLoading, onWithdraw }: ProposalsListPro
         <ProposalCard
           key={application.id}
           application={application}
-          onWithdraw={onWithdraw}
+          onUpdateStatus={onUpdateStatus}
         />
       ))}
     </div>

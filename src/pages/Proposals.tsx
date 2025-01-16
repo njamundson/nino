@@ -3,23 +3,25 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import PageHeader from "@/components/shared/PageHeader";
 import ProposalsList from "@/components/proposals/ProposalsList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Send, Inbox } from "lucide-react";
 
 const Proposals = () => {
   const { toast } = useToast();
 
-  const { data: applications, isLoading } = useQuery({
-    queryKey: ['applications'],
+  const { data: applications, isLoading: isLoadingApplications } = useQuery({
+    queryKey: ['received-applications'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: creator } = await supabase
-        .from('creators')
+      const { data: brand } = await supabase
+        .from('brands')
         .select('id')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (!creator) throw new Error("Creator profile not found");
+      if (!brand) throw new Error("Brand profile not found");
 
       const { data, error } = await supabase
         .from('applications')
@@ -36,10 +38,20 @@ const Proposals = () => {
               company_name,
               brand_type
             )
+          ),
+          creator:creators (
+            id,
+            bio,
+            instagram,
+            website,
+            location,
+            profile:profiles (
+              first_name,
+              last_name
+            )
           )
         `)
-        .eq('creator_id', creator.id)
-        .order('created_at', { ascending: false });
+        .eq('opportunities.brand_id', brand.id);
 
       if (error) throw error;
       return data;
@@ -49,23 +61,23 @@ const Proposals = () => {
     }
   });
 
-  const handleWithdrawApplication = async (applicationId: string) => {
+  const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected') => {
     try {
       const { error } = await supabase
         .from('applications')
-        .delete()
+        .update({ status: newStatus })
         .eq('id', applicationId);
 
       if (error) throw error;
 
       toast({
-        title: "Application withdrawn",
-        description: "Your application has been successfully withdrawn.",
+        title: `Application ${newStatus}`,
+        description: `The application has been ${newStatus} successfully.`,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to withdraw application. Please try again.",
+        description: "Failed to update application status. Please try again.",
         variant: "destructive",
       });
     }
@@ -74,15 +86,36 @@ const Proposals = () => {
   return (
     <div className="space-y-8">
       <PageHeader 
-        title="My Proposals" 
-        description="Track all your submitted proposals and their current status" 
+        title="Proposals" 
+        description="Manage creator applications and send invites for your campaigns" 
       />
       
-      <ProposalsList
-        applications={applications}
-        isLoading={isLoading}
-        onWithdraw={handleWithdrawApplication}
-      />
+      <Tabs defaultValue="received" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+          <TabsTrigger value="received" className="flex items-center gap-2">
+            <Inbox className="w-4 h-4" />
+            Received Proposals
+          </TabsTrigger>
+          <TabsTrigger value="sent" className="flex items-center gap-2">
+            <Send className="w-4 h-4" />
+            Sent Invites
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="received" className="mt-6">
+          <ProposalsList
+            applications={applications}
+            isLoading={isLoadingApplications}
+            onUpdateStatus={handleUpdateApplicationStatus}
+          />
+        </TabsContent>
+        
+        <TabsContent value="sent" className="mt-6">
+          <div className="text-center text-muted-foreground">
+            Coming soon: Send and manage invites to creators
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
