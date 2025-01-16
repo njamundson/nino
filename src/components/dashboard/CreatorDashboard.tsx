@@ -28,7 +28,14 @@ const CreatorDashboard = () => {
 
       const { data } = await supabase
         .from('messages')
-        .select('*, sender:sender_id(*)')
+        .select(`
+          *,
+          sender:sender_id(
+            id,
+            first_name,
+            last_name
+          )
+        `)
         .eq('receiver_id', user.id)
         .order('created_at', { ascending: false })
         .limit(5);
@@ -116,7 +123,9 @@ const CreatorDashboard = () => {
                     <div className="w-10 h-10 rounded-full bg-gray-200" />
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-gray-900">Luxury Brand Co.</h3>
+                        <h3 className="font-medium text-gray-900">
+                          {message.sender?.first_name} {message.sender?.last_name}
+                        </h3>
                         <span className="text-sm text-gray-500">2h ago</span>
                       </div>
                       <p className="text-gray-600 text-sm">{message.content}</p>
