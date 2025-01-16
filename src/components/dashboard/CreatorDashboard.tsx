@@ -1,9 +1,13 @@
 import React from 'react';
+import Sidebar from './Sidebar';
 
 const CreatorDashboard = () => {
   return (
-    <div className="min-h-screen bg-nino-bg">
-      {/* Dashboard content will go here */}
+    <div className="flex h-screen bg-nino-bg">
+      <Sidebar />
+      <div className="flex-1 p-8">
+        {/* Main content will go here */}
+      </div>
     </div>
   );
 };
