@@ -1,14 +1,14 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { CreatorProfile, OnboardingStep } from "@/types/creator";
-import BasicInfoStep from "./creator/BasicInfoStep";
-import SocialLinksStep from "./creator/SocialLinksStep";
-import ProfessionalInfoStep from "./creator/ProfessionalInfoStep";
-import PaymentStep from "./creator/PaymentStep";
+import BasicInfoStep from "./BasicInfoStep";
+import SocialLinksStep from "./SocialLinksStep";
+import ProfessionalInfoStep from "./ProfessionalInfoStep";
+import PaymentStep from "./PaymentStep";
 
-const CreatorOnboarding = () => {
+const CreatorOnboardingFlow = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("basic");
   const [profile, setProfile] = useState<CreatorProfile>({
@@ -117,27 +117,23 @@ const CreatorOnboarding = () => {
         </div>
 
         <div className="flex justify-between pt-4">
-          {currentStep !== "payment" && (
-            <Button
-              onClick={handleBack}
-              variant="outline"
-              className="text-nino-gray hover:bg-white"
-            >
-              Back
-            </Button>
-          )}
-          {currentStep !== "payment" && (
-            <Button
-              onClick={handleNext}
-              className="bg-nino-primary hover:bg-nino-primary/90 text-white"
-            >
-              Next
-            </Button>
-          )}
+          <Button
+            onClick={handleBack}
+            variant="outline"
+            className="text-nino-gray hover:bg-white"
+          >
+            Back
+          </Button>
+          <Button
+            onClick={handleNext}
+            className="bg-nino-primary hover:bg-nino-primary/90 text-white"
+          >
+            {currentStep === "payment" ? "Complete" : "Next"}
+          </Button>
         </div>
       </motion.div>
     </div>
   );
 };
 
-export default CreatorOnboarding;
+export default CreatorOnboardingFlow;
