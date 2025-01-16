@@ -20,93 +20,97 @@ import CreatorLayout from "./components/layouts/CreatorLayout";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/onboarding" element={<UserTypeSelection />} />
-          <Route path="/onboarding/creator" element={<CreatorOnboarding />} />
-          <Route path="/onboarding/brand" element={<BrandOnboarding />} />
-          <Route
-            path="/onboarding/brand/managers"
-            element={<AccountManagersStep />}
-          />
-          <Route 
-            path="/welcome" 
-            element={
-              <ProtectedCreatorRoute>
-                <Welcome />
-              </ProtectedCreatorRoute>
-            } 
-          />
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedCreatorRoute>
-                <CreatorLayout>
-                  <Dashboard />
-                </CreatorLayout>
-              </ProtectedCreatorRoute>
-            } 
-          />
-          <Route 
-            path="/projects" 
-            element={
-              <ProtectedCreatorRoute>
-                <CreatorLayout>
-                  <Projects />
-                </CreatorLayout>
-              </ProtectedCreatorRoute>
-            } 
-          />
-          <Route 
-            path="/proposals" 
-            element={
-              <ProtectedCreatorRoute>
-                <CreatorLayout>
-                  <Proposals />
-                </CreatorLayout>
-              </ProtectedCreatorRoute>
-            } 
-          />
-          <Route 
-            path="/bookings" 
-            element={
-              <ProtectedCreatorRoute>
-                <CreatorLayout>
-                  <Bookings />
-                </CreatorLayout>
-              </ProtectedCreatorRoute>
-            } 
-          />
-          <Route 
-            path="/messages" 
-            element={
-              <ProtectedCreatorRoute>
-                <CreatorLayout>
-                  <Messages />
-                </CreatorLayout>
-              </ProtectedCreatorRoute>
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <ProtectedCreatorRoute>
-                <CreatorLayout>
-                  <Settings />
-                </CreatorLayout>
-              </ProtectedCreatorRoute>
-            } 
-          />
-        </Routes>
-      </TooltipProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/onboarding" element={<UserTypeSelection />} />
+              <Route path="/onboarding/creator" element={<CreatorOnboarding />} />
+              <Route path="/onboarding/brand" element={<BrandOnboarding />} />
+              <Route
+                path="/onboarding/brand/managers"
+                element={<AccountManagersStep />}
+              />
+              <Route 
+                path="/welcome" 
+                element={
+                  <ProtectedCreatorRoute>
+                    <Welcome />
+                  </ProtectedCreatorRoute>
+                } 
+              />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedCreatorRoute>
+                    <CreatorLayout>
+                      <Dashboard />
+                    </CreatorLayout>
+                  </ProtectedCreatorRoute>
+                } 
+              />
+              <Route 
+                path="/projects" 
+                element={
+                  <ProtectedCreatorRoute>
+                    <CreatorLayout>
+                      <Projects />
+                    </CreatorLayout>
+                  </ProtectedCreatorRoute>
+                } 
+              />
+              <Route 
+                path="/proposals" 
+                element={
+                  <ProtectedCreatorRoute>
+                    <CreatorLayout>
+                      <Proposals />
+                    </CreatorLayout>
+                  </ProtectedCreatorRoute>
+                } 
+              />
+              <Route 
+                path="/bookings" 
+                element={
+                  <ProtectedCreatorRoute>
+                    <CreatorLayout>
+                      <Bookings />
+                    </CreatorLayout>
+                  </ProtectedCreatorRoute>
+                } 
+              />
+              <Route 
+                path="/messages" 
+                element={
+                  <ProtectedCreatorRoute>
+                    <CreatorLayout>
+                      <Messages />
+                    </CreatorLayout>
+                  </ProtectedCreatorRoute>
+                } 
+              />
+              <Route 
+                path="/settings" 
+                element={
+                  <ProtectedCreatorRoute>
+                    <CreatorLayout>
+                      <Settings />
+                    </CreatorLayout>
+                  </ProtectedCreatorRoute>
+                } 
+              />
+            </Routes>
+          </TooltipProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </StrictMode>
+  );
+};
 
 export default App;
