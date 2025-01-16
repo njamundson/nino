@@ -10,7 +10,7 @@ import AccountManagersStep from "./components/onboarding/brand/managers/AccountM
 import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import ProtectedCreatorRoute from "./components/auth/ProtectedCreatorRoute";
-import { PaymentStep } from "./components/onboarding/creator/PaymentStep";
+import PaymentStep from "./components/onboarding/creator/PaymentStep";
 
 const queryClient = new QueryClient();
 
