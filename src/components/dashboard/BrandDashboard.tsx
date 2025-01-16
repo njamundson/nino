@@ -4,7 +4,6 @@ import BrandStatsCards from "./stats/BrandStatsCards";
 import RecentMessages from "./messages/RecentMessages";
 import QuickNotes from "./notes/QuickNotes";
 import DashboardHeader from "./header/DashboardHeader";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const BrandDashboard = () => {
   const { data: profile, isLoading: profileLoading, error: profileError } = useQuery({
