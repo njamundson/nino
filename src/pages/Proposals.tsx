@@ -107,25 +107,31 @@ const Proposals = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12 px-4 max-w-7xl mx-auto">
       <PageHeader 
         title="Proposals" 
         description="Manage creator applications and send invites for your campaigns" 
       />
       
       <Tabs defaultValue="received" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-          <TabsTrigger value="received" className="flex items-center gap-2">
+        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 rounded-2xl bg-gray-100/90 p-1 backdrop-blur-sm">
+          <TabsTrigger 
+            value="received" 
+            className="flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
+          >
             <Inbox className="w-4 h-4" />
             Received Proposals
           </TabsTrigger>
-          <TabsTrigger value="sent" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="sent" 
+            className="flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
+          >
             <Send className="w-4 h-4" />
             Sent Invites
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="received" className="mt-6">
+        <TabsContent value="received" className="mt-8">
           <ProposalsList
             applications={applications}
             isLoading={isLoadingApplications}
@@ -133,8 +139,8 @@ const Proposals = () => {
           />
         </TabsContent>
         
-        <TabsContent value="sent" className="mt-6">
-          <div className="text-center text-muted-foreground">
+        <TabsContent value="sent" className="mt-8">
+          <div className="text-center text-gray-500">
             Coming soon: Send and manage invites to creators
           </div>
         </TabsContent>
