@@ -59,18 +59,7 @@ serve(async (req) => {
       )
     }
 
-    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
-    if (!stripeKey) {
-      return new Response(
-        JSON.stringify({ error: 'Stripe configuration error' }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 500 
-        }
-      )
-    }
-
-    const stripe = new Stripe(stripeKey, {
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     })
 
@@ -93,10 +82,13 @@ serve(async (req) => {
 
       if (subscriptions.data.length > 0) {
         return new Response(
-          JSON.stringify({ error: "Already subscribed to this plan" }),
+          JSON.stringify({ 
+            error: 'Already subscribed',
+            subscribed: true 
+          }),
           { 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 400 
+            status: 200  // Changed to 200 to handle this as a valid state
           }
         )
       }
