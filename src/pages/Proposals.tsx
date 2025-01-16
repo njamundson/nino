@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import PageHeader from "@/components/shared/PageHeader";
 import ProposalsList from "@/components/proposals/ProposalsList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Send, Inbox } from "lucide-react";
+import { Send, Inbox, XCircle } from "lucide-react";
 
 const Proposals = () => {
   const { toast } = useToast();
@@ -23,7 +23,6 @@ const Proposals = () => {
 
       if (!brand) throw new Error("Brand profile not found");
 
-      // First, get applications with opportunity and creator data
       const { data, error } = await supabase
         .from('applications')
         .select(`
@@ -54,19 +53,16 @@ const Proposals = () => {
       if (error) throw error;
 
       if (data) {
-        // Get unique creator user IDs
         const creatorUserIds = data
           .map(app => app.creator?.user_id)
           .filter((id): id is string => id != null);
 
         if (creatorUserIds.length > 0) {
-          // Fetch corresponding profiles
           const { data: profiles } = await supabase
             .from('profiles')
             .select('id, first_name, last_name')
             .in('id', creatorUserIds);
 
-          // Merge profile data with applications
           return data.map(application => ({
             ...application,
             creator: application.creator ? {
@@ -106,6 +102,10 @@ const Proposals = () => {
     }
   };
 
+  const pendingApplications = applications?.filter(app => app.status === 'pending') || [];
+  const acceptedApplications = applications?.filter(app => app.status === 'accepted') || [];
+  const rejectedApplications = applications?.filter(app => app.status === 'rejected') || [];
+
   return (
     <div className="space-y-8">
       <PageHeader 
@@ -113,30 +113,44 @@ const Proposals = () => {
         description="Manage creator applications and send invites for your campaigns" 
       />
       
-      <Tabs defaultValue="received" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:w-[400px] p-1 rounded-full bg-nino-bg">
-          <TabsTrigger value="received" className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300">
+      <Tabs defaultValue="pending" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 lg:w-[600px] p-1 rounded-full bg-nino-bg">
+          <TabsTrigger value="pending" className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300">
             <Inbox className="w-4 h-4" />
-            Received Proposals
+            Pending
           </TabsTrigger>
-          <TabsTrigger value="sent" className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300">
+          <TabsTrigger value="accepted" className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300">
             <Send className="w-4 h-4" />
-            Sent Invites
+            Accepted
+          </TabsTrigger>
+          <TabsTrigger value="rejected" className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300">
+            <XCircle className="w-4 h-4" />
+            Rejected
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="received" className="mt-6">
+        <TabsContent value="pending" className="mt-6">
           <ProposalsList
-            applications={applications}
+            applications={pendingApplications}
             isLoading={isLoadingApplications}
             onUpdateStatus={handleUpdateApplicationStatus}
           />
         </TabsContent>
         
-        <TabsContent value="sent" className="mt-6">
-          <div className="text-center text-muted-foreground">
-            Coming soon: Send and manage invites to creators
-          </div>
+        <TabsContent value="accepted" className="mt-6">
+          <ProposalsList
+            applications={acceptedApplications}
+            isLoading={isLoadingApplications}
+            onUpdateStatus={handleUpdateApplicationStatus}
+          />
+        </TabsContent>
+
+        <TabsContent value="rejected" className="mt-6">
+          <ProposalsList
+            applications={rejectedApplications}
+            isLoading={isLoadingApplications}
+            onUpdateStatus={handleUpdateStatusStatus}
+          />
         </TabsContent>
       </Tabs>
     </div>
