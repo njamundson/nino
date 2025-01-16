@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import ResetPassword from "./ResetPassword";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { AuthError } from "@supabase/supabase-js";
 
 interface SignInProps {
   onToggleAuth: () => void;
@@ -26,33 +27,73 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
     setLoading(true);
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log("Starting sign in process...");
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
-
-      // Check if user has a creator profile
-      const { data: creator } = await supabase
-        .from('creators')
-        .select('*')
-        .single();
-
-      if (creator) {
-        navigate('/dashboard');
-      } else {
-        navigate('/onboarding');
+      if (signInError) {
+        console.error("Sign in error:", signInError);
+        let errorMessage = "Failed to sign in";
+        
+        if (signInError instanceof AuthError) {
+          switch (signInError.message) {
+            case "Invalid login credentials":
+              errorMessage = "Invalid email or password. Please try again.";
+              break;
+            case "Email not confirmed":
+              errorMessage = "Please verify your email before signing in.";
+              break;
+            default:
+              errorMessage = signInError.message;
+          }
+        }
+        
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        return;
       }
 
-      toast({
-        title: "Welcome back!",
-      });
-    } catch (error: any) {
-      console.error("Sign in error:", error);
+      if (signInData.user) {
+        // Check if user has a creator profile
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('*')
+          .eq('user_id', signInData.user.id)
+          .single();
+
+        if (creatorError && creatorError.code !== 'PGRST116') {
+          console.error("Error fetching creator profile:", creatorError);
+          toast({
+            title: "Error",
+            description: "Failed to fetch user profile. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (creator) {
+          console.log("Creator profile found, redirecting to dashboard");
+          navigate('/dashboard');
+        } else {
+          console.log("No creator profile found, redirecting to onboarding");
+          navigate('/onboarding');
+        }
+
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in.",
+        });
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -76,6 +117,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
             onChange={(e) => setEmail(e.target.value)}
             className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
             required
+            disabled={loading}
           />
 
           <div className="relative">
@@ -86,11 +128,13 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
               onChange={(e) => setPassword(e.target.value)}
               className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-10 transition-all duration-300"
               required
+              disabled={loading}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
+              disabled={loading}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -106,6 +150,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
             type="button"
             onClick={() => setShowResetPassword(true)}
             className="text-sm text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+            disabled={loading}
           >
             Forgot password?
           </button>
@@ -136,6 +181,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
             type="button"
             onClick={onToggleAuth}
             className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+            disabled={loading}
           >
             Create one
           </button>
