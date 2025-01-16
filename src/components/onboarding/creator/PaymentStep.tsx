@@ -29,12 +29,14 @@ const PaymentStep = () => {
 
       // Make the request to create checkout session
       const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { returnUrl: window.location.origin },
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
 
       if (error) {
+        console.error('Checkout error:', error);
         throw new Error(error.message);
       }
 
@@ -42,17 +44,14 @@ const PaymentStep = () => {
         throw new Error('No checkout URL received');
       }
 
-      // Store the session token before redirecting
-      localStorage.setItem('stripe_session_token', session.access_token);
-      
       // Redirect to Stripe checkout
       window.location.href = data.url;
     } catch (error) {
       console.error('Subscription error:', error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to start checkout process",
+        title: "Subscription Error",
+        description: error instanceof Error ? error.message : "Failed to start checkout process. Please try again.",
       });
     } finally {
       setIsLoading(false);

@@ -12,12 +12,17 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-  )
-
   try {
+    const { returnUrl } = await req.json();
+    if (!returnUrl) {
+      throw new Error('Return URL is required');
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    )
+
     // Validate authorization header
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
@@ -97,7 +102,7 @@ serve(async (req) => {
       }
     }
 
-    // Create checkout session
+    console.log('Creating checkout session...')
     const session = await stripe.checkout.sessions.create({
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
@@ -108,10 +113,11 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/welcome`,
-      cancel_url: `${req.headers.get('origin')}/onboarding/creator`,
+      success_url: `${returnUrl}/welcome`,
+      cancel_url: `${returnUrl}/onboarding/creator`,
     })
 
+    console.log('Checkout session created:', session.id)
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
