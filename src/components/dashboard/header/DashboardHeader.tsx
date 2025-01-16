@@ -19,24 +19,29 @@ const DashboardHeader = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
       
       return data;
     }
   });
 
-  // Fetch notifications
-  const { data: notifications } = useQuery({
+  // Fetch notifications with error handling
+  const { data: notifications, error: notificationsError } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
       
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .select('*')
         .eq('receiver_id', user.id)
@@ -44,12 +49,20 @@ const DashboardHeader = () => {
         .order('created_at', { ascending: false })
         .limit(5);
       
+      if (error) {
+        console.error('Error fetching notifications:', error);
+        return [];
+      }
+      
       return data || [];
-    }
+    },
+    retry: 1, // Only retry once if the query fails
   });
 
   const hasUnreadNotifications = notifications && notifications.length > 0;
 
+  // If there's an error fetching notifications, we'll still render the header
+  // but without the notification count
   return (
     <div className="flex justify-end items-center space-x-4 mb-8">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -59,7 +72,7 @@ const DashboardHeader = () => {
               "w-6 h-6 transition-colors",
               isOpen ? "text-nino-primary" : "text-nino-gray hover:text-nino-primary"
             )} />
-            {hasUnreadNotifications && (
+            {!notificationsError && hasUnreadNotifications && (
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
             )}
           </button>
@@ -69,7 +82,11 @@ const DashboardHeader = () => {
             <h3 className="font-semibold text-nino-text">Notifications</h3>
           </div>
           <div className="max-h-[300px] overflow-y-auto">
-            {notifications && notifications.length > 0 ? (
+            {notificationsError ? (
+              <div className="p-4 text-center text-nino-gray">
+                Unable to load notifications
+              </div>
+            ) : notifications && notifications.length > 0 ? (
               notifications.map((notification) => (
                 <div 
                   key={notification.id} 
