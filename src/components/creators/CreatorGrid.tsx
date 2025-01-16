@@ -1,15 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import CreatorCard from "./CreatorCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Creator {
   id: string;
   bio: string | null;
   location: string | null;
   specialties: string[] | null;
-  user_id: string;
   profile: {
     first_name: string | null;
     last_name: string | null;
@@ -17,29 +14,61 @@ interface Creator {
 }
 
 const CreatorGrid = () => {
-  const { data: creators, isLoading } = useQuery({
-    queryKey: ['creators'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('creators')
-        .select(`
-          id,
-          bio,
-          location,
-          specialties,
-          user_id,
-          profile:profiles(first_name, last_name)
-        `)
-        .eq('is_verified', true);
-
-      if (error) {
-        console.error('Error fetching creators:', error);
-        throw error;
+  // Dummy data for development
+  const creators: Creator[] = [
+    {
+      id: "1",
+      bio: "Travel and lifestyle photographer specializing in outdoor adventures and cultural experiences. Always seeking the next great story to tell through my lens.",
+      location: "New York, USA",
+      specialties: ["Photography", "Travel Content", "Storytelling"],
+      profile: {
+        first_name: "Sarah",
+        last_name: "Johnson"
       }
-
-      return data as Creator[];
     },
-  });
+    {
+      id: "2",
+      bio: "Fashion and beauty content creator with a passion for sustainable style. Helping brands tell their story through authentic and engaging content.",
+      location: "London, UK",
+      specialties: ["Fashion", "Beauty", "Sustainable Living"],
+      profile: {
+        first_name: "Michael",
+        last_name: "Chen"
+      }
+    },
+    {
+      id: "3",
+      bio: "Food photographer and recipe developer. Creating mouthwatering content that makes people stop scrolling and start cooking.",
+      location: "Paris, France",
+      specialties: ["Food Photography", "Recipe Development", "Styling"],
+      profile: {
+        first_name: "Emma",
+        last_name: "Rodriguez"
+      }
+    },
+    {
+      id: "4",
+      bio: "Tech reviewer and digital lifestyle content creator. Bringing the latest gadgets and innovations to life through engaging video content.",
+      location: "Tokyo, Japan",
+      specialties: ["Tech Reviews", "Video Production", "Digital Content"],
+      profile: {
+        first_name: "Alex",
+        last_name: "Tanaka"
+      }
+    },
+    {
+      id: "5",
+      bio: "Fitness and wellness influencer helping people achieve their health goals through practical and sustainable methods.",
+      location: "Sydney, Australia",
+      specialties: ["Fitness", "Wellness", "Lifestyle"],
+      profile: {
+        first_name: "Jordan",
+        last_name: "Smith"
+      }
+    }
+  ];
+
+  const isLoading = false;
 
   if (isLoading) {
     return (
