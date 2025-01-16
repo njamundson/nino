@@ -16,11 +16,6 @@ interface Creator {
   } | null;
 }
 
-interface CreatorGridProps {
-  creators: Creator[] | null;
-  isLoading: boolean;
-}
-
 const CreatorGrid = () => {
   const { data: creators, isLoading } = useQuery({
     queryKey: ['creators'],
@@ -33,7 +28,7 @@ const CreatorGrid = () => {
           location,
           specialties,
           user_id,
-          profile:profiles!user_id(first_name, last_name)
+          profile:profiles(first_name, last_name)
         `)
         .eq('is_verified', true);
 
