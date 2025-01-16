@@ -2,6 +2,9 @@ import { Route } from "react-router-dom";
 import BrandLayout from "@/components/layouts/BrandLayout";
 import ProtectedBrandRoute from "@/components/auth/ProtectedBrandRoute";
 import Dashboard from "@/pages/Dashboard";
+import NewCampaign from "@/pages/NewCampaign";
+import MyCampaigns from "@/pages/MyCampaigns";
+import ViewCreators from "@/pages/ViewCreators";
 import Proposals from "@/pages/Proposals";
 import Bookings from "@/pages/Bookings";
 import Messages from "@/pages/Messages";
@@ -32,7 +35,7 @@ export const brandRoutes = [
     element: (
       <ProtectedBrandRoute>
         <BrandLayout>
-          <div>New Campaign Page</div>
+          <NewCampaign />
         </BrandLayout>
       </ProtectedBrandRoute>
     ),
@@ -42,7 +45,7 @@ export const brandRoutes = [
     element: (
       <ProtectedBrandRoute>
         <BrandLayout>
-          <div>My Campaigns Page</div>
+          <MyCampaigns />
         </BrandLayout>
       </ProtectedBrandRoute>
     ),
@@ -52,7 +55,7 @@ export const brandRoutes = [
     element: (
       <ProtectedBrandRoute>
         <BrandLayout>
-          <div>View Creators Page</div>
+          <ViewCreators />
         </BrandLayout>
       </ProtectedBrandRoute>
     ),
@@ -108,3 +111,5 @@ export const BrandRoutes = () => {
     </>
   );
 };
+
+export default BrandRoutes;
