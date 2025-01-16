@@ -7,7 +7,7 @@ import ProjectModal from "@/components/projects/ProjectModal";
 
 const Projects = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -54,12 +54,17 @@ const Projects = () => {
         return;
       }
 
-      // Then fetch the projects
+      // Then fetch the projects with brand information
       const { data: projectsData, error: projectsError } = await supabase
         .from('opportunities')
         .select(`
           *,
-          applications!inner(*)
+          applications!inner(*),
+          brand:brands(
+            company_name,
+            brand_type,
+            location
+          )
         `)
         .eq('applications.creator_id', creatorData.id);
 
@@ -88,14 +93,14 @@ const Projects = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">
-      <ProjectsHeader onCreateNew={() => setIsModalOpen(true)} />
+      <ProjectsHeader />
       
       {loading ? (
         <div className="text-center">Loading projects...</div>
       ) : projects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} opportunity={project} />
           ))}
         </div>
       ) : (
@@ -104,10 +109,13 @@ const Projects = () => {
         </div>
       )}
 
-      <ProjectModal 
-        open={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
+      {isModalOpen && (
+        <ProjectModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          opportunity={projects[0]}
+        />
+      )}
     </div>
   );
 };
