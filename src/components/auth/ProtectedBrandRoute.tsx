@@ -16,7 +16,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     },
   });
 
-  const { data: brand, isLoading: brandLoading, error } = useQuery({
+  const { data: brand, isLoading: brandLoading } = useQuery({
     queryKey: ["brand-profile"],
     enabled: !!session?.user,
     queryFn: async () => {
@@ -44,11 +44,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
   if (!session) {
     return <Navigate to="/" />;
-  }
-
-  if (error) {
-    console.error("Error in ProtectedBrandRoute:", error);
-    return <Navigate to="/onboarding" />;
   }
 
   if (!brand) {
