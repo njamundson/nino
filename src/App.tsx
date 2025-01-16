@@ -39,7 +39,7 @@ const App = () => {
                 element={<AccountManagersStep />}
               />
               <Route 
-                path="/welcome" 
+                path="/creator/welcome" 
                 element={
                   <ProtectedCreatorRoute>
                     <Welcome />
@@ -47,7 +47,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/dashboard" 
+                path="/creator/dashboard" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -57,7 +57,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/projects" 
+                path="/creator/projects" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -67,7 +67,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/proposals" 
+                path="/creator/proposals" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -77,7 +77,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/bookings" 
+                path="/creator/bookings" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -87,7 +87,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/messages" 
+                path="/creator/messages" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>
@@ -97,7 +97,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/settings" 
+                path="/creator/settings" 
                 element={
                   <ProtectedCreatorRoute>
                     <CreatorLayout>

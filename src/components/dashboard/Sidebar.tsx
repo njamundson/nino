@@ -14,12 +14,12 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-    { icon: Briefcase, label: "View Projects", path: "/projects" },
-    { icon: FileText, label: "Proposals", path: "/proposals" },
-    { icon: Calendar, label: "Bookings", path: "/bookings" },
-    { icon: MessageSquare, label: "Messages", path: "/messages" },
-    { icon: Settings, label: "Settings", path: "/settings" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/creator/dashboard" },
+    { icon: Briefcase, label: "View Projects", path: "/creator/projects" },
+    { icon: FileText, label: "Proposals", path: "/creator/proposals" },
+    { icon: Calendar, label: "Bookings", path: "/creator/bookings" },
+    { icon: MessageSquare, label: "Messages", path: "/creator/messages" },
+    { icon: Settings, label: "Settings", path: "/creator/settings" },
   ];
 
   return (

@@ -51,6 +51,13 @@ const CreatorOnboarding = () => {
     return ((currentIndex + 1) / stepOrder.length) * 100;
   };
 
+  const handleBack = () => {
+    if (currentStep === "social") setCurrentStep("basic");
+    else if (currentStep === "professional") setCurrentStep("social");
+    else if (currentStep === "payment") setCurrentStep("professional");
+    else navigate("/onboarding");
+  };
+
   const handleNext = async () => {
     if (currentStep === "basic") setCurrentStep("social");
     else if (currentStep === "social") setCurrentStep("professional");
@@ -106,7 +113,7 @@ const CreatorOnboarding = () => {
           description: "Your creator profile has been created successfully!",
         });
         
-        navigate("/welcome");
+        navigate("/creator/welcome");
       } catch (error) {
         console.error("Error in profile creation:", error);
         toast({
