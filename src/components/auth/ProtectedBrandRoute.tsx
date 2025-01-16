@@ -22,17 +22,19 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     queryFn: async () => {
       if (!session?.user) return null;
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("brands")
         .select("*")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
+      
+      if (error) {
+        console.error("Error fetching brand profile:", error);
+        return null;
+      }
       
       return data;
     },
-    meta: {
-      errorBoundary: false
-    }
   });
 
   if (sessionLoading || brandLoading) {
