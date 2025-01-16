@@ -11,6 +11,7 @@ interface Creator {
     first_name: string | null;
     last_name: string | null;
   } | null;
+  imageUrl: string;
 }
 
 const CreatorGrid = () => {
@@ -18,53 +19,58 @@ const CreatorGrid = () => {
   const creators: Creator[] = [
     {
       id: "1",
-      bio: "Travel and lifestyle photographer specializing in outdoor adventures and cultural experiences. Always seeking the next great story to tell through my lens.",
+      bio: "Travel and lifestyle photographer specializing in outdoor adventures and cultural experiences.",
       location: "New York, USA",
-      specialties: ["Photography", "Travel Content", "Storytelling"],
+      specialties: ["Photography", "Travel"],
       profile: {
         first_name: "Sarah",
         last_name: "Johnson"
-      }
+      },
+      imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
     },
     {
       id: "2",
-      bio: "Fashion and beauty content creator with a passion for sustainable style. Helping brands tell their story through authentic and engaging content.",
+      bio: "Fashion and beauty content creator with a passion for sustainable style.",
       location: "London, UK",
-      specialties: ["Fashion", "Beauty", "Sustainable Living"],
+      specialties: ["Fashion", "Beauty"],
       profile: {
         first_name: "Michael",
         last_name: "Chen"
-      }
+      },
+      imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
     },
     {
       id: "3",
-      bio: "Food photographer and recipe developer. Creating mouthwatering content that makes people stop scrolling and start cooking.",
+      bio: "Food photographer and recipe developer.",
       location: "Paris, France",
-      specialties: ["Food Photography", "Recipe Development", "Styling"],
+      specialties: ["Food", "Styling"],
       profile: {
         first_name: "Emma",
         last_name: "Rodriguez"
-      }
+      },
+      imageUrl: "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843"
     },
     {
       id: "4",
-      bio: "Tech reviewer and digital lifestyle content creator. Bringing the latest gadgets and innovations to life through engaging video content.",
+      bio: "Tech reviewer and digital lifestyle content creator.",
       location: "Tokyo, Japan",
-      specialties: ["Tech Reviews", "Video Production", "Digital Content"],
+      specialties: ["Tech", "Video"],
       profile: {
         first_name: "Alex",
         last_name: "Tanaka"
-      }
+      },
+      imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec871214838"
     },
     {
       id: "5",
-      bio: "Fitness and wellness influencer helping people achieve their health goals through practical and sustainable methods.",
+      bio: "Fitness and wellness influencer helping people achieve their health goals.",
       location: "Sydney, Australia",
-      specialties: ["Fitness", "Wellness", "Lifestyle"],
+      specialties: ["Fitness", "Wellness"],
       profile: {
         first_name: "Jordan",
         last_name: "Smith"
-      }
+      },
+      imageUrl: "https://images.unsplash.com/photo-1582562124811-c09040d0a901"
     }
   ];
 
@@ -72,9 +78,9 @@ const CreatorGrid = () => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Skeleton key={i} className="h-[200px] w-full rounded-xl" />
+          <Skeleton key={i} className="aspect-[3/4] rounded-3xl" />
         ))}
       </div>
     );
@@ -91,7 +97,7 @@ const CreatorGrid = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {creators.map((creator) => (
         <CreatorCard key={creator.id} creator={creator} />
       ))}
