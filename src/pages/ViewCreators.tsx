@@ -1,29 +1,36 @@
 import PageHeader from "@/components/shared/PageHeader";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import CreatorGrid from "@/components/creators/CreatorGrid";
 
 const ViewCreators = () => {
-  const { data: creators, isLoading } = useQuery({
-    queryKey: ['creators'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('creators')
-        .select(`
-          id,
-          bio,
-          profile:profiles(
-            first_name,
-            last_name
-          )
-        `)
-        .eq('is_verified', true)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
+  // Mock data for development
+  const mockCreators = [
+    {
+      id: "1",
+      bio: "Travel photographer and content creator",
+      profile: {
+        first_name: "Sarah",
+        last_name: "Johnson"
+      }
+    },
+    {
+      id: "2",
+      bio: "Lifestyle and fashion influencer",
+      profile: {
+        first_name: "Michael",
+        last_name: "Chen"
+      }
+    },
+    {
+      id: "3",
+      bio: "Food and culinary content specialist",
+      profile: {
+        first_name: "Emma",
+        last_name: "Rodriguez"
+      }
     }
-  });
+  ];
+
+  const isLoading = false; // We'll handle loading states later
 
   return (
     <div className="space-y-8">
@@ -31,7 +38,7 @@ const ViewCreators = () => {
         title="Browse Creators"
         description="Discover and connect with talented creators for your campaigns."
       />
-      <CreatorGrid creators={creators} isLoading={isLoading} />
+      <CreatorGrid creators={mockCreators} isLoading={isLoading} />
     </div>
   );
 };
