@@ -4,7 +4,6 @@ import BrandStatsCards from "./stats/BrandStatsCards";
 import RecentMessages from "./messages/RecentMessages";
 import QuickNotes from "./notes/QuickNotes";
 import DashboardHeader from "./header/DashboardHeader";
-import PageHeader from "../shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const BrandDashboard = () => {
@@ -51,24 +50,9 @@ const BrandDashboard = () => {
     );
   }
 
-  const isLoading = profileLoading || brandLoading;
-
   return (
     <div className="space-y-8">
       <DashboardHeader />
-      
-      {isLoading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-12 w-3/4" />
-          <Skeleton className="h-8 w-1/2" />
-        </div>
-      ) : (
-        <PageHeader 
-          title={`Welcome back, ${profile?.first_name || 'there'}!`}
-          description={`Here's what's happening with ${brand?.company_name || 'your brand'} today.`}
-        />
-      )}
-
       <BrandStatsCards />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
