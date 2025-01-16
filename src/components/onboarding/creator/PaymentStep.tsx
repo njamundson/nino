@@ -27,34 +27,36 @@ const PaymentStep = () => {
         return;
       }
 
-      console.log('Invoking create-checkout function...');
-      
       // Make the request to create checkout session
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
+      const response = await supabase.functions.invoke('create-checkout', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
 
-      if (error) {
-        console.error('Checkout error:', error);
-        throw new Error(error.message || 'Failed to create checkout session');
+      if (response.error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: response.error.message || "Failed to start checkout process",
+        });
+        return;
       }
 
-      console.log('Checkout response:', data);
-
-      // Redirect to Stripe checkout if URL is received
-      if (data?.url) {
-        window.location.href = data.url;
+      if (response.data?.url) {
+        window.location.href = response.data.url;
       } else {
-        throw new Error('No checkout URL received');
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No checkout URL received",
+        });
       }
     } catch (error) {
-      console.error('Subscribe error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to start checkout process",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
       });
     } finally {
       setIsLoading(false);
