@@ -177,11 +177,14 @@ export type Database = {
       opportunities: {
         Row: {
           brand_id: string | null
+          compensation_details: string | null
           created_at: string
+          deliverables: string[] | null
           description: string
           end_date: string | null
           id: string
           location: string | null
+          payment_details: string | null
           perks: string[] | null
           requirements: string[] | null
           start_date: string | null
@@ -191,11 +194,14 @@ export type Database = {
         }
         Insert: {
           brand_id?: string | null
+          compensation_details?: string | null
           created_at?: string
+          deliverables?: string[] | null
           description: string
           end_date?: string | null
           id?: string
           location?: string | null
+          payment_details?: string | null
           perks?: string[] | null
           requirements?: string[] | null
           start_date?: string | null
@@ -205,11 +211,14 @@ export type Database = {
         }
         Update: {
           brand_id?: string | null
+          compensation_details?: string | null
           created_at?: string
+          deliverables?: string[] | null
           description?: string
           end_date?: string | null
           id?: string
           location?: string | null
+          payment_details?: string | null
           perks?: string[] | null
           requirements?: string[] | null
           start_date?: string | null

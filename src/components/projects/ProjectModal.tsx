@@ -28,6 +28,9 @@ interface ProjectModalProps {
     end_date: string | null;
     perks: string[] | null;
     requirements: string[] | null;
+    payment_details: string | null;
+    compensation_details: string | null;
+    deliverables: string[] | null;
     brand: {
       company_name: string;
       brand_type: string;
@@ -114,7 +117,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-2xl">
           <div className="flex justify-center items-center min-h-[200px]">
-            <Loader2 className="w-8 h-8 animate-spin text-nino-primary" />
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         </DialogContent>
       </Dialog>
@@ -143,6 +146,9 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
             endDate={opportunity.end_date}
             requirements={opportunity.requirements}
             perks={opportunity.perks}
+            paymentDetails={opportunity.payment_details}
+            compensationDetails={opportunity.compensation_details}
+            deliverables={opportunity.deliverables}
           />
 
           {isApplying ? (
