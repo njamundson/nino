@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProjectModal from "./ProjectModal";
 import ProjectHeader from "./card/ProjectHeader";
 import ProjectMetadata from "./card/ProjectMetadata";
 import ProjectBadges from "./card/ProjectBadges";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProjectCardProps {
   opportunity: {
@@ -31,7 +32,25 @@ interface ProjectCardProps {
 
 const ProjectCard = ({ opportunity }: ProjectCardProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleViewDetails = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsLoading(true);
+    try {
+      navigate(`/projects/${opportunity.id}`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Could not load project details. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   return (
     <>
@@ -72,12 +91,14 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
             size="icon"
             variant="secondary"
             className="absolute bottom-6 right-6 rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/projects/${opportunity.id}`);
-            }}
+            onClick={handleViewDetails}
+            disabled={isLoading}
           >
-            <Plus className="h-4 w-4 text-primary" />
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4 text-primary" />
+            )}
           </Button>
         </div>
       </Card>
