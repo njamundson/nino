@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Sidebar from './Sidebar';
@@ -40,27 +40,39 @@ const CreatorDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-nino-text">
-                Active Projects
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Active Projects content will go here */}
-              <p className="text-nino-gray">No active projects yet</p>
+          <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
+                  <Users className="w-6 h-6 text-nino-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg text-nino-gray font-medium mb-1">
+                    Active Projects
+                  </h3>
+                  <p className="text-4xl font-semibold text-nino-text">
+                    0
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-nino-text">
-                New Proposals
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* New Proposals content will go here */}
-              <p className="text-nino-gray">No new proposals</p>
+          <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
+                  <Users className="w-6 h-6 text-nino-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg text-nino-gray font-medium mb-1">
+                    New Proposals
+                  </h3>
+                  <p className="text-4xl font-semibold text-nino-text">
+                    0
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
