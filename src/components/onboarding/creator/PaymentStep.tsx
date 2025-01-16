@@ -27,6 +27,8 @@ const PaymentStep = () => {
         return;
       }
 
+      console.log('Invoking create-checkout function...');
+      
       // Make the request to create checkout session
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         headers: {
@@ -35,8 +37,11 @@ const PaymentStep = () => {
       });
 
       if (error) {
-        throw new Error(error.message);
+        console.error('Checkout error:', error);
+        throw new Error(error.message || 'Failed to create checkout session');
       }
+
+      console.log('Checkout response:', data);
 
       // Redirect to Stripe checkout if URL is received
       if (data?.url) {
@@ -45,6 +50,7 @@ const PaymentStep = () => {
         throw new Error('No checkout URL received');
       }
     } catch (error) {
+      console.error('Subscribe error:', error);
       toast({
         variant: "destructive",
         title: "Error",

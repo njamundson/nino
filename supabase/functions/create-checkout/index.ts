@@ -8,17 +8,13 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-  )
-
   try {
-    // Validate authorization header
+    // Get the authorization header
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       console.error('No authorization header')
@@ -31,10 +27,17 @@ serve(async (req) => {
       )
     }
 
+    // Initialize Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    )
+
+    // Get user data
     const token = authHeader.replace('Bearer ', '')
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token)
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token)
     
-    if (userError || !userData.user) {
+    if (userError || !user) {
       console.error('Auth error:', userError)
       return new Response(
         JSON.stringify({ error: 'Authentication failed' }),
@@ -45,7 +48,7 @@ serve(async (req) => {
       )
     }
 
-    const email = userData.user.email
+    const email = user.email
     if (!email) {
       console.error('No email found for user')
       return new Response(
@@ -59,6 +62,7 @@ serve(async (req) => {
 
     console.log('Creating Stripe session for email:', email)
 
+    // Initialize Stripe
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeKey) {
       console.error('Stripe key not configured')
@@ -75,6 +79,7 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
+    // Check if customer exists
     const customers = await stripe.customers.list({
       email: email,
       limit: 1
@@ -83,6 +88,7 @@ serve(async (req) => {
     let customer_id = undefined
     if (customers.data.length > 0) {
       customer_id = customers.data[0].id
+      // Check if already subscribed
       const subscriptions = await stripe.subscriptions.list({
         customer: customers.data[0].id,
         status: 'active',
