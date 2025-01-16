@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Check, CreditCard } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useSubscription } from "@/hooks/useSubscription";
+import { createCheckoutSession } from "@/utils/stripe";
+import PricingCard from "./payment/PricingCard";
 
 const PaymentStep = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,18 +17,6 @@ const PaymentStep = () => {
     try {
       setIsLoading(true);
       
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session) {
-        toast({
-          variant: "destructive",
-          title: "Authentication required",
-          description: "Please sign in to continue.",
-        });
-        navigate("/");
-        return;
-      }
-
       // If already subscribed, redirect to welcome page
       if (subscriptionData?.subscribed) {
         toast({
@@ -38,33 +27,8 @@ const PaymentStep = () => {
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { returnUrl: window.location.origin },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (error) {
-        console.error('Checkout error:', error);
-        // Handle the specific "already subscribed" error
-        if (error.message.includes("Already subscribed")) {
-          toast({
-            title: "Already subscribed",
-            description: "You are already subscribed to Nino Pro. Redirecting to welcome page.",
-          });
-          navigate("/welcome");
-          return;
-        }
-        throw new Error(error.message);
-      }
-
-      if (!data?.url) {
-        throw new Error('No checkout URL received');
-      }
-
-      // Redirect to Stripe checkout
-      window.location.href = data.url;
+      const checkoutUrl = await createCheckoutSession();
+      window.location.href = checkoutUrl;
     } catch (error) {
       console.error('Subscription error:', error);
       toast({
@@ -98,33 +62,7 @@ const PaymentStep = () => {
         <h1 className="text-2xl font-medium text-nino-text">Join Nino Today!</h1>
       </div>
 
-      <div className="bg-nino-bg rounded-xl p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h3 className="font-medium text-nino-text">Nino Pro</h3>
-            <p className="text-sm text-nino-gray">Monthly subscription</p>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-semibold text-nino-text">$25</div>
-            <div className="text-sm text-nino-gray">/month</div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-nino-text">
-            <Check className="w-4 h-4 text-nino-primary" />
-            <span>Access to All Nino Jobs</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-nino-text">
-            <Check className="w-4 h-4 text-nino-primary" />
-            <span>Unlimited Collaborations</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-nino-text">
-            <Check className="w-4 h-4 text-nino-primary" />
-            <span>Direct Messaging with Brands</span>
-          </div>
-        </div>
-      </div>
+      <PricingCard />
 
       <Button 
         className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
