@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Instagram, Globe, Youtube } from "lucide-react";
+import { Instagram, Globe, Youtube, Tiktok } from "lucide-react";
 
 interface SocialLinksStepProps {
   instagram: string;
