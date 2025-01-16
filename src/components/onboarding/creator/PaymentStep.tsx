@@ -39,8 +39,9 @@ const PaymentStep = () => {
       }
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { 
-          returnUrl: window.location.origin 
+        body: { returnUrl: window.location.origin },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 

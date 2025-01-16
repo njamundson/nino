@@ -115,6 +115,17 @@ serve(async (req) => {
       cancel_url: `${returnUrl}/onboarding/creator`,
     })
 
+    if (!session?.url) {
+      console.error('No URL in session response:', session)
+      return new Response(
+        JSON.stringify({ error: 'Failed to create checkout session' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      )
+    }
+
     console.log('Checkout session created:', session.id)
     return new Response(
       JSON.stringify({ url: session.url }),
