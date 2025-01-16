@@ -42,12 +42,18 @@ const CreatorDashboard = () => {
         .select(`
           *,
           sender:sender_id(
-            first_name,
-            last_name
+            id,
+            profiles:id(
+              first_name,
+              last_name
+            )
           ),
           receiver:receiver_id(
-            first_name,
-            last_name
+            id,
+            profiles:id(
+              first_name,
+              last_name
+            )
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -208,12 +214,12 @@ const CreatorDashboard = () => {
                     <div key={message.id} className="flex items-start gap-3 p-3 rounded-2xl bg-nino-bg/50">
                       <Avatar className="w-8 h-8">
                         <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-xs">
-                          {message.sender?.first_name?.[0]}{message.sender?.last_name?.[0]}
+                          {message.sender?.profiles?.first_name?.[0]}{message.sender?.profiles?.last_name?.[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-nino-text truncate">
-                          {message.sender?.first_name} {message.sender?.last_name}
+                          {message.sender?.profiles?.first_name} {message.sender?.profiles?.last_name}
                         </p>
                         <p className="text-sm text-nino-gray line-clamp-2">
                           {message.content}
