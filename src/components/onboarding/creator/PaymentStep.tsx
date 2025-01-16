@@ -35,7 +35,8 @@ const PaymentStep = () => {
       });
 
       if (error) {
-        throw new Error(error.message);
+        console.error('Checkout error:', error);
+        throw new Error(error.message || 'Failed to start checkout process');
       }
 
       // Redirect to Stripe checkout if URL is received
@@ -45,6 +46,7 @@ const PaymentStep = () => {
         throw new Error('No checkout URL received');
       }
     } catch (error) {
+      console.error('Payment error:', error);
       toast({
         variant: "destructive",
         title: "Error",
