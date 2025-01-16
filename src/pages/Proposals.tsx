@@ -149,7 +149,7 @@ const Proposals = () => {
           <ProposalsList
             applications={rejectedApplications}
             isLoading={isLoadingApplications}
-            onUpdateStatus={handleUpdateStatusStatus}
+            onUpdateStatus={handleUpdateApplicationStatus}
           />
         </TabsContent>
       </Tabs>
