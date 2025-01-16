@@ -1,14 +1,40 @@
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const PaymentStep = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Check for successful payment and maintain session
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      const session = await supabase.auth.getSession();
+      
+      // If we have a success parameter and no session, show error
+      if (searchParams.get('success') && !session.data.session) {
+        toast({
+          variant: "destructive",
+          title: "Session expired",
+          description: "Please try signing in again.",
+        });
+        navigate('/');
+        return;
+      }
+
+      // If payment was successful, proceed to welcome page
+      if (searchParams.get('success') === 'true' && session.data.session) {
+        navigate('/welcome');
+      }
+    };
+
+    checkPaymentStatus();
+  }, [searchParams, navigate, toast]);
 
   const handleSubscribe = async () => {
     try {
@@ -32,6 +58,9 @@ const PaymentStep = () => {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
+        body: {
+          sessionId: session.access_token, // Pass the session ID to maintain auth state
+        }
       });
 
       if (error) {
@@ -40,6 +69,8 @@ const PaymentStep = () => {
 
       // Redirect to Stripe checkout if URL is received
       if (data?.url) {
+        // Store the session in localStorage before redirect
+        localStorage.setItem('preCheckoutSession', session.access_token);
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received');
