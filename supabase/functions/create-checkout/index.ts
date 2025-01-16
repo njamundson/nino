@@ -8,7 +8,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -35,7 +34,6 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    // Check if user already has an active subscription
     const customers = await stripe.customers.list({
       email: email,
       limit: 1
@@ -47,6 +45,7 @@ serve(async (req) => {
       const subscriptions = await stripe.subscriptions.list({
         customer: customers.data[0].id,
         status: 'active',
+        price: 'price_1QQsszENnsaw1LqJp3UNpI8d',
         limit: 1
       })
 
