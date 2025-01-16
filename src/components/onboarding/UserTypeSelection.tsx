@@ -2,62 +2,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Star, Briefcase } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 const UserTypeSelection = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const handleCreatorSelection = async () => {
-    try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session) {
-        toast({
-          variant: "destructive",
-          title: "Authentication required",
-          description: "Please sign in to continue.",
-        });
-        navigate("/");
-        return;
-      }
-
-      // Create checkout session directly
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to start checkout process",
-      });
-    }
-  };
-
-  const handleBrandSelection = () => {
-    navigate('/onboarding/brand');
+  const handleSelection = (type: "creator" | "brand") => {
+    navigate(`/onboarding/${type}`);
   };
 
   return (
@@ -86,7 +36,7 @@ const UserTypeSelection = () => {
         <div className="space-y-4">
           <motion.button
             whileHover={{ scale: 1.02 }}
-            onClick={handleCreatorSelection}
+            onClick={() => handleSelection("creator")}
             className="w-full bg-white hover:bg-nino-bg border-2 border-transparent hover:border-nino-primary rounded-xl p-6 text-left transition-all duration-200 group"
           >
             <div className="flex items-start space-x-4">
@@ -95,13 +45,14 @@ const UserTypeSelection = () => {
               </div>
               <div>
                 <h3 className="font-medium text-nino-text">Creator</h3>
+                <p className="text-sm text-nino-gray">Subscribe to start creating</p>
               </div>
             </div>
           </motion.button>
 
           <motion.button
             whileHover={{ scale: 1.02 }}
-            onClick={handleBrandSelection}
+            onClick={() => handleSelection("brand")}
             className="w-full bg-white hover:bg-nino-bg border-2 border-transparent hover:border-nino-primary rounded-xl p-6 text-left transition-all duration-200 group"
           >
             <div className="flex items-start space-x-4">
@@ -110,6 +61,7 @@ const UserTypeSelection = () => {
               </div>
               <div>
                 <h3 className="font-medium text-nino-text">Brand</h3>
+                <p className="text-sm text-nino-gray">Start hiring creators</p>
               </div>
             </div>
           </motion.button>
