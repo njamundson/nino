@@ -11,6 +11,10 @@ import AccountManagersStep from "./components/onboarding/brand/managers/AccountM
 import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
+import Proposals from "./pages/Proposals";
+import Bookings from "./pages/Bookings";
+import Messages from "./pages/Messages";
+import Settings from "./pages/Settings";
 import ProtectedCreatorRoute from "./components/auth/ProtectedCreatorRoute";
 import CreatorLayout from "./components/layouts/CreatorLayout";
 
@@ -55,6 +59,46 @@ const App = () => (
               <ProtectedCreatorRoute>
                 <CreatorLayout>
                   <Projects />
+                </CreatorLayout>
+              </ProtectedCreatorRoute>
+            } 
+          />
+          <Route 
+            path="/proposals" 
+            element={
+              <ProtectedCreatorRoute>
+                <CreatorLayout>
+                  <Proposals />
+                </CreatorLayout>
+              </ProtectedCreatorRoute>
+            } 
+          />
+          <Route 
+            path="/bookings" 
+            element={
+              <ProtectedCreatorRoute>
+                <CreatorLayout>
+                  <Bookings />
+                </CreatorLayout>
+              </ProtectedCreatorRoute>
+            } 
+          />
+          <Route 
+            path="/messages" 
+            element={
+              <ProtectedCreatorRoute>
+                <CreatorLayout>
+                  <Messages />
+                </CreatorLayout>
+              </ProtectedCreatorRoute>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedCreatorRoute>
+                <CreatorLayout>
+                  <Settings />
                 </CreatorLayout>
               </ProtectedCreatorRoute>
             } 
