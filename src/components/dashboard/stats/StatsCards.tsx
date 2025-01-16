@@ -11,7 +11,7 @@ const StatsCards = () => {
               <Briefcase className="w-6 h-6 text-nino-primary" />
             </div>
             <div>
-              <h3 className="text-lg text-nino-gray font-medium mb-1">
+              <h3 className="text-lg text-nino-text font-medium mb-1">
                 Active Projects
               </h3>
               <p className="text-4xl font-semibold text-nino-text">
@@ -29,7 +29,7 @@ const StatsCards = () => {
               <FilePlus className="w-6 h-6 text-nino-primary" />
             </div>
             <div>
-              <h3 className="text-lg text-nino-gray font-medium mb-1">
+              <h3 className="text-lg text-nino-text font-medium mb-1">
                 New Proposals
               </h3>
               <p className="text-4xl font-semibold text-nino-text">
