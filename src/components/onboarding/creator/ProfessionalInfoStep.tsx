@@ -6,10 +6,6 @@ interface ProfessionalInfoStepProps {
   skills: string[];
   onUpdateField: (field: string, value: string) => void;
   onUpdateSkills: (skills: string[]) => void;
-  errors: {
-    creatorType?: string;
-    skills?: string;
-  };
 }
 
 const ProfessionalInfoStep = ({
@@ -17,7 +13,6 @@ const ProfessionalInfoStep = ({
   skills,
   onUpdateField,
   onUpdateSkills,
-  errors,
 }: ProfessionalInfoStepProps) => {
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -29,13 +24,11 @@ const ProfessionalInfoStep = ({
       <div className="space-y-6">
         <CreatorTypeSelect 
           creatorType={creatorType} 
-          onUpdateField={onUpdateField}
-          error={errors.creatorType}
+          onUpdateField={onUpdateField} 
         />
         <SkillsSelection 
           skills={skills} 
-          onUpdateSkills={onUpdateSkills}
-          error={errors.skills}
+          onUpdateSkills={onUpdateSkills} 
         />
       </div>
     </div>

@@ -57,6 +57,8 @@ serve(async (req) => {
       )
     }
 
+    console.log('Creating Stripe session for email:', email)
+
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeKey) {
       console.error('Stripe key not configured')
@@ -72,9 +74,6 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, {
       apiVersion: '2023-10-16',
     })
-
-    // Get request body for additional data
-    const { sessionId } = await req.json()
 
     const customers = await stripe.customers.list({
       email: email,
@@ -103,11 +102,10 @@ serve(async (req) => {
       }
     }
 
-    // Create checkout session with client reference ID
+    console.log('Creating checkout session...')
     const session = await stripe.checkout.sessions.create({
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
-      client_reference_id: sessionId, // Store the session ID
       line_items: [
         {
           price: 'price_1QXjhYENnsaw1LqJ53MPzJHB',
@@ -115,10 +113,11 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/onboarding/creator?success=true`,
+      success_url: `${req.headers.get('origin')}/welcome`,
       cancel_url: `${req.headers.get('origin')}/onboarding/creator`,
     })
 
+    console.log('Checkout session created:', session.id)
     return new Response(
       JSON.stringify({ url: session.url }),
       { 

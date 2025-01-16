@@ -26,39 +26,28 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
     setLoading(true);
     
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (signInError) throw signInError;
-
-      // Get the current user's ID
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error("No user found");
+      if (error) throw error;
 
       // Check if user has a creator profile
-      const { data: creator, error: creatorError } = await supabase
+      const { data: creator } = await supabase
         .from('creators')
         .select('*')
-        .eq('user_id', user.id)
         .single();
 
-      if (creatorError && creatorError.code !== 'PGRST116') {
-        throw creatorError;
-      }
-
-      toast({
-        title: "Welcome back!",
-      });
-
-      // Navigate based on whether the user has a creator profile
       if (creator) {
         navigate('/dashboard');
       } else {
         navigate('/onboarding');
       }
+
+      toast({
+        title: "Welcome back!",
+      });
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({

@@ -9,13 +9,6 @@ interface BasicInfoStepProps {
   location: string;
   onUpdateField: (field: string, value: string) => void;
   onUpdateImage: (image: string | null) => void;
-  errors: {
-    firstName?: string;
-    lastName?: string;
-    bio?: string;
-    location?: string;
-    profileImage?: string;
-  };
 }
 
 const BasicInfoStep = ({
@@ -26,7 +19,6 @@ const BasicInfoStep = ({
   location,
   onUpdateField,
   onUpdateImage,
-  errors,
 }: BasicInfoStepProps) => {
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -39,8 +31,7 @@ const BasicInfoStep = ({
 
       <ProfileImageUpload 
         profileImage={profileImage} 
-        onUpdateImage={onUpdateImage}
-        error={errors.profileImage} 
+        onUpdateImage={onUpdateImage} 
       />
 
       <PersonalInfoFields
@@ -49,7 +40,6 @@ const BasicInfoStep = ({
         bio={bio}
         location={location}
         onUpdateField={onUpdateField}
-        errors={errors}
       />
     </div>
   );
