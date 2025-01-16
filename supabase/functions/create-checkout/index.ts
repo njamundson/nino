@@ -21,7 +21,6 @@ serve(async (req) => {
     // Validate authorization header
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      console.error('No authorization header')
       return new Response(
         JSON.stringify({ error: 'No authorization header' }),
         { 
@@ -32,10 +31,9 @@ serve(async (req) => {
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token)
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token)
     
-    if (userError || !userData.user) {
-      console.error('Auth error:', userError)
+    if (userError || !user) {
       return new Response(
         JSON.stringify({ error: 'Authentication failed' }),
         { 
@@ -45,9 +43,8 @@ serve(async (req) => {
       )
     }
 
-    const email = userData.user.email
+    const email = user.email
     if (!email) {
-      console.error('No email found for user')
       return new Response(
         JSON.stringify({ error: 'No email found for user' }),
         { 
@@ -57,11 +54,8 @@ serve(async (req) => {
       )
     }
 
-    console.log('Creating Stripe session for email:', email)
-
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
     if (!stripeKey) {
-      console.error('Stripe key not configured')
       return new Response(
         JSON.stringify({ error: 'Stripe configuration error' }),
         { 
@@ -75,6 +69,7 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
+    // Check if customer exists
     const customers = await stripe.customers.list({
       email: email,
       limit: 1
@@ -83,6 +78,7 @@ serve(async (req) => {
     let customer_id = undefined
     if (customers.data.length > 0) {
       customer_id = customers.data[0].id
+      // Check if already subscribed
       const subscriptions = await stripe.subscriptions.list({
         customer: customers.data[0].id,
         status: 'active',
@@ -91,7 +87,6 @@ serve(async (req) => {
       })
 
       if (subscriptions.data.length > 0) {
-        console.error('Customer already subscribed')
         return new Response(
           JSON.stringify({ error: "Already subscribed to this plan" }),
           { 
@@ -102,7 +97,7 @@ serve(async (req) => {
       }
     }
 
-    console.log('Creating checkout session...')
+    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
@@ -117,7 +112,6 @@ serve(async (req) => {
       cancel_url: `${req.headers.get('origin')}/onboarding/creator`,
     })
 
-    console.log('Checkout session created:', session.id)
     return new Response(
       JSON.stringify({ url: session.url }),
       { 

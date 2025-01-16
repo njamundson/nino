@@ -38,17 +38,21 @@ const PaymentStep = () => {
         throw new Error(error.message);
       }
 
-      // Redirect to Stripe checkout if URL is received
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
+      if (!data?.url) {
         throw new Error('No checkout URL received');
       }
+
+      // Store the session token before redirecting
+      localStorage.setItem('stripe_session_token', session.access_token);
+      
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
     } catch (error) {
+      console.error('Subscription error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to start checkout process",
+        description: error instanceof Error ? error.message : "Failed to start checkout process",
       });
     } finally {
       setIsLoading(false);
