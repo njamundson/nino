@@ -23,7 +23,7 @@ const SocialLinksStep = ({
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-base">Instagram</Label>
+            <Label className="text-base">Instagram *</Label>
             <div className="relative">
               <Instagram className="absolute left-4 top-3.5 w-5 h-5 text-nino-gray" />
               <Input
@@ -31,12 +31,13 @@ const SocialLinksStep = ({
                 onChange={(e) => onUpdateField("instagram", e.target.value)}
                 placeholder="Instagram username"
                 className="pl-12 bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
+                required
               />
             </div>
           </div>
           
           <div className="space-y-2">
-            <Label className="text-base">Website</Label>
+            <Label className="text-base">Website (Optional)</Label>
             <div className="relative">
               <Globe className="absolute left-4 top-3.5 w-5 h-5 text-nino-gray" />
               <Input
