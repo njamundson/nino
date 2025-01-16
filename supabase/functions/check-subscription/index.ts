@@ -91,7 +91,7 @@ serve(async (req) => {
     const subscriptions = await stripe.subscriptions.list({
       customer: customers.data[0].id,
       status: 'active',
-      price: 'price_1QQsszENnsaw1LqJp3UNpI8d',
+      price: 'price_1QXjhYENnsaw1LqJ53MPzJHB',
       limit: 1
     })
 
