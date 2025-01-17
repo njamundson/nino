@@ -142,7 +142,6 @@ export type Database = {
           instagram: string | null
           is_verified: boolean | null
           location: string | null
-          profile_id: string
           specialties: string[] | null
           updated_at: string
           user_id: string | null
@@ -155,7 +154,6 @@ export type Database = {
           instagram?: string | null
           is_verified?: boolean | null
           location?: string | null
-          profile_id: string
           specialties?: string[] | null
           updated_at?: string
           user_id?: string | null
@@ -168,21 +166,12 @@ export type Database = {
           instagram?: string | null
           is_verified?: boolean | null
           location?: string | null
-          profile_id?: string
           specialties?: string[] | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "creators_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       messages: {
         Row: {
