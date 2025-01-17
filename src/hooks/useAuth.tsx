@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from './use-toast';
 
 interface AuthState {
   session: Session | null;
@@ -14,10 +15,20 @@ export const useAuth = () => {
     user: null,
     loading: true,
   });
+  const { toast } = useToast();
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error fetching session:', error);
+        toast({
+          title: "Authentication Error",
+          description: "There was a problem fetching your session. Please try again.",
+          variant: "destructive",
+        });
+      }
+      
       setAuthState(prev => ({
         ...prev,
         session,
@@ -38,7 +49,7 @@ export const useAuth = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [toast]);
 
   return authState;
 };
