@@ -9,6 +9,9 @@ import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "./hooks/use-toast";
+import { useEffect } from "react";
+import { supabase } from "./integrations/supabase/client";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +25,44 @@ const queryClient = new QueryClient({
 // AuthWrapper component to handle authentication state
 const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Listen for auth errors
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+        // Clear any stored auth data
+        await supabase.auth.signOut();
+        window.location.href = '/';
+      }
+    });
+
+    // Check if the session is valid
+    const validateSession = async () => {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) {
+          if (error.message.includes('User from sub claim in JWT does not exist')) {
+            await supabase.auth.signOut();
+            toast({
+              title: "Session expired",
+              description: "Please sign in again",
+              variant: "destructive",
+            });
+            window.location.href = '/';
+          }
+        }
+      } catch (error) {
+        console.error('Error validating session:', error);
+      }
+    };
+
+    validateSession();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [toast]);
 
   if (loading) {
     return (
