@@ -19,35 +19,50 @@ const DashboardHeader = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       
-      const { data, error } = await supabase
+      // First get the profile
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('*, brands(id)')
+        .select('*')
         .eq('id', user.id)
         .maybeSingle();
       
-      if (error) {
-        console.error('Error fetching profile:', error);
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
         return null;
       }
 
-      // Get the avatar URL if it exists
-      const { data: avatarData } = await supabase
-        .storage
-        .from('avatars')
-        .list(`${data?.brands?.id || ''}`);
+      // Then get the brand associated with this user
+      const { data: brandData, error: brandError } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      const avatarFile = avatarData?.[0];
+      if (brandError) {
+        console.error('Error fetching brand:', brandError);
+        return profileData;
+      }
+
+      // Get the avatar URL if brand exists
       let avatarUrl = '';
-      
-      if (avatarFile) {
-        const { data: { publicUrl } } = supabase
+      if (brandData?.id) {
+        const { data: avatarData } = await supabase
           .storage
           .from('avatars')
-          .getPublicUrl(`${data?.brands?.id}/${avatarFile.name}`);
-        avatarUrl = publicUrl;
+          .list(`${brandData.id}`);
+
+        const avatarFile = avatarData?.[0];
+        
+        if (avatarFile) {
+          const { data: { publicUrl } } = supabase
+            .storage
+            .from('avatars')
+            .getPublicUrl(`${brandData.id}/${avatarFile.name}`);
+          avatarUrl = publicUrl;
+        }
       }
       
-      return { ...data, avatarUrl };
+      return { ...profileData, avatarUrl };
     }
   });
 
@@ -72,13 +87,10 @@ const DashboardHeader = () => {
       
       return data || [];
     },
-    retry: 1, // Only retry once if the query fails
+    retry: 1,
   });
 
   const hasUnreadNotifications = notifications && notifications.length > 0;
-
-  // If there's an error fetching notifications, we'll still render the header
-  // but without the notification count
 
   return (
     <div className="flex justify-end items-center space-x-4 mb-8">
