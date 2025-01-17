@@ -54,6 +54,41 @@ export type Database = {
           },
         ]
       }
+      brand_login_history: {
+        Row: {
+          brand_id: string | null
+          device_info: string | null
+          id: string
+          ip_address: string | null
+          location: string | null
+          login_timestamp: string | null
+        }
+        Insert: {
+          brand_id?: string | null
+          device_info?: string | null
+          id?: string
+          ip_address?: string | null
+          location?: string | null
+          login_timestamp?: string | null
+        }
+        Update: {
+          brand_id?: string | null
+          device_info?: string | null
+          id?: string
+          ip_address?: string | null
+          location?: string | null
+          login_timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_login_history_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_managers: {
         Row: {
           brand_id: string | null
@@ -148,6 +183,10 @@ export type Database = {
           id: string
           instagram: string | null
           location: string | null
+          phone_number: string | null
+          sms_notifications_enabled: boolean | null
+          support_email: string | null
+          two_factor_enabled: boolean | null
           updated_at: string
           user_id: string | null
           website: string | null
@@ -160,6 +199,10 @@ export type Database = {
           id?: string
           instagram?: string | null
           location?: string | null
+          phone_number?: string | null
+          sms_notifications_enabled?: boolean | null
+          support_email?: string | null
+          two_factor_enabled?: boolean | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
@@ -172,6 +215,10 @@ export type Database = {
           id?: string
           instagram?: string | null
           location?: string | null
+          phone_number?: string | null
+          sms_notifications_enabled?: boolean | null
+          support_email?: string | null
+          two_factor_enabled?: boolean | null
           updated_at?: string
           user_id?: string | null
           website?: string | null

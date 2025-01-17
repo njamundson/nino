@@ -2,35 +2,39 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Camera, Plus, X } from "lucide-react";
+import { Camera, Plus, X, Shield, History, HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface Manager {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 const ProfileSettings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [brandData, setBrandData] = useState({
-    email: "",
-    location: "",
-    company_name: "",
-  });
-  const [managers, setManagers] = useState<Manager[]>([]);
   const [showAddManager, setShowAddManager] = useState(false);
+  const [managers, setManagers] = useState<any[]>([]);
+  const [loginHistory, setLoginHistory] = useState<any[]>([]);
+  const [brandData, setBrandData] = useState({
+    company_name: "",
+    description: "",
+    website: "",
+    instagram: "",
+    location: "",
+    phone_number: "",
+    support_email: "",
+    sms_notifications_enabled: false,
+    two_factor_enabled: false,
+    email: "",
+  });
 
   useEffect(() => {
     fetchBrandData();
     fetchManagers();
+    fetchLoginHistory();
   }, []);
 
   const fetchBrandData = async () => {
@@ -47,9 +51,16 @@ const ProfileSettings = () => {
       if (error) throw error;
       if (brand) {
         setBrandData({
-          email: user.email || "",
-          location: brand.location || "",
           company_name: brand.company_name || "",
+          description: brand.description || "",
+          website: brand.website || "",
+          instagram: brand.instagram || "",
+          location: brand.location || "",
+          phone_number: brand.phone_number || "",
+          support_email: brand.support_email || "",
+          sms_notifications_enabled: brand.sms_notifications_enabled || false,
+          two_factor_enabled: brand.two_factor_enabled || false,
+          email: user.email || "",
         });
       }
     } catch (error) {
@@ -89,6 +100,40 @@ const ProfileSettings = () => {
       toast({
         title: "Error",
         description: "Failed to load account managers",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchLoginHistory = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: brand } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (brand) {
+        const { data: historyData, error } = await supabase
+          .from('brand_login_history')
+          .select('*')
+          .eq('brand_id', brand.id)
+          .order('login_timestamp', { ascending: false })
+          .limit(5);
+
+        if (error) throw error;
+        if (historyData) {
+          setLoginHistory(historyData);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching login history:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load login history",
         variant: "destructive",
       });
     }
@@ -139,8 +184,15 @@ const ProfileSettings = () => {
       const { error } = await supabase
         .from('brands')
         .update({
-          location: brandData.location,
           company_name: brandData.company_name,
+          description: brandData.description,
+          website: brandData.website,
+          instagram: brandData.instagram,
+          location: brandData.location,
+          phone_number: brandData.phone_number,
+          support_email: brandData.support_email,
+          sms_notifications_enabled: brandData.sms_notifications_enabled,
+          two_factor_enabled: brandData.two_factor_enabled,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', user.id);
@@ -160,77 +212,6 @@ const ProfileSettings = () => {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAddManager = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!brand) return;
-
-      const formData = new FormData(e.currentTarget);
-      const newManager = {
-        brand_id: brand.id,
-        name: formData.get('name') as string,
-        email: formData.get('email') as string,
-        role: formData.get('role') as string,
-      };
-
-      const { data, error } = await supabase
-        .from('brand_managers')
-        .insert([newManager])
-        .select()
-        .single();
-
-      if (error) throw error;
-      if (data) {
-        setManagers([...managers, data]);
-        setShowAddManager(false);
-        toast({
-          title: "Success",
-          description: "Manager added successfully",
-        });
-      }
-    } catch (error) {
-      console.error('Error adding manager:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add manager",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleRemoveManager = async (managerId: string) => {
-    try {
-      const { error } = await supabase
-        .from('brand_managers')
-        .delete()
-        .eq('id', managerId);
-
-      if (error) throw error;
-
-      setManagers(managers.filter(m => m.id !== managerId));
-      toast({
-        title: "Success",
-        description: "Manager removed successfully",
-      });
-    } catch (error) {
-      console.error('Error removing manager:', error);
-      toast({
-        title: "Error",
-        description: "Failed to remove manager",
-        variant: "destructive",
-      });
     }
   };
 
@@ -267,20 +248,9 @@ const ProfileSettings = () => {
         {/* Brand Details */}
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="company_name">Brand Name</Label>
             <Input
-              id="email"
-              value={brandData.email}
-              onChange={(e) => setBrandData({ ...brandData, email: e.target.value })}
-              disabled={loading}
-              className="bg-white/50"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="company">Company Name</Label>
-            <Input
-              id="company"
+              id="company_name"
               value={brandData.company_name}
               onChange={(e) => setBrandData({ ...brandData, company_name: e.target.value })}
               disabled={loading}
@@ -289,101 +259,152 @@ const ProfileSettings = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={brandData.location}
-              onChange={(e) => setBrandData({ ...brandData, location: e.target.value })}
+            <Label htmlFor="description">Brand Description</Label>
+            <Textarea
+              id="description"
+              value={brandData.description}
+              onChange={(e) => setBrandData({ ...brandData, description: e.target.value })}
               disabled={loading}
-              className="bg-white/50"
+              className="bg-white/50 min-h-[100px]"
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="website">Website</Label>
+              <Input
+                id="website"
+                value={brandData.website}
+                onChange={(e) => setBrandData({ ...brandData, website: e.target.value })}
+                disabled={loading}
+                className="bg-white/50"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="instagram">Instagram</Label>
+              <Input
+                id="instagram"
+                value={brandData.instagram}
+                onChange={(e) => setBrandData({ ...brandData, instagram: e.target.value })}
+                disabled={loading}
+                className="bg-white/50"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Account Managers */}
+        {/* Contact Information */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <Label className="text-lg font-medium">Account Managers</Label>
-            <Button
-              onClick={() => setShowAddManager(true)}
-              disabled={loading}
-              variant="outline"
-              className="bg-white/50"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Manager
-            </Button>
+          <h3 className="text-lg font-medium">Contact Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={brandData.email}
+                disabled
+                className="bg-gray-100"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="support_email">Support Email</Label>
+              <Input
+                id="support_email"
+                type="email"
+                value={brandData.support_email}
+                onChange={(e) => setBrandData({ ...brandData, support_email: e.target.value })}
+                disabled={loading}
+                className="bg-white/50"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                value={brandData.phone_number}
+                onChange={(e) => setBrandData({ ...brandData, phone_number: e.target.value })}
+                disabled={loading}
+                className="bg-white/50"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input
+                id="location"
+                value={brandData.location}
+                onChange={(e) => setBrandData({ ...brandData, location: e.target.value })}
+                disabled={loading}
+                className="bg-white/50"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Notification Preferences */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Notification Preferences</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>SMS Notifications</Label>
+                <p className="text-sm text-nino-gray">Receive notifications via text message</p>
+              </div>
+              <Switch
+                checked={brandData.sms_notifications_enabled}
+                onCheckedChange={(checked) => setBrandData({ ...brandData, sms_notifications_enabled: checked })}
+                disabled={loading}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Security Settings */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Security Settings</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Two-Factor Authentication</Label>
+                <p className="text-sm text-nino-gray">Add an extra layer of security to your account</p>
+              </div>
+              <Switch
+                checked={brandData.two_factor_enabled}
+                onCheckedChange={(checked) => setBrandData({ ...brandData, two_factor_enabled: checked })}
+                disabled={loading}
+              />
+            </div>
           </div>
 
-          <AnimatePresence>
-            {showAddManager && (
-              <motion.form
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-4 p-4 bg-white/50 rounded-lg border"
-                onSubmit={handleAddManager}
-              >
-                <Input
-                  name="name"
-                  placeholder="Name"
-                  required
-                  className="bg-white"
-                />
-                <Input
-                  name="email"
-                  type="email"
-                  placeholder="Email"
-                  required
-                  className="bg-white"
-                />
-                <Input
-                  name="role"
-                  placeholder="Role (e.g., Admin, Editor)"
-                  required
-                  className="bg-white"
-                />
-                <div className="flex justify-end space-x-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowAddManager(false)}
-                    className="bg-white"
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={loading}>
-                    Add Manager
-                  </Button>
+          {/* Login History */}
+          <div className="mt-4 space-y-2">
+            <Label>Recent Login Activity</Label>
+            <div className="space-y-2">
+              {loginHistory.map((login) => (
+                <div key={login.id} className="flex items-center justify-between p-3 bg-white/50 rounded-lg">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">{new Date(login.login_timestamp).toLocaleDateString()}</p>
+                    <p className="text-xs text-nino-gray">{login.ip_address}</p>
+                  </div>
+                  <div className="text-xs text-nino-gray">{login.device_info}</div>
                 </div>
-              </motion.form>
-            )}
-          </AnimatePresence>
+              ))}
+            </div>
+          </div>
+        </div>
 
-          <div className="space-y-2">
-            {managers.map((manager) => (
-              <motion.div
-                key={manager.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex items-center justify-between p-4 bg-white/50 rounded-lg hover:bg-white/60 transition-colors"
-              >
-                <div>
-                  <p className="font-medium">{manager.name}</p>
-                  <p className="text-sm text-nino-gray">{manager.email}</p>
-                  <p className="text-xs text-nino-primary">{manager.role}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveManager(manager.id)}
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </motion.div>
-            ))}
+        {/* Support and Help */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Support</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button variant="outline" className="w-full">
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Contact Support
+            </Button>
+            <Button variant="outline" className="w-full">
+              <Shield className="w-4 h-4 mr-2" />
+              View FAQ
+            </Button>
           </div>
         </div>
 
