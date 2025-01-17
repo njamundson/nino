@@ -1,67 +1,66 @@
-import { motion } from "framer-motion";
-import { useBrandOnboarding } from "@/hooks/useBrandOnboarding";
+import { useState } from "react";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
+import AccountManagersStep from "./brand/managers/AccountManagersStep";
 import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
-import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
+
+type OnboardingStep = "basic" | "details" | "social" | "managers";
 
 const BrandOnboarding = () => {
-  const {
-    currentStep,
-    profileImage,
-    brandData,
-    updateField,
-    setProfileImage,
-    handleNext,
-    handleBack,
-  } = useBrandOnboarding();
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>("basic");
 
-  const getCurrentStep = () => {
+  const handleNext = () => {
     switch (currentStep) {
-      case 'basic':
-        return (
-          <BrandBasicInfoStep
-            profileImage={profileImage}
-            brandData={brandData}
-            onUpdateField={updateField}
-            onUpdateImage={setProfileImage}
-          />
-        );
-      case 'details':
-        return (
-          <BrandDetailsStep
-            brandData={brandData}
-            onUpdateField={updateField}
-          />
-        );
-      case 'social':
-        return (
-          <BrandSocialStep
-            brandData={brandData}
-            onUpdateField={updateField}
-          />
-        );
+      case "basic":
+        setCurrentStep("details");
+        break;
+      case "details":
+        setCurrentStep("social");
+        break;
+      case "social":
+        setCurrentStep("managers");
+        break;
       default:
-        return null;
+        break;
+    }
+  };
+
+  const handleBack = () => {
+    switch (currentStep) {
+      case "details":
+        setCurrentStep("basic");
+        break;
+      case "social":
+        setCurrentStep("details");
+        break;
+      case "managers":
+        setCurrentStep("social");
+        break;
+      default:
+        break;
     }
   };
 
   return (
-    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm"
-      >
-        <BrandOnboardingProgress currentStep={currentStep} />
-        {getCurrentStep()}
-        <BrandOnboardingNavigation
-          currentStep={currentStep}
-          onBack={handleBack}
-          onNext={handleNext}
-        />
-      </motion.div>
+    <div className="min-h-screen bg-nino-bg">
+      <BrandOnboardingProgress currentStep={currentStep} />
+      
+      {currentStep === "basic" && (
+        <BrandBasicInfoStep onNext={handleNext} />
+      )}
+      
+      {currentStep === "details" && (
+        <BrandDetailsStep onNext={handleNext} onBack={handleBack} />
+      )}
+      
+      {currentStep === "social" && (
+        <BrandSocialStep onNext={handleNext} onBack={handleBack} />
+      )}
+
+      {currentStep === "managers" && (
+        <AccountManagersStep />
+      )}
     </div>
   );
 };
