@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion"; // Added this import
+import { motion } from "framer-motion";
 import ManagerForm from "./ManagerForm";
 import AccountManagersHeader from "./AccountManagersHeader";
 import AddManagerButton from "./AddManagerButton";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import ManagerCard from "./ManagerCard";
 
 interface AccountManager {
@@ -23,7 +21,6 @@ const AccountManagersStep = () => {
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const addAccountManager = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -114,10 +111,6 @@ const AccountManagersStep = () => {
     }
   };
 
-  const handleComplete = () => {
-    navigate("/brand/dashboard");
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -160,15 +153,6 @@ const AccountManagersStep = () => {
             />
           ))}
         </div>
-      </div>
-
-      <div className="flex justify-end pt-6">
-        <Button
-          onClick={handleComplete}
-          className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
-        >
-          Complete Setup
-        </Button>
       </div>
     </motion.div>
   );
