@@ -13,3 +13,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     storageKey: 'nino-auth-token',
   },
 });
+
+// Add debug logging
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, session);
+});
+
+// Debug log for initialization
+console.log('Supabase client initialized with URL:', supabaseUrl);
