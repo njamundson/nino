@@ -69,7 +69,6 @@ const Messages = () => {
     },
   });
 
-  // Fetch available creators/brands to message
   const { data: creators } = useQuery({
     queryKey: ["creators"],
     queryFn: async () => {
@@ -87,11 +86,18 @@ const Messages = () => {
         console.error("Error fetching creators:", error);
         throw error;
       }
-      return data as Creator[];
+
+      // Transform the data to match the Creator interface
+      return data.map(creator => ({
+        id: creator.id,
+        profile: {
+          first_name: creator.profile?.[0]?.first_name || "",
+          last_name: creator.profile?.[0]?.last_name || ""
+        }
+      })) as Creator[];
     },
   });
 
-  // Set up real-time subscription for new messages
   useEffect(() => {
     const channel = supabase
       .channel('public:messages')
