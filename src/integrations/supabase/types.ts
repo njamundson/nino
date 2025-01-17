@@ -95,6 +95,9 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          invitation_status: string | null
+          invitation_token: string | null
+          invited_at: string | null
           name: string
           permissions: string[] | null
           role: string
@@ -105,6 +108,9 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          invitation_status?: string | null
+          invitation_token?: string | null
+          invited_at?: string | null
           name: string
           permissions?: string[] | null
           role: string
@@ -115,6 +121,9 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          invitation_status?: string | null
+          invitation_token?: string | null
+          invited_at?: string | null
           name?: string
           permissions?: string[] | null
           role?: string

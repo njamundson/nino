@@ -5,6 +5,8 @@ import ManagerList from "./ManagerList";
 import AccountManagersHeader from "./AccountManagersHeader";
 import AddManagerButton from "./AddManagerButton";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AccountManager {
   id: string;
@@ -15,37 +17,85 @@ interface AccountManager {
 }
 
 const AccountManagersStep = () => {
-  const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
   const [showAddManager, setShowAddManager] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
+  const { toast } = useToast();
 
-  const addAccountManager = (e: React.FormEvent<HTMLFormElement>) => {
+  const addAccountManager = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const newManager = {
-      id: Date.now().toString(),
-      name: formData.get("managerName") as string,
-      email: formData.get("managerEmail") as string,
-      role: formData.get("managerRole") as string,
-      permissions: selectedPermissions,
-    };
-    setAccountManagers([...accountManagers, newManager]);
-    setShowAddManager(false);
-    setSelectedPermissions([]);
-    form.reset();
-  };
 
-  const updateManagerPermissions = (managerId: string, permissions: string[]) => {
-    setAccountManagers(
-      accountManagers.map((manager) =>
-        manager.id === managerId ? { ...manager, permissions } : manager
-      )
-    );
-  };
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
-  const removeManager = (id: string) => {
-    setAccountManagers(accountManagers.filter((manager) => manager.id !== id));
+      // Get the brand ID for the current user
+      const { data: brandData, error: brandError } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (brandError || !brandData) {
+        console.error('Error fetching brand:', brandError);
+        toast({
+          title: "Error",
+          description: "Could not find associated brand",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create the manager invitation
+      const { data: manager, error: managerError } = await supabase
+        .from('brand_managers')
+        .insert({
+          brand_id: brandData.id,
+          name: formData.get("managerName") as string,
+          email: formData.get("managerEmail") as string,
+          role: formData.get("managerRole") as string,
+          permissions: selectedPermissions,
+          invitation_status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (managerError) {
+        console.error('Error creating manager:', managerError);
+        toast({
+          title: "Error",
+          description: "Failed to add team member",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setAccountManagers([...accountManagers, manager as AccountManager]);
+      setShowAddManager(false);
+      setSelectedPermissions([]);
+      form.reset();
+
+      toast({
+        title: "Success",
+        description: "Team member invited successfully",
+      });
+    } catch (error) {
+      console.error('Error in addAccountManager:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -78,8 +128,8 @@ const AccountManagersStep = () => {
 
         <ManagerList
           managers={accountManagers}
-          onUpdatePermissions={updateManagerPermissions}
-          onRemoveManager={removeManager}
+          onUpdatePermissions={() => {}}
+          onRemoveManager={() => {}}
         />
       </div>
     </motion.div>
