@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -18,22 +19,37 @@ interface ResetPasswordProps {
 
 const ResetPassword = ({ isOpen, onClose }: ResetPasswordProps) => {
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API call - will be replaced with Supabase
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Reset link sent!",
-      description: "Please check your email for password reset instructions.",
-    });
-    
-    setLoading(false);
-    onClose();
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Reset link sent!",
+        description: "Please check your email for password reset instructions.",
+      });
+      
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send reset link. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,6 +65,8 @@ const ResetPassword = ({ isOpen, onClose }: ResetPasswordProps) => {
           <Input
             type="email"
             placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
             required
           />
