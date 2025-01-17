@@ -4,6 +4,7 @@ import ProjectCard from "@/components/projects/ProjectCard";
 import { Loader2, AlertCircle } from "lucide-react";
 import ProjectsHeader from "@/components/projects/ProjectsHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import EmptyProjects from "@/components/projects/EmptyProjects";
 
 const Projects = () => {
   const { data: opportunities, isLoading, error } = useQuery({
@@ -17,7 +18,10 @@ const Projects = () => {
           brand:brands (
             company_name,
             brand_type,
-            location
+            location,
+            description,
+            website,
+            instagram
           )
         `)
         .eq('status', 'open')
@@ -62,17 +66,7 @@ const Projects = () => {
     return (
       <div className="container py-8 space-y-8">
         <ProjectsHeader />
-        <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
-          <div className="rounded-full bg-nino-primary/10 p-4">
-            <AlertCircle className="w-8 h-8 text-nino-primary" />
-          </div>
-          <h3 className="text-xl font-medium text-gray-900">
-            No campaigns available
-          </h3>
-          <p className="text-gray-500 max-w-md">
-            There are no active campaigns right now. Check back later for new opportunities!
-          </p>
-        </div>
+        <EmptyProjects />
       </div>
     );
   }
