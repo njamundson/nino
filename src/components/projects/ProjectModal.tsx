@@ -25,6 +25,9 @@ interface ProjectModalProps {
       company_name: string;
       brand_type: string;
       location: string | null;
+      description?: string;
+      website?: string;
+      instagram?: string;
     };
   };
 }
