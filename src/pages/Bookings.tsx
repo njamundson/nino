@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar } from "@/components/ui/calendar";
 import PageHeader from "@/components/shared/PageHeader";
 import { useState } from "react";
 import CreatorModal from "@/components/creators/CreatorModal";
-import BookingCard from "@/components/bookings/BookingCard";
 import { useNavigate } from "react-router-dom";
+import BookingsList from "@/components/bookings/BookingsList";
+import BookingsCalendar from "@/components/bookings/BookingsCalendar";
 
 interface Creator {
   id: string;
@@ -90,17 +88,12 @@ const Bookings = () => {
     return (
       <div className="p-8 max-w-7xl mx-auto space-y-8">
         <Skeleton className="h-8 w-48" />
-        <Card className="p-8">
-          <div className="space-y-6">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="space-y-4">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-20 w-full" />
-              </div>
-            ))}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <Skeleton className="h-[600px] w-full" />
           </div>
-        </Card>
+          <Skeleton className="h-[400px] w-full" />
+        </div>
       </div>
     );
   }
@@ -114,41 +107,18 @@ const Bookings = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         <div className="lg:col-span-2">
-          <Card className="p-8">
-            <ScrollArea className="h-[600px] pr-4">
-              {bookings && bookings.length > 0 ? (
-                <div className="space-y-6">
-                  {bookings.map((booking: any) => (
-                    <BookingCard
-                      key={booking.id}
-                      booking={booking}
-                      onChatClick={() => handleChatClick(booking.creator.id)}
-                      onViewCreator={() => handleViewCreator(booking.creator)}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center text-muted-foreground py-8">
-                  <p>No confirmed bookings yet</p>
-                  <p className="text-sm mt-1">
-                    Your accepted applications will appear here
-                  </p>
-                </div>
-              )}
-            </ScrollArea>
-          </Card>
+          <BookingsList
+            bookings={bookings || []}
+            onChatClick={handleChatClick}
+            onViewCreator={handleViewCreator}
+          />
         </div>
 
         <div>
-          <Card className="p-6">
-            <h3 className="text-lg font-medium mb-4">Upcoming Bookings</h3>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className="rounded-md border"
-            />
-          </Card>
+          <BookingsCalendar
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+          />
         </div>
       </div>
 
