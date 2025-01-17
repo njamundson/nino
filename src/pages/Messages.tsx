@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Search, MoreHorizontal } from "lucide-react";
+import { Send, Search, MoreHorizontal, Plus, Image, Mic, Paperclip } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +31,7 @@ const Messages = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
   const { toast } = useToast();
 
   const { data: messages, refetch } = useQuery({
@@ -86,6 +87,34 @@ const Messages = () => {
     refetch();
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Handle file upload logic here
+    toast({
+      title: "Coming soon",
+      description: "File upload feature will be available soon",
+    });
+  };
+
+  const handleVoiceRecord = () => {
+    setIsRecording(!isRecording);
+    // Handle voice recording logic here
+    toast({
+      title: "Coming soon",
+      description: "Voice recording feature will be available soon",
+    });
+  };
+
+  const handleNewMessage = () => {
+    // Handle new message creation logic here
+    toast({
+      title: "Coming soon",
+      description: "New message feature will be available soon",
+    });
+  };
+
   const filteredMessages = messages?.filter((message) => {
     const senderName = `${message.sender_profile?.first_name} ${message.sender_profile?.last_name}`.toLowerCase();
     const receiverName = `${message.receiver_profile?.first_name} ${message.receiver_profile?.last_name}`.toLowerCase();
@@ -99,8 +128,8 @@ const Messages = () => {
       <div className="flex h-full gap-6">
         {/* Conversations List */}
         <Card className="w-96 bg-white/80 backdrop-blur-xl border-0 shadow-sm overflow-hidden">
-          <div className="p-4 border-b">
-            <div className="relative">
+          <div className="p-4 border-b flex justify-between items-center">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 placeholder="Search messages"
@@ -109,6 +138,14 @@ const Messages = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-2"
+              onClick={handleNewMessage}
+            >
+              <Plus className="w-5 h-5 text-gray-500" />
+            </Button>
           </div>
           <ScrollArea className="h-[calc(100vh-10rem)]">
             <div className="p-2">
@@ -207,7 +244,30 @@ const Messages = () => {
                 </div>
               </ScrollArea>
               <div className="p-4 border-t bg-white/50">
-                <div className="flex gap-3">
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="file"
+                    id="file-upload"
+                    className="hidden"
+                    accept="image/*,video/*"
+                    onChange={handleFileUpload}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-gray-500"
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                  >
+                    <Paperclip className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`text-gray-500 ${isRecording ? 'bg-red-50' : ''}`}
+                    onClick={handleVoiceRecord}
+                  >
+                    <Mic className="w-5 h-5" />
+                  </Button>
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
