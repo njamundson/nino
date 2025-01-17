@@ -1,109 +1,81 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { useBrandProfile } from "@/hooks/useBrandProfile";
+import { useBrandOnboarding } from "@/hooks/useBrandOnboarding";
+import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
+import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
+import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
-import AccountManagersStep from "./brand/managers/AccountManagersStep";
-import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
-import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
-import { BrandData } from "@/types/brand";
+import AccountManagersStep from "./brand/AccountManagersStep";
 
 const BrandOnboarding = () => {
   const navigate = useNavigate();
-  const { session } = useAuth();
-  const { data: brandProfile } = useBrandProfile(session?.user?.id);
-  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [brandData, setBrandData] = useState<BrandData>({
-    brandName: "",
-    brandEmail: "",
-    brandType: "hotel",
-    homeLocation: "",
-    brandBio: "",
-    instagram: "",
-    website: "",
-    location: "",
-  });
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const { brandData, updateBrandData, handleSubmit } = useBrandOnboarding();
 
-  // Redirect if brand profile already exists
-  if (brandProfile) {
-    navigate("/dashboard");
-    return null;
-  }
-
-  const handleUpdateField = (field: string, value: string) => {
-    setBrandData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleUpdateImage = (image: string | null) => {
-    setProfileImage(image);
-  };
-
-  const handleNext = () => {
-    const steps: ('basic' | 'details' | 'social' | 'managers')[] = ['basic', 'details', 'social', 'managers'];
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
+  const handleNext = async () => {
+    if (currentStep === 4) {
+      await handleSubmit();
+      navigate("/brand/dashboard");
+      return;
     }
+    setCurrentStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
-    const steps: ('basic' | 'details' | 'social' | 'managers')[] = ['basic', 'details', 'social', 'managers'];
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
+    if (currentStep === 1) {
+      navigate("/onboarding");
+      return;
     }
+    setCurrentStep((prev) => prev - 1);
   };
 
   const renderStep = () => {
     switch (currentStep) {
-      case 'basic':
+      case 1:
         return (
           <BrandBasicInfoStep
-            profileImage={profileImage}
             brandData={brandData}
-            onUpdateField={handleUpdateField}
-            onUpdateImage={handleUpdateImage}
+            updateBrandData={updateBrandData}
           />
         );
-      case 'details':
+      case 2:
         return (
           <BrandDetailsStep
             brandData={brandData}
-            onUpdateField={handleUpdateField}
+            updateBrandData={updateBrandData}
           />
         );
-      case 'social':
+      case 3:
         return (
           <BrandSocialStep
             brandData={brandData}
-            onUpdateField={handleUpdateField}
+            updateBrandData={updateBrandData}
           />
         );
-      case 'managers':
-        return <AccountManagersStep />;
+      case 4:
+        return (
+          <AccountManagersStep
+            brandData={brandData}
+            updateBrandData={updateBrandData}
+          />
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
-      <div className="w-full max-w-2xl bg-white rounded-xl shadow-sm p-8">
-        <BrandOnboardingProgress currentStep={currentStep} />
-        {renderStep()}
-        <BrandOnboardingNavigation
-          currentStep={currentStep}
-          onBack={handleBack}
-          onNext={handleNext}
-        />
-      </div>
-    </div>
+    <BrandOnboardingContainer>
+      <BrandOnboardingProgress currentStep={currentStep} />
+      {renderStep()}
+      <BrandOnboardingNavigation
+        currentStep={currentStep}
+        onNext={handleNext}
+        onBack={handleBack}
+      />
+    </BrandOnboardingContainer>
   );
 };
 
