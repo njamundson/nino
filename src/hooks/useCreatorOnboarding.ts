@@ -11,7 +11,7 @@ export const useCreatorOnboarding = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
-    id: crypto.randomUUID(), // Generate a temporary ID for the form
+    id: crypto.randomUUID(),
     firstName: "",
     lastName: "",
     bio: "",
@@ -20,10 +20,12 @@ export const useCreatorOnboarding = () => {
     website: "",
     location: "",
     paymentDetails: "",
-    profile: null
+    profile: null,
+    profileImage: "",
   });
 
   const updateField = (field: keyof CreatorData, value: string | string[]) => {
+    console.log('Updating field:', field, 'with value:', value);
     setCreatorData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -46,7 +48,6 @@ export const useCreatorOnboarding = () => {
           return;
         }
 
-        // First get the profile ID
         const { data: profile } = await supabase
           .from('profiles')
           .select('id')
