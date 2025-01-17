@@ -7,6 +7,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { formatDate } from "@/lib/utils";
 
 interface Message {
   id: string;
@@ -18,11 +20,23 @@ interface Message {
     first_name: string;
     last_name: string;
   };
+  receiver_profile?: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
+interface Creator {
+  id: string;
+  profile: {
+    first_name: string;
+    last_name: string;
+  };
 }
 
 interface ChatListProps {
   messages: Message[] | undefined;
-  creators: any[];
+  creators: Creator[] | undefined;
   selectedChat: string | null;
   setSelectedChat: (id: string) => void;
   searchQuery: string;
@@ -31,12 +45,29 @@ interface ChatListProps {
 
 export const ChatList = ({
   messages = [],
-  creators,
+  creators = [],
   selectedChat,
   setSelectedChat,
   searchQuery,
   setSearchQuery,
 }: ChatListProps) => {
+  // Group messages by conversation partner
+  const conversations = messages.reduce((acc: { [key: string]: Message }, message) => {
+    const partnerId = message.sender_id === selectedChat ? message.receiver_id : message.sender_id;
+    if (!acc[partnerId] || new Date(acc[partnerId].created_at) < new Date(message.created_at)) {
+      acc[partnerId] = message;
+    }
+    return acc;
+  }, {});
+
+  const filteredConversations = Object.values(conversations).filter((message) => {
+    const senderName = `${message.sender_profile?.first_name} ${message.sender_profile?.last_name}`.toLowerCase();
+    const receiverName = `${message.receiver_profile?.first_name} ${message.receiver_profile?.last_name}`.toLowerCase();
+    return senderName.includes(searchQuery.toLowerCase()) || 
+           receiverName.includes(searchQuery.toLowerCase()) ||
+           message.content.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex items-center justify-between">
@@ -68,13 +99,18 @@ export const ChatList = ({
                 <div
                   key={creator.id}
                   className="p-2 hover:bg-gray-100 rounded-md cursor-pointer"
-                  onClick={() => {
-                    // Handle starting new conversation
-                    console.log("Start conversation with:", creator.id);
-                  }}
+                  onClick={() => setSelectedChat(creator.id)}
                 >
-                  <div className="font-medium">
-                    {creator.profile?.first_name} {creator.profile?.last_name}
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>
+                        {creator.profile?.first_name?.[0]}
+                        {creator.profile?.last_name?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="font-medium">
+                      {creator.profile?.first_name} {creator.profile?.last_name}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -84,20 +120,42 @@ export const ChatList = ({
       </div>
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          {messages?.map((message) => (
-            <div
-              key={message.id}
-              className={`p-2 rounded-lg cursor-pointer ${
-                selectedChat === message.id ? 'bg-gray-200' : 'hover:bg-gray-100'
-              }`}
-              onClick={() => setSelectedChat(message.id)}
-            >
-              <div className="font-semibold">
-                {message.sender_profile?.first_name} {message.sender_profile?.last_name}
+          {filteredConversations.map((message) => {
+            const isReceived = message.receiver_id === selectedChat;
+            const profile = isReceived ? message.sender_profile : message.receiver_profile;
+            
+            return (
+              <div
+                key={message.id}
+                className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                  selectedChat === (isReceived ? message.sender_id : message.receiver_id)
+                    ? 'bg-gray-200'
+                    : 'hover:bg-gray-100'
+                }`}
+                onClick={() => setSelectedChat(isReceived ? message.sender_id : message.receiver_id)}
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback>
+                      {profile?.first_name?.[0]}
+                      {profile?.last_name?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="font-semibold text-sm">
+                        {profile?.first_name} {profile?.last_name}
+                      </p>
+                      <span className="text-xs text-gray-500">
+                        {formatDate(message.created_at)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 truncate">{message.content}</p>
+                  </div>
+                </div>
               </div>
-              <div className="text-sm text-gray-600">{message.content}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </ScrollArea>
     </div>

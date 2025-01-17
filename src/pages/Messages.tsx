@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,10 @@ interface Message {
   content: string;
   created_at: string;
   sender_profile?: {
+    first_name: string;
+    last_name: string;
+  };
+  receiver_profile?: {
     first_name: string;
     last_name: string;
   };
@@ -35,6 +39,7 @@ const Messages = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { toast } = useToast();
 
+  // Fetch messages
   const { data: messages, refetch } = useQuery({
     queryKey: ["messages"],
     queryFn: async () => {
@@ -57,11 +62,15 @@ const Messages = () => {
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching messages:", error);
+        throw error;
+      }
       return data as Message[];
     },
   });
 
+  // Fetch available creators/brands to message
   const { data: creators } = useQuery({
     queryKey: ["creators"],
     queryFn: async () => {
@@ -75,16 +84,56 @@ const Messages = () => {
           )
         `);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching creators:", error);
+        throw error;
+      }
       return data as Creator[];
     },
   });
 
+  // Set up real-time subscription for new messages
+  useEffect(() => {
+    const channel = supabase
+      .channel('public:messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages'
+        },
+        (payload) => {
+          console.log('New message received:', payload);
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
+
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !selectedChat) return;
+    if (!newMessage.trim() || !selectedChat) {
+      toast({
+        title: "Cannot send message",
+        description: "Please select a recipient and enter a message",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to send messages",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const { error } = await supabase.from("messages").insert({
       content: newMessage,
@@ -94,6 +143,7 @@ const Messages = () => {
     });
 
     if (error) {
+      console.error("Error sending message:", error);
       toast({
         title: "Error sending message",
         description: "Please try again later",
@@ -106,7 +156,13 @@ const Messages = () => {
     refetch();
   };
 
-  const selectedChatData = messages?.find(m => m.id === selectedChat);
+  const selectedChatProfile = messages?.find(m => 
+    m.sender_id === selectedChat 
+      ? m.sender_profile 
+      : m.receiver_id === selectedChat 
+        ? m.receiver_profile 
+        : null
+  );
 
   return (
     <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-4rem)]">
@@ -126,12 +182,19 @@ const Messages = () => {
           {selectedChat ? (
             <>
               <ChatHeader
-                senderFirstName={selectedChatData?.sender_profile?.first_name}
-                senderLastName={selectedChatData?.sender_profile?.last_name}
+                senderFirstName={selectedChatProfile?.first_name}
+                senderLastName={selectedChatProfile?.last_name}
               />
               <ChatMessages
                 messages={messages}
                 selectedChat={selectedChat}
+              />
+              <ChatInput
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                handleSendMessage={handleSendMessage}
+                isRecording={isRecording}
+                setIsRecording={setIsRecording}
               />
             </>
           ) : (
@@ -139,13 +202,6 @@ const Messages = () => {
               <p>Select a conversation to start messaging</p>
             </div>
           )}
-          <ChatInput
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            handleSendMessage={handleSendMessage}
-            isRecording={isRecording}
-            setIsRecording={setIsRecording}
-          />
         </Card>
       </div>
     </div>

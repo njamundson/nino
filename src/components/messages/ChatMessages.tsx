@@ -1,5 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDate } from "@/lib/utils";
+import { useEffect, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
@@ -15,9 +17,36 @@ interface ChatMessagesProps {
 }
 
 export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const filteredMessages = messages?.filter(
     (m) => m.sender_id === selectedChat || m.receiver_id === selectedChat
-  );
+  ).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  // Mark messages as read
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      if (!selectedChat) return;
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      await supabase
+        .from('messages')
+        .update({ read: true })
+        .eq('sender_id', selectedChat)
+        .eq('receiver_id', user.id)
+        .eq('read', false);
+    };
+
+    markMessagesAsRead();
+  }, [selectedChat, messages]);
 
   return (
     <ScrollArea className="flex-1 p-4">
@@ -45,6 +74,7 @@ export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
             </div>
           </div>
         ))}
+        <div ref={scrollRef} />
       </div>
     </ScrollArea>
   );
