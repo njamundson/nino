@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandData } from "@/types/brand";
 
@@ -26,12 +26,6 @@ export const useBrandOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
-      setCurrentStep('details');
-    } else if (currentStep === 'details') {
-      setCurrentStep('social');
-    } else if (currentStep === 'social') {
-      setCurrentStep('managers');
-    } else {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -43,6 +37,7 @@ export const useBrandOnboarding = () => {
           return;
         }
 
+        // Create the brand profile if it doesn't exist
         const { error: brandError } = await supabase.from('brands').insert({
           user_id: user.id,
           company_name: brandData.brandName,
@@ -62,13 +57,6 @@ export const useBrandOnboarding = () => {
           });
           return;
         }
-
-        toast({
-          title: "Success!",
-          description: "Your brand profile has been created.",
-        });
-
-        navigate("/brand/dashboard");
       } catch (error) {
         console.error("Error in brand creation:", error);
         toast({
@@ -76,7 +64,13 @@ export const useBrandOnboarding = () => {
           description: "An unexpected error occurred. Please try again.",
           variant: "destructive",
         });
+        return;
       }
+      setCurrentStep('details');
+    } else if (currentStep === 'details') {
+      setCurrentStep('social');
+    } else if (currentStep === 'social') {
+      setCurrentStep('managers');
     }
   };
 
@@ -94,6 +88,7 @@ export const useBrandOnboarding = () => {
 
   return {
     currentStep,
+    setCurrentStep,
     profileImage,
     brandData,
     updateField,
