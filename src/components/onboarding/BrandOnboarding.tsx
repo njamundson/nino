@@ -1,79 +1,106 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { useBrandProfile } from "@/hooks/useBrandProfile";
+import { motion } from "framer-motion";
+import { useBrandOnboarding } from "@/hooks/useBrandOnboarding";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
-import AccountManagersStep from "./brand/managers/AccountManagersStep";
-import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
 import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
-import { BrandData } from "@/types/brand";
+import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
+import AccountManagersStep from "./brand/managers/AccountManagersStep";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const BrandOnboarding = () => {
   const navigate = useNavigate();
-  const { session } = useAuth();
-  const { data: brandProfile } = useBrandProfile(session?.user?.id);
-  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
-  const [brandData, setBrandData] = useState<BrandData>({
-    companyName: "",
-    brandType: "",
-    homeLocation: "",
-    brandBio: "",
-    instagram: "",
-    website: "",
-  });
+  const { toast } = useToast();
+  const {
+    currentStep,
+    setCurrentStep,
+    profileImage,
+    brandData,
+    updateField,
+    setProfileImage,
+    handleNext,
+    handleBack,
+  } = useBrandOnboarding();
 
-  // Redirect if brand profile already exists
-  if (brandProfile) {
-    navigate("/dashboard");
-    return null;
-  }
+  const handleComplete = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
-  const handleUpdateField = (field: string, value: string) => {
-    setBrandData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+      // Get the brand ID for the current user using maybeSingle() instead of single()
+      const { data: brand, error: brandError } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-  const handleNext = () => {
-    const steps: ('basic' | 'details' | 'social' | 'managers')[] = ['basic', 'details', 'social', 'managers'];
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
+      if (brandError) {
+        toast({
+          title: "Error",
+          description: "Could not fetch brand information",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!brand) {
+        toast({
+          title: "Error",
+          description: "Brand profile not found. Please complete the basic information first.",
+          variant: "destructive",
+        });
+        setCurrentStep('basic');
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Brand setup completed successfully",
+      });
+
+      navigate("/brand/dashboard");
+    } catch (error) {
+      console.error('Error in handleComplete:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleBack = () => {
-    const steps: ('basic' | 'details' | 'social' | 'managers')[] = ['basic', 'details', 'social', 'managers'];
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
-    }
-  };
-
-  const renderStep = () => {
+  const getCurrentStep = () => {
     switch (currentStep) {
       case 'basic':
         return (
           <BrandBasicInfoStep
+            profileImage={profileImage}
             brandData={brandData}
-            onUpdateField={handleUpdateField}
+            onUpdateField={updateField}
+            onUpdateImage={setProfileImage}
           />
         );
       case 'details':
         return (
           <BrandDetailsStep
             brandData={brandData}
-            onUpdateField={handleUpdateField}
+            onUpdateField={updateField}
           />
         );
       case 'social':
         return (
           <BrandSocialStep
             brandData={brandData}
-            onUpdateField={handleUpdateField}
+            onUpdateField={updateField}
           />
         );
       case 'managers':
@@ -84,16 +111,20 @@ const BrandOnboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-2xl mx-auto p-6">
+    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm"
+      >
         <BrandOnboardingProgress currentStep={currentStep} />
-        {renderStep()}
+        {getCurrentStep()}
         <BrandOnboardingNavigation
           currentStep={currentStep}
           onBack={handleBack}
-          onNext={handleNext}
+          onNext={currentStep === 'managers' ? handleComplete : handleNext}
         />
-      </div>
+      </motion.div>
     </div>
   );
 };
