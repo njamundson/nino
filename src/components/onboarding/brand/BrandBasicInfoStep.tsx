@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandData } from "@/types/brand";
+import { useToast } from "@/hooks/use-toast";
 
 interface BrandBasicInfoStepProps {
   profileImage: string | null;
@@ -22,6 +23,8 @@ const BrandBasicInfoStep = ({
   onUpdateImage,
   onNext,
 }: BrandBasicInfoStepProps) => {
+  const { toast } = useToast();
+
   useEffect(() => {
     const setUserEmail = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -33,14 +36,48 @@ const BrandBasicInfoStep = ({
     setUserEmail();
   }, [onUpdateField]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    try {
+      // First, create a temporary preview
       const reader = new FileReader();
       reader.onloadend = () => {
         onUpdateImage(reader.result as string);
       };
       reader.readAsDataURL(file);
+
+      // Then upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      onUpdateImage(publicUrl);
+      
+      toast({
+        title: "Success",
+        description: "Brand logo uploaded successfully",
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload brand logo. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
