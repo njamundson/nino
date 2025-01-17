@@ -37,7 +37,6 @@ export const useBrandOnboarding = () => {
           return;
         }
 
-        // Create the brand profile if it doesn't exist
         const { error: brandError } = await supabase.from('brands').insert({
           user_id: user.id,
           company_name: brandData.brandName,
