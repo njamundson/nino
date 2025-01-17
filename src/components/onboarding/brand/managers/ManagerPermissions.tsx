@@ -2,13 +2,15 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ManagerPermissionsProps {
   permissions: string[];
+  onUpdate?: (permissions: string[]) => void;
 }
 
-const ManagerPermissions = ({ permissions }: ManagerPermissionsProps) => {
+const ManagerPermissions = ({ permissions, onUpdate }: ManagerPermissionsProps) => {
   return (
     <ToggleGroup
       type="multiple"
       value={permissions}
+      onValueChange={onUpdate}
       className="flex flex-wrap gap-1"
     >
       <ToggleGroupItem
