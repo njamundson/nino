@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +7,7 @@ import AccountManagersHeader from "./AccountManagersHeader";
 import AddManagerButton from "./AddManagerButton";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import ManagerCard from "./ManagerCard";
 
 interface AccountManager {
   id: string;
@@ -41,7 +40,6 @@ const AccountManagersStep = () => {
         return;
       }
 
-      // Get the brand for the current user
       const { data: brand } = await supabase
         .from('brands')
         .select('id')
@@ -57,24 +55,6 @@ const AccountManagersStep = () => {
         return;
       }
 
-      // Check if manager with this email already exists
-      const { data: existingManager } = await supabase
-        .from('brand_managers')
-        .select('*')
-        .eq('brand_id', brand.id)
-        .eq('email', formData.get("managerEmail")?.toString())
-        .single();
-
-      if (existingManager) {
-        toast({
-          title: "Error",
-          description: "A team member with this email already exists",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create the manager invitation
       const { data: manager, error: managerError } = await supabase
         .from('brand_managers')
         .insert({
@@ -88,15 +68,7 @@ const AccountManagersStep = () => {
         .select()
         .single();
 
-      if (managerError) {
-        console.error('Error creating manager:', managerError);
-        toast({
-          title: "Error",
-          description: "Failed to add team member",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (managerError) throw managerError;
 
       setAccountManagers([...accountManagers, manager as AccountManager]);
       setShowAddManager(false);
@@ -173,26 +145,18 @@ const AccountManagersStep = () => {
 
         <div className="space-y-2">
           {accountManagers.map((manager) => (
-            <motion.div
+            <ManagerCard
               key={manager.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center justify-between p-3 bg-nino-bg rounded-lg hover:bg-nino-bg/80 transition-colors"
-            >
-              <div className="space-y-1">
-                <p className="font-medium text-sm text-nino-text">{manager.name}</p>
-                <p className="text-xs text-nino-gray">{manager.email}</p>
-                <p className="text-xs text-nino-primary">{manager.role}</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => removeManager(manager.id)}
-                className="text-red-500 hover:text-red-600 hover:bg-red-50"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </motion.div>
+              manager={manager}
+              onUpdatePermissions={(permissions) => {
+                setAccountManagers(managers =>
+                  managers.map(m =>
+                    m.id === manager.id ? { ...m, permissions } : m
+                  )
+                );
+              }}
+              onRemove={() => removeManager(manager.id)}
+            />
           ))}
         </div>
       </div>
