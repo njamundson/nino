@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,32 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Check session on mount
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/onboarding");
+      }
+      if (error) {
+        console.error("Session check error:", error);
+      }
+    };
+    
+    checkSession();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate("/onboarding");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleSignUp = async ({ email, password, firstName, lastName }: {
     email: string;
@@ -41,7 +67,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         
         if (signUpError.message.includes("User already registered")) {
           errorMessage = "An account with this email already exists. Please sign in instead.";
-          onToggleAuth(); // Switch to sign in form
+          onToggleAuth();
         } else {
           switch (signUpError.message) {
             case "Failed to fetch":
@@ -67,12 +93,27 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       }
 
       if (signUpData) {
-        toast({
-          title: "Welcome to NINO",
-          description: "Your account has been created successfully.",
-        });
+        // Wait for session to be established
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        navigate("/onboarding");
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          toast({
+            title: "Error",
+            description: "Error establishing session. Please try signing in.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (session) {
+          toast({
+            title: "Welcome to NINO",
+            description: "Your account has been created successfully.",
+          });
+          
+          navigate("/onboarding");
+        }
       }
     } catch (error: any) {
       console.error("Authentication error:", error);
@@ -85,7 +126,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             break;
           case "User already registered":
             errorMessage = "An account with this email already exists.";
-            onToggleAuth(); // Switch to sign in form
+            onToggleAuth();
             break;
           default:
             errorMessage = error.message;
