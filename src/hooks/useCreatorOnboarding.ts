@@ -11,7 +11,7 @@ export const useCreatorOnboarding = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
-    id: crypto.randomUUID(), // Generate a temporary ID for the form
+    id: crypto.randomUUID(),
     firstName: "",
     lastName: "",
     bio: "",
@@ -20,10 +20,12 @@ export const useCreatorOnboarding = () => {
     website: "",
     location: "",
     paymentDetails: "",
-    profile: null
+    profile: null,
+    profileImage: null // Initialize profileImage
   });
 
-  const updateField = (field: keyof CreatorData, value: string | string[]) => {
+  const updateField = (field: keyof CreatorData, value: any) => {
+    console.log('Updating field:', field, 'with value:', value);
     setCreatorData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -70,6 +72,7 @@ export const useCreatorOnboarding = () => {
           website: creatorData.website,
           location: creatorData.location,
           specialties: creatorData.specialties,
+          profile_image_url: creatorData.profileImage // Save the profile image URL
         });
 
         if (creatorError) {

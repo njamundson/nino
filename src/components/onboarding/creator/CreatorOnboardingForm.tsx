@@ -26,13 +26,16 @@ const CreatorOnboardingForm = () => {
       case 'basic':
         return (
           <BasicInfoStep
-            profileImage={null}
+            profileImage={creatorData.profileImage}
             firstName={creatorData.firstName}
             lastName={creatorData.lastName}
             bio={creatorData.bio}
             location={creatorData.location}
             onUpdateField={updateField}
-            onUpdateImage={(image: string | null) => updateField('profileImage', image || '')}
+            onUpdateImage={(image: string | null) => {
+              console.log('Updating profile image:', image);
+              updateField('profileImage', image);
+            }}
           />
         );
       case 'professional':
