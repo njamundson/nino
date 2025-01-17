@@ -42,10 +42,22 @@ export const useBrandOnboarding = () => {
       setCurrentStep('managers');
     } else {
       try {
-        console.log("Creating brand with data:", brandData);
+        console.log("Starting brand creation with data:", brandData);
         
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          console.error("Error getting user:", userError);
+          toast({
+            title: "Authentication Error",
+            description: "Please sign in again",
+            variant: "destructive",
+          });
+          return;
+        }
+
         if (!user) {
+          console.error("No user found");
           toast({
             title: "Error",
             description: "No authenticated user found.",
@@ -53,6 +65,8 @@ export const useBrandOnboarding = () => {
           });
           return;
         }
+
+        console.log("Got user:", user.id);
 
         const { data: brand, error: brandError } = await supabase
           .from('brands')
@@ -66,13 +80,23 @@ export const useBrandOnboarding = () => {
             brand_type: brandData.brandType,
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (brandError) {
           console.error("Error creating brand:", brandError);
           toast({
             title: "Error",
             description: "Failed to create brand profile. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (!brand) {
+          console.error("No brand data returned after insert");
+          toast({
+            title: "Error",
+            description: "Brand profile creation failed. Please try again.",
             variant: "destructive",
           });
           return;
