@@ -30,16 +30,21 @@ const CreatorGrid = ({ selectedSpecialties }: CreatorGridProps) => {
 
         if (error) throw error;
 
-        const formattedCreators = data.map(creator => ({
-          firstName: creator.profiles.first_name,
-          lastName: creator.profiles.last_name,
+        const formattedCreators: CreatorData[] = data.map(creator => ({
+          id: creator.id,
+          firstName: creator.profiles?.first_name || '',
+          lastName: creator.profiles?.last_name || '',
           bio: creator.bio || '',
           specialties: creator.specialties || [],
           instagram: creator.instagram || '',
           website: creator.website || '',
           location: creator.location || '',
           paymentDetails: '',
-          profileImage: null
+          profileImage: null,
+          profile: {
+            first_name: creator.profiles?.first_name,
+            last_name: creator.profiles?.last_name
+          }
         }));
 
         setCreators(formattedCreators);
@@ -79,7 +84,7 @@ const CreatorGrid = ({ selectedSpecialties }: CreatorGridProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {creators.map((creator, index) => (
-        <CreatorCard key={index} creator={creator} />
+        <CreatorCard key={creator.id || index} creator={creator} />
       ))}
     </div>
   );

@@ -11,6 +11,7 @@ export const useCreatorOnboarding = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
+    id: crypto.randomUUID(), // Generate a temporary ID for the form
     firstName: "",
     lastName: "",
     bio: "",
@@ -19,6 +20,7 @@ export const useCreatorOnboarding = () => {
     website: "",
     location: "",
     paymentDetails: "",
+    profile: null
   });
 
   const updateField = (field: keyof CreatorData, value: string | string[]) => {

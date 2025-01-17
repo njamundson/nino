@@ -10,4 +10,8 @@ export interface CreatorData {
   paymentDetails: string;
   creatorType?: string;
   profileImage?: string | null;
+  profile?: {
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
 }
