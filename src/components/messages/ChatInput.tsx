@@ -68,7 +68,7 @@ export const ChatInput = ({
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type a message..."
-          className="bg-white"
+          className="bg-white rounded-full"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               handleSendMessage();
