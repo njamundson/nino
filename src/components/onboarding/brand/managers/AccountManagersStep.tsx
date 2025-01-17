@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ManagerForm from "./ManagerForm";
 import ManagerList from "./ManagerList";
 import AccountManagersHeader from "./AccountManagersHeader";
-import NavigationButtons from "./NavigationButtons";
 import AddManagerButton from "./AddManagerButton";
 import { Label } from "@/components/ui/label";
 
@@ -17,7 +15,6 @@ interface AccountManager {
 }
 
 const AccountManagersStep = () => {
-  const navigate = useNavigate();
   const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
   const [showAddManager, setShowAddManager] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
@@ -49,10 +46,6 @@ const AccountManagersStep = () => {
 
   const removeManager = (id: string) => {
     setAccountManagers(accountManagers.filter((manager) => manager.id !== id));
-  };
-
-  const handleComplete = () => {
-    navigate("/brand/dashboard");
   };
 
   return (
@@ -89,8 +82,6 @@ const AccountManagersStep = () => {
           onRemoveManager={removeManager}
         />
       </div>
-
-      <NavigationButtons onComplete={handleComplete} />
     </motion.div>
   );
 };
