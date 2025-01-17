@@ -29,6 +29,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
             first_name: firstName,
             last_name: lastName,
           },
+          emailRedirectTo: `${window.location.origin}/onboarding`,
         },
       });
 
@@ -63,13 +64,19 @@ export const useSignUp = (onToggleAuth: () => void) => {
         return;
       }
 
-      if (signUpData) {
+      if (signUpData?.session) {
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
         });
         
         navigate("/onboarding");
+      } else {
+        // If no session but signup was successful, show a message about email confirmation
+        toast({
+          title: "Check your email",
+          description: "Please check your email to confirm your account.",
+        });
       }
     } catch (error: any) {
       console.error("Authentication error:", error);
