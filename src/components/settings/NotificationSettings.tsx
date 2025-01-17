@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Bell, Mail, MessageSquare, Globe, Calendar, Star } from "lucide-react";
+import { Bell, Mail, MessageSquare, Calendar, Star } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,79 +14,101 @@ interface NotificationSettings {
   marketing_updates: boolean;
 }
 
+const defaultSettings: NotificationSettings = {
+  push_enabled: true,
+  email_enabled: true,
+  message_notifications: true,
+  application_updates: true,
+  marketing_updates: true,
+};
+
 const NotificationSettings = () => {
   const { toast } = useToast();
-  const [settings, setSettings] = useState<NotificationSettings>({
-    push_enabled: true,
-    email_enabled: true,
-    message_notifications: true,
-    application_updates: true,
-    marketing_updates: true,
-  });
+  const [settings, setSettings] = useState<NotificationSettings>(defaultSettings);
   const [brandId, setBrandId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBrandId = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: brandData } = await supabase
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: brandData, error: brandError } = await supabase
           .from('brands')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
         
-        if (brandData) {
-          setBrandId(brandData.id);
-          const { data: notificationSettings } = await supabase
+        if (brandError) throw brandError;
+        if (!brandData) return;
+
+        setBrandId(brandData.id);
+
+        const { data: notificationSettings, error: settingsError } = await supabase
+          .from('brand_notification_settings')
+          .select('*')
+          .eq('brand_id', brandData.id)
+          .maybeSingle();
+        
+        if (settingsError) throw settingsError;
+
+        if (notificationSettings) {
+          setSettings(notificationSettings);
+        } else {
+          // Create default settings
+          const { data: newSettings, error: createError } = await supabase
             .from('brand_notification_settings')
-            .select('*')
-            .eq('brand_id', brandData.id)
+            .insert([{ 
+              brand_id: brandData.id,
+              ...defaultSettings 
+            }])
+            .select()
             .single();
           
-          if (notificationSettings) {
-            setSettings(notificationSettings);
-          } else {
-            // Create default settings
-            const { data: newSettings } = await supabase
-              .from('brand_notification_settings')
-              .insert([{ brand_id: brandData.id }])
-              .select()
-              .single();
-            
-            if (newSettings) {
-              setSettings(newSettings);
-            }
+          if (createError) throw createError;
+          if (newSettings) {
+            setSettings(newSettings);
           }
         }
+      } catch (error) {
+        console.error('Error fetching notification settings:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load notification settings",
+          variant: "destructive",
+        });
       }
     };
 
     fetchBrandId();
-  }, []);
+  }, [toast]);
 
   const handleToggle = async (setting: keyof NotificationSettings) => {
     if (!brandId) return;
 
-    const newSettings = { ...settings, [setting]: !settings[setting] };
-    setSettings(newSettings);
+    try {
+      const newSettings = { ...settings, [setting]: !settings[setting] };
+      setSettings(newSettings);
 
-    const { error } = await supabase
-      .from('brand_notification_settings')
-      .update(newSettings)
-      .eq('brand_id', brandId);
+      const { error } = await supabase
+        .from('brand_notification_settings')
+        .update(newSettings)
+        .eq('brand_id', brandId);
 
-    if (error) {
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Notification settings updated",
+      });
+    } catch (error) {
+      console.error('Error updating notification settings:', error);
       toast({
         title: "Error",
         description: "Failed to update notification settings",
         variant: "destructive",
       });
       setSettings(settings); // Revert on error
-    } else {
-      toast({
-        title: "Success",
-        description: "Notification settings updated",
-      });
     }
   };
 
