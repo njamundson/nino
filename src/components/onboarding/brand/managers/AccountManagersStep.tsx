@@ -40,7 +40,7 @@ const AccountManagersStep = () => {
 
       const { data: brand, error: brandError } = await supabase
         .from('brands')
-        .select('id')
+        .select('id, created_at')
         .eq('user_id', user.id)
         .maybeSingle();
 
@@ -62,6 +62,21 @@ const AccountManagersStep = () => {
         return;
       }
 
+      // Check if 5 minutes have passed since brand creation
+      const createdAt = new Date(brand.created_at);
+      const fiveMinutesAfterCreation = new Date(createdAt.getTime() + 5 * 60000);
+      const now = new Date();
+
+      if (now < fiveMinutesAfterCreation) {
+        const remainingMinutes = Math.ceil((fiveMinutesAfterCreation.getTime() - now.getTime()) / 60000);
+        toast({
+          title: "Please wait",
+          description: `You can add team members ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''} after brand creation`,
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data: manager, error: managerError } = await supabase
         .from('brand_managers')
         .insert({
@@ -75,7 +90,17 @@ const AccountManagersStep = () => {
         .select()
         .single();
 
-      if (managerError) throw managerError;
+      if (managerError) {
+        if (managerError.code === 'PGRST109') {
+          toast({
+            title: "Access Denied",
+            description: "Please wait 5 minutes after brand creation before adding team members",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw managerError;
+      }
 
       setAccountManagers([...accountManagers, manager as AccountManager]);
       setShowAddManager(false);
