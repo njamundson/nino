@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ManagerForm from "./ManagerForm";
-import ManagerList from "./ManagerList";
 import AccountManagersHeader from "./AccountManagersHeader";
 import AddManagerButton from "./AddManagerButton";
 import { Label } from "@/components/ui/label";
@@ -22,6 +21,37 @@ const AccountManagersStep = () => {
   const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
   const { toast } = useToast();
 
+  // Load existing managers on component mount
+  useEffect(() => {
+    const loadExistingManagers = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: brand } = await supabase
+          .from('brands')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (brand) {
+          const { data: managers } = await supabase
+            .from('brand_managers')
+            .select('*')
+            .eq('brand_id', brand.id);
+
+          if (managers) {
+            setAccountManagers(managers as AccountManager[]);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading managers:', error);
+      }
+    };
+
+    loadExistingManagers();
+  }, []);
+
   const addAccountManager = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -38,18 +68,40 @@ const AccountManagersStep = () => {
         return;
       }
 
-      // Get the brand ID for the current user
-      const { data: brandData, error: brandError } = await supabase
+      // First, get or create the brand
+      let brandId: string;
+      
+      // Try to get existing brand
+      const { data: existingBrand } = await supabase
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
         .single();
 
-      if (brandError || !brandData) {
-        console.error('Error fetching brand:', brandError);
+      if (existingBrand) {
+        brandId = existingBrand.id;
+      } else {
+        // If no brand exists, show error - brand should be created in previous step
         toast({
           title: "Error",
-          description: "Could not find associated brand",
+          description: "Please complete brand setup first",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check if manager with this email already exists
+      const { data: existingManager } = await supabase
+        .from('brand_managers')
+        .select('*')
+        .eq('brand_id', brandId)
+        .eq('email', formData.get("managerEmail"))
+        .single();
+
+      if (existingManager) {
+        toast({
+          title: "Error",
+          description: "A team member with this email already exists",
           variant: "destructive",
         });
         return;
@@ -59,7 +111,7 @@ const AccountManagersStep = () => {
       const { data: manager, error: managerError } = await supabase
         .from('brand_managers')
         .insert({
-          brand_id: brandData.id,
+          brand_id: brandId,
           name: formData.get("managerName") as string,
           email: formData.get("managerEmail") as string,
           role: formData.get("managerRole") as string,
@@ -102,16 +154,17 @@ const AccountManagersStep = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-md space-y-8"
+      className="space-y-6"
     >
       <AccountManagersHeader />
 
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <Label className="text-lg font-medium text-nino-text">
-            Team Members
-          </Label>
-          <AddManagerButton onClick={() => setShowAddManager(true)} />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Label className="text-base">Team Members</Label>
+          <AddManagerButton
+            onClick={() => setShowAddManager(true)}
+            disabled={showAddManager}
+          />
         </div>
 
         {showAddManager && (
