@@ -2,27 +2,14 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
 import ManagerPermissions from "./ManagerPermissions";
+import type { AccountManager } from "./hooks/useAccountManagers";
 
 interface ManagerCardProps {
-  manager: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-    permissions: string[];
-  };
-  onUpdatePermissions: (permissions: string[]) => void;
+  manager: AccountManager;
   onRemove: () => void;
 }
 
-const ManagerCard = ({ manager, onUpdatePermissions, onRemove }: ManagerCardProps) => {
-  const handlePermissionToggle = (permission: string) => {
-    const newPermissions = manager.permissions.includes(permission)
-      ? manager.permissions.filter((p) => p !== permission)
-      : [...manager.permissions, permission];
-    onUpdatePermissions(newPermissions);
-  };
-
+const ManagerCard = ({ manager, onRemove }: ManagerCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -34,11 +21,7 @@ const ManagerCard = ({ manager, onUpdatePermissions, onRemove }: ManagerCardProp
         <p className="text-xs text-nino-gray">{manager.email}</p>
         <p className="text-xs text-nino-primary">{manager.role}</p>
         <div className="mt-2">
-          <ManagerPermissions
-            managerId={manager.id}
-            permissions={manager.permissions}
-            onPermissionToggle={handlePermissionToggle}
-          />
+          <ManagerPermissions permissions={manager.permissions} />
         </div>
       </div>
       <Button
