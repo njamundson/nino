@@ -7,4 +7,6 @@ export interface CreatorData {
   website: string;
   location: string;
   paymentDetails: string;
+  creatorType?: string;
+  profileImage?: string | null;
 }

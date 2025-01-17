@@ -25,30 +25,35 @@ const CreatorOnboardingForm = () => {
       case 'basic':
         return (
           <BasicInfoStep
-            creatorData={creatorData}
+            profileImage={null} // This needs to be added to CreatorData if needed
+            firstName={creatorData.firstName}
+            lastName={creatorData.lastName}
+            bio={creatorData.bio}
+            location={creatorData.location}
             onUpdateField={updateField}
+            onUpdateImage={(image: string | null) => updateField('profileImage', image || '')}
           />
         );
       case 'professional':
         return (
           <ProfessionalInfoStep
-            creatorData={creatorData}
+            creatorType={creatorData.creatorType || ''}
+            skills={creatorData.specialties || []}
             onUpdateField={updateField}
+            onUpdateSkills={(skills: string[]) => updateField('specialties', skills)}
           />
         );
       case 'social':
         return (
           <SocialLinksStep
-            creatorData={creatorData}
+            instagram={creatorData.instagram}
+            website={creatorData.website}
             onUpdateField={updateField}
           />
         );
       case 'payment':
         return (
-          <PaymentStep
-            creatorData={creatorData}
-            onUpdateField={updateField}
-          />
+          <PaymentStep />
         );
       default:
         return null;
