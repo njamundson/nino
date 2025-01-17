@@ -2,8 +2,20 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 
+interface Message {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  created_at: string;
+  sender_profile?: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
 interface ChatListProps {
-  messages: any[];
+  messages: Message[] | undefined;
   creators: any[];
   selectedChat: string | null;
   setSelectedChat: (id: string) => void;
@@ -12,7 +24,7 @@ interface ChatListProps {
 }
 
 export const ChatList = ({
-  messages,
+  messages = [],
   creators,
   selectedChat,
   setSelectedChat,
@@ -34,10 +46,12 @@ export const ChatList = ({
       </div>
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          {messages.map((message) => (
+          {messages?.map((message) => (
             <div
               key={message.id}
-              className={`p-2 rounded-lg ${selectedChat === message.id ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
+              className={`p-2 rounded-lg cursor-pointer ${
+                selectedChat === message.id ? 'bg-gray-200' : 'hover:bg-gray-100'
+              }`}
               onClick={() => setSelectedChat(message.id)}
             >
               <div className="font-semibold">
