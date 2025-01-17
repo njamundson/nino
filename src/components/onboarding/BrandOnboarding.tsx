@@ -1,14 +1,36 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
 import AccountManagersStep from "./brand/managers/AccountManagersStep";
 import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
+import { BrandData } from "@/types/brand";
 
 type OnboardingStep = "basic" | "details" | "social" | "managers";
 
 const BrandOnboarding = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("basic");
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [brandData, setBrandData] = useState<BrandData>({
+    brandName: "",
+    brandEmail: "",
+    brandBio: "",
+    homeLocation: "",
+    instagram: "",
+    website: "",
+    location: "",
+    brandType: "hotel",
+  });
+
+  const handleUpdateField = (field: keyof BrandData, value: string) => {
+    setBrandData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const handleNext = () => {
     switch (currentStep) {
@@ -42,24 +64,44 @@ const BrandOnboarding = () => {
     }
   };
 
+  const handleComplete = () => {
+    navigate("/brand/dashboard");
+  };
+
   return (
     <div className="min-h-screen bg-nino-bg">
       <BrandOnboardingProgress currentStep={currentStep} />
       
       {currentStep === "basic" && (
-        <BrandBasicInfoStep onNext={handleNext} />
+        <BrandBasicInfoStep
+          profileImage={profileImage}
+          brandData={brandData}
+          onUpdateField={handleUpdateField}
+          onUpdateImage={setProfileImage}
+          onNext={handleNext}
+        />
       )}
       
       {currentStep === "details" && (
-        <BrandDetailsStep onNext={handleNext} onBack={handleBack} />
+        <BrandDetailsStep
+          brandData={brandData}
+          onUpdateField={handleUpdateField}
+          onNext={handleNext}
+          onBack={handleBack}
+        />
       )}
       
       {currentStep === "social" && (
-        <BrandSocialStep onNext={handleNext} onBack={handleBack} />
+        <BrandSocialStep
+          brandData={brandData}
+          onUpdateField={handleUpdateField}
+          onNext={handleNext}
+          onBack={handleBack}
+        />
       )}
 
       {currentStep === "managers" && (
-        <AccountManagersStep />
+        <AccountManagersStep onComplete={handleComplete} />
       )}
     </div>
   );
