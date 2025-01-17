@@ -39,7 +39,6 @@ const Messages = () => {
   const [isRecording, setIsRecording] = useState(false);
   const { toast } = useToast();
 
-  // Fetch messages
   const { data: messages, refetch } = useQuery({
     queryKey: ["messages"],
     queryFn: async () => {
@@ -156,13 +155,18 @@ const Messages = () => {
     refetch();
   };
 
-  const selectedChatProfile = messages?.find(m => 
-    m.sender_id === selectedChat 
-      ? m.sender_profile 
-      : m.receiver_id === selectedChat 
-        ? m.receiver_profile 
-        : null
-  );
+  const selectedChatProfile = messages?.find(m => {
+    if (m.sender_id === selectedChat) {
+      return m.sender_profile;
+    }
+    if (m.receiver_id === selectedChat) {
+      return m.receiver_profile;
+    }
+    return null;
+  });
+
+  const selectedFirstName = selectedChatProfile?.sender_profile?.first_name || selectedChatProfile?.receiver_profile?.first_name;
+  const selectedLastName = selectedChatProfile?.sender_profile?.last_name || selectedChatProfile?.receiver_profile?.last_name;
 
   return (
     <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-4rem)]">
@@ -182,8 +186,8 @@ const Messages = () => {
           {selectedChat ? (
             <>
               <ChatHeader
-                senderFirstName={selectedChatProfile?.first_name}
-                senderLastName={selectedChatProfile?.last_name}
+                senderFirstName={selectedFirstName}
+                senderLastName={selectedLastName}
               />
               <ChatMessages
                 messages={messages}

@@ -6,29 +6,16 @@ import { Plus } from "lucide-react";
 import CreatorModal from "./CreatorModal";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-
-interface Creator {
-  id: string;
-  bio: string | null;
-  location: string | null;
-  specialties: string[] | null;
-  instagram: string | null;
-  website: string | null;
-  profile: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
-  imageUrl: string;
-}
+import { CreatorData } from "@/types/creator";
 
 interface CreatorCardProps {
-  creator: Creator;
+  creator: CreatorData;
 }
 
 const CreatorCard = ({ creator }: CreatorCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
-  const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
+  const fullName = `${creator.firstName || ''} ${creator.lastName || ''}`.trim();
 
   const handleInvite = async (opportunityId: string) => {
     try {
@@ -83,7 +70,7 @@ const CreatorCard = ({ creator }: CreatorCardProps) => {
       >
         <div className="relative aspect-[3/4] overflow-hidden">
           <img
-            src={creator.imageUrl}
+            src={creator.profileImage || '/placeholder.svg'}
             alt={fullName}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />

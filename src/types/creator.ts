@@ -1,4 +1,5 @@
 export interface CreatorData {
+  id: string;
   firstName: string;
   lastName: string;
   bio: string;
