@@ -15,6 +15,7 @@ const BrandOnboarding = () => {
   const { toast } = useToast();
   const {
     currentStep,
+    setCurrentStep,
     profileImage,
     brandData,
     updateField,
