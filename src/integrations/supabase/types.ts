@@ -225,6 +225,75 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_verifications: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          creator_id: string | null
+          government_id_url: string | null
+          id: string
+          instagram_handle: string | null
+          portfolio_url: string | null
+          profile_photo_url: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["verification_status"] | null
+          submitted_at: string | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          government_id_url?: string | null
+          id?: string
+          instagram_handle?: string | null
+          portfolio_url?: string | null
+          profile_photo_url?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["verification_status"] | null
+          submitted_at?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          government_id_url?: string | null
+          id?: string
+          instagram_handle?: string | null
+          portfolio_url?: string | null
+          profile_photo_url?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["verification_status"] | null
+          submitted_at?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_verifications_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_verifications_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creators: {
         Row: {
           bio: string | null
@@ -384,6 +453,7 @@ export type Database = {
           created_at: string
           first_name: string | null
           id: string
+          is_admin: boolean | null
           last_name: string | null
           updated_at: string
         }
@@ -391,6 +461,7 @@ export type Database = {
           created_at?: string
           first_name?: string | null
           id: string
+          is_admin?: boolean | null
           last_name?: string | null
           updated_at?: string
         }
@@ -398,10 +469,53 @@ export type Database = {
           created_at?: string
           first_name?: string | null
           id?: string
+          is_admin?: boolean | null
           last_name?: string | null
           updated_at?: string
         }
         Relationships: []
+      }
+      verification_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          status: Database["public"]["Enums"]["verification_status"] | null
+          verification_id: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["verification_status"] | null
+          verification_id?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["verification_status"] | null
+          verification_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_history_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "creator_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -414,6 +528,7 @@ export type Database = {
       application_status: "pending" | "accepted" | "rejected"
       brand_type: "hotel" | "resort" | "travel_agency"
       opportunity_status: "draft" | "open" | "closed" | "expired"
+      verification_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
