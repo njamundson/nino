@@ -32,6 +32,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             first_name: firstName,
             last_name: lastName,
           },
+          emailRedirectTo: window.location.origin,
         },
       });
 
@@ -41,7 +42,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         
         if (signUpError.message.includes("User already registered")) {
           errorMessage = "An account with this email already exists. Please sign in instead.";
-          onToggleAuth(); // Switch to sign in form
+          onToggleAuth();
         } else {
           switch (signUpError.message) {
             case "Failed to fetch":
@@ -66,13 +67,14 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         return;
       }
 
-      if (signUpData) {
+      if (signUpData?.user) {
         toast({
-          title: "Welcome to NINO",
-          description: "Your account has been created successfully.",
+          title: "Account created successfully",
+          description: "Please check your email to verify your account before signing in.",
         });
         
-        navigate("/onboarding");
+        // Don't navigate, just show the success message and let them verify email
+        onToggleAuth(); // Switch back to sign in after successful registration
       }
     } catch (error: any) {
       console.error("Authentication error:", error);
@@ -85,7 +87,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             break;
           case "User already registered":
             errorMessage = "An account with this email already exists.";
-            onToggleAuth(); // Switch to sign in form
+            onToggleAuth();
             break;
           default:
             errorMessage = error.message;
