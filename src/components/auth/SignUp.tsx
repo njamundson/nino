@@ -113,6 +113,25 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           });
           
           navigate("/onboarding");
+        } else {
+          // If no session is established yet, wait a bit and try again
+          setTimeout(async () => {
+            const { data: { session: retrySession } } = await supabase.auth.getSession();
+            if (retrySession) {
+              toast({
+                title: "Welcome to NINO",
+                description: "Your account has been created successfully.",
+              });
+              navigate("/onboarding");
+            } else {
+              toast({
+                title: "Error",
+                description: "Please try signing in again.",
+                variant: "destructive",
+              });
+              onToggleAuth();
+            }
+          }, 1000);
         }
       }
     } catch (error: any) {
