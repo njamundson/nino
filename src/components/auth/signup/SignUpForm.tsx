@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SignUpFormProps {
   onSubmit: (formData: {
@@ -23,25 +24,41 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateForm = () => {
+    // Reset error
     setError("");
-
-    if (password !== confirmPassword) {
-      setError("Passwords don't match");
-      return;
-    }
-
-    // Basic password validation
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address");
+      return false;
+    }
+
+    // Password validation
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords don't match");
+      return false;
+    }
+
+    // Name validation
+    if (!firstName.trim() || !lastName.trim()) {
+      setError("Please enter both first and last name");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
       return;
     }
 
@@ -50,6 +67,12 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="grid grid-cols-2 gap-4">
         <Input
           type="text"
@@ -128,10 +151,6 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
           )}
         </button>
       </div>
-
-      {error && (
-        <p className="text-red-500 text-sm">{error}</p>
-      )}
 
       <Button
         type="submit"

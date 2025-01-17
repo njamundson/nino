@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +8,8 @@ interface ProtectedBrandRouteProps {
 }
 
 const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
+  const location = useLocation();
+
   const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ["auth-session"],
     queryFn: async () => {
@@ -47,11 +49,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   }
 
   if (!session) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   if (!brand) {
-    return <Navigate to="/onboarding" />;
+    return <Navigate to="/onboarding" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
