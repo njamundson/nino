@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion"; // Added this import
 import ManagerForm from "./ManagerForm";
 import AccountManagersHeader from "./AccountManagersHeader";
 import AddManagerButton from "./AddManagerButton";
