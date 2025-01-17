@@ -35,19 +35,29 @@ const BrandOnboarding = () => {
         return;
       }
 
-      // Get the brand ID for the current user
+      // Get the brand ID for the current user using maybeSingle() instead of single()
       const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (brandError || !brand) {
+      if (brandError) {
         toast({
           title: "Error",
-          description: "Could not find brand information",
+          description: "Could not fetch brand information",
           variant: "destructive",
         });
+        return;
+      }
+
+      if (!brand) {
+        toast({
+          title: "Error",
+          description: "Brand profile not found. Please complete the basic information first.",
+          variant: "destructive",
+        });
+        setCurrentStep('basic');
         return;
       }
 
