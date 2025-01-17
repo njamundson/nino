@@ -3,8 +3,8 @@ import PageHeader from "@/components/shared/PageHeader";
 const ProjectsHeader = () => {
   return (
     <PageHeader
-      title="My Projects"
-      description="View and manage your active projects"
+      title="Projects"
+      description="View and apply to projects"
     />
   );
 };
