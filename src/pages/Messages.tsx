@@ -133,19 +133,19 @@ const Messages = () => {
                 messages={messages}
                 selectedChat={selectedChat}
               />
-              <ChatInput
-                newMessage={newMessage}
-                setNewMessage={setNewMessage}
-                handleSendMessage={handleSendMessage}
-                isRecording={isRecording}
-                setIsRecording={setIsRecording}
-              />
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-gray-500">
               <p>Select a conversation to start messaging</p>
             </div>
           )}
+          <ChatInput
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            handleSendMessage={handleSendMessage}
+            isRecording={isRecording}
+            setIsRecording={setIsRecording}
+          />
         </Card>
       </div>
     </div>
