@@ -38,11 +38,20 @@ const AccountManagersStep = () => {
         return;
       }
 
-      const { data: brand } = await supabase
+      const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (brandError) {
+        toast({
+          title: "Error",
+          description: "Error fetching brand data",
+          variant: "destructive",
+        });
+        return;
+      }
 
       if (!brand) {
         toast({
