@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import ProjectCard from "@/components/projects/ProjectCard";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import ProjectsHeader from "@/components/projects/ProjectsHeader";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Projects = () => {
-  const { data: opportunities, isLoading } = useQuery({
+  const { data: opportunities, isLoading, error } = useQuery({
     queryKey: ['opportunities'],
     queryFn: async () => {
       console.log("Fetching opportunities...");
@@ -32,30 +33,58 @@ const Projects = () => {
     },
   });
 
-  return (
-    <div className="space-y-8">
-      <ProjectsHeader />
-      
-      {isLoading ? (
-        <div className="flex justify-center items-center min-h-[200px]">
+  if (isLoading) {
+    return (
+      <div className="container py-8 space-y-8">
+        <ProjectsHeader />
+        <div className="flex justify-center items-center min-h-[400px]">
           <Loader2 className="w-8 h-8 animate-spin text-nino-primary" />
         </div>
-      ) : opportunities && opportunities.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {opportunities.map((opportunity) => (
-            <ProjectCard key={opportunity.id} opportunity={opportunity} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <h3 className="text-lg font-medium text-nino-gray mb-2">
-            No open opportunities yet
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container py-8 space-y-8">
+        <ProjectsHeader />
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            There was an error loading the projects. Please try again later.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (!opportunities || opportunities.length === 0) {
+    return (
+      <div className="container py-8 space-y-8">
+        <ProjectsHeader />
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
+          <div className="rounded-full bg-nino-primary/10 p-4">
+            <AlertCircle className="w-8 h-8 text-nino-primary" />
+          </div>
+          <h3 className="text-xl font-medium text-gray-900">
+            No campaigns available
           </h3>
-          <p className="text-nino-gray">
-            Check back later for new opportunities
+          <p className="text-gray-500 max-w-md">
+            There are no active campaigns right now. Check back later for new opportunities!
           </p>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="container py-8 space-y-8">
+      <ProjectsHeader />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {opportunities.map((opportunity) => (
+          <ProjectCard key={opportunity.id} opportunity={opportunity} />
+        ))}
+      </div>
     </div>
   );
 };
