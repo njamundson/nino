@@ -26,6 +26,15 @@ export const useBrandOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
+      // Validate basic info before proceeding
+      if (!brandData.brandName || !brandData.brandEmail) {
+        toast({
+          title: "Missing Information",
+          description: "Please fill out brand name and email",
+          variant: "destructive",
+        });
+        return;
+      }
       setCurrentStep('details');
     } else if (currentStep === 'details') {
       setCurrentStep('social');
@@ -33,6 +42,8 @@ export const useBrandOnboarding = () => {
       setCurrentStep('managers');
     } else {
       try {
+        console.log("Creating brand with data:", brandData);
+        
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           toast({
@@ -43,15 +54,19 @@ export const useBrandOnboarding = () => {
           return;
         }
 
-        const { error: brandError } = await supabase.from('brands').insert({
-          user_id: user.id,
-          company_name: brandData.brandName,
-          description: brandData.brandBio,
-          website: brandData.website,
-          instagram: brandData.instagram,
-          location: brandData.location,
-          brand_type: brandData.brandType,
-        });
+        const { data: brand, error: brandError } = await supabase
+          .from('brands')
+          .insert({
+            user_id: user.id,
+            company_name: brandData.brandName,
+            description: brandData.brandBio,
+            website: brandData.website,
+            instagram: brandData.instagram,
+            location: brandData.location,
+            brand_type: brandData.brandType,
+          })
+          .select()
+          .single();
 
         if (brandError) {
           console.error("Error creating brand:", brandError);
@@ -62,6 +77,8 @@ export const useBrandOnboarding = () => {
           });
           return;
         }
+
+        console.log("Brand created successfully:", brand);
 
         toast({
           title: "Success!",
