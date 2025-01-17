@@ -18,8 +18,8 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session);
       
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User signed out or deleted');
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
         toast({
           title: "Session ended",
           description: "Please sign in again to continue.",
