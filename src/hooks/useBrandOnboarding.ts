@@ -7,7 +7,7 @@ import { BrandData } from "@/types/brand";
 export const useBrandOnboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social'>('basic');
+  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({
     brandName: "",
@@ -29,6 +29,8 @@ export const useBrandOnboarding = () => {
       setCurrentStep('details');
     } else if (currentStep === 'details') {
       setCurrentStep('social');
+    } else if (currentStep === 'social') {
+      setCurrentStep('managers');
     } else {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -66,7 +68,6 @@ export const useBrandOnboarding = () => {
           description: "Your brand profile has been created.",
         });
 
-        // Redirect to brand dashboard after successful creation
         navigate("/brand/dashboard");
       } catch (error) {
         console.error("Error in brand creation:", error);
@@ -80,7 +81,9 @@ export const useBrandOnboarding = () => {
   };
 
   const handleBack = () => {
-    if (currentStep === 'social') {
+    if (currentStep === 'managers') {
+      setCurrentStep('social');
+    } else if (currentStep === 'social') {
       setCurrentStep('details');
     } else if (currentStep === 'details') {
       setCurrentStep('basic');

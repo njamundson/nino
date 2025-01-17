@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 
 interface BrandOnboardingNavigationProps {
-  currentStep: 'basic' | 'details' | 'social';
+  currentStep: 'basic' | 'details' | 'social' | 'managers';
   onBack: () => void;
   onNext: () => void;
 }
@@ -24,7 +24,7 @@ const BrandOnboardingNavigation = ({
         onClick={onNext}
         className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
       >
-        {currentStep === 'social' ? 'Complete Setup' : 'Next'}
+        {currentStep === 'managers' ? 'Complete Setup' : 'Next'}
       </Button>
     </div>
   );

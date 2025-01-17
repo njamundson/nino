@@ -5,6 +5,7 @@ import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
 import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
 import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
+import AccountManagersStep from "./brand/managers/AccountManagersStep";
 
 const BrandOnboarding = () => {
   const {
@@ -42,6 +43,8 @@ const BrandOnboarding = () => {
             onUpdateField={updateField}
           />
         );
+      case 'managers':
+        return <AccountManagersStep />;
       default:
         return null;
     }
