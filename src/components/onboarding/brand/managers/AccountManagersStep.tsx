@@ -7,7 +7,6 @@ import AccountManagersHeader from "./AccountManagersHeader";
 import AddManagerButton from "./AddManagerButton";
 import ManagerForm from "./ManagerForm";
 import ManagerList from "./ManagerList";
-import { Button } from "@/components/ui/button";
 
 export interface AccountManager {
   id: string;
@@ -57,72 +56,6 @@ const AccountManagersStep = () => {
     );
   };
 
-  const handleComplete = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Error",
-          description: "No authenticated user found",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Get the brand ID for the current user
-      const { data: brand, error: brandError } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (brandError || !brand) {
-        toast({
-          title: "Error",
-          description: "Could not find brand information",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Insert all managers
-      const { error: managersError } = await supabase
-        .from('brand_managers')
-        .insert(
-          accountManagers.map(manager => ({
-            brand_id: brand.id,
-            name: manager.name,
-            email: manager.email,
-            role: manager.role,
-            permissions: manager.permissions,
-          }))
-        );
-
-      if (managersError) {
-        toast({
-          title: "Error",
-          description: "Failed to add team members",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: "Success",
-        description: "Brand setup completed successfully",
-      });
-
-      navigate("/brand/dashboard");
-    } catch (error) {
-      console.error('Error in handleComplete:', error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -132,7 +65,7 @@ const AccountManagersStep = () => {
       <AccountManagersHeader />
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex justify-center">
           <AddManagerButton onClick={() => setShowAddManager(true)} />
         </div>
 
@@ -153,22 +86,6 @@ const AccountManagersStep = () => {
           onRemoveManager={removeManager}
           onUpdatePermissions={updateManagerPermissions}
         />
-
-        <div className="flex justify-between pt-6">
-          <Button
-            onClick={() => navigate("/onboarding/brand")}
-            variant="outline"
-            className="text-nino-gray hover:bg-gray-50"
-          >
-            Back
-          </Button>
-          <Button
-            onClick={handleComplete}
-            className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
-          >
-            Complete Setup
-          </Button>
-        </div>
       </div>
     </motion.div>
   );

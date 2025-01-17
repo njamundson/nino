@@ -6,8 +6,13 @@ import BrandSocialStep from "./brand/BrandSocialStep";
 import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
 import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
 import AccountManagersStep from "./brand/managers/AccountManagersStep";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const BrandOnboarding = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const {
     currentStep,
     profileImage,
@@ -17,6 +22,50 @@ const BrandOnboarding = () => {
     handleNext,
     handleBack,
   } = useBrandOnboarding();
+
+  const handleComplete = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Get the brand ID for the current user
+      const { data: brand, error: brandError } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (brandError || !brand) {
+        toast({
+          title: "Error",
+          description: "Could not find brand information",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Brand setup completed successfully",
+      });
+
+      navigate("/brand/dashboard");
+    } catch (error) {
+      console.error('Error in handleComplete:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getCurrentStep = () => {
     switch (currentStep) {
@@ -62,7 +111,7 @@ const BrandOnboarding = () => {
         <BrandOnboardingNavigation
           currentStep={currentStep}
           onBack={handleBack}
-          onNext={handleNext}
+          onNext={currentStep === 'managers' ? handleComplete : handleNext}
         />
       </motion.div>
     </div>
