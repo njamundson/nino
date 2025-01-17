@@ -11,56 +11,44 @@ import AccountManagersStep from "./brand/AccountManagersStep";
 
 const BrandOnboarding = () => {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<number>(1);
-  const { brandData, updateBrandData, handleSubmit } = useBrandOnboarding();
-
-  const handleNext = async () => {
-    if (currentStep === 4) {
-      await handleSubmit();
-      navigate("/brand/dashboard");
-      return;
-    }
-    setCurrentStep((prev) => prev + 1);
-  };
-
-  const handleBack = () => {
-    if (currentStep === 1) {
-      navigate("/onboarding");
-      return;
-    }
-    setCurrentStep((prev) => prev - 1);
-  };
+  const {
+    currentStep,
+    setCurrentStep,
+    profileImage,
+    brandData,
+    updateField,
+    setProfileImage,
+    handleNext,
+    handleBack,
+  } = useBrandOnboarding();
 
   const renderStep = () => {
     switch (currentStep) {
-      case 1:
+      case 'basic':
         return (
           <BrandBasicInfoStep
+            profileImage={profileImage}
             brandData={brandData}
-            updateBrandData={updateBrandData}
+            onUpdateField={updateField}
+            onUpdateImage={setProfileImage}
           />
         );
-      case 2:
+      case 'details':
         return (
           <BrandDetailsStep
             brandData={brandData}
-            updateBrandData={updateBrandData}
+            onUpdateField={updateField}
           />
         );
-      case 3:
+      case 'social':
         return (
           <BrandSocialStep
             brandData={brandData}
-            updateBrandData={updateBrandData}
+            onUpdateField={updateField}
           />
         );
-      case 4:
-        return (
-          <AccountManagersStep
-            brandData={brandData}
-            updateBrandData={updateBrandData}
-          />
-        );
+      case 'managers':
+        return <AccountManagersStep />;
       default:
         return null;
     }

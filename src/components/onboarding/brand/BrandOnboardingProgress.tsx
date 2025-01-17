@@ -1,30 +1,29 @@
-import { motion } from "framer-motion";
-
 interface BrandOnboardingProgressProps {
   currentStep: 'basic' | 'details' | 'social' | 'managers';
 }
 
 const BrandOnboardingProgress = ({ currentStep }: BrandOnboardingProgressProps) => {
-  const getStepProgress = () => {
-    switch (currentStep) {
-      case 'basic':
-        return 'w-1/4';
-      case 'details':
-        return 'w-2/4';
-      case 'social':
-        return 'w-3/4';
-      case 'managers':
-        return 'w-full';
-      default:
-        return 'w-1/4';
-    }
-  };
+  const steps = ['basic', 'details', 'social', 'managers'];
+  const currentIndex = steps.indexOf(currentStep);
 
   return (
-    <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-      <motion.div
-        className={`h-full bg-nino-primary rounded-full transition-all duration-500 ease-in-out ${getStepProgress()}`}
-      />
+    <div className="w-full flex justify-between items-center mb-8">
+      {steps.map((step, index) => (
+        <div key={step} className="flex items-center">
+          <div
+            className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+              index <= currentIndex ? 'bg-nino-primary' : 'bg-gray-200'
+            }`}
+          />
+          {index < steps.length - 1 && (
+            <div
+              className={`h-[2px] w-[calc(100%-12px)] mx-1.5 transition-colors duration-200 ${
+                index < currentIndex ? 'bg-nino-primary' : 'bg-gray-200'
+              }`}
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
 };
