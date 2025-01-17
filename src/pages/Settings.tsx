@@ -1,16 +1,16 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProfileSettings from "@/components/settings/ProfileSettings";
-import NotificationSettings from "@/components/settings/NotificationSettings";
-import AccountSettings from "@/components/settings/AccountSettings";
-import { User, Bell, Settings as SettingsIcon } from "lucide-react";
+import { User, Bell, CreditCard } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
+import ProfileSettings from "@/components/settings/profile/CreatorProfileSettings";
+import NotificationSettings from "@/components/settings/NotificationSettings";
+import SubscriptionSettings from "@/components/settings/SubscriptionSettings";
 
 const Settings = () => {
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
       <PageHeader
         title="Settings"
-        description="Manage your account preferences and profile"
+        description="Manage your creator profile, notifications, and subscription"
       />
       
       <Tabs defaultValue="profile" className="w-full">
@@ -23,9 +23,9 @@ const Settings = () => {
             <Bell className="w-4 h-4 mr-2" />
             Notifications
           </TabsTrigger>
-          <TabsTrigger value="account" className="flex-1 data-[state=active]:bg-white">
-            <SettingsIcon className="w-4 h-4 mr-2" />
-            Account
+          <TabsTrigger value="subscription" className="flex-1 data-[state=active]:bg-white">
+            <CreditCard className="w-4 h-4 mr-2" />
+            Subscription
           </TabsTrigger>
         </TabsList>
         
@@ -38,8 +38,8 @@ const Settings = () => {
             <NotificationSettings />
           </TabsContent>
           
-          <TabsContent value="account" className="animate-fadeIn">
-            <AccountSettings />
+          <TabsContent value="subscription" className="animate-fadeIn">
+            <SubscriptionSettings />
           </TabsContent>
         </div>
       </Tabs>

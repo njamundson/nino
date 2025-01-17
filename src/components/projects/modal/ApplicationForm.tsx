@@ -1,80 +1,68 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
-interface ApplicationFormProps {
-  onSubmit: (coverLetter: string) => Promise<void>;
-  onBack: () => void;
-  onClose: () => void;
+export interface ApplicationFormProps {
   opportunity: {
     id: string;
     title: string;
     description: string;
-    location: string | null;
-    start_date: string | null;
-    end_date: string | null;
-    perks: string[] | null;
-    requirements: string[] | null;
-    payment_details: string | null;
-    compensation_details: string | null;
-    deliverables: string[] | null;
+    location: string;
+    start_date: string;
+    end_date: string;
+    perks: string[];
+    requirements: string[];
+    payment_details: string;
+    compensation_details: string;
+    deliverables: string[];
     brand: {
       company_name: string;
-      brand_type: string;
-      location: string | null;
+      description: string;
+      website: string;
+      instagram: string;
     };
   };
+  onBack: () => void;
+  onClose: () => void;
+  onSubmit: (coverLetter: string) => void;
 }
 
-const ApplicationForm = ({ onSubmit, onBack, onClose, opportunity }: ApplicationFormProps) => {
+const ApplicationForm = ({ opportunity, onBack, onClose, onSubmit }: ApplicationFormProps) => {
   const [coverLetter, setCoverLetter] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      await onSubmit(coverLetter);
-      onClose();
-    } catch (error) {
-      console.error('Error submitting application:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(coverLetter);
   };
 
   return (
-    <div className="space-y-4 pt-4">
-      <h4 className="font-medium">Your Application for {opportunity.title}</h4>
-      <Textarea
-        placeholder="Write a cover letter explaining why you're a great fit for this opportunity..."
-        value={coverLetter}
-        onChange={(e) => setCoverLetter(e.target.value)}
-        className="min-h-[200px]"
-      />
-      <div className="flex gap-2 justify-end">
-        <Button
-          variant="outline"
-          onClick={onBack}
-          disabled={isSubmitting}
-        >
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <label htmlFor="coverLetter" className="text-sm font-medium">
+          Cover Letter
+        </label>
+        <Textarea
+          id="coverLetter"
+          value={coverLetter}
+          onChange={(e) => setCoverLetter(e.target.value)}
+          placeholder="Tell us why you're interested in this opportunity..."
+          className="h-40"
+          required
+        />
+      </div>
+
+      <div className="flex justify-between">
+        <Button type="button" variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={!coverLetter.trim() || isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting...
-            </>
-          ) : (
-            "Submit Application"
-          )}
-        </Button>
+        <div className="space-x-2">
+          <Button type="button" variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit">Submit Application</Button>
+        </div>
       </div>
-    </div>
+    </form>
   );
 };
 
