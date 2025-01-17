@@ -14,6 +14,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   const location = useLocation();
   const { data: brandProfile, isLoading: profileLoading } = useBrandProfile(session?.user?.id);
 
+  // Show loading state while checking auth and profile
   if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -22,6 +23,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     );
   }
 
+  // Redirect to login if not authenticated
   if (!session) {
     toast({
       title: "Authentication required",
@@ -31,6 +33,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
+  // Allow access to onboarding routes even without a brand profile
   if (!brandProfile && !location.pathname.includes("/onboarding")) {
     toast({
       title: "Profile required",
