@@ -20,7 +20,15 @@ console.log('Supabase client initialized with URL:', supabaseUrl);
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session);
   
-  if (session?.error) {
-    console.error('Auth error occurred:', session.error);
+  if (!session) {
+    console.log('No active session');
+    return;
+  }
+
+  // Log successful authentication events
+  if (event === 'SIGNED_IN') {
+    console.log('User signed in successfully');
+  } else if (event === 'SIGNED_OUT') {
+    console.log('User signed out');
   }
 });
