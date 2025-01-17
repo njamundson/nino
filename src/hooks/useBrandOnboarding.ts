@@ -37,6 +37,19 @@ export const useBrandOnboarding = () => {
           return;
         }
 
+        // First check if the user already has a brand
+        const { data: existingBrand } = await supabase
+          .from('brands')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (existingBrand) {
+          // If brand exists, just move to the next step
+          setCurrentStep('details');
+          return;
+        }
+
         // Create the brand profile if it doesn't exist
         const { error: brandError } = await supabase.from('brands').insert({
           user_id: user.id,
