@@ -19,9 +19,9 @@ console.log('Supabase client initialized with URL:', supabaseUrl);
 
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session);
-});
-
-// Add error handling for auth operations
-supabase.auth.onError((error) => {
-  console.error('Auth error:', error);
+  
+  // Handle auth errors within the state change event
+  if (event === 'ERROR') {
+    console.error('Auth error occurred:', session);
+  }
 });
