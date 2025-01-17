@@ -1,59 +1,54 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import AccountManagersHeader from "./AccountManagersHeader";
-import AddManagerButton from "./AddManagerButton";
-import ManagerForm from "./ManagerForm";
-import ManagerList from "./ManagerList";
-
-export interface AccountManager {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  permissions: string[];
-}
 
 const AccountManagersStep = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showAddManager, setShowAddManager] = useState(false);
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
-  const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
 
-  const addAccountManager = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    
-    const newManager = {
-      id: Date.now().toString(),
-      name: formData.get("managerName") as string,
-      email: formData.get("managerEmail") as string,
-      role: formData.get("managerRole") as string,
-      permissions: selectedPermissions,
-    };
+  const handleComplete = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    setAccountManagers([...accountManagers, newManager]);
-    setShowAddManager(false);
-    setSelectedPermissions([]);
-    form.reset();
-  };
+      // Get the brand ID for the current user
+      const { data: brand, error: brandError } = await supabase
+        .from('brands')
+        .select('id, created_at')
+        .eq('user_id', user.id)
+        .single();
 
-  const removeManager = (id: string) => {
-    setAccountManagers(accountManagers.filter(manager => manager.id !== id));
-  };
+      if (brandError || !brand) {
+        toast({
+          title: "Error",
+          description: "Could not find brand information",
+          variant: "destructive",
+        });
+        return;
+      }
 
-  const updateManagerPermissions = async (managerId: string, permissions: string[]) => {
-    setAccountManagers(
-      accountManagers.map(manager =>
-        manager.id === managerId
-          ? { ...manager, permissions }
-          : manager
-      )
-    );
+      toast({
+        title: "Success",
+        description: "Brand setup completed successfully. Team members can be added after 5 minutes.",
+      });
+
+      navigate("/brand/dashboard");
+    } catch (error) {
+      console.error('Error in handleComplete:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -62,30 +57,20 @@ const AccountManagersStep = () => {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
-      <AccountManagersHeader />
+      <div className="text-center space-y-4">
+        <h1 className="text-[40px] font-medium text-nino-text">Account Managers</h1>
+        <p className="text-nino-gray text-xl">
+          Team members can be added to your brand account 5 minutes after setup completion.
+        </p>
+      </div>
 
-      <div className="space-y-4">
-        <div className="flex justify-center">
-          <AddManagerButton onClick={() => setShowAddManager(true)} />
-        </div>
-
-        {showAddManager && (
-          <ManagerForm
-            onSubmit={addAccountManager}
-            selectedPermissions={selectedPermissions}
-            setSelectedPermissions={setSelectedPermissions}
-            onCancel={() => {
-              setShowAddManager(false);
-              setSelectedPermissions([]);
-            }}
-          />
-        )}
-
-        <ManagerList
-          managers={accountManagers}
-          onRemoveManager={removeManager}
-          onUpdatePermissions={updateManagerPermissions}
-        />
+      <div className="flex justify-end pt-6">
+        <button
+          onClick={handleComplete}
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8 py-2 rounded-md"
+        >
+          Complete Setup
+        </button>
       </div>
     </motion.div>
   );
