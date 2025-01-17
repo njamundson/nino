@@ -21,7 +21,7 @@ const DashboardHeader = () => {
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, brands(id)')
         .eq('id', user.id)
         .maybeSingle();
       
@@ -29,12 +29,28 @@ const DashboardHeader = () => {
         console.error('Error fetching profile:', error);
         return null;
       }
+
+      // Get the avatar URL if it exists
+      const { data: avatarData } = await supabase
+        .storage
+        .from('avatars')
+        .list(`${data?.brands?.id || ''}`);
+
+      const avatarFile = avatarData?.[0];
+      let avatarUrl = '';
       
-      return data;
+      if (avatarFile) {
+        const { data: { publicUrl } } = supabase
+          .storage
+          .from('avatars')
+          .getPublicUrl(`${data?.brands?.id}/${avatarFile.name}`);
+        avatarUrl = publicUrl;
+      }
+      
+      return { ...data, avatarUrl };
     }
   });
 
-  // Fetch notifications with error handling
   const { data: notifications, error: notificationsError } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
@@ -63,6 +79,7 @@ const DashboardHeader = () => {
 
   // If there's an error fetching notifications, we'll still render the header
   // but without the notification count
+
   return (
     <div className="flex justify-end items-center space-x-4 mb-8">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -107,7 +124,7 @@ const DashboardHeader = () => {
         </PopoverContent>
       </Popover>
       <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20">
-        <AvatarImage src="" alt="Profile" />
+        <AvatarImage src={profile?.avatarUrl || ""} alt="Profile" />
         <AvatarFallback className="bg-nino-primary text-nino-white">
           {profile?.first_name?.[0]}{profile?.last_name?.[0]}
         </AvatarFallback>
