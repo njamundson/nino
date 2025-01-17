@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { AuthError } from "@supabase/supabase-js";
 
 interface ProtectedBrandRouteProps {
   children: React.ReactNode;
@@ -15,9 +16,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
   // Add auth state change listener
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state changed:', event, session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+      console.log('Auth state changed:', event);
       if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+        await supabase.auth.signOut(); // Ensure clean signout
         toast({
           title: "Session ended",
           description: "Please sign in again to continue.",
@@ -38,13 +41,26 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       
       if (error) {
         console.error("Error fetching session:", error);
+        // If we get a user_not_found error, sign out the user
+        if ((error as AuthError).message.includes("User from sub claim in JWT does not exist")) {
+          await supabase.auth.signOut();
+          toast({
+            title: "Authentication Error",
+            description: "Your session has expired. Please sign in again.",
+            variant: "destructive",
+          });
+        }
         throw error;
+      }
+      
+      if (!session) {
+        throw new Error("No session found");
       }
       
       console.log("Session fetched:", session);
       return session;
     },
-    retry: 1,
+    retry: false, // Don't retry on auth errors
   });
 
   const { data: brand, isLoading: brandLoading, error: brandError } = useQuery({
@@ -68,17 +84,16 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       console.log("Brand profile fetched:", data);
       return data;
     },
-    retry: 1,
+    retry: false, // Don't retry on data errors
   });
 
   // Handle session error
   if (sessionError) {
     console.error("Session error:", sessionError);
-    toast({
-      title: "Authentication Error",
-      description: "There was a problem verifying your session. Please try signing in again.",
-      variant: "destructive",
-    });
+    // Clean up the session if we get a user_not_found error
+    if ((sessionError as AuthError).message?.includes("User from sub claim in JWT does not exist")) {
+      supabase.auth.signOut();
+    }
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
