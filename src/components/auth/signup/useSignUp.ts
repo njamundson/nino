@@ -29,7 +29,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
             first_name: firstName,
             last_name: lastName,
           },
-          emailRedirectTo: window.location.origin + '/onboarding',
+          emailRedirectTo: `${window.location.origin}/onboarding`,
         },
       });
 
@@ -37,23 +37,36 @@ export const useSignUp = (onToggleAuth: () => void) => {
         console.error("Sign up error:", signUpError);
         let errorMessage = "Error creating account";
         
-        if (signUpError.message.includes("User already registered")) {
-          errorMessage = "An account with this email already exists. Please sign in instead.";
-          onToggleAuth();
-        } else {
-          switch (signUpError.message) {
-            case "Failed to fetch":
-              errorMessage = "Network error. Please check your connection and try again.";
-              break;
-            case "Invalid email":
-              errorMessage = "Please enter a valid email address.";
-              break;
-            case "Weak password":
-              errorMessage = "Password is too weak. Please use a stronger password.";
-              break;
-            default:
-              errorMessage = signUpError.message;
+        // Check if the error response contains a JSON body
+        try {
+          const errorBody = JSON.parse(signUpError.message);
+          if (errorBody.code === "user_already_exists") {
+            errorMessage = "An account with this email already exists. Please sign in instead.";
+            onToggleAuth(); // Switch to sign in form
+            return;
           }
+        } catch {
+          // If parsing fails, handle the error message directly
+          if (signUpError.message.includes("User already registered")) {
+            errorMessage = "An account with this email already exists. Please sign in instead.";
+            onToggleAuth();
+            return;
+          }
+        }
+        
+        // Handle other types of errors
+        switch (signUpError.message) {
+          case "Failed to fetch":
+            errorMessage = "Network error. Please check your connection and try again.";
+            break;
+          case "Invalid email":
+            errorMessage = "Please enter a valid email address.";
+            break;
+          case "Weak password":
+            errorMessage = "Password is too weak. Please use a stronger password.";
+            break;
+          default:
+            errorMessage = signUpError.message;
         }
         
         toast({
