@@ -31,7 +31,7 @@ export const brandRoutes = [
     ),
   },
   {
-    path: "/brand/campaigns/new",
+    path: "/brand/campaigns/new",  // Updated this path to match sidebar
     element: (
       <ProtectedBrandRoute>
         <BrandLayout>
