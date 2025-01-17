@@ -9,6 +9,12 @@ import { Send, Search, MoreHorizontal, Plus, Image, Mic, Paperclip } from "lucid
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Message {
   id: string;
@@ -22,6 +28,14 @@ interface Message {
     last_name: string;
   };
   receiver_profile?: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
+interface Creator {
+  id: string;
+  profile: {
     first_name: string;
     last_name: string;
   };
@@ -61,6 +75,24 @@ const Messages = () => {
     },
   });
 
+  const { data: creators } = useQuery({
+    queryKey: ["creators"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("creators")
+        .select(`
+          id,
+          profile:profiles(
+            first_name,
+            last_name
+          )
+        `);
+
+      if (error) throw error;
+      return data as Creator[];
+    },
+  });
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedChat) return;
 
@@ -91,7 +123,6 @@ const Messages = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Handle file upload logic here
     toast({
       title: "Coming soon",
       description: "File upload feature will be available soon",
@@ -100,19 +131,14 @@ const Messages = () => {
 
   const handleVoiceRecord = () => {
     setIsRecording(!isRecording);
-    // Handle voice recording logic here
     toast({
       title: "Coming soon",
       description: "Voice recording feature will be available soon",
     });
   };
 
-  const handleNewMessage = () => {
-    // Handle new message creation logic here
-    toast({
-      title: "Coming soon",
-      description: "New message feature will be available soon",
-    });
+  const startNewChat = (creatorId: string) => {
+    setSelectedChat(creatorId);
   };
 
   const filteredMessages = messages?.filter((message) => {
@@ -138,14 +164,36 @@ const Messages = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="ml-2"
-              onClick={handleNewMessage}
-            >
-              <Plus className="w-5 h-5 text-gray-500" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ml-2"
+                >
+                  <Plus className="w-5 h-5 text-gray-500" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {creators?.map((creator) => (
+                  <DropdownMenuItem
+                    key={creator.id}
+                    onClick={() => startNewChat(creator.id)}
+                    className="flex items-center gap-2 p-2"
+                  >
+                    <Avatar className="w-8 h-8">
+                      <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
+                        {creator.profile?.first_name?.[0]}
+                        {creator.profile?.last_name?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>
+                      {creator.profile?.first_name} {creator.profile?.last_name}
+                    </span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <ScrollArea className="h-[calc(100vh-10rem)]">
             <div className="p-2">
