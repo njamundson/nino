@@ -30,11 +30,11 @@ const BrandSidebar = () => {
     <div className="w-64 h-screen sticky top-0 p-4">
       <div className="bg-white rounded-xl shadow-lg h-full flex flex-col">
         <div className="p-6 border-b">
-          <Link to="/brand/dashboard" className="flex items-center justify-center">
+          <Link to="/brand/dashboard" className="flex items-center">
             <img 
               src="/lovable-uploads/96268c5e-175d-42ed-9c0e-7d11dbfff036.png" 
               alt="Nino" 
-              className="h-8 w-auto"
+              className="h-16 w-auto"
             />
           </Link>
         </div>
