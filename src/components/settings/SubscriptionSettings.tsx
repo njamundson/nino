@@ -14,7 +14,9 @@ const SubscriptionSettings = () => {
   const handleManageSubscription = async () => {
     try {
       if (!subscriptionData?.subscribed) {
-        const checkoutUrl = await createCheckoutSession();
+        const checkoutUrl = await createCheckoutSession({
+          returnUrl: `${window.location.origin}/settings`,
+        });
         window.location.href = checkoutUrl;
       } else {
         // TODO: Implement customer portal for subscription management
