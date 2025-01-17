@@ -72,6 +72,7 @@ const CreatorOnboarding = () => {
           .from('creators')
           .insert({
             user_id: user.id,
+            profile_id: user.id, // Add this line - profile_id is the same as user_id
             bio: profile.bio,
             instagram: profile.instagram,
             website: profile.website,
@@ -180,23 +181,19 @@ const CreatorOnboarding = () => {
         </div>
 
         <div className="flex justify-between pt-4">
-          {currentStep !== "payment" && (
-            <Button
-              onClick={handleBack}
-              variant="outline"
-              className="text-nino-gray hover:bg-white"
-            >
-              Back
-            </Button>
-          )}
-          {currentStep !== "payment" && (
-            <Button
-              onClick={handleNext}
-              className="bg-nino-primary hover:bg-nino-primary/90 text-white"
-            >
-              Next
-            </Button>
-          )}
+          <Button
+            onClick={handleBack}
+            variant="outline"
+            className="text-nino-gray hover:bg-white"
+          >
+            Back
+          </Button>
+          <Button
+            onClick={handleNext}
+            className="bg-nino-primary hover:bg-nino-primary/90 text-white"
+          >
+            {currentStep === "payment" ? "Complete" : "Next"}
+          </Button>
         </div>
       </motion.div>
     </div>
