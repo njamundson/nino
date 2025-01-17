@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import BasicInfoStep from "./BasicInfoStep";
 import ProfessionalInfoStep from "./ProfessionalInfoStep";
 import SocialLinksStep from "./SocialLinksStep";
@@ -25,7 +26,7 @@ const CreatorOnboardingForm = () => {
       case 'basic':
         return (
           <BasicInfoStep
-            profileImage={null} // This needs to be added to CreatorData if needed
+            profileImage={null}
             firstName={creatorData.firstName}
             lastName={creatorData.lastName}
             bio={creatorData.bio}
@@ -66,18 +67,18 @@ const CreatorOnboardingForm = () => {
         {renderStep()}
         
         <div className="flex justify-between pt-6 border-t border-gray-100">
-          <button
+          <Button
             onClick={handleBack}
-            className="text-gray-600 hover:text-gray-900"
+            variant="outline"
           >
             Back
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleNext}
-            className="bg-black hover:bg-gray-900 text-white px-8 py-2 rounded"
+            variant="default"
           >
             {currentStep === 'payment' ? 'Complete' : 'Continue'}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
