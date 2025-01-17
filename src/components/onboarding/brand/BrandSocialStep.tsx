@@ -6,12 +6,16 @@ import { BrandData } from "@/types/brand";
 
 interface BrandSocialStepProps {
   brandData: BrandData;
-  onUpdateField: (field: string, value: string) => void;
+  onUpdateField: (field: keyof BrandData, value: string) => void;
+  onNext: () => void;
+  onBack: () => void;
 }
 
 const BrandSocialStep = ({
   brandData,
   onUpdateField,
+  onNext,
+  onBack,
 }: BrandSocialStepProps) => {
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -47,6 +51,21 @@ const BrandSocialStep = ({
               onChange={(e) => onUpdateField("website", e.target.value)}
             />
           </div>
+        </div>
+
+        <div className="flex justify-between">
+          <button
+            onClick={onBack}
+            className="text-nino-gray hover:text-nino-text px-8 py-3 rounded-lg transition-colors"
+          >
+            Back
+          </button>
+          <button
+            onClick={onNext}
+            className="bg-nino-primary text-white px-8 py-3 rounded-lg hover:bg-nino-primary/90 transition-colors"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
