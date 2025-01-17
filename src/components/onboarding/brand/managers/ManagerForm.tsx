@@ -101,7 +101,7 @@ const ManagerForm = ({
           type="submit"
           className="bg-nino-primary hover:bg-nino-primary/90 text-white h-9"
         >
-          Send Invitation
+          Save
         </Button>
       </div>
     </motion.form>
