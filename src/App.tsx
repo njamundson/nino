@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
@@ -21,6 +21,8 @@ const App = () => {
             <Sonner />
             <Routes>
               <Route path="/" element={<Index />} />
+              {/* Redirect /auth/signin to root since that's where our auth form is */}
+              <Route path="/auth/signin" element={<Navigate to="/" replace />} />
               {onboardingRoutes.map((route) => (
                 <Route
                   key={route.path}
@@ -42,6 +44,8 @@ const App = () => {
                   element={route.element}
                 />
               ))}
+              {/* Catch all route for 404s */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </TooltipProvider>
         </BrowserRouter>
