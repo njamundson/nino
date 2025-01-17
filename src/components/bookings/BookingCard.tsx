@@ -5,7 +5,16 @@ import { MessageSquare } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 interface BookingCardProps {
-  booking: any;
+  booking: {
+    opportunity: {
+      title: string;
+    };
+    creator: {
+      bio: string | null;
+      specialties: string[] | null;
+    };
+    created_at: string;
+  };
   onChatClick: () => void;
   onViewCreator: () => void;
 }
