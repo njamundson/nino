@@ -24,6 +24,7 @@ interface ProjectCardProps {
       company_name: string;
       brand_type: string;
       location: string | null;
+      profile_image_url: string | null;
     };
   };
 }
@@ -38,7 +39,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
     e.stopPropagation();
     setIsLoading(true);
     try {
-      navigate(`/projects/${opportunity.id}`);
+      navigate(`/creator/projects/${opportunity.id}`);
     } catch (error) {
       toast({
         title: "Error",
@@ -64,26 +65,47 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
             </span>
           </div>
 
-          {/* Title */}
-          <div className="absolute top-16 left-6 z-10">
-            <h3 className="text-2xl font-semibold text-gray-900">
+          {/* Brand Info */}
+          <div className="absolute top-16 left-6 right-6 z-10">
+            <p className="text-sm font-medium text-gray-600 mb-2">
+              {opportunity.brand.company_name}
+            </p>
+            <h3 className="text-2xl font-semibold text-gray-900 line-clamp-2">
               {opportunity.title}
             </h3>
           </div>
 
-          {/* Background Image */}
-          <img
-            src="/public/lovable-uploads/b852de8f-a42e-4be7-88e2-d2a17634fb0f.png"
-            alt={opportunity.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          {/* Location and Date */}
+          <div className="absolute top-36 left-6 right-6 z-10">
+            {opportunity.location && (
+              <p className="text-sm text-gray-600 mb-1">
+                📍 {opportunity.location}
+              </p>
+            )}
+            {opportunity.start_date && (
+              <p className="text-sm text-gray-600">
+                🗓️ Starts {new Date(opportunity.start_date).toLocaleDateString()}
+              </p>
+            )}
+          </div>
 
-          {/* Avatar Overlay */}
-          <div className="absolute top-1/2 left-6 z-10">
+          {/* Brand Avatar */}
+          <div className="absolute bottom-24 left-6 z-10">
             <Avatar className="h-12 w-12 border-2 border-white shadow-md">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={opportunity.brand.profile_image_url || undefined} />
+              <AvatarFallback>
+                {opportunity.brand.company_name.charAt(0)}
+              </AvatarFallback>
             </Avatar>
+          </div>
+
+          {/* Payment Details */}
+          <div className="absolute bottom-6 left-6 right-20 z-10">
+            {opportunity.payment_details && (
+              <p className="text-sm font-medium text-gray-900">
+                💰 {opportunity.payment_details}
+              </p>
+            )}
           </div>
 
           {/* Action Button */}

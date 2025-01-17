@@ -15,7 +15,8 @@ const Projects = () => {
           brand:brands (
             company_name,
             brand_type,
-            location
+            location,
+            profile_image_url
           )
         `)
         .eq('status', 'open')
