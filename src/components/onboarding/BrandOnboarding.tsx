@@ -15,16 +15,13 @@ const BrandOnboarding = () => {
   const { session } = useAuth();
   const { data: brandProfile } = useBrandProfile(session?.user?.id);
   const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
-  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({
-    brandName: "",
-    brandEmail: "",
-    brandType: "hotel",
+    companyName: "",
+    brandType: "",
     homeLocation: "",
     brandBio: "",
     instagram: "",
     website: "",
-    location: "",
   });
 
   // Redirect if brand profile already exists
@@ -38,10 +35,6 @@ const BrandOnboarding = () => {
       ...prev,
       [field]: value,
     }));
-  };
-
-  const handleUpdateImage = (image: string | null) => {
-    setProfileImage(image);
   };
 
   const handleNext = () => {
@@ -65,10 +58,8 @@ const BrandOnboarding = () => {
       case 'basic':
         return (
           <BrandBasicInfoStep
-            profileImage={profileImage}
             brandData={brandData}
             onUpdateField={handleUpdateField}
-            onUpdateImage={handleUpdateImage}
           />
         );
       case 'details':
