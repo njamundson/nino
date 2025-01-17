@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { AuthError } from "@supabase/supabase-js";
 
 interface ProtectedBrandRouteProps {
   children: React.ReactNode;
@@ -15,10 +16,10 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
   // Add auth state change listener
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session);
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User signed out or deleted');
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+      console.log('Auth state changed:', event);
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
         await supabase.auth.signOut(); // Ensure clean signout
         toast({
           title: "Session ended",
@@ -41,7 +42,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       if (error) {
         console.error("Error fetching session:", error);
         // If we get a user_not_found error, sign out the user
-        if (error.message.includes("User from sub claim in JWT does not exist")) {
+        if ((error as AuthError).message.includes("User from sub claim in JWT does not exist")) {
           await supabase.auth.signOut();
           toast({
             title: "Authentication Error",
@@ -90,7 +91,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   if (sessionError) {
     console.error("Session error:", sessionError);
     // Clean up the session if we get a user_not_found error
-    if (sessionError.message.includes("User from sub claim in JWT does not exist")) {
+    if ((sessionError as AuthError).message?.includes("User from sub claim in JWT does not exist")) {
       supabase.auth.signOut();
     }
     return <Navigate to="/" state={{ from: location }} replace />;
