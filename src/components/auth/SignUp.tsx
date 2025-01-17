@@ -30,6 +30,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state change event:", event);
       if (event === 'SIGNED_IN' && session) {
         navigate("/onboarding");
       }
@@ -93,46 +94,10 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       }
 
       if (signUpData) {
-        // Wait for session to be established
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          toast({
-            title: "Error",
-            description: "Error establishing session. Please try signing in.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        if (session) {
-          toast({
-            title: "Welcome to NINO",
-            description: "Your account has been created successfully.",
-          });
-          
-          navigate("/onboarding");
-        } else {
-          // If no session is established yet, wait a bit and try again
-          setTimeout(async () => {
-            const { data: { session: retrySession } } = await supabase.auth.getSession();
-            if (retrySession) {
-              toast({
-                title: "Welcome to NINO",
-                description: "Your account has been created successfully.",
-              });
-              navigate("/onboarding");
-            } else {
-              toast({
-                title: "Error",
-                description: "Please try signing in again.",
-                variant: "destructive",
-              });
-              onToggleAuth();
-            }
-          }, 1000);
-        }
+        toast({
+          title: "Welcome to NINO",
+          description: "Your account has been created successfully. Please check your email to verify your account.",
+        });
       }
     } catch (error: any) {
       console.error("Authentication error:", error);
