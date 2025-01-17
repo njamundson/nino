@@ -10,10 +10,20 @@ import {
 import { useState } from 'react';
 import { cn } from "@/lib/utils";
 
+type ProfileWithAvatar = {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  created_at: string;
+  updated_at: string;
+  is_admin: boolean | null;
+  avatarUrl?: string;
+}
+
 const DashboardHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: profile } = useQuery({
+  const { data: profile } = useQuery<ProfileWithAvatar | null>({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -62,7 +72,7 @@ const DashboardHeader = () => {
         }
       }
       
-      return { ...profileData, avatarUrl };
+      return { ...profileData, avatarUrl } as ProfileWithAvatar;
     }
   });
 
