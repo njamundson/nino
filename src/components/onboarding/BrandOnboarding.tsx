@@ -1,26 +1,64 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useBrandOnboarding } from "@/hooks/useBrandOnboarding";
-import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
-import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
-import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
+import { useAuth } from "@/hooks/useAuth";
+import { useBrandProfile } from "@/hooks/useBrandProfile";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
-import AccountManagersStep from "./brand/AccountManagersStep";
+import AccountManagersStep from "./brand/managers/AccountManagersStep";
+import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
+import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
+import { BrandData } from "@/types/brand";
 
 const BrandOnboarding = () => {
   const navigate = useNavigate();
-  const {
-    currentStep,
-    setCurrentStep,
-    profileImage,
-    brandData,
-    updateField,
-    setProfileImage,
-    handleNext,
-    handleBack,
-  } = useBrandOnboarding();
+  const { session } = useAuth();
+  const { data: brandProfile } = useBrandProfile(session?.user?.id);
+  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [brandData, setBrandData] = useState<BrandData>({
+    brandName: "",
+    brandEmail: "",
+    brandType: "hotel",
+    homeLocation: "",
+    brandBio: "",
+    instagram: "",
+    website: "",
+    location: "",
+  });
+
+  // Redirect if brand profile already exists
+  if (brandProfile) {
+    navigate("/dashboard");
+    return null;
+  }
+
+  const handleUpdateField = (field: string, value: string) => {
+    setBrandData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleUpdateImage = (image: string | null) => {
+    setProfileImage(image);
+  };
+
+  const handleNext = () => {
+    const steps: ('basic' | 'details' | 'social' | 'managers')[] = ['basic', 'details', 'social', 'managers'];
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex < steps.length - 1) {
+      setCurrentStep(steps[currentIndex + 1]);
+    }
+  };
+
+  const handleBack = () => {
+    const steps: ('basic' | 'details' | 'social' | 'managers')[] = ['basic', 'details', 'social', 'managers'];
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex > 0) {
+      setCurrentStep(steps[currentIndex - 1]);
+    }
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -29,22 +67,22 @@ const BrandOnboarding = () => {
           <BrandBasicInfoStep
             profileImage={profileImage}
             brandData={brandData}
-            onUpdateField={updateField}
-            onUpdateImage={setProfileImage}
+            onUpdateField={handleUpdateField}
+            onUpdateImage={handleUpdateImage}
           />
         );
       case 'details':
         return (
           <BrandDetailsStep
             brandData={brandData}
-            onUpdateField={updateField}
+            onUpdateField={handleUpdateField}
           />
         );
       case 'social':
         return (
           <BrandSocialStep
             brandData={brandData}
-            onUpdateField={updateField}
+            onUpdateField={handleUpdateField}
           />
         );
       case 'managers':
@@ -55,15 +93,17 @@ const BrandOnboarding = () => {
   };
 
   return (
-    <BrandOnboardingContainer>
-      <BrandOnboardingProgress currentStep={currentStep} />
-      {renderStep()}
-      <BrandOnboardingNavigation
-        currentStep={currentStep}
-        onNext={handleNext}
-        onBack={handleBack}
-      />
-    </BrandOnboardingContainer>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-2xl mx-auto p-6">
+        <BrandOnboardingProgress currentStep={currentStep} />
+        {renderStep()}
+        <BrandOnboardingNavigation
+          currentStep={currentStep}
+          onBack={handleBack}
+          onNext={handleNext}
+        />
+      </div>
+    </div>
   );
 };
 

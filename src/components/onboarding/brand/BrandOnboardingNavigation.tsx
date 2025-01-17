@@ -1,28 +1,31 @@
+import { Button } from "@/components/ui/button";
+
 interface BrandOnboardingNavigationProps {
   currentStep: 'basic' | 'details' | 'social' | 'managers';
-  onNext: () => void;
   onBack: () => void;
+  onNext: () => void;
 }
 
 const BrandOnboardingNavigation = ({
   currentStep,
-  onNext,
   onBack,
+  onNext,
 }: BrandOnboardingNavigationProps) => {
   return (
-    <div className="flex justify-between items-center pt-8 mt-8 border-t border-gray-100">
-      <button
+    <div className="flex justify-between pt-6">
+      <Button
         onClick={onBack}
-        className="text-nino-gray hover:text-nino-text transition-colors px-6 py-2.5 rounded-lg hover:bg-gray-50"
+        variant="outline"
+        className="text-nino-gray hover:bg-gray-50"
       >
         Back
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={onNext}
-        className="bg-nino-primary text-white px-8 py-2.5 rounded-lg hover:bg-nino-primary/90 transition-colors"
+        className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
       >
-        {currentStep === 'managers' ? 'Complete' : 'Continue'}
-      </button>
+        {currentStep === 'managers' ? 'Complete Setup' : 'Next'}
+      </Button>
     </div>
   );
 };
