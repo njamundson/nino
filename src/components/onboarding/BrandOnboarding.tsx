@@ -40,22 +40,12 @@ const BrandOnboarding = () => {
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
-      if (brandError) {
+      if (brandError || !brand) {
         toast({
           title: "Error",
           description: "Could not find brand information",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // If no brand was found, show an error
-      if (!brand) {
-        toast({
-          title: "Error",
-          description: "Brand profile not found. Please complete the basic information first.",
           variant: "destructive",
         });
         return;
