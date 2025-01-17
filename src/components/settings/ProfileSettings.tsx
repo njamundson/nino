@@ -7,16 +7,12 @@ import { useToast } from "@/components/ui/use-toast";
 import ProfileImageSection from "./profile/ProfileImageSection";
 import BrandDetailsForm from "./profile/BrandDetailsForm";
 import ContactInformationForm from "./profile/ContactInformationForm";
-import NotificationPreferences from "./profile/NotificationPreferences";
-import SecuritySettings from "./profile/SecuritySettings";
-import SupportSection from "./profile/SupportSection";
 import AccountManagersSection from "./profile/AccountManagersSection";
 
 const ProfileSettings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [loginHistory, setLoginHistory] = useState<any[]>([]);
   const [brandData, setBrandData] = useState({
     company_name: "",
     description: "",
@@ -25,14 +21,11 @@ const ProfileSettings = () => {
     location: "",
     phone_number: "",
     support_email: "",
-    sms_notifications_enabled: false,
-    two_factor_enabled: false,
     email: "",
   });
 
   useEffect(() => {
     fetchBrandData();
-    fetchLoginHistory();
   }, []);
 
   const fetchBrandData = async () => {
@@ -56,8 +49,6 @@ const ProfileSettings = () => {
           location: brand.location || "",
           phone_number: brand.phone_number || "",
           support_email: brand.support_email || "",
-          sms_notifications_enabled: brand.sms_notifications_enabled || false,
-          two_factor_enabled: brand.two_factor_enabled || false,
           email: user.email || "",
         });
       }
@@ -66,40 +57,6 @@ const ProfileSettings = () => {
       toast({
         title: "Error",
         description: "Failed to load brand data",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const fetchLoginHistory = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (brand) {
-        const { data: historyData, error } = await supabase
-          .from('brand_login_history')
-          .select('*')
-          .eq('brand_id', brand.id)
-          .order('login_timestamp', { ascending: false })
-          .limit(5);
-
-        if (error) throw error;
-        if (historyData) {
-          setLoginHistory(historyData);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching login history:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load login history",
         variant: "destructive",
       });
     }
@@ -125,8 +82,6 @@ const ProfileSettings = () => {
           location: brandData.location,
           phone_number: brandData.phone_number,
           support_email: brandData.support_email,
-          sms_notifications_enabled: brandData.sms_notifications_enabled,
-          two_factor_enabled: brandData.two_factor_enabled,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', user.id);
@@ -170,21 +125,6 @@ const ProfileSettings = () => {
         />
 
         <AccountManagersSection />
-
-        <NotificationPreferences 
-          brandData={brandData}
-          loading={loading}
-          onUpdateField={handleUpdateField}
-        />
-
-        <SecuritySettings 
-          brandData={brandData}
-          loading={loading}
-          loginHistory={loginHistory}
-          onUpdateField={handleUpdateField}
-        />
-
-        <SupportSection />
 
         <div className="flex justify-end">
           <Button
