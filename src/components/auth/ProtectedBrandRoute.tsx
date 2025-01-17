@@ -2,6 +2,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProtectedBrandRouteProps {
   children: React.ReactNode;
@@ -9,13 +10,26 @@ interface ProtectedBrandRouteProps {
 
 const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   const location = useLocation();
+  const { toast } = useToast();
 
-  const { data: session, isLoading: sessionLoading } = useQuery({
+  const { data: session, isLoading: sessionLoading, error: sessionError } = useQuery({
     queryKey: ["auth-session"],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Session error:", error);
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again",
+          variant: "destructive",
+        });
+        // Clear any existing session
+        await supabase.auth.signOut();
+        return null;
+      }
       return session;
     },
+    retry: false, // Don't retry on failure
   });
 
   const { data: brand, isLoading: brandLoading } = useQuery({
@@ -38,6 +52,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       return data;
     },
   });
+
+  // Handle session error
+  if (sessionError) {
+    return <Navigate to="/" state={{ from: location }} replace />;
+  }
 
   if (sessionLoading || brandLoading) {
     return (
