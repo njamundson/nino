@@ -93,8 +93,8 @@ const BrandOnboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-2xl mx-auto p-6">
+    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-sm p-8">
         <BrandOnboardingProgress currentStep={currentStep} />
         {renderStep()}
         <BrandOnboardingNavigation
