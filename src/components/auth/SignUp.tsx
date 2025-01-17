@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SignUpForm from "./signup/SignUpForm";
 import { AuthError } from "@supabase/supabase-js";
@@ -12,7 +11,6 @@ interface SignUpProps {
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleSignUp = async ({ email, password, firstName, lastName }: {
     email: string;
@@ -32,6 +30,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             first_name: firstName,
             last_name: lastName,
           },
+          emailRedirectTo: window.location.origin,
         },
       });
 
@@ -68,11 +67,12 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
       if (signUpData) {
         toast({
-          title: "Welcome to NINO",
-          description: "Your account has been created successfully.",
+          title: "Account created",
+          description: "Please check your email to verify your account before signing in.",
         });
         
-        navigate("/onboarding");
+        // Switch back to sign in view after successful registration
+        onToggleAuth();
       }
     } catch (error: any) {
       console.error("Authentication error:", error);
