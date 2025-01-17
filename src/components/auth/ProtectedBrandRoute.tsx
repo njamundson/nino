@@ -13,40 +13,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   const location = useLocation();
   const { toast } = useToast();
 
-  // Add auth state change listener with improved error handling
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session);
-      
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
-        toast({
-          title: "Session ended",
-          description: "Please sign in again to continue.",
-        });
-        return;
-      }
-
-      // Verify session is valid
-      if (session) {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-          console.error('Error verifying user:', userError);
-          toast({
-            title: "Authentication Error",
-            description: "Please sign in again to continue.",
-            variant: "destructive",
-          });
-        }
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [toast]);
-
-  const { data: session, isLoading: sessionLoading, error: sessionError } = useQuery({
+  const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ["auth-session"],
     queryFn: async () => {
       console.log("Fetching session...");
@@ -62,21 +29,14 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         return null;
       }
       
-      // Verify user exists
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        console.error("Error verifying user:", userError);
-        throw new Error("User verification failed");
-      }
-      
-      console.log("Session fetched:", session);
+      console.log("Session fetched successfully:", session);
       return session;
     },
-    retry: false, // Don't retry on auth errors
+    retry: false,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
-  const { data: brand, isLoading: brandLoading, error: brandError } = useQuery({
+  const { data: brand, isLoading: brandLoading } = useQuery({
     queryKey: ["brand-profile"],
     enabled: !!session?.user,
     queryFn: async () => {
@@ -100,26 +60,24 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     retry: false,
   });
 
-  // Handle session error
-  if (sessionError) {
-    console.error("Session error:", sessionError);
-    toast({
-      title: "Authentication Error",
-      description: "There was a problem verifying your session. Please try signing in again.",
-      variant: "destructive",
+  // Add auth state change listener
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session);
+      
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+        toast({
+          title: "Session ended",
+          description: "Please sign in again to continue.",
+        });
+      }
     });
-    return <Navigate to="/" state={{ from: location }} replace />;
-  }
 
-  // Handle brand error
-  if (brandError && session) {
-    console.error("Brand error:", brandError);
-    toast({
-      title: "Error",
-      description: "There was a problem loading your brand profile.",
-      variant: "destructive",
-    });
-  }
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [toast]);
 
   if (sessionLoading || brandLoading) {
     return (
