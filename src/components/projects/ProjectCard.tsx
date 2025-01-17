@@ -5,7 +5,6 @@ import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProjectModal from "./ProjectModal";
 import { useToast } from "@/components/ui/use-toast";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProjectCardProps {
   opportunity: {
@@ -61,6 +60,17 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
           alt={opportunity.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        
+        <div className="absolute bottom-20 left-6 right-6 text-white">
+          <p className="text-sm font-medium text-white/90 mb-1">
+            {opportunity.brand.company_name}
+          </p>
+          <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
+            {opportunity.title}
+          </h3>
+        </div>
 
         <Button
           size="icon"
