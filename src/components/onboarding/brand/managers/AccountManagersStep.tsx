@@ -1,13 +1,12 @@
-import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ManagerForm from "./ManagerForm";
 import ManagerList from "./ManagerList";
 import AccountManagersHeader from "./AccountManagersHeader";
-import ProgressBar from "./ProgressBar";
 import NavigationButtons from "./NavigationButtons";
 import AddManagerButton from "./AddManagerButton";
+import { Label } from "@/components/ui/label";
 
 interface AccountManager {
   id: string;
@@ -53,49 +52,46 @@ const AccountManagersStep = () => {
   };
 
   const handleComplete = () => {
-    navigate("/brand/dashboard"); // Updated navigation path
+    navigate("/brand/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm"
-      >
-        <ProgressBar />
-        <AccountManagersHeader />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-md space-y-8"
+    >
+      <AccountManagersHeader />
 
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <Label className="text-lg font-medium text-nino-text">
-              Team Members
-            </Label>
-            <AddManagerButton onClick={() => setShowAddManager(true)} />
-          </div>
-
-          {showAddManager && (
-            <ManagerForm
-              onSubmit={addAccountManager}
-              selectedPermissions={selectedPermissions}
-              setSelectedPermissions={setSelectedPermissions}
-              onCancel={() => {
-                setShowAddManager(false);
-                setSelectedPermissions([]);
-              }}
-            />
-          )}
-
-          <ManagerList
-            managers={accountManagers}
-            onUpdatePermissions={updateManagerPermissions}
-            onRemoveManager={removeManager}
-          />
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <Label className="text-lg font-medium text-nino-text">
+            Team Members
+          </Label>
+          <AddManagerButton onClick={() => setShowAddManager(true)} />
         </div>
 
-        <NavigationButtons onComplete={handleComplete} />
-      </motion.div>
-    </div>
+        {showAddManager && (
+          <ManagerForm
+            onSubmit={addAccountManager}
+            selectedPermissions={selectedPermissions}
+            setSelectedPermissions={setSelectedPermissions}
+            onCancel={() => {
+              setShowAddManager(false);
+              setSelectedPermissions([]);
+            }}
+          />
+        )}
+
+        <ManagerList
+          managers={accountManagers}
+          onUpdatePermissions={updateManagerPermissions}
+          onRemoveManager={removeManager}
+        />
+      </div>
+
+      <NavigationButtons onComplete={handleComplete} />
+    </motion.div>
   );
 };
 
