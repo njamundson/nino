@@ -13,15 +13,31 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   const location = useLocation();
   const { toast } = useToast();
 
-  // Add auth state change listener
+  // Add auth state change listener with improved error handling
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session);
-      if (event === 'SIGNED_OUT') {
+      
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        console.log('User signed out or deleted');
         toast({
           title: "Session ended",
           description: "Please sign in again to continue.",
         });
+        return;
+      }
+
+      // Verify session is valid
+      if (session) {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          console.error('Error verifying user:', userError);
+          toast({
+            title: "Authentication Error",
+            description: "Please sign in again to continue.",
+            variant: "destructive",
+          });
+        }
       }
     });
 
@@ -41,10 +57,23 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         throw error;
       }
       
+      if (!session) {
+        console.log("No active session found");
+        return null;
+      }
+      
+      // Verify user exists
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        console.error("Error verifying user:", userError);
+        throw new Error("User verification failed");
+      }
+      
       console.log("Session fetched:", session);
       return session;
     },
-    retry: 1,
+    retry: false, // Don't retry on auth errors
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
   const { data: brand, isLoading: brandLoading, error: brandError } = useQuery({
@@ -68,7 +97,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       console.log("Brand profile fetched:", data);
       return data;
     },
-    retry: 1,
+    retry: false,
   });
 
   // Handle session error
@@ -102,16 +131,19 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   }
 
   if (!session) {
+    console.log("No session, redirecting to home");
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   // If we're already on the onboarding page, don't redirect
   if (!brand && !location.pathname.includes('/onboarding')) {
+    console.log("No brand profile, redirecting to onboarding");
     return <Navigate to="/onboarding" state={{ from: location }} replace />;
   }
 
   // If we have a brand and we're on the onboarding page, redirect to dashboard
   if (brand && location.pathname.includes('/onboarding')) {
+    console.log("Brand exists, redirecting to dashboard");
     return <Navigate to="/brand/dashboard" replace />;
   }
 
