@@ -57,8 +57,8 @@ const BrandSidebar = () => {
               className={cn(
                 "flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 location.pathname === item.path
-                  ? "bg-black text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  ? "bg-nino-bg text-nino-primary"
+                  : "text-gray-600 hover:text-nino-primary hover:bg-nino-bg"
               )}
             >
               <item.icon className="w-5 h-5" />
@@ -70,7 +70,7 @@ const BrandSidebar = () => {
         <div className="p-3 mt-auto border-t">
           <button
             onClick={handleSignOut}
-            className="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            className="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full text-gray-600 hover:text-nino-primary hover:bg-nino-bg"
           >
             <LogOut className="w-5 h-5" />
             <span>Sign Out</span>
