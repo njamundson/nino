@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { useBrandOnboarding } from "@/hooks/useBrandOnboarding";
-import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
-import BrandDetailsStep from "./brand/BrandDetailsStep";
-import BrandSocialStep from "./brand/BrandSocialStep";
-import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
-import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
-import AccountManagersStep from "./brand/managers/AccountManagersStep";
-import { useHandleComplete } from "./brand/hooks/useHandleComplete";
+import BrandBasicInfoStep from "../brand/BrandBasicInfoStep";
+import BrandDetailsStep from "../brand/BrandDetailsStep";
+import BrandSocialStep from "../brand/BrandSocialStep";
+import BrandOnboardingProgress from "../brand/BrandOnboardingProgress";
+import BrandOnboardingNavigation from "../brand/BrandOnboardingNavigation";
+import AccountManagersStep from "../brand/managers/AccountManagersStep";
+import { useHandleComplete } from "../brand/hooks/useHandleComplete";
 
 const BrandOnboarding = () => {
   const {
