@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import CreatorCard from "./CreatorCard";
 import CreatorFilters from "./CreatorFilters";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,74 +23,37 @@ interface Creator {
 const CreatorGrid = () => {
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
 
-  // Dummy data for development
-  const creators: Creator[] = [
-    {
-      id: "1",
-      bio: "Travel and lifestyle content creator specializing in outdoor adventures and cultural experiences.",
-      location: "New York, USA",
-      specialties: ["UGC", "Photography"],
-      instagram: "sarahjohnson",
-      website: "https://sarahjohnson.com",
-      profile: {
-        first_name: "Sarah",
-        last_name: "Johnson"
-      },
-      imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
-    },
-    {
-      id: "2",
-      bio: "Fashion and beauty content creator with a passion for sustainable style.",
-      location: "London, UK",
-      specialties: ["Model/Talent", "Photography"],
-      instagram: "michaelchen",
-      website: "https://michaelchen.co",
-      profile: {
-        first_name: "Michael",
-        last_name: "Chen"
-      },
-      imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
-    },
-    {
-      id: "3",
-      bio: "Food and lifestyle content creator.",
-      location: "Paris, France",
-      specialties: ["UGC", "Videography"],
-      instagram: "emmarodriguez",
-      website: null,
-      profile: {
-        first_name: "Emma",
-        last_name: "Rodriguez"
-      },
-      imageUrl: "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843"
-    },
-    {
-      id: "4",
-      bio: "Tech and lifestyle content creator.",
-      location: "Tokyo, Japan",
-      specialties: ["Videography", "Public Relations"],
-      instagram: "alextanaka",
-      website: "https://alextanaka.dev",
-      profile: {
-        first_name: "Alex",
-        last_name: "Tanaka"
-      },
-      imageUrl: "https://images.unsplash.com/photo-1501286353178-1ec871214838"
-    },
-    {
-      id: "5",
-      bio: "Fitness and wellness content creator helping people achieve their health goals.",
-      location: "Sydney, Australia",
-      specialties: ["Model/Talent", "UGC"],
-      instagram: "jordansmith",
-      website: "https://jordansmith.fit",
-      profile: {
-        first_name: "Jordan",
-        last_name: "Smith"
-      },
-      imageUrl: "https://images.unsplash.com/photo-1582562124811-c09040d0a901"
+  const { data: creators, isLoading } = useQuery({
+    queryKey: ['verified-creators'],
+    queryFn: async () => {
+      const { data: creatorsData, error } = await supabase
+        .from('creators')
+        .select(`
+          id,
+          bio,
+          location,
+          specialties,
+          instagram,
+          website,
+          profile:profiles (
+            first_name,
+            last_name
+          )
+        `)
+        .eq('is_verified', true);
+
+      if (error) {
+        console.error("Error fetching creators:", error);
+        return [];
+      }
+
+      // Transform the data to match our interface
+      return creatorsData.map(creator => ({
+        ...creator,
+        imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" // Placeholder for now
+      }));
     }
-  ];
+  });
 
   const handleSpecialtyChange = (specialty: string) => {
     setSelectedSpecialties(prev =>
@@ -99,14 +64,12 @@ const CreatorGrid = () => {
   };
 
   const filteredCreators = selectedSpecialties.length > 0
-    ? creators.filter(creator =>
+    ? creators?.filter(creator =>
         creator.specialties?.some(specialty =>
           selectedSpecialties.includes(specialty)
         )
       )
     : creators;
-
-  const isLoading = false;
 
   if (isLoading) {
     return (
@@ -135,7 +98,7 @@ const CreatorGrid = () => {
         onSpecialtyChange={handleSpecialtyChange}
       />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCreators.map((creator) => (
+        {filteredCreators?.map((creator) => (
           <CreatorCard key={creator.id} creator={creator} />
         ))}
       </div>

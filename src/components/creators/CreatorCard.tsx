@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import CreatorModal from "./CreatorModal";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Creator {
   id: string;
@@ -25,7 +27,53 @@ interface CreatorCardProps {
 
 const CreatorCard = ({ creator }: CreatorCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toast } = useToast();
   const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
+
+  const handleInvite = async (opportunityId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to invite creators",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('applications')
+        .insert({
+          opportunity_id: opportunityId,
+          creator_id: creator.id,
+          status: 'invited'
+        });
+
+      if (error) {
+        console.error("Error inviting creator:", error);
+        toast({
+          title: "Error",
+          description: "Failed to invite creator. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Creator invited successfully!",
+      });
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error in handleInvite:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <>
@@ -69,7 +117,7 @@ const CreatorCard = ({ creator }: CreatorCardProps) => {
             className="absolute bottom-6 right-6 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              // Handle add creator action
+              handleInvite(creator.id);
             }}
           >
             <Plus className="h-4 w-4" />
