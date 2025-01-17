@@ -1,6 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export const createCheckoutSession = async () => {
+interface CreateCheckoutOptions {
+  returnUrl: string;
+}
+
+export const createCheckoutSession = async ({ returnUrl }: CreateCheckoutOptions) => {
   const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
   if (sessionError || !session) {
@@ -8,9 +12,7 @@ export const createCheckoutSession = async () => {
   }
 
   const { data, error } = await supabase.functions.invoke('create-checkout', {
-    body: { 
-      returnUrl: `${window.location.origin}/creator/welcome`,
-    },
+    body: { returnUrl },
     headers: {
       Authorization: `Bearer ${session.access_token}`,
     },

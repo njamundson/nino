@@ -111,7 +111,7 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${returnUrl}/welcome`,
+      success_url: `${returnUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${returnUrl}/onboarding/creator`,
     })
 

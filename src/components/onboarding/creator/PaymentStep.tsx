@@ -27,7 +27,9 @@ const PaymentStep = () => {
         return;
       }
 
-      const checkoutUrl = await createCheckoutSession();
+      const checkoutUrl = await createCheckoutSession({
+        returnUrl: `${window.location.origin}/creator/welcome`,
+      });
       window.location.href = checkoutUrl;
     } catch (error) {
       console.error('Subscription error:', error);
