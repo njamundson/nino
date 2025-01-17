@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface BrandOnboardingNavigationProps {
   currentStep: 'basic' | 'details' | 'social' | 'managers';
@@ -12,19 +13,21 @@ const BrandOnboardingNavigation = ({
   onNext,
 }: BrandOnboardingNavigationProps) => {
   return (
-    <div className="flex justify-between pt-6">
+    <div className="flex justify-between pt-8">
       <Button
         onClick={onBack}
         variant="outline"
-        className="text-nino-gray hover:bg-gray-50"
+        className="text-nino-gray hover:bg-gray-50 space-x-2"
       >
-        Back
+        <ChevronLeft className="w-4 h-4" />
+        <span>Back</span>
       </Button>
       <Button
         onClick={onNext}
-        className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
+        className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8 space-x-2"
       >
-        {currentStep === 'managers' ? 'Complete Setup' : 'Next'}
+        <span>{currentStep === 'managers' ? 'Complete Setup' : 'Next'}</span>
+        {currentStep !== 'managers' && <ChevronRight className="w-4 h-4" />}
       </Button>
     </div>
   );
