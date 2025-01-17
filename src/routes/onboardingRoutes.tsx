@@ -3,6 +3,7 @@ import UserTypeSelection from "@/components/onboarding/UserTypeSelection";
 import CreatorOnboarding from "@/components/onboarding/CreatorOnboarding";
 import BrandOnboarding from "@/components/onboarding/BrandOnboarding";
 import AccountManagersStep from "@/components/onboarding/brand/managers/AccountManagersStep";
+import InvitationAcceptance from "@/components/onboarding/brand/managers/InvitationAcceptance";
 
 export const onboardingRoutes = [
   {
@@ -20,6 +21,10 @@ export const onboardingRoutes = [
   {
     path: "/onboarding/brand/managers",
     element: <AccountManagersStep />,
+  },
+  {
+    path: "/onboarding/brand/invitation/:token",
+    element: <InvitationAcceptance />,
   },
 ];
 
