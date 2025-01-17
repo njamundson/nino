@@ -2,15 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, MapPin, MessageSquare } from "lucide-react";
-import { formatDate } from "@/lib/utils";
 import PageHeader from "@/components/shared/PageHeader";
 import { useState } from "react";
 import CreatorModal from "@/components/creators/CreatorModal";
+import BookingCard from "@/components/bookings/BookingCard";
+import { useNavigate } from "react-router-dom";
 
 interface Creator {
   id: string;
@@ -27,6 +25,7 @@ interface Creator {
 }
 
 const Bookings = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
@@ -68,6 +67,25 @@ const Bookings = () => {
     },
   });
 
+  const handleViewCreator = (creator: any) => {
+    const creatorData: Creator = {
+      id: creator.id,
+      bio: creator.bio,
+      location: creator.location,
+      specialties: creator.specialties,
+      instagram: creator.instagram,
+      website: creator.website,
+      profile: creator.profile,
+      imageUrl: `https://source.unsplash.com/random/400x600?portrait&${creator.id}`,
+    };
+    setSelectedCreator(creatorData);
+    setIsCreatorModalOpen(true);
+  };
+
+  const handleChatClick = (creatorId: string) => {
+    navigate(`/messages?creator=${creatorId}`);
+  };
+
   if (isLoading) {
     return (
       <div className="p-8 max-w-7xl mx-auto space-y-8">
@@ -87,21 +105,6 @@ const Bookings = () => {
     );
   }
 
-  const handleViewCreator = (creator: any) => {
-    const creatorData: Creator = {
-      id: creator.id,
-      bio: creator.bio,
-      location: creator.location,
-      specialties: creator.specialties,
-      instagram: creator.instagram,
-      website: creator.website,
-      profile: creator.profile,
-      imageUrl: `https://source.unsplash.com/random/400x600?portrait&${creator.id}`,
-    };
-    setSelectedCreator(creatorData);
-    setIsCreatorModalOpen(true);
-  };
-
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <PageHeader
@@ -114,68 +117,14 @@ const Bookings = () => {
           <Card className="p-8">
             <ScrollArea className="h-[600px] pr-4">
               {bookings && bookings.length > 0 ? (
-                <div className="space-y-8">
+                <div className="space-y-6">
                   {bookings.map((booking: any) => (
-                    <div
+                    <BookingCard
                       key={booking.id}
-                      className="p-6 border rounded-lg space-y-4 hover:border-nino-primary transition-colors"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-lg font-medium">
-                            {booking.opportunity.title}
-                          </h3>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                            <MapPin className="w-4 h-4" />
-                            {booking.opportunity.location}
-                          </div>
-                        </div>
-                        <Badge variant="outline" className="capitalize">
-                          Confirmed
-                        </Badge>
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewCreator(booking.creator)}
-                          >
-                            View Creator
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              // Handle chat functionality
-                            }}
-                          >
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            Chat
-                          </Button>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <CalendarIcon className="w-4 h-4" />
-                          <span>
-                            {booking.opportunity.start_date
-                              ? formatDate(booking.opportunity.start_date)
-                              : "Date TBD"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="text-sm text-muted-foreground">
-                        <p className="font-medium mb-2">Booking details:</p>
-                        <p className="whitespace-pre-wrap">
-                          {booking.cover_letter}
-                        </p>
-                      </div>
-
-                      <div className="text-xs text-muted-foreground mt-4">
-                        Booked on {formatDate(booking.created_at)}
-                      </div>
-                    </div>
+                      booking={booking}
+                      onChatClick={() => handleChatClick(booking.creator.id)}
+                      onViewCreator={() => handleViewCreator(booking.creator)}
+                    />
                   ))}
                 </div>
               ) : (
