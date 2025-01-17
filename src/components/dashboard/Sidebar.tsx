@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Briefcase,
@@ -9,9 +9,13 @@ import {
   LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/creator/dashboard" },
@@ -22,10 +26,30 @@ const Sidebar = () => {
     { icon: Settings, label: "Settings", path: "/creator/settings" },
   ];
 
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Signed out successfully",
+        description: "You have been logged out of your account.",
+      });
+      
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast({
+        title: "Error signing out",
+        description: "There was a problem signing out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="w-64 m-4">
       <div className="h-full bg-white rounded-xl shadow-md flex flex-col">
-        {/* Logo */}
         <div className="p-6 border-b">
           <div className="flex items-center gap-2">
             <img 
@@ -36,7 +60,6 @@ const Sidebar = () => {
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-4 py-4">
           <ul className="space-y-1">
             {menuItems.map((item) => (
@@ -56,10 +79,9 @@ const Sidebar = () => {
           </ul>
         </nav>
 
-        {/* Sign Out Button */}
         <div className="p-4 mt-auto border-t">
           <button
-            onClick={() => {}} // We'll implement logout later
+            onClick={handleSignOut}
             className="flex items-center gap-3 px-4 py-3 w-full text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
           >
             <LogOut className="w-5 h-5" />

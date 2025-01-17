@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const BrandSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const menuItems = [
@@ -30,11 +31,21 @@ const BrandSidebar = () => {
   ];
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Signed out successfully",
+        description: "You have been logged out of your account.",
+      });
+      
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
       toast({
         title: "Error signing out",
-        description: error.message,
+        description: "There was a problem signing out. Please try again.",
         variant: "destructive",
       });
     }
