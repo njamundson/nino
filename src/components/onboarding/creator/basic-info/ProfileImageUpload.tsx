@@ -1,5 +1,8 @@
 import { Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 interface ProfileImageUploadProps {
   profileImage: string | null;
@@ -7,14 +10,47 @@ interface ProfileImageUploadProps {
 }
 
 const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadProps) => {
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onUpdateImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      
+      // Generate a unique file name
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      onUpdateImage(publicUrl);
+      
+      toast({
+        title: "Success",
+        description: "Profile photo uploaded successfully",
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload profile photo",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,9 +75,12 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
           className="hidden"
           accept="image/*"
           onChange={handleImageUpload}
+          disabled={loading}
         />
       </div>
-      <p className="text-sm text-nino-gray">Upload your profile photo</p>
+      <p className="text-sm text-nino-gray">
+        {loading ? "Uploading..." : "Upload your profile photo"}
+      </p>
     </div>
   );
 };
