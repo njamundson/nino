@@ -48,7 +48,7 @@ const BrandSidebar = () => {
             <img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
-              className="h-12"
+              className="h-16"
             />
           </Link>
         </div>
