@@ -26,7 +26,6 @@ export const useBrandOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
-      // Validate basic info before proceeding
       if (!brandData.brandName || !brandData.brandEmail) {
         toast({
           title: "Missing Information",
@@ -67,6 +66,18 @@ export const useBrandOnboarding = () => {
         }
 
         console.log("Got user:", user.id);
+
+        const { data: existingBrand } = await supabase
+          .from('brands')
+          .select()
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (existingBrand) {
+          console.log("Brand already exists:", existingBrand);
+          navigate("/brand/dashboard");
+          return;
+        }
 
         const { data: brand, error: brandError } = await supabase
           .from('brands')
