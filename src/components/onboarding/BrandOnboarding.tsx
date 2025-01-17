@@ -1,108 +1,67 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
+import { useBrandOnboarding } from "@/hooks/useBrandOnboarding";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
 import BrandSocialStep from "./brand/BrandSocialStep";
-import AccountManagersStep from "./brand/managers/AccountManagersStep";
 import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
-import { BrandData } from "@/types/brand";
-
-type OnboardingStep = "basic" | "details" | "social" | "managers";
+import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
 
 const BrandOnboarding = () => {
-  const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>("basic");
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [brandData, setBrandData] = useState<BrandData>({
-    brandName: "",
-    brandEmail: "",
-    brandBio: "",
-    homeLocation: "",
-    instagram: "",
-    website: "",
-    location: "",
-    brandType: "hotel",
-  });
+  const {
+    currentStep,
+    profileImage,
+    brandData,
+    updateField,
+    setProfileImage,
+    handleNext,
+    handleBack,
+  } = useBrandOnboarding();
 
-  const handleUpdateField = (field: keyof BrandData, value: string) => {
-    setBrandData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleNext = () => {
+  const getCurrentStep = () => {
     switch (currentStep) {
-      case "basic":
-        setCurrentStep("details");
-        break;
-      case "details":
-        setCurrentStep("social");
-        break;
-      case "social":
-        setCurrentStep("managers");
-        break;
+      case 'basic':
+        return (
+          <BrandBasicInfoStep
+            profileImage={profileImage}
+            brandData={brandData}
+            onUpdateField={updateField}
+            onUpdateImage={setProfileImage}
+          />
+        );
+      case 'details':
+        return (
+          <BrandDetailsStep
+            brandData={brandData}
+            onUpdateField={updateField}
+          />
+        );
+      case 'social':
+        return (
+          <BrandSocialStep
+            brandData={brandData}
+            onUpdateField={updateField}
+          />
+        );
       default:
-        break;
+        return null;
     }
-  };
-
-  const handleBack = () => {
-    switch (currentStep) {
-      case "details":
-        setCurrentStep("basic");
-        break;
-      case "social":
-        setCurrentStep("details");
-        break;
-      case "managers":
-        setCurrentStep("social");
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleComplete = () => {
-    navigate("/brand/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-nino-bg">
-      <BrandOnboardingProgress currentStep={currentStep} />
-      
-      {currentStep === "basic" && (
-        <BrandBasicInfoStep
-          profileImage={profileImage}
-          brandData={brandData}
-          onUpdateField={handleUpdateField}
-          onUpdateImage={setProfileImage}
-          onNext={handleNext}
-        />
-      )}
-      
-      {currentStep === "details" && (
-        <BrandDetailsStep
-          brandData={brandData}
-          onUpdateField={handleUpdateField}
-          onNext={handleNext}
+    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm"
+      >
+        <BrandOnboardingProgress currentStep={currentStep} />
+        {getCurrentStep()}
+        <BrandOnboardingNavigation
+          currentStep={currentStep}
           onBack={handleBack}
-        />
-      )}
-      
-      {currentStep === "social" && (
-        <BrandSocialStep
-          brandData={brandData}
-          onUpdateField={handleUpdateField}
           onNext={handleNext}
-          onBack={handleBack}
         />
-      )}
-
-      {currentStep === "managers" && (
-        <AccountManagersStep onComplete={handleComplete} />
-      )}
+      </motion.div>
     </div>
   );
 };

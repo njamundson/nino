@@ -10,9 +10,8 @@ import { BrandData } from "@/types/brand";
 interface BrandBasicInfoStepProps {
   profileImage: string | null;
   brandData: BrandData;
-  onUpdateField: (field: keyof BrandData, value: string) => void;
+  onUpdateField: (field: string, value: string) => void;
   onUpdateImage: (image: string | null) => void;
-  onNext: () => void;
 }
 
 const BrandBasicInfoStep = ({
@@ -20,7 +19,6 @@ const BrandBasicInfoStep = ({
   brandData,
   onUpdateField,
   onUpdateImage,
-  onNext,
 }: BrandBasicInfoStepProps) => {
   useEffect(() => {
     const setUserEmail = async () => {
@@ -100,15 +98,6 @@ const BrandBasicInfoStep = ({
               onChange={(e) => onUpdateField("brandEmail", e.target.value)}
             />
           </div>
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            onClick={onNext}
-            className="bg-nino-primary text-white px-8 py-3 rounded-lg hover:bg-nino-primary/90 transition-colors"
-          >
-            Next
-          </button>
         </div>
       </div>
     </div>

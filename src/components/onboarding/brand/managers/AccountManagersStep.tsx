@@ -17,11 +17,7 @@ interface AccountManager {
   permissions: string[];
 }
 
-interface AccountManagersStepProps {
-  onComplete: () => void;
-}
-
-const AccountManagersStep = ({ onComplete }: AccountManagersStepProps) => {
+const AccountManagersStep = () => {
   const navigate = useNavigate();
   const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
   const [showAddManager, setShowAddManager] = useState(false);
@@ -54,6 +50,10 @@ const AccountManagersStep = ({ onComplete }: AccountManagersStepProps) => {
 
   const removeManager = (id: string) => {
     setAccountManagers(accountManagers.filter((manager) => manager.id !== id));
+  };
+
+  const handleComplete = () => {
+    navigate("/brand/dashboard"); // Updated navigation path
   };
 
   return (
@@ -93,7 +93,7 @@ const AccountManagersStep = ({ onComplete }: AccountManagersStepProps) => {
           />
         </div>
 
-        <NavigationButtons onComplete={onComplete} />
+        <NavigationButtons onComplete={handleComplete} />
       </motion.div>
     </div>
   );

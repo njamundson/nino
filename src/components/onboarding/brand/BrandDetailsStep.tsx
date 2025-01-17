@@ -7,16 +7,12 @@ import { BrandData } from "@/types/brand";
 
 interface BrandDetailsStepProps {
   brandData: BrandData;
-  onUpdateField: (field: keyof BrandData, value: string) => void;
-  onNext: () => void;
-  onBack: () => void;
+  onUpdateField: (field: string, value: string) => void;
 }
 
 const BrandDetailsStep = ({
   brandData,
   onUpdateField,
-  onNext,
-  onBack,
 }: BrandDetailsStepProps) => {
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -49,21 +45,6 @@ const BrandDetailsStep = ({
             className="min-h-[120px] text-base bg-nino-bg border-transparent focus:border-nino-primary resize-none"
             onChange={(e) => onUpdateField("brandBio", e.target.value)}
           />
-        </div>
-
-        <div className="flex justify-between">
-          <button
-            onClick={onBack}
-            className="text-nino-gray hover:text-nino-text px-8 py-3 rounded-lg transition-colors"
-          >
-            Back
-          </button>
-          <button
-            onClick={onNext}
-            className="bg-nino-primary text-white px-8 py-3 rounded-lg hover:bg-nino-primary/90 transition-colors"
-          >
-            Next
-          </button>
         </div>
       </div>
     </div>
