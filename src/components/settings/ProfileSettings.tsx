@@ -10,6 +10,7 @@ import ContactInformationForm from "./profile/ContactInformationForm";
 import NotificationPreferences from "./profile/NotificationPreferences";
 import SecuritySettings from "./profile/SecuritySettings";
 import SupportSection from "./profile/SupportSection";
+import AccountManagersSection from "./profile/AccountManagersSection";
 
 const ProfileSettings = () => {
   const { toast } = useToast();
@@ -167,6 +168,8 @@ const ProfileSettings = () => {
           loading={loading}
           onUpdateField={handleUpdateField}
         />
+
+        <AccountManagersSection />
 
         <NotificationPreferences 
           brandData={brandData}
