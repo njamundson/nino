@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CreditCard, Lock, LogOut, Trash2 } from "lucide-react";
+import { Lock, LogOut, Trash2 } from "lucide-react";
 
 const AccountSettings = () => {
   const { toast } = useToast();
@@ -39,20 +39,6 @@ const AccountSettings = () => {
       <h3 className="text-xl font-semibold text-nino-text mb-6">Account</h3>
       
       <div className="space-y-6">
-        <div>
-          <h4 className="text-base font-medium text-nino-text mb-2">Subscription</h4>
-          <div className="flex items-center space-x-3 mb-4">
-            <CreditCard className="w-5 h-5 text-nino-primary" />
-            <div>
-              <p className="text-sm font-medium">Pro Plan</p>
-              <p className="text-sm text-nino-gray">$9.99/month</p>
-            </div>
-          </div>
-          <Button variant="outline" className="w-full sm:w-auto">
-            Manage Subscription
-          </Button>
-        </div>
-
         <div className="pt-4 border-t border-gray-100">
           <h4 className="text-base font-medium text-nino-text mb-2">Security</h4>
           <div className="space-y-4">
