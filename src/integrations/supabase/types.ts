@@ -95,6 +95,50 @@ export type Database = {
           },
         ]
       }
+      brand_notification_settings: {
+        Row: {
+          application_updates: boolean | null
+          brand_id: string | null
+          created_at: string
+          email_enabled: boolean | null
+          id: string
+          marketing_updates: boolean | null
+          message_notifications: boolean | null
+          push_enabled: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          application_updates?: boolean | null
+          brand_id?: string | null
+          created_at?: string
+          email_enabled?: boolean | null
+          id?: string
+          marketing_updates?: boolean | null
+          message_notifications?: boolean | null
+          push_enabled?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          application_updates?: boolean | null
+          brand_id?: string | null
+          created_at?: string
+          email_enabled?: boolean | null
+          id?: string
+          marketing_updates?: boolean | null
+          message_notifications?: boolean | null
+          push_enabled?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_notification_settings_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brands: {
         Row: {
           brand_type: Database["public"]["Enums"]["brand_type"]
