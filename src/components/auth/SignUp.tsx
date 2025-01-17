@@ -18,7 +18,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
-      if (session) {
+      if (session?.user?.email_confirmed_at) {
         navigate("/onboarding");
       }
       if (error) {
@@ -29,9 +29,9 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     checkSession();
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state change event:", event);
-      if (event === 'SIGNED_IN' && session) {
+      if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
         navigate("/onboarding");
       }
     });
