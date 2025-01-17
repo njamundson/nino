@@ -47,7 +47,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         .from("brands")
         .select("*")
         .eq("user_id", session.user.id)
-        .maybeSingle();
+        .maybeSingle(); // Changed from .single() to .maybeSingle()
       
       if (error) {
         console.error("Error fetching brand profile:", error);
