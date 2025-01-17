@@ -8,6 +8,7 @@ const Projects = () => {
   const { data: opportunities, isLoading } = useQuery({
     queryKey: ['opportunities'],
     queryFn: async () => {
+      console.log("Fetching opportunities...");
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
@@ -21,7 +22,12 @@ const Projects = () => {
         .eq('status', 'open')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching opportunities:", error);
+        throw error;
+      }
+
+      console.log("Fetched opportunities:", data);
       return data;
     },
   });

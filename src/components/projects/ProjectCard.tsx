@@ -49,6 +49,15 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
       setIsLoading(false);
     }
   };
+
+  const getInitials = (companyName: string) => {
+    return companyName
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
   
   return (
     <>
@@ -56,35 +65,38 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
         className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
         onClick={() => setShowModal(true)}
       >
-        <div className="relative h-full">
+        <div className="relative h-full p-6">
           {/* Status Badge */}
-          <div className="absolute top-6 left-6 z-10">
+          <div className="mb-4">
             <span className="px-3 py-1 text-sm font-medium text-green-600 bg-green-50 rounded-full">
               Active
             </span>
           </div>
 
-          {/* Title */}
-          <div className="absolute top-16 left-6 z-10">
-            <h3 className="text-2xl font-semibold text-gray-900">
-              {opportunity.title}
-            </h3>
-          </div>
-
-          {/* Background Image */}
-          <img
-            src="/public/lovable-uploads/b852de8f-a42e-4be7-88e2-d2a17634fb0f.png"
-            alt={opportunity.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-
-          {/* Avatar Overlay */}
-          <div className="absolute top-1/2 left-6 z-10">
-            <Avatar className="h-12 w-12 border-2 border-white shadow-md">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
+          {/* Company Info */}
+          <div className="mb-4">
+            <Avatar className="h-12 w-12 mb-3">
+              <AvatarFallback>{getInitials(opportunity.brand.company_name)}</AvatarFallback>
             </Avatar>
+            <p className="text-sm text-gray-600 mb-1">{opportunity.brand.company_name}</p>
           </div>
+
+          {/* Title */}
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            {opportunity.title}
+          </h3>
+
+          {/* Description */}
+          <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+            {opportunity.description}
+          </p>
+
+          {/* Location */}
+          {opportunity.location && (
+            <p className="text-sm text-gray-600 mb-4">
+              📍 {opportunity.location}
+            </p>
+          )}
 
           {/* Action Button */}
           <Button
