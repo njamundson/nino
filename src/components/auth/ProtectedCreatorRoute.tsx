@@ -11,7 +11,15 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ["auth-session"],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      console.log("Fetching session...");
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Error fetching session:", error);
+        return null;
+      }
+      
+      console.log("Session fetched:", session);
       return session;
     },
   });
@@ -22,9 +30,16 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     queryFn: async () => {
       if (!session?.user) return null;
 
+      console.log("Fetching creator profile...");
       const { data, error } = await supabase
         .from("creators")
-        .select("*")
+        .select(`
+          *,
+          profile:profiles(
+            first_name,
+            last_name
+          )
+        `)
         .eq("user_id", session.user.id)
         .maybeSingle();
       
@@ -33,6 +48,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         return null;
       }
       
+      console.log("Creator profile fetched:", data);
       return data;
     },
   });
@@ -47,10 +63,12 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   }
 
   if (!session) {
+    console.log("No session, redirecting to home");
     return <Navigate to="/" />;
   }
 
   if (!creator) {
+    console.log("No creator profile, redirecting to onboarding");
     return <Navigate to="/onboarding" />;
   }
 
