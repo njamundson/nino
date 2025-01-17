@@ -7,32 +7,33 @@ export interface ApplicationFormProps {
     id: string;
     title: string;
     description: string;
-    location: string;
-    start_date: string;
-    end_date: string;
-    perks: string[];
-    requirements: string[];
-    payment_details: string;
-    compensation_details: string;
-    deliverables: string[];
+    location: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    perks: string[] | null;
+    requirements: string[] | null;
+    payment_details: string | null;
+    compensation_details: string | null;
+    deliverables: string[] | null;
     brand: {
       company_name: string;
+      brand_type: string;
+      location: string | null;
       description: string;
       website: string;
       instagram: string;
     };
   };
-  onBack: () => void;
   onClose: () => void;
-  onSubmit: (coverLetter: string) => void;
 }
 
-const ApplicationForm = ({ opportunity, onBack, onClose, onSubmit }: ApplicationFormProps) => {
+const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
   const [coverLetter, setCoverLetter] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(coverLetter);
+    // Handle application submission
+    onClose();
   };
 
   return (
@@ -52,15 +53,10 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onSubmit }: Application
       </div>
 
       <div className="flex justify-between">
-        <Button type="button" variant="outline" onClick={onBack}>
-          Back
+        <Button type="button" variant="outline" onClick={onClose}>
+          Cancel
         </Button>
-        <div className="space-x-2">
-          <Button type="button" variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit">Submit Application</Button>
-        </div>
+        <Button type="submit">Submit Application</Button>
       </div>
     </form>
   );

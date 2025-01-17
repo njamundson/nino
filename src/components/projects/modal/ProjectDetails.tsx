@@ -2,25 +2,25 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
-interface ProjectDetailsProps {
+export interface ProjectDetailsProps {
   description: string;
-  startDate: string | null;
-  endDate: string | null;
+  start_date: string | null;
+  end_date: string | null;
   requirements: string[] | null;
   perks: string[] | null;
-  paymentDetails: string | null;
-  compensationDetails: string | null;
+  payment_details: string | null;
+  compensation_details: string | null;
   deliverables: string[] | null;
 }
 
 const ProjectDetails = ({ 
   description, 
-  startDate, 
-  endDate, 
+  start_date, 
+  end_date, 
   requirements, 
   perks,
-  paymentDetails,
-  compensationDetails,
+  payment_details,
+  compensation_details,
   deliverables
 }: ProjectDetailsProps) => {
   return (
@@ -30,35 +30,35 @@ const ProjectDetails = ({
         <p className="text-sm">{description}</p>
       </div>
 
-      {(startDate || endDate) && (
+      {(start_date || end_date) && (
         <div className="flex gap-4 text-sm">
-          {startDate && (
+          {start_date && (
             <div>
               <span className="text-muted-foreground">Start:</span>{" "}
-              {formatDate(startDate)}
+              {formatDate(start_date)}
             </div>
           )}
-          {endDate && (
+          {end_date && (
             <div>
               <span className="text-muted-foreground">End:</span>{" "}
-              {formatDate(endDate)}
+              {formatDate(end_date)}
             </div>
           )}
         </div>
       )}
 
       <div className="grid grid-cols-2 gap-4">
-        {paymentDetails && (
+        {payment_details && (
           <div>
             <h4 className="font-medium mb-1 text-sm">Payment</h4>
-            <p className="text-sm text-muted-foreground">{paymentDetails}</p>
+            <p className="text-sm text-muted-foreground">{payment_details}</p>
           </div>
         )}
 
-        {compensationDetails && (
+        {compensation_details && (
           <div>
             <h4 className="font-medium mb-1 text-sm">Additional Compensation</h4>
-            <p className="text-sm text-muted-foreground">{compensationDetails}</p>
+            <p className="text-sm text-muted-foreground">{compensation_details}</p>
           </div>
         )}
       </div>
