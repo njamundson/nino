@@ -1,12 +1,12 @@
 import { Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
 interface ProfileImageSectionProps {
   profileImage: string | null;
-  setProfileImage: (url: string) => void;
+  setProfileImage: (url: string | null) => void;
 }
 
 const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSectionProps) => {
@@ -32,6 +32,7 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
           .getPublicUrl(filePath);
 
         setProfileImage(publicUrl);
+        
         toast({
           title: "Success",
           description: "Profile image updated successfully",
@@ -73,7 +74,9 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
           disabled={loading}
         />
       </div>
-      <p className="text-sm text-nino-gray">Upload your brand logo</p>
+      <p className="text-sm text-nino-gray">
+        {loading ? "Uploading..." : "Upload your brand logo"}
+      </p>
     </div>
   );
 };

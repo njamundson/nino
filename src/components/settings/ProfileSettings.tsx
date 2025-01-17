@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 import ProfileImageSection from "./profile/ProfileImageSection";
 import BrandDetailsForm from "./profile/BrandDetailsForm";
@@ -22,6 +22,7 @@ const ProfileSettings = () => {
     phone_number: "",
     support_email: "",
     email: "",
+    profile_image_url: "",
   });
 
   useEffect(() => {
@@ -37,9 +38,10 @@ const ProfileSettings = () => {
         .from('brands')
         .select('*')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
       if (error) throw error;
+      
       if (brand) {
         setBrandData({
           company_name: brand.company_name || "",
@@ -50,7 +52,9 @@ const ProfileSettings = () => {
           phone_number: brand.phone_number || "",
           support_email: brand.support_email || "",
           email: user.email || "",
+          profile_image_url: brand.profile_image_url || "",
         });
+        setProfileImage(brand.profile_image_url);
       }
     } catch (error) {
       console.error('Error fetching brand data:', error);
@@ -82,6 +86,7 @@ const ProfileSettings = () => {
           location: brandData.location,
           phone_number: brandData.phone_number,
           support_email: brandData.support_email,
+          profile_image_url: profileImage,
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', user.id);
@@ -109,7 +114,7 @@ const ProfileSettings = () => {
       <div className="space-y-6">
         <ProfileImageSection 
           profileImage={profileImage} 
-          setProfileImage={setProfileImage} 
+          setProfileImage={setProfileImage}
         />
 
         <BrandDetailsForm 
@@ -132,7 +137,14 @@ const ProfileSettings = () => {
             disabled={loading}
             className="bg-nino-primary hover:bg-nino-primary/90"
           >
-            Save Changes
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Saving...</span>
+              </div>
+            ) : (
+              "Save Changes"
+            )}
           </Button>
         </div>
       </div>

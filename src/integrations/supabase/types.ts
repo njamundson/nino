@@ -193,6 +193,7 @@ export type Database = {
           instagram: string | null
           location: string | null
           phone_number: string | null
+          profile_image_url: string | null
           sms_notifications_enabled: boolean | null
           support_email: string | null
           two_factor_enabled: boolean | null
@@ -209,6 +210,7 @@ export type Database = {
           instagram?: string | null
           location?: string | null
           phone_number?: string | null
+          profile_image_url?: string | null
           sms_notifications_enabled?: boolean | null
           support_email?: string | null
           two_factor_enabled?: boolean | null
@@ -225,6 +227,7 @@ export type Database = {
           instagram?: string | null
           location?: string | null
           phone_number?: string | null
+          profile_image_url?: string | null
           sms_notifications_enabled?: boolean | null
           support_email?: string | null
           two_factor_enabled?: boolean | null
