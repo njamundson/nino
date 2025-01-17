@@ -7,9 +7,10 @@ import type { AccountManager } from "./hooks/useAccountManagers";
 interface ManagerCardProps {
   manager: AccountManager;
   onRemove: () => void;
+  onUpdatePermissions?: (managerId: string, permissions: string[]) => Promise<void>;
 }
 
-const ManagerCard = ({ manager, onRemove }: ManagerCardProps) => {
+const ManagerCard = ({ manager, onRemove, onUpdatePermissions }: ManagerCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -21,7 +22,10 @@ const ManagerCard = ({ manager, onRemove }: ManagerCardProps) => {
         <p className="text-xs text-nino-gray">{manager.email}</p>
         <p className="text-xs text-nino-primary">{manager.role}</p>
         <div className="mt-2">
-          <ManagerPermissions permissions={manager.permissions} />
+          <ManagerPermissions 
+            permissions={manager.permissions} 
+            onUpdate={onUpdatePermissions ? (permissions) => onUpdatePermissions(manager.id, permissions) : undefined}
+          />
         </div>
       </div>
       <Button
