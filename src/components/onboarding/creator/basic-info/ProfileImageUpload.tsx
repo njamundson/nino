@@ -3,14 +3,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileImageUploadProps {
   profileImage: string | null;
-  onUpdateImage: (image: string | null) => void;
+  onUpdateImage: (url: string) => void;
 }
 
 const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,6 +22,19 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
     try {
       setLoading(true);
       
+      // Check authentication status
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to upload a profile photo",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
+
       // Generate a unique file name
       const fileExt = file.name.split('.').pop();
       const filePath = `${crypto.randomUUID()}.${fileExt}`;
@@ -29,7 +44,18 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
         .from('avatars')
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        if (uploadError.message.includes('JWT')) {
+          toast({
+            title: "Session expired",
+            description: "Your session has expired. Please sign in again.",
+            variant: "destructive",
+          });
+          navigate('/');
+          return;
+        }
+        throw uploadError;
+      }
 
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
@@ -46,7 +72,7 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
       console.error('Error uploading image:', error);
       toast({
         title: "Error",
-        description: "Failed to upload profile photo",
+        description: "Failed to upload profile photo. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -55,9 +81,9 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4 mb-8">
-      <div className="relative group cursor-pointer">
-        <Avatar className="w-32 h-32 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="relative group">
+        <Avatar className="w-32 h-32 ring-4 ring-white/50 transition-all duration-200 group-hover:ring-nino-primary/20">
           <AvatarImage src={profileImage || ""} />
           <AvatarFallback className="bg-nino-bg">
             <Camera className="w-12 h-12 text-nino-gray" />
@@ -65,7 +91,7 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
         </Avatar>
         <label
           htmlFor="photo-upload"
-          className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors"
+          className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors shadow-lg"
         >
           <Camera className="w-5 h-5 text-white" />
         </label>
