@@ -6,25 +6,32 @@ import { useNavigate } from "react-router-dom";
 import ProjectModal from "./ProjectModal";
 import { useToast } from "@/components/ui/use-toast";
 
+interface Brand {
+  company_name: string;
+  brand_type: string;
+  location: string | null;
+  description: string | null;
+  website: string | null;
+  instagram: string | null;
+}
+
+interface Opportunity {
+  id: string;
+  title: string;
+  description: string;
+  location: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  perks: string[] | null;
+  requirements: string[] | null;
+  payment_details: string | null;
+  compensation_details: string | null;
+  deliverables: string[] | null;
+  brand: Brand;
+}
+
 interface ProjectCardProps {
-  opportunity: {
-    id: string;
-    title: string;
-    description: string;
-    location: string | null;
-    start_date: string | null;
-    end_date: string | null;
-    perks: string[] | null;
-    requirements: string[] | null;
-    payment_details: string | null;
-    compensation_details: string | null;
-    deliverables: string[] | null;
-    brand: {
-      company_name: string;
-      brand_type: string;
-      location: string | null;
-    };
-  };
+  opportunity: Opportunity;
 }
 
 const ProjectCard = ({ opportunity }: ProjectCardProps) => {
