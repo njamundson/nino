@@ -19,7 +19,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/creator/dashboard" },
-    { icon: Briefcase, label: "View Projects", path: "/creator/projects" },
+    { icon: Briefcase, label: "Projects", path: "/creator/projects" },
     { icon: FileText, label: "Proposals", path: "/creator/proposals" },
     { icon: Calendar, label: "Bookings", path: "/creator/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/creator/messages" },

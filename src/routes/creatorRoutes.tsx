@@ -29,7 +29,7 @@ export const creatorRoutes = [
     ),
   },
   {
-    path: "/projects",
+    path: "/creator/projects",
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
@@ -39,7 +39,7 @@ export const creatorRoutes = [
     ),
   },
   {
-    path: "/proposals",
+    path: "/creator/proposals",
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
@@ -49,7 +49,7 @@ export const creatorRoutes = [
     ),
   },
   {
-    path: "/bookings",
+    path: "/creator/bookings",
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
@@ -59,7 +59,7 @@ export const creatorRoutes = [
     ),
   },
   {
-    path: "/messages",
+    path: "/creator/messages",
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
@@ -69,7 +69,7 @@ export const creatorRoutes = [
     ),
   },
   {
-    path: "/settings",
+    path: "/creator/settings",
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
