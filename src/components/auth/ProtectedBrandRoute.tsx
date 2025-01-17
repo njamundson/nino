@@ -52,8 +52,14 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  if (!brand) {
+  // If we're already on the onboarding page, don't redirect
+  if (!brand && !location.pathname.includes('/onboarding')) {
     return <Navigate to="/onboarding" state={{ from: location }} replace />;
+  }
+
+  // If we have a brand and we're on the onboarding page, redirect to dashboard
+  if (brand && location.pathname.includes('/onboarding')) {
+    return <Navigate to="/brand/dashboard" replace />;
   }
 
   return <>{children}</>;

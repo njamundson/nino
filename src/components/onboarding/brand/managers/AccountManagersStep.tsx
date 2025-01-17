@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import ManagerForm from "./ManagerForm";
 import AccountManagersHeader from "./AccountManagersHeader";
 import AddManagerButton from "./AddManagerButton";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 interface AccountManager {
   id: string;
@@ -20,37 +23,7 @@ const AccountManagersStep = () => {
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
   const { toast } = useToast();
-
-  // Load existing managers on component mount
-  useEffect(() => {
-    const loadExistingManagers = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data: brand } = await supabase
-          .from('brands')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-
-        if (brand) {
-          const { data: managers } = await supabase
-            .from('brand_managers')
-            .select('*')
-            .eq('brand_id', brand.id);
-
-          if (managers) {
-            setAccountManagers(managers as AccountManager[]);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading managers:', error);
-      }
-    };
-
-    loadExistingManagers();
-  }, []);
+  const navigate = useNavigate();
 
   const addAccountManager = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -68,20 +41,14 @@ const AccountManagersStep = () => {
         return;
       }
 
-      // First, get or create the brand
-      let brandId: string;
-      
-      // Try to get existing brand
-      const { data: existingBrand } = await supabase
+      // Get the brand for the current user
+      const { data: brand } = await supabase
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
         .single();
 
-      if (existingBrand) {
-        brandId = existingBrand.id;
-      } else {
-        // If no brand exists, show error - brand should be created in previous step
+      if (!brand) {
         toast({
           title: "Error",
           description: "Please complete brand setup first",
@@ -94,8 +61,8 @@ const AccountManagersStep = () => {
       const { data: existingManager } = await supabase
         .from('brand_managers')
         .select('*')
-        .eq('brand_id', brandId)
-        .eq('email', formData.get("managerEmail"))
+        .eq('brand_id', brand.id)
+        .eq('email', formData.get("managerEmail")?.toString())
         .single();
 
       if (existingManager) {
@@ -111,10 +78,10 @@ const AccountManagersStep = () => {
       const { data: manager, error: managerError } = await supabase
         .from('brand_managers')
         .insert({
-          brand_id: brandId,
-          name: formData.get("managerName") as string,
-          email: formData.get("managerEmail") as string,
-          role: formData.get("managerRole") as string,
+          brand_id: brand.id,
+          name: formData.get("managerName")?.toString(),
+          email: formData.get("managerEmail")?.toString(),
+          role: formData.get("managerRole")?.toString(),
           permissions: selectedPermissions,
           invitation_status: 'pending'
         })
@@ -150,6 +117,34 @@ const AccountManagersStep = () => {
     }
   };
 
+  const removeManager = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('brand_managers')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setAccountManagers(accountManagers.filter(manager => manager.id !== id));
+      toast({
+        title: "Success",
+        description: "Team member removed successfully",
+      });
+    } catch (error) {
+      console.error('Error removing manager:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove team member",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleComplete = () => {
+    navigate("/brand/dashboard");
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -161,10 +156,7 @@ const AccountManagersStep = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <Label className="text-base">Team Members</Label>
-          <AddManagerButton
-            onClick={() => setShowAddManager(true)}
-            disabled={showAddManager}
-          />
+          <AddManagerButton onClick={() => setShowAddManager(true)} />
         </div>
 
         {showAddManager && (
@@ -179,11 +171,39 @@ const AccountManagersStep = () => {
           />
         )}
 
-        <ManagerList
-          managers={accountManagers}
-          onUpdatePermissions={() => {}}
-          onRemoveManager={() => {}}
-        />
+        <div className="space-y-2">
+          {accountManagers.map((manager) => (
+            <motion.div
+              key={manager.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center justify-between p-3 bg-nino-bg rounded-lg hover:bg-nino-bg/80 transition-colors"
+            >
+              <div className="space-y-1">
+                <p className="font-medium text-sm text-nino-text">{manager.name}</p>
+                <p className="text-xs text-nino-gray">{manager.email}</p>
+                <p className="text-xs text-nino-primary">{manager.role}</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => removeManager(manager.id)}
+                className="text-red-500 hover:text-red-600 hover:bg-red-50"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex justify-end pt-6">
+        <Button
+          onClick={handleComplete}
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8"
+        >
+          Complete Setup
+        </Button>
       </div>
     </motion.div>
   );
