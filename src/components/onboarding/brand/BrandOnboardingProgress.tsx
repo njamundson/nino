@@ -18,20 +18,21 @@ const BrandOnboardingProgress = ({ currentStep }: BrandOnboardingProgressProps) 
     <div className="mb-8">
       <div className="flex justify-between items-center">
         {steps.map((step, index) => (
-          <div key={step.key} className="flex items-center flex-1">
+          <div key={step.key} className="flex items-center">
             <motion.div
               initial={false}
               animate={{
                 scale: currentIndex >= index ? 1.1 : 1,
                 backgroundColor: currentIndex >= index ? 'rgb(165, 85, 73)' : 'rgb(229, 231, 235)',
               }}
-              className="w-3 h-3 rounded-full flex-shrink-0"
+              className="w-3 h-3 rounded-full"
             />
             {index < steps.length - 1 && (
               <div
-                className="h-0.5 mx-2 flex-1"
+                className="w-full h-0.5 mx-2"
                 style={{
                   backgroundColor: currentIndex > index ? 'rgb(165, 85, 73)' : 'rgb(229, 231, 235)',
+                  width: '100%',
                   transition: 'background-color 0.3s ease',
                 }}
               />
