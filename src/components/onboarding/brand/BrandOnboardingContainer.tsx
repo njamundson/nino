@@ -10,7 +10,7 @@ const BrandOnboardingContainer = ({ children }: BrandOnboardingContainerProps) =
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-sm"
+        className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm"
       >
         {children}
       </motion.div>

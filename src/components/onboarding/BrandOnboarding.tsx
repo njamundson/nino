@@ -5,10 +5,14 @@ import BrandSocialStep from "./brand/BrandSocialStep";
 import BrandOnboardingProgress from "./brand/BrandOnboardingProgress";
 import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
 import AccountManagersStep from "./brand/managers/AccountManagersStep";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
-import { useHandleComplete } from "@/hooks/useHandleComplete";
 
 const BrandOnboarding = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const {
     currentStep,
     setCurrentStep,
@@ -20,7 +24,58 @@ const BrandOnboarding = () => {
     handleBack,
   } = useBrandOnboarding();
 
-  const { handleComplete } = useHandleComplete();
+  const handleComplete = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data: brand, error: brandError } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (brandError) {
+        toast({
+          title: "Error",
+          description: "Could not fetch brand information",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!brand) {
+        toast({
+          title: "Error",
+          description: "Brand profile not found. Please complete the basic information first.",
+          variant: "destructive",
+        });
+        setCurrentStep('basic');
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Brand setup completed successfully",
+      });
+
+      navigate("/brand/dashboard");
+    } catch (error) {
+      console.error('Error in handleComplete:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getCurrentStep = () => {
     switch (currentStep) {
