@@ -72,7 +72,8 @@ const Bookings = () => {
               specialties,
               instagram,
               website,
-              profile:profiles (
+              user_id,
+              profile:profiles!inner (
                 first_name,
                 last_name
               )
