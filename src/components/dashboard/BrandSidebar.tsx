@@ -45,7 +45,11 @@ const BrandSidebar = () => {
       <div className="bg-white rounded-xl shadow-sm h-full flex flex-col">
         <div className="p-6 border-b">
           <Link to="/brand/dashboard" className="flex items-center">
-            <span className="font-semibold text-xl text-nino-primary">Nino</span>
+            <img 
+              src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
+              alt="Nino" 
+              className="h-8"
+            />
           </Link>
         </div>
         
