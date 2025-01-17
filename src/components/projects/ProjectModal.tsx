@@ -128,18 +128,17 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">
+          <DialogTitle className="text-xl font-semibold">
             {opportunity.title}
           </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-6">
           <BrandInfo
             companyName={opportunity.brand.company_name}
             brandType={opportunity.brand.brand_type}
             location={opportunity.location}
           />
-
+        </DialogHeader>
+        
+        <div className="space-y-4">
           <ProjectDetails
             description={opportunity.description}
             startDate={opportunity.start_date}
@@ -158,14 +157,12 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
               isSubmitting={isSubmitting}
             />
           ) : (
-            <div className="pt-4">
-              <Button
-                className="w-full"
-                onClick={() => setIsApplying(true)}
-              >
-                Apply for this Project
-              </Button>
-            </div>
+            <Button
+              className="w-full"
+              onClick={() => setIsApplying(true)}
+            >
+              Apply for this Project
+            </Button>
           )}
         </div>
       </DialogContent>
