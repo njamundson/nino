@@ -14,10 +14,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-// Add debug logging
+// Add debug logging for initialization and auth state changes
+console.log('Supabase client initialized with URL:', supabaseUrl);
+
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session);
 });
 
-// Debug log for initialization
-console.log('Supabase client initialized with URL:', supabaseUrl);
+// Add error handling for auth operations
+supabase.auth.onError((error) => {
+  console.error('Auth error:', error);
+});

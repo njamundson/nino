@@ -29,7 +29,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
             first_name: firstName,
             last_name: lastName,
           },
-          emailRedirectTo: `${window.location.origin}/onboarding`,
+          emailRedirectTo: window.location.origin + '/onboarding',
         },
       });
 
