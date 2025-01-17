@@ -7,7 +7,7 @@ const Welcome = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/dashboard");
+      navigate("/creator/dashboard");
     }, 3000);
 
     return () => clearTimeout(timer);

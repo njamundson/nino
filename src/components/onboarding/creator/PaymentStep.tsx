@@ -17,13 +17,13 @@ const PaymentStep = () => {
     try {
       setIsLoading(true);
       
-      // If already subscribed, redirect to welcome page
+      // If already subscribed, redirect to creator dashboard
       if (subscriptionData?.subscribed) {
         toast({
           title: "Already subscribed",
-          description: "You are already subscribed to Nino Pro. Redirecting to welcome page.",
+          description: "You are already subscribed to Nino Pro. Redirecting to dashboard.",
         });
-        navigate("/welcome");
+        navigate("/creator/dashboard");
         return;
       }
 
@@ -50,9 +50,9 @@ const PaymentStep = () => {
     );
   }
 
-  // If already subscribed, show message and redirect
+  // If already subscribed, redirect to creator dashboard
   if (subscriptionData?.subscribed) {
-    navigate("/welcome");
+    navigate("/creator/dashboard");
     return null;
   }
 

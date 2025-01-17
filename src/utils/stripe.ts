@@ -8,7 +8,9 @@ export const createCheckoutSession = async () => {
   }
 
   const { data, error } = await supabase.functions.invoke('create-checkout', {
-    body: { returnUrl: window.location.origin },
+    body: { 
+      returnUrl: `${window.location.origin}/creator/welcome`,
+    },
     headers: {
       Authorization: `Bearer ${session.access_token}`,
     },
