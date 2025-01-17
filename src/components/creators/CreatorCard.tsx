@@ -113,7 +113,10 @@ const CreatorCard = ({ creator }: CreatorCardProps) => {
       </Card>
 
       <CreatorModal
-        creator={creator}
+        creator={{
+          ...creator,
+          imageUrl: creator.profileImage || '/placeholder.svg'
+        }}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
