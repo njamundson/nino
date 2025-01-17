@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useBrandOnboarding } from "@/hooks/useBrandOnboarding";
 import BrandBasicInfoStep from "./brand/BrandBasicInfoStep";
 import BrandDetailsStep from "./brand/BrandDetailsStep";
@@ -9,6 +8,7 @@ import AccountManagersStep from "./brand/managers/AccountManagersStep";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
 
 const BrandOnboarding = () => {
   const navigate = useNavigate();
@@ -36,7 +36,6 @@ const BrandOnboarding = () => {
         return;
       }
 
-      // Get the brand ID for the current user using maybeSingle() instead of single()
       const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
@@ -111,21 +110,15 @@ const BrandOnboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm"
-      >
-        <BrandOnboardingProgress currentStep={currentStep} />
-        {getCurrentStep()}
-        <BrandOnboardingNavigation
-          currentStep={currentStep}
-          onBack={handleBack}
-          onNext={currentStep === 'managers' ? handleComplete : handleNext}
-        />
-      </motion.div>
-    </div>
+    <BrandOnboardingContainer>
+      <BrandOnboardingProgress currentStep={currentStep} />
+      {getCurrentStep()}
+      <BrandOnboardingNavigation
+        currentStep={currentStep}
+        onBack={handleBack}
+        onNext={currentStep === 'managers' ? handleComplete : handleNext}
+      />
+    </BrandOnboardingContainer>
   );
 };
 
