@@ -26,16 +26,13 @@ const CreatorOnboardingForm = () => {
       case 'basic':
         return (
           <BasicInfoStep
-            profileImage={creatorData.profileImage || null}
+            profileImage={null}
             firstName={creatorData.firstName}
             lastName={creatorData.lastName}
             bio={creatorData.bio}
             location={creatorData.location}
             onUpdateField={updateField}
-            onUpdateImage={(image: string | null) => {
-              console.log('Updating profile image:', image);
-              updateField('profileImage', image || '');
-            }}
+            onUpdateImage={(image: string | null) => updateField('profileImage', image || '')}
           />
         );
       case 'professional':
@@ -69,22 +66,20 @@ const CreatorOnboardingForm = () => {
       <div className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm">
         {renderStep()}
         
-        {currentStep !== 'payment' && (
-          <div className="flex justify-between pt-6 border-t border-gray-100">
-            <Button
-              onClick={handleBack}
-              variant="outline"
-            >
-              Back
-            </Button>
-            <Button
-              onClick={handleNext}
-              variant="default"
-            >
-              Continue
-            </Button>
-          </div>
-        )}
+        <div className="flex justify-between pt-6 border-t border-gray-100">
+          <Button
+            onClick={handleBack}
+            variant="outline"
+          >
+            Back
+          </Button>
+          <Button
+            onClick={handleNext}
+            variant="default"
+          >
+            {currentStep === 'payment' ? 'Complete' : 'Continue'}
+          </Button>
+        </div>
       </div>
     </div>
   );

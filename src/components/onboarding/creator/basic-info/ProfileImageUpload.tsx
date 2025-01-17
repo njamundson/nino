@@ -37,25 +37,30 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
 
       // Generate a unique file name
       const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
       // Upload to Supabase Storage
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+        .upload(filePath, file);
 
       if (uploadError) {
-        console.error('Upload error:', uploadError);
+        if (uploadError.message.includes('JWT')) {
+          toast({
+            title: "Session expired",
+            description: "Your session has expired. Please sign in again.",
+            variant: "destructive",
+          });
+          navigate('/');
+          return;
+        }
         throw uploadError;
       }
 
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(fileName);
+        .getPublicUrl(filePath);
 
       onUpdateImage(publicUrl);
       
@@ -63,20 +68,8 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
         title: "Success",
         description: "Profile photo uploaded successfully",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error uploading image:', error);
-      
-      // Handle specific error cases
-      if (error.message?.includes('JWT')) {
-        toast({
-          title: "Session expired",
-          description: "Your session has expired. Please sign in again.",
-          variant: "destructive",
-        });
-        navigate('/');
-        return;
-      }
-
       toast({
         title: "Error",
         description: "Failed to upload profile photo. Please try again.",
