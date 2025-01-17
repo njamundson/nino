@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Send } from "lucide-react";
-import PageHeader from "@/components/shared/PageHeader";
+import { Send, Search, MoreHorizontal } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { formatDate } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -15,18 +17,42 @@ interface Message {
   content: string;
   created_at: string;
   read: boolean;
+  sender_profile?: {
+    first_name: string;
+    last_name: string;
+  };
+  receiver_profile?: {
+    first_name: string;
+    last_name: string;
+  };
 }
 
 const Messages = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
 
-  const { data: messages } = useQuery({
+  const { data: messages, refetch } = useQuery({
     queryKey: ["messages"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
       const { data, error } = await supabase
         .from("messages")
-        .select("*")
+        .select(`
+          *,
+          sender_profile:profiles!messages_sender_id_fkey(
+            first_name,
+            last_name
+          ),
+          receiver_profile:profiles!messages_receiver_id_fkey(
+            first_name,
+            last_name
+          )
+        `)
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -37,51 +63,82 @@ const Messages = () => {
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedChat) return;
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     const { error } = await supabase.from("messages").insert({
       content: newMessage,
+      sender_id: user.id,
       receiver_id: selectedChat,
       read: false,
     });
 
-    if (!error) {
-      setNewMessage("");
+    if (error) {
+      toast({
+        title: "Error sending message",
+        description: "Please try again later",
+        variant: "destructive",
+      });
+      return;
     }
+
+    setNewMessage("");
+    refetch();
   };
+
+  const filteredMessages = messages?.filter((message) => {
+    const senderName = `${message.sender_profile?.first_name} ${message.sender_profile?.last_name}`.toLowerCase();
+    const receiverName = `${message.receiver_profile?.first_name} ${message.receiver_profile?.last_name}`.toLowerCase();
+    const query = searchQuery.toLowerCase();
+    
+    return senderName.includes(query) || receiverName.includes(query) || message.content.toLowerCase().includes(query);
+  });
 
   return (
     <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-4rem)]">
-      <PageHeader
-        title="Messages"
-        description="Chat with brands and manage your conversations"
-      />
-      
-      <div className="flex h-full gap-6 mt-8">
+      <div className="flex h-full gap-6">
         {/* Conversations List */}
-        <Card className="w-80 bg-white/80 backdrop-blur-xl border-0 shadow-sm">
+        <Card className="w-96 bg-white/80 backdrop-blur-xl border-0 shadow-sm overflow-hidden">
           <div className="p-4 border-b">
-            <h2 className="text-lg font-semibold text-nino-text">Messages</h2>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search messages"
+                className="pl-10 bg-gray-50 border-0"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
           <ScrollArea className="h-[calc(100vh-10rem)]">
-            <div className="p-2 space-y-1">
-              {messages?.map((chat) => (
+            <div className="p-2">
+              {filteredMessages?.map((chat) => (
                 <button
                   key={chat.id}
                   onClick={() => setSelectedChat(chat.id)}
-                  className={`w-full p-3 rounded-lg text-left transition-colors ${
+                  className={`w-full p-4 rounded-xl text-left transition-all duration-200 ${
                     selectedChat === chat.id
                       ? "bg-nino-primary/10"
                       : "hover:bg-gray-50"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-nino-primary/20 flex items-center justify-center text-nino-primary font-medium">
-                      {chat.sender_id.substring(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm text-nino-text">
-                        User {chat.sender_id.substring(0, 8)}
-                      </p>
-                      <p className="text-xs text-nino-gray truncate">
+                    <Avatar className="w-12 h-12">
+                      <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
+                        {chat.sender_profile?.first_name?.[0]}
+                        {chat.sender_profile?.last_name?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <p className="font-medium text-nino-text truncate">
+                          {chat.sender_profile?.first_name} {chat.sender_profile?.last_name}
+                        </p>
+                        <span className="text-xs text-gray-500">
+                          {formatDate(chat.created_at)}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 truncate mt-1">
                         {chat.content}
                       </p>
                     </div>
@@ -93,13 +150,28 @@ const Messages = () => {
         </Card>
 
         {/* Chat Area */}
-        <Card className="flex-1 bg-white/80 backdrop-blur-xl border-0 shadow-sm flex flex-col">
+        <Card className="flex-1 bg-white/80 backdrop-blur-xl border-0 shadow-sm flex flex-col overflow-hidden">
           {selectedChat ? (
             <>
-              <div className="p-4 border-b">
-                <h3 className="font-medium text-nino-text">
-                  Chat with User {selectedChat.substring(0, 8)}
-                </h3>
+              <div className="p-4 border-b flex justify-between items-center bg-white/50">
+                <div className="flex items-center gap-3">
+                  <Avatar className="w-10 h-10">
+                    <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
+                      {messages?.find(m => m.id === selectedChat)?.sender_profile?.first_name?.[0]}
+                      {messages?.find(m => m.id === selectedChat)?.sender_profile?.last_name?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-medium text-nino-text">
+                      {messages?.find(m => m.id === selectedChat)?.sender_profile?.first_name}{" "}
+                      {messages?.find(m => m.id === selectedChat)?.sender_profile?.last_name}
+                    </h3>
+                    <p className="text-xs text-gray-500">Active now</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="w-5 h-5 text-gray-500" />
+                </Button>
               </div>
               <ScrollArea className="flex-1 p-4">
                 <div className="space-y-4">
@@ -119,20 +191,23 @@ const Messages = () => {
                         }`}
                       >
                         <div
-                          className={`max-w-[70%] p-3 rounded-2xl ${
+                          className={`max-w-[70%] p-4 rounded-2xl animate-fade-in ${
                             message.sender_id === selectedChat
                               ? "bg-gray-100 text-nino-text"
                               : "bg-nino-primary text-white"
                           }`}
                         >
-                          <p className="text-sm">{message.content}</p>
+                          <p className="text-sm leading-relaxed">{message.content}</p>
+                          <p className="text-xs mt-1 opacity-70">
+                            {formatDate(message.created_at)}
+                          </p>
                         </div>
                       </div>
                     ))}
                 </div>
               </ScrollArea>
-              <div className="p-4 border-t">
-                <div className="flex gap-2">
+              <div className="p-4 border-t bg-white/50">
+                <div className="flex gap-3">
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
@@ -146,7 +221,7 @@ const Messages = () => {
                   />
                   <Button
                     onClick={handleSendMessage}
-                    className="bg-nino-primary hover:bg-nino-primary/90"
+                    className="bg-nino-primary hover:bg-nino-primary/90 text-white"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
@@ -154,7 +229,7 @@ const Messages = () => {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-nino-gray">
+            <div className="flex-1 flex items-center justify-center text-gray-500">
               <p>Select a conversation to start messaging</p>
             </div>
           )}
