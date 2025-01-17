@@ -1,13 +1,10 @@
-export type OnboardingStep = "basic" | "social" | "professional" | "payment";
-
-export interface CreatorProfile {
+export interface CreatorData {
   firstName: string;
   lastName: string;
   bio: string;
-  profileImage: string | null;
+  specialties: string[];
   instagram: string;
-  website?: string; // Only this field is optional
-  creatorType: string;
-  skills: string[];
+  website: string;
   location: string;
+  paymentDetails: string;
 }
