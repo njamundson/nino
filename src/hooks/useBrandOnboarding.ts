@@ -26,14 +26,6 @@ export const useBrandOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
-      if (!brandData.brandName || !brandData.brandEmail) {
-        toast({
-          title: "Missing Information",
-          description: "Please fill out brand name and email",
-          variant: "destructive",
-        });
-        return;
-      }
       setCurrentStep('details');
     } else if (currentStep === 'details') {
       setCurrentStep('social');
@@ -41,22 +33,8 @@ export const useBrandOnboarding = () => {
       setCurrentStep('managers');
     } else {
       try {
-        console.log("Starting brand creation with data:", brandData);
-        
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError) {
-          console.error("Error getting user:", userError);
-          toast({
-            title: "Authentication Error",
-            description: "Please sign in again",
-            variant: "destructive",
-          });
-          return;
-        }
-
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          console.error("No user found");
           toast({
             title: "Error",
             description: "No authenticated user found.",
@@ -65,33 +43,15 @@ export const useBrandOnboarding = () => {
           return;
         }
 
-        console.log("Got user:", user.id);
-
-        const { data: existingBrand } = await supabase
-          .from('brands')
-          .select()
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (existingBrand) {
-          console.log("Brand already exists:", existingBrand);
-          navigate("/brand/dashboard");
-          return;
-        }
-
-        const { data: brand, error: brandError } = await supabase
-          .from('brands')
-          .insert({
-            user_id: user.id,
-            company_name: brandData.brandName,
-            description: brandData.brandBio,
-            website: brandData.website,
-            instagram: brandData.instagram,
-            location: brandData.location,
-            brand_type: brandData.brandType,
-          })
-          .select()
-          .maybeSingle();
+        const { error: brandError } = await supabase.from('brands').insert({
+          user_id: user.id,
+          company_name: brandData.brandName,
+          description: brandData.brandBio,
+          website: brandData.website,
+          instagram: brandData.instagram,
+          location: brandData.location,
+          brand_type: brandData.brandType,
+        });
 
         if (brandError) {
           console.error("Error creating brand:", brandError);
@@ -102,18 +62,6 @@ export const useBrandOnboarding = () => {
           });
           return;
         }
-
-        if (!brand) {
-          console.error("No brand data returned after insert");
-          toast({
-            title: "Error",
-            description: "Brand profile creation failed. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        console.log("Brand created successfully:", brand);
 
         toast({
           title: "Success!",
