@@ -24,18 +24,9 @@ interface Message {
   };
 }
 
-interface Creator {
-  id: string;
-  profile: {
-    first_name: string;
-    last_name: string;
-  };
-}
-
 const Messages = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const { toast } = useToast();
 
@@ -66,35 +57,6 @@ const Messages = () => {
         throw error;
       }
       return data as Message[];
-    },
-  });
-
-  const { data: creators } = useQuery({
-    queryKey: ["creators"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("creators")
-        .select(`
-          id,
-          profile:profiles(
-            first_name,
-            last_name
-          )
-        `);
-
-      if (error) {
-        console.error("Error fetching creators:", error);
-        throw error;
-      }
-
-      // Transform the data to match the Creator interface
-      return data.map(creator => ({
-        id: creator.id,
-        profile: {
-          first_name: creator.profile?.[0]?.first_name || "",
-          last_name: creator.profile?.[0]?.last_name || ""
-        }
-      })) as Creator[];
     },
   });
 
@@ -179,12 +141,8 @@ const Messages = () => {
       <div className="flex h-full gap-6">
         <Card className="w-96 bg-white/80 backdrop-blur-xl border-0 shadow-sm overflow-hidden">
           <ChatList
-            messages={messages}
-            creators={creators}
-            selectedChat={selectedChat}
-            setSelectedChat={setSelectedChat}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
+            onSelectChat={setSelectedChat}
+            selectedUserId={selectedChat}
           />
         </Card>
 
