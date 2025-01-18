@@ -6,7 +6,7 @@ import BrandLayout from "@/components/layouts/BrandLayout";
 const NewCampaign = () => {
   return (
     <BrandLayout>
-      <div className="space-y-8">
+      <div className="space-y-12">
         <PageHeader
           title="Create New Campaign"
           description="Set up a new campaign to collaborate with creators."
