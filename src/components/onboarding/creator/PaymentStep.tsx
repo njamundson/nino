@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { CreditCard } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { createCheckoutSession } from "@/utils/stripe";
+import { supabase } from "@/integrations/supabase/client";
 import PricingCard from "./payment/PricingCard";
 
 const PaymentStep = () => {
@@ -12,6 +13,71 @@ const PaymentStep = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { data: subscriptionData, isLoading: isCheckingSubscription } = useSubscription();
+
+  // Check for successful payment on component mount
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session_id');
+
+      if (sessionId) {
+        try {
+          setIsLoading(true);
+          
+          // Get the current user
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) throw new Error("No authenticated user found");
+
+          // Get the user's profile
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', user.id)
+            .single();
+
+          if (!profile) throw new Error("Profile not found");
+
+          // Create creator profile if it doesn't exist
+          const { data: existingCreator } = await supabase
+            .from('creators')
+            .select('id')
+            .eq('user_id', user.id)
+            .single();
+
+          if (!existingCreator) {
+            const { error: creatorError } = await supabase
+              .from('creators')
+              .insert({
+                user_id: user.id,
+                profile_id: profile.id,
+              });
+
+            if (creatorError) throw creatorError;
+          }
+
+          toast({
+            title: "Welcome to Nino!",
+            description: "Your creator account has been set up successfully.",
+          });
+
+          // Clear the URL parameters and redirect to dashboard
+          window.history.replaceState({}, document.title, window.location.pathname);
+          navigate('/creator/dashboard');
+        } catch (error) {
+          console.error('Error setting up creator account:', error);
+          toast({
+            variant: "destructive",
+            title: "Setup Error",
+            description: "There was a problem setting up your creator account. Please try again.",
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    checkPaymentStatus();
+  }, [navigate, toast]);
 
   const handleSubscribe = async () => {
     try {
@@ -28,7 +94,7 @@ const PaymentStep = () => {
       }
 
       const checkoutUrl = await createCheckoutSession({
-        returnUrl: `${window.location.origin}/creator/welcome`,
+        returnUrl: `${window.location.origin}/onboarding/creator`,
       });
 
       if (!checkoutUrl) {
