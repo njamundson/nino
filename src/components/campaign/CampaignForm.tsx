@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Camera } from "lucide-react";
+import { Camera, ImagePlus } from "lucide-react";
 import BasicInfo from "./steps/BasicInfo";
 import Requirements from "./steps/Requirements";
 import Compensation from "./steps/Compensation";
@@ -175,19 +175,36 @@ const CampaignForm = () => {
       <Progress value={progress} className="h-1 bg-gray-100" />
 
       {currentStep === 0 && (
-        <div className="flex flex-col items-center space-y-4 py-8">
-          <div className="relative group cursor-pointer">
-            <div className={`w-64 h-48 rounded-lg border-2 border-dashed flex items-center justify-center bg-gray-50 ${uploadedImage ? 'border-green-500' : 'border-gray-300'}`}>
+        <div className="flex flex-col items-center space-y-4 py-12">
+          <div className="relative group cursor-pointer transition-all duration-300">
+            <div 
+              className={`
+                w-80 h-56 rounded-2xl border-2 border-dashed 
+                flex items-center justify-center bg-white
+                transition-all duration-300 ease-in-out
+                group-hover:border-gray-400 group-hover:bg-gray-50
+                ${uploadedImage ? 'border-green-500 shadow-lg' : 'border-gray-200'}
+                ${isUploading ? 'animate-pulse' : ''}
+              `}
+            >
               {uploadedImage ? (
-                <img 
-                  src={uploadedImage} 
-                  alt="Campaign" 
-                  className="w-full h-full object-cover rounded-lg"
-                />
+                <div className="relative w-full h-full overflow-hidden rounded-2xl">
+                  <img 
+                    src={uploadedImage} 
+                    alt="Campaign" 
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                    <ImagePlus className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                </div>
               ) : (
-                <div className="text-center">
-                  <Camera className="mx-auto h-12 w-12 text-gray-400" />
-                  <p className="mt-2 text-sm text-gray-500">Upload campaign image</p>
+                <div className="text-center space-y-3 px-6 transition-all duration-300 group-hover:scale-105">
+                  <Camera className="mx-auto h-12 w-12 text-gray-300 group-hover:text-gray-400 transition-colors duration-300" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Upload campaign image</p>
+                    <p className="text-xs text-gray-500 mt-1">Recommended size: 1200x800px</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -199,7 +216,12 @@ const CampaignForm = () => {
               disabled={isUploading}
             />
           </div>
-          {isUploading && <p className="text-sm text-gray-500">Uploading...</p>}
+          {isUploading && (
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
+              <p className="text-sm text-gray-600 font-medium">Uploading...</p>
+            </div>
+          )}
         </div>
       )}
 
