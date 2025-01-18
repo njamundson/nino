@@ -30,9 +30,20 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         .from('brands')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error || !brand) {
+      if (error) {
+        console.error("Error checking brand profile:", error);
+        toast({
+          title: "Error",
+          description: "Failed to verify brand access. Please try again.",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
+
+      if (!brand) {
         toast({
           title: "Access denied",
           description: "You need a brand profile to access this area.",
