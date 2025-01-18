@@ -12,65 +12,10 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     let authSubscription: { unsubscribe: () => void } | null = null;
-
-    const initialize = async () => {
-      try {
-        // Get the initial session and ensure it's valid
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          throw sessionError;
-        }
-
-        // Initial session check
-        if (!session?.user?.id) {
-          console.log("No active session found");
-          toast({
-            title: "Access denied",
-            description: "Please sign in to continue.",
-            variant: "destructive",
-          });
-          navigate('/');
-          return;
-        }
-
-        // Set up auth state change listener
-        authSubscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-          console.log("Auth state changed:", event, currentSession?.user?.id);
-          
-          if (!currentSession?.user?.id || event === 'SIGNED_OUT') {
-            navigate('/');
-            return;
-          }
-
-          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            await checkBrandAccess(currentSession.user.id);
-          }
-        }).data.subscription;
-
-        // Initial brand access check with valid session
-        await checkBrandAccess(session.user.id);
-
-        if (mounted) {
-          setIsInitialized(true);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error("Initialization error:", error);
-        toast({
-          title: "Error",
-          description: "Failed to initialize. Please try signing in again.",
-          variant: "destructive",
-        });
-        navigate('/');
-      }
-    };
 
     const checkBrandAccess = async (userId: string) => {
       if (!userId) {
@@ -81,13 +26,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
       try {
         console.log("Checking brand profile for user:", userId);
-        
-        // Refresh the session before making the request
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) {
-          throw new Error("No active session");
-        }
-
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
@@ -125,6 +63,50 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       }
     };
 
+    const initialize = async () => {
+      try {
+        // Get current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          throw sessionError;
+        }
+
+        if (!session?.user?.id) {
+          toast({
+            title: "Access denied",
+            description: "Please sign in to continue.",
+            variant: "destructive",
+          });
+          navigate('/');
+          return;
+        }
+
+        // Set up auth state change listener
+        authSubscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+          if (!currentSession?.user?.id || event === 'SIGNED_OUT') {
+            navigate('/');
+            return;
+          }
+
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            await checkBrandAccess(currentSession.user.id);
+          }
+        }).data.subscription;
+
+        // Initial brand access check
+        await checkBrandAccess(session.user.id);
+      } catch (error) {
+        console.error("Initialization error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to initialize. Please try signing in again.",
+          variant: "destructive",
+        });
+        navigate('/');
+      }
+    };
+
     initialize();
 
     return () => {
@@ -135,7 +117,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     };
   }, [navigate, toast]);
 
-  if (!isInitialized || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
