@@ -54,16 +54,14 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
     setShowSuccessModal(true);
   };
 
-  const handleSuccessClose = () => {
-    setShowSuccessModal(false);
-    onClose();
-  };
-
   if (showSuccessModal) {
     return (
       <SuccessModal 
-        companyName={opportunity.brand.company_name} 
-        onClose={handleSuccessClose} 
+        isOpen={showSuccessModal}
+        onOpenChange={(open) => {
+          setShowSuccessModal(open);
+          if (!open) onClose();
+        }}
       />
     );
   }
