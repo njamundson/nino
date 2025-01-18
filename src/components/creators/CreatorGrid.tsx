@@ -23,7 +23,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
           profiles!creators_profile_id_fkey (
             first_name,
             last_name,
-            avatar_url
+            id
           )
         `);
 
