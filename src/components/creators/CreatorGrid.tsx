@@ -43,7 +43,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         throw error;
       }
 
-      console.log("Fetched creators:", data); // Debug log
+      console.log("Fetched creators:", data);
       return data || [];
     },
   });

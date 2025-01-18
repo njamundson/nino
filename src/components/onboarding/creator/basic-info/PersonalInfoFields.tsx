@@ -17,11 +17,12 @@ const PersonalInfoFields = ({
   location,
   onUpdateField,
 }: PersonalInfoFieldsProps) => {
-  const handleFullNameChange = (value: string) => {
-    const names = value.split(' ');
+  const handleFullNameChange = async (value: string) => {
+    const names = value.trim().split(' ');
     const firstNameValue = names[0] || '';
     const lastNameValue = names.slice(1).join(' ') || '';
     
+    // Update both first name and last name in the profiles table
     onUpdateField("firstName", firstNameValue);
     onUpdateField("lastName", lastNameValue);
   };
