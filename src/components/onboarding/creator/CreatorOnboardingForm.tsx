@@ -1,14 +1,12 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import BasicInfoStep from "./BasicInfoStep";
 import ProfessionalInfoStep from "./ProfessionalInfoStep";
 import SocialLinksStep from "./SocialLinksStep";
 import PaymentStep from "./PaymentStep";
-import { CreatorData } from "@/types/creator";
 import { useCreatorOnboarding } from "@/hooks/useCreatorOnboarding";
+import CreatorOnboardingProgress from "./CreatorOnboardingProgress";
 
 const CreatorOnboardingForm = () => {
   const navigate = useNavigate();
@@ -67,7 +65,10 @@ const CreatorOnboardingForm = () => {
   return (
     <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
       <div className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm">
-        {renderStep()}
+        <CreatorOnboardingProgress currentStep={currentStep} />
+        <div className="mt-6">
+          {renderStep()}
+        </div>
         
         {/* Only show navigation buttons when not on payment step */}
         {currentStep !== 'payment' && (
