@@ -199,11 +199,11 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
                             </AvatarFallback>
                           )}
                         </Avatar>
-                        <div className="space-y-2">
-                          <h4 className="text-lg font-medium text-gray-900">
+                        <div className="space-y-2 flex-1">
+                          <h4 className="text-2xl font-medium text-gray-900 tracking-tight">
                             {application.creator?.profile?.first_name} {application.creator?.profile?.last_name}
                           </h4>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-gray-600 leading-relaxed">
                             {application.cover_letter}
                           </p>
                         </div>
