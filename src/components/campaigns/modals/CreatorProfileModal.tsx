@@ -5,7 +5,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CheckSquare, XSquare, MessageSquare, Instagram, Globe } from "lucide-react";
 import { toast } from "sonner";
@@ -45,7 +44,7 @@ const CreatorProfileModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+      <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-gradient-to-b from-nino-bg to-white">
         <div className="relative">
           <div className="p-8">
             <DialogHeader>
@@ -62,7 +61,7 @@ const CreatorProfileModal = ({
                     src={creator?.profile_image_url} 
                     alt={`${creator?.profile?.first_name} ${creator?.profile?.last_name}`}
                   />
-                  <AvatarFallback className="bg-gray-100 text-gray-600 text-xl">
+                  <AvatarFallback className="bg-nino-bg text-nino-text text-xl">
                     {getInitials(
                       creator?.profile?.first_name || '',
                       creator?.profile?.last_name || ''
@@ -70,11 +69,11 @@ const CreatorProfileModal = ({
                   </AvatarFallback>
                 </Avatar>
                 <div className="text-center">
-                  <h3 className="text-xl font-semibold">
+                  <h3 className="text-xl font-semibold text-nino-text">
                     {creator?.profile?.first_name} {creator?.profile?.last_name}
                   </h3>
                   {creator?.location && (
-                    <p className="text-gray-600 text-sm mt-1">📍 {creator.location}</p>
+                    <p className="text-nino-gray text-sm mt-1">📍 {creator.location}</p>
                   )}
                 </div>
               </div>
@@ -86,7 +85,7 @@ const CreatorProfileModal = ({
                     href={`https://instagram.com/${creator.instagram}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
+                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-nino-primary/90 to-nino-primary text-white hover:opacity-90 transition-opacity"
                   >
                     <Instagram className="w-4 h-4 mr-2" />
                     Instagram
@@ -97,7 +96,7 @@ const CreatorProfileModal = ({
                     href={creator.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+                    className="inline-flex items-center px-4 py-2 rounded-full bg-nino-text text-white hover:bg-nino-text/90 transition-colors"
                   >
                     <Globe className="w-4 h-4 mr-2" />
                     Website
@@ -106,16 +105,16 @@ const CreatorProfileModal = ({
               </div>
 
               {/* Proposal Section */}
-              <div className="space-y-4 bg-gray-50 p-6 rounded-2xl">
-                <h4 className="font-medium text-gray-900">Application Message</h4>
-                <p className="text-gray-600 leading-relaxed">{coverLetter}</p>
+              <div className="space-y-4 bg-nino-bg/50 p-6 rounded-2xl">
+                <h4 className="font-medium text-nino-text">Application Message</h4>
+                <p className="text-nino-gray leading-relaxed">{coverLetter}</p>
               </div>
 
               {/* Action Buttons */}
               <div className="space-y-4">
                 <Button
                   onClick={onMessageCreator}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Begin Chat
