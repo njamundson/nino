@@ -118,38 +118,29 @@ const CampaignForm = () => {
   return (
     <div className="space-y-10">
       <div className="space-y-2">
-        <h2 className="text-2xl font-medium tracking-tight text-gray-900">
+        <h2 className="text-3xl font-semibold tracking-tight text-gray-900">
           {steps[currentStep].title}
         </h2>
-        <p className="text-base text-gray-500">
+        <p className="text-lg text-gray-500">
           {steps[currentStep].description}
         </p>
       </div>
 
-      <div className="relative">
-        <Progress 
-          value={progress} 
-          className="h-1 bg-gray-100/50 rounded-full overflow-hidden"
-        />
-        <div 
-          className="absolute top-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
+      <Progress value={progress} className="h-1 bg-gray-100" />
 
-      <div className="min-h-[400px] py-6">
+      <div className="min-h-[400px] py-4">
         <CurrentStepComponent
           formData={formData}
           setFormData={setFormData}
         />
       </div>
 
-      <div className="flex justify-between pt-8 border-t border-gray-100">
+      <div className="flex justify-between pt-6 border-t border-gray-100">
         <Button
           variant="ghost"
           onClick={handleBack}
           disabled={currentStep === 0}
-          className="text-gray-600 hover:text-gray-900 hover:bg-gray-50/50 rounded-full px-6"
+          className="text-gray-600 hover:text-gray-900"
         >
           Back
         </Button>
@@ -157,14 +148,14 @@ const CampaignForm = () => {
         {currentStep === steps.length - 1 ? (
           <Button 
             onClick={handleSubmit}
-            className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-full px-8 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200"
+            className="bg-black hover:bg-gray-900 text-white px-8"
           >
             Create Campaign
           </Button>
         ) : (
           <Button 
             onClick={handleNext}
-            className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-full px-8 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-200"
+            className="bg-black hover:bg-gray-900 text-white px-8"
           >
             Continue
           </Button>
