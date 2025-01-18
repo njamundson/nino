@@ -30,5 +30,18 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('User signed in successfully');
   } else if (event === 'SIGNED_OUT') {
     console.log('User signed out');
+    // Clear any stored tokens
+    window.localStorage.removeItem('nino-auth-token');
+  } else if (event === 'TOKEN_REFRESHED') {
+    console.log('Token refreshed successfully');
+  }
+});
+
+// Handle refresh token errors
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'TOKEN_REFRESHED' && !session) {
+    console.log('Token refresh failed, redirecting to login');
+    // Redirect to login page if token refresh fails
+    window.location.href = '/';
   }
 });

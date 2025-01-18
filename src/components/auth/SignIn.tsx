@@ -53,6 +53,12 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       }
 
       if (signInData.user) {
+        // Ensure the session is properly stored
+        await supabase.auth.setSession({
+          access_token: signInData.session?.access_token!,
+          refresh_token: signInData.session?.refresh_token!,
+        });
+
         // Check if user has a brand profile
         const { data: brand, error: brandError } = await supabase
           .from('brands')
