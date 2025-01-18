@@ -68,6 +68,24 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
         return;
       }
 
+      // Check if application already exists
+      const { data: existingApplication } = await supabase
+        .from('applications')
+        .select('id')
+        .eq('opportunity_id', opportunity.id)
+        .eq('creator_id', creatorData.id)
+        .single();
+
+      if (existingApplication) {
+        toast({
+          title: "Already Applied",
+          description: "You have already applied to this opportunity",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Submit the application
       const { error: applicationError } = await supabase
         .from('applications')
