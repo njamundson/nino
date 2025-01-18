@@ -183,17 +183,21 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
                       className="p-4 rounded-lg bg-gray-50 flex items-start justify-between"
                     >
                       <div className="flex items-start gap-4">
-                        <Avatar className="h-12 w-12 rounded-full border-2 border-white shadow-sm">
-                          <AvatarImage
-                            src={application.creator?.profile_image_url || "/placeholder.svg"}
-                            alt={`${application.creator?.profile?.first_name || ''} ${application.creator?.profile?.last_name || ''}`}
-                          />
-                          <AvatarFallback className="bg-gray-100 text-gray-600">
-                            {getInitials(
-                              application.creator?.profile?.first_name || '',
-                              application.creator?.profile?.last_name || ''
-                            )}
-                          </AvatarFallback>
+                        <Avatar className="h-12 w-12 rounded-full border-2 border-white shadow-sm overflow-hidden">
+                          {application.creator?.profile_image_url ? (
+                            <AvatarImage
+                              src={`${application.creator.profile_image_url}?${new Date().getTime()}`}
+                              alt={`${application.creator?.profile?.first_name || ''} ${application.creator?.profile?.last_name || ''}`}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <AvatarFallback className="bg-gray-100 text-gray-600">
+                              {getInitials(
+                                application.creator?.profile?.first_name || '',
+                                application.creator?.profile?.last_name || ''
+                              )}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                         <div>
                           <h4 className="font-medium text-gray-900">
