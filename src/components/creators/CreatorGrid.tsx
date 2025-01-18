@@ -22,7 +22,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         .from("creators")
         .select(`
           *,
-          profiles!creators_profile_id_fkey (
+          profiles (
             first_name,
             last_name,
             id
