@@ -23,9 +23,9 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         .select(`
           *,
           profiles (
+            id,
             first_name,
-            last_name,
-            id
+            last_name
           )
         `);
 
@@ -52,22 +52,19 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
   const mappedCreators: CreatorData[] = creators
     ? creators.map(creator => ({
-        ...creator,
+        id: creator.id,
         firstName: creator.profiles?.first_name || '',
         lastName: creator.profiles?.last_name || '',
-        profile: {
-          first_name: creator.profiles?.first_name || '',
-          last_name: creator.profiles?.last_name || ''
-        },
-        paymentDetails: '',
-        creatorType: '',
-        id: creator.id,
         bio: creator.bio || '',
+        specialties: creator.specialties || [],
         instagram: creator.instagram || '',
         website: creator.website || '',
         location: creator.location || '',
-        specialties: creator.specialties || [],
-        profileImage: creator.profile_image_url || '/placeholder.svg'  // Use the profile_image_url directly
+        profileImage: creator.profile_image_url || '/placeholder.svg',
+        profile: {
+          first_name: creator.profiles?.first_name || '',
+          last_name: creator.profiles?.last_name || ''
+        }
       }))
     : [];
 

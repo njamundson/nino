@@ -7,9 +7,7 @@ export interface CreatorData {
   instagram: string;
   website: string;
   location: string;
-  paymentDetails: string;
-  creatorType?: string;
-  profileImage?: string | null;
+  profileImage: string | null;
   profile?: {
     first_name: string | null;
     last_name: string | null;
