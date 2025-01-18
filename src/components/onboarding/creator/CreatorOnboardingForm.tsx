@@ -1,19 +1,24 @@
-import { useCreatorOnboarding } from "@/hooks/useCreatorOnboarding";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import BasicInfoStep from "./steps/BasicInfoStep";
-import ProfessionalInfoStep from "./steps/ProfessionalInfoStep";
-import SocialLinksStep from "./steps/SocialLinksStep";
-import PaymentStep from "./steps/PaymentStep";
-import OnboardingProgress from "./common/OnboardingProgress";
-import OnboardingNavigation from "./common/OnboardingNavigation";
+import BasicInfoStep from "./BasicInfoStep";
+import ProfessionalInfoStep from "./ProfessionalInfoStep";
+import SocialLinksStep from "./SocialLinksStep";
+import PaymentStep from "./PaymentStep";
+import { CreatorData } from "@/types/creator";
+import { useCreatorOnboarding } from "@/hooks/useCreatorOnboarding";
 
 const CreatorOnboardingForm = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const {
     currentStep,
     creatorData,
     updateField,
     handleNext,
-    handleBack,
+    handleBack
   } = useCreatorOnboarding();
 
   const renderStep = () => {
@@ -27,7 +32,10 @@ const CreatorOnboardingForm = () => {
             bio={creatorData.bio}
             location={creatorData.location}
             onUpdateField={updateField}
-            onUpdateImage={(url: string) => updateField('profileImage', url)}
+            onUpdateImage={(image: string | null) => {
+              console.log('Updating profile image:', image);
+              updateField('profileImage', image);
+            }}
           />
         );
       case 'professional':
@@ -36,7 +44,7 @@ const CreatorOnboardingForm = () => {
             creatorType={creatorData.creatorType || ''}
             skills={creatorData.specialties || []}
             onUpdateField={updateField}
-            onUpdateSkills={(skills) => updateField('specialties', skills)}
+            onUpdateSkills={(skills: string[]) => updateField('specialties', skills)}
           />
         );
       case 'social':
@@ -49,10 +57,7 @@ const CreatorOnboardingForm = () => {
         );
       case 'payment':
         return (
-          <PaymentStep
-            paymentDetails={creatorData.paymentDetails}
-            onUpdateField={updateField}
-          />
+          <PaymentStep />
         );
       default:
         return null;
@@ -60,14 +65,28 @@ const CreatorOnboardingForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <OnboardingProgress currentStep={currentStep} />
-      {renderStep()}
-      <OnboardingNavigation
-        currentStep={currentStep}
-        onNext={handleNext}
-        onBack={handleBack}
-      />
+    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
+      <div className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm">
+        {renderStep()}
+        
+        {/* Only show navigation buttons when not on payment step */}
+        {currentStep !== 'payment' && (
+          <div className="flex justify-between pt-6 border-t border-gray-100">
+            <Button
+              onClick={handleBack}
+              variant="outline"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleNext}
+              variant="default"
+            >
+              Continue
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
