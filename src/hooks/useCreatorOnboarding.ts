@@ -19,9 +19,9 @@ export const useCreatorOnboarding = () => {
     instagram: "",
     website: "",
     location: "",
-    paymentDetails: "",
-    profile: null,
-    profileImage: null // Initialize profileImage
+    profileImage: null,
+    creatorType: "",
+    profile: null
   });
 
   const updateField = (field: keyof CreatorData, value: any) => {
@@ -72,7 +72,7 @@ export const useCreatorOnboarding = () => {
           website: creatorData.website,
           location: creatorData.location,
           specialties: creatorData.specialties,
-          profile_image_url: creatorData.profileImage // Save the profile image URL
+          profile_image_url: creatorData.profileImage
         });
 
         if (creatorError) {

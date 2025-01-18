@@ -8,6 +8,7 @@ export interface CreatorData {
   website: string;
   location: string;
   profileImage: string | null;
+  creatorType?: string;
   profile?: {
     first_name: string | null;
     last_name: string | null;
