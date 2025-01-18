@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import ApplicationForm from "./modal/ApplicationForm";
@@ -72,7 +72,6 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-2xl p-6">
-          <DialogTitle>Apply to {opportunity.title}</DialogTitle>
           <ApplicationForm 
             opportunity={opportunity}
             onClose={() => setShowApplicationForm(false)}
