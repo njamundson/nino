@@ -54,19 +54,29 @@ const CampaignForm = () => {
 
     try {
       setIsUploading(true);
+      console.log("Starting image upload...");
       
       const fileExt = file.name.split('.').pop();
       const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      console.log("Uploading to path:", filePath);
+
+      const { error: uploadError, data } = await supabase.storage
         .from('campaign-images')
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      console.log("Upload successful, getting public URL...");
 
       const { data: { publicUrl } } = supabase.storage
         .from('campaign-images')
         .getPublicUrl(filePath);
+
+      console.log("Public URL obtained:", publicUrl);
 
       setUploadedImage(publicUrl);
       toast({

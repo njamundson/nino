@@ -1,4 +1,5 @@
 import { Camera, ImagePlus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ImageUploadProps {
   uploadedImage: string | null;
@@ -7,6 +8,43 @@ interface ImageUploadProps {
 }
 
 const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadProps) => {
+  const { toast } = useToast();
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    
+    if (!file) {
+      toast({
+        title: "Error",
+        description: "No file selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Error",
+        description: "Image size should be less than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onImageUpload(e);
+  };
+
   return (
     <div className="flex flex-col items-center space-y-4 py-12">
       <div className="relative group cursor-pointer transition-all duration-300">
@@ -43,7 +81,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
         </div>
         <input
           type="file"
-          onChange={onImageUpload}
+          onChange={handleImageUpload}
           accept="image/*"
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           disabled={isUploading}
