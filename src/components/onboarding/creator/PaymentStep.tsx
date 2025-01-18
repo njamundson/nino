@@ -66,15 +66,15 @@ const PaymentStep = () => {
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-medium text-nino-text">Complete Setup</h1>
-        <p className="text-nino-gray text-sm">Click below to complete your creator account setup</p>
+        <h1 className="text-2xl font-medium text-nino-text">Whoo whoo!</h1>
+        <p className="text-nino-gray text-sm">You're all set—welcome to Nino!</p>
       </div>
 
       <Button 
         className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
         onClick={handleComplete}
       >
-        Complete Setup
+        Dashboard
       </Button>
     </div>
   );
