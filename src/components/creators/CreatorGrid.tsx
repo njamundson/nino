@@ -22,7 +22,8 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
           *,
           profiles!creators_profile_id_fkey (
             first_name,
-            last_name
+            last_name,
+            avatar_url
           )
         `);
 
@@ -64,7 +65,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         website: creator.website || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
-        profileImage: null
+        profileImage: creator.profiles?.avatar_url || '/placeholder.svg'
       }))
     : [];
 
