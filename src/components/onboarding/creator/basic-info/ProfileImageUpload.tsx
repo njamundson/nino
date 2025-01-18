@@ -22,7 +22,6 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
     try {
       setLoading(true);
       
-      // Check authentication status
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
@@ -37,39 +36,32 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
 
       // Generate a unique file name
       const fileExt = file.name.split('.').pop();
-      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
 
       // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(fileName, file, {
+          upsert: true // This will replace if exists
+        });
 
       if (uploadError) {
-        if (uploadError.message.includes('JWT')) {
-          toast({
-            title: "Session expired",
-            description: "Your session has expired. Please sign in again.",
-            variant: "destructive",
-          });
-          navigate('/');
-          return;
-        }
         throw uploadError;
       }
 
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
-      // Update the creators table with the profile image URL
-      const { error: updateError } = await supabase
+      // Update both creators and profiles tables
+      const { error: creatorError } = await supabase
         .from('creators')
         .update({ profile_image_url: publicUrl })
         .eq('user_id', session.user.id);
 
-      if (updateError) {
-        throw updateError;
+      if (creatorError) {
+        throw creatorError;
       }
 
       onUpdateImage(publicUrl);
@@ -78,6 +70,12 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
         title: "Success",
         description: "Profile photo uploaded successfully",
       });
+
+      // Force refresh the avatar in the UI
+      const timestamp = new Date().getTime();
+      const refreshedUrl = `${publicUrl}?t=${timestamp}`;
+      onUpdateImage(refreshedUrl);
+
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
@@ -94,7 +92,10 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
     <div className="flex flex-col items-center space-y-4">
       <div className="relative group">
         <Avatar className="w-32 h-32 ring-4 ring-white/50 transition-all duration-200 group-hover:ring-nino-primary/20">
-          <AvatarImage src={profileImage || ""} />
+          <AvatarImage 
+            src={profileImage || ""} 
+            className="object-cover"
+          />
           <AvatarFallback className="bg-nino-bg">
             <Camera className="w-12 h-12 text-nino-gray" />
           </AvatarFallback>
