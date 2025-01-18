@@ -2,9 +2,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -18,6 +22,8 @@ interface EditCampaignModalProps {
     location: string | null;
     payment_details: string | null;
     compensation_details: string | null;
+    start_date: string | null;
+    end_date: string | null;
   };
 }
 
@@ -32,12 +38,21 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
     location: campaign.location || "",
     payment_details: campaign.payment_details || "",
     compensation_details: campaign.compensation_details || "",
+    start_date: campaign.start_date || null,
+    end_date: campaign.end_date || null,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleDateSelect = (field: 'start_date' | 'end_date') => (date: Date | undefined) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: date ? date.toISOString() : null
     }));
   };
 
@@ -54,6 +69,8 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
           location: formData.location,
           payment_details: formData.payment_details,
           compensation_details: formData.compensation_details,
+          start_date: formData.start_date,
+          end_date: formData.end_date,
         })
         .eq('id', campaign.id);
 
@@ -115,6 +132,66 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
               value={formData.location}
               onChange={handleChange}
             />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Start Date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !formData.start_date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.start_date ? (
+                      format(new Date(formData.start_date), "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.start_date ? new Date(formData.start_date) : undefined}
+                    onSelect={handleDateSelect('start_date')}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">End Date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !formData.end_date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.end_date ? (
+                      format(new Date(formData.end_date), "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.end_date ? new Date(formData.end_date) : undefined}
+                    onSelect={handleDateSelect('end_date')}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
           <div className="space-y-2">
             <label htmlFor="payment_details" className="text-sm font-medium">Payment Details</label>
