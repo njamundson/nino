@@ -20,7 +20,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         .from("creators")
         .select(`
           *,
-          profiles (
+          profiles!creators_profile_id_fkey (
             first_name,
             last_name
           )
@@ -42,6 +42,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         throw error;
       }
 
+      console.log("Fetched creators:", data); // Debug log
       return data || [];
     },
   });
