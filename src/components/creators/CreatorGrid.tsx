@@ -67,7 +67,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         website: creator.website || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
-        profileImage: creator.profiles?.avatar_url || null
+        profileImage: creator.profile_image_url || '/placeholder.svg'
       }))
     : [];
 
