@@ -20,27 +20,13 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
     const initialize = async () => {
       try {
-        // Get the initial session
+        // Get the initial session and ensure it's valid
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
           throw sessionError;
         }
-
-        // Set up auth state change listener before checking access
-        authSubscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-          console.log("Auth state changed:", event, currentSession?.user?.id);
-          
-          if (event === 'SIGNED_OUT' || !currentSession) {
-            navigate('/');
-            return;
-          }
-
-          if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && currentSession?.user?.id) {
-            await checkBrandAccess(currentSession.user.id);
-          }
-        }).data.subscription;
 
         // Initial session check
         if (!session?.user?.id) {
@@ -54,11 +40,26 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        // Initial brand access check
+        // Set up auth state change listener
+        authSubscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+          console.log("Auth state changed:", event, currentSession?.user?.id);
+          
+          if (!currentSession?.user?.id || event === 'SIGNED_OUT') {
+            navigate('/');
+            return;
+          }
+
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            await checkBrandAccess(currentSession.user.id);
+          }
+        }).data.subscription;
+
+        // Initial brand access check with valid session
         await checkBrandAccess(session.user.id);
 
         if (mounted) {
           setIsInitialized(true);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error("Initialization error:", error);
@@ -74,15 +75,22 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     const checkBrandAccess = async (userId: string) => {
       if (!userId) {
         console.error("No user ID provided for brand access check");
+        navigate('/');
         return;
       }
 
       try {
         console.log("Checking brand profile for user:", userId);
+        
+        // Refresh the session before making the request
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          throw new Error("No active session");
+        }
 
         const { data: brand, error: brandError } = await supabase
           .from('brands')
-          .select('*')
+          .select('id')
           .eq('user_id', userId)
           .maybeSingle();
 
