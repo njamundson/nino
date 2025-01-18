@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import BrandOnboardingContainer from "./BrandOnboardingContainer";
 
 const PaymentStep = () => {
   const navigate = useNavigate();
@@ -62,19 +63,21 @@ const PaymentStep = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn">
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl font-medium text-nino-text">Whoo whoo!</h1>
-        <p className="text-nino-gray text-sm">You're all set—welcome to Nino!</p>
-      </div>
+    <BrandOnboardingContainer>
+      <div className="space-y-8 animate-fadeIn">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-medium text-nino-text">Whoo whoo!</h1>
+          <p className="text-nino-gray text-sm">You're all set—welcome to Nino!</p>
+        </div>
 
-      <Button 
-        className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
-        onClick={handleComplete}
-      >
-        Dashboard
-      </Button>
-    </div>
+        <Button 
+          className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
+          onClick={handleComplete}
+        >
+          Dashboard
+        </Button>
+      </div>
+    </BrandOnboardingContainer>
   );
 };
 
