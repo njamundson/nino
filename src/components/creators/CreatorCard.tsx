@@ -7,16 +7,18 @@ import CreatorCardImage from "./card/CreatorCardImage";
 
 interface CreatorCardProps {
   creator: CreatorData;
+  onInvite: (creatorId: string) => void;
 }
 
-const CreatorCard = ({ creator }: CreatorCardProps) => {
+const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { handleInvite } = useCreatorInvite();
 
-  const onInvite = async (creatorId: string) => {
+  const handleInviteClick = async (creatorId: string) => {
     const success = await handleInvite(creatorId);
     if (success) {
       setIsModalOpen(false);
+      onInvite(creatorId);
     }
   };
 
@@ -26,7 +28,7 @@ const CreatorCard = ({ creator }: CreatorCardProps) => {
         className="group relative overflow-hidden rounded-3xl border-0 cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        <CreatorCardImage creator={creator} onInvite={onInvite} />
+        <CreatorCardImage creator={creator} onInvite={handleInviteClick} />
       </Card>
 
       <CreatorModal
