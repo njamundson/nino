@@ -9,6 +9,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
+import { useState } from "react";
+import CreatorSelectionModal from "./CreatorSelectionModal";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
@@ -51,6 +55,54 @@ export const ChatList = ({
   searchQuery,
   setSearchQuery,
 }: ChatListProps) => {
+  const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleCreatorSelect = async (creatorId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to send messages",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create an empty message to start the conversation
+      const { error } = await supabase.from("messages").insert({
+        content: "Started a conversation",
+        sender_id: user.id,
+        receiver_id: creatorId,
+        read: false,
+      });
+
+      if (error) {
+        console.error("Error creating conversation:", error);
+        toast({
+          title: "Error",
+          description: "Could not start conversation. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setSelectedChat(creatorId);
+      toast({
+        title: "Conversation started",
+        description: "You can now send messages to this creator.",
+      });
+    } catch (error) {
+      console.error("Error selecting creator:", error);
+      toast({
+        title: "Error",
+        description: "Could not start conversation. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Group messages by conversation partner
   const conversations = messages.reduce((acc: { [key: string]: Message }, message) => {
     const partnerId = message.sender_id === selectedChat ? message.receiver_id : message.sender_id;
@@ -80,44 +132,16 @@ export const ChatList = ({
             className="pl-9 bg-white/50 rounded-full"
           />
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            className="w-56 max-h-[300px] overflow-y-auto bg-white"
-            align="end"
-          >
-            <ScrollArea className="h-[300px] p-2">
-              {creators?.map((creator) => (
-                <div
-                  key={creator.id}
-                  className="p-2 hover:bg-gray-100 rounded-md cursor-pointer"
-                  onClick={() => setSelectedChat(creator.id)}
-                >
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback>
-                        {creator.profile?.first_name?.[0]}
-                        {creator.profile?.last_name?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="font-medium">
-                      {creator.profile?.first_name} {creator.profile?.last_name}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </ScrollArea>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full"
+          onClick={() => setIsCreatorModalOpen(true)}
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
       </div>
+
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
           {filteredConversations.map((message) => {
@@ -158,6 +182,12 @@ export const ChatList = ({
           })}
         </div>
       </ScrollArea>
+
+      <CreatorSelectionModal
+        isOpen={isCreatorModalOpen}
+        onClose={() => setIsCreatorModalOpen(false)}
+        onSelect={handleCreatorSelect}
+      />
     </div>
   );
 };
