@@ -61,12 +61,8 @@ const BrandOnboarding = () => {
         return;
       }
 
-      toast({
-        title: "Success",
-        description: "Brand setup completed successfully",
-      });
-
-      navigate("/brand/dashboard");
+      // Navigate to payment step
+      navigate("/onboarding/brand/payment");
     } catch (error) {
       console.error('Error in handleComplete:', error);
       toast({
