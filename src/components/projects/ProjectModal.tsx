@@ -78,26 +78,32 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0 gap-0 overflow-hidden rounded-2xl bg-white">
-        <div className="p-8 overflow-y-auto max-h-[90vh] space-y-8">
-          <div className="space-y-4">
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0 gap-0 overflow-hidden rounded-2xl bg-white">
+        <div className="grid grid-cols-1 h-full">
+          {/* Header Section */}
+          <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl border-b p-6">
             <div className="flex justify-between items-start gap-4">
               <div>
-                <h2 className="text-2xl font-semibold tracking-tight">{opportunity.title}</h2>
+                <h2 className="text-2xl font-semibold tracking-tight mb-1">{opportunity.title}</h2>
                 <p className="text-muted-foreground">{opportunity.brand.company_name}</p>
               </div>
-              <Button onClick={handleApply} size="lg">
+              <Button onClick={handleApply} size="lg" className="rounded-full px-8">
                 Apply Now
               </Button>
             </div>
-            <p className="text-gray-600 leading-relaxed">{opportunity.description}</p>
           </div>
 
-          <div className="space-y-6">
+          {/* Content Section */}
+          <div className="p-6 overflow-y-auto space-y-8">
+            {/* Description */}
+            <div className="prose prose-gray max-w-none">
+              <p className="text-gray-600 leading-relaxed text-lg">{opportunity.description}</p>
+            </div>
+
             {/* Project Metadata */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               {opportunity.location && (
-                <div>
+                <div className="bg-gray-50 p-4 rounded-2xl">
                   <p className="text-sm text-gray-600 flex items-center gap-2">
                     <span className="text-gray-400">📍</span>
                     {opportunity.location}
@@ -105,7 +111,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
                 </div>
               )}
               {(opportunity.start_date || opportunity.end_date) && (
-                <div>
+                <div className="bg-gray-50 p-4 rounded-2xl">
                   <p className="text-sm text-gray-600 flex items-center gap-2">
                     <span className="text-gray-400">🗓️</span>
                     {opportunity.start_date && formatDate(opportunity.start_date)}
@@ -117,8 +123,8 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
             {/* Compensation Details */}
             {(opportunity.payment_details || opportunity.compensation_details) && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium">Compensation</h3>
+              <div className="space-y-3 bg-gray-50 p-6 rounded-2xl">
+                <h3 className="text-lg font-medium">Compensation</h3>
                 <div className="flex gap-2 flex-wrap">
                   {opportunity.payment_details && (
                     <Badge variant="secondary" className="bg-green-50 text-green-700 hover:bg-green-100">
@@ -136,11 +142,11 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
             {/* Requirements */}
             {opportunity.requirements && opportunity.requirements.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium">Requirements</h3>
-                <ul className="space-y-2">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Requirements</h3>
+                <ul className="space-y-3">
                   {opportunity.requirements.map((req, index) => (
-                    <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                    <li key={index} className="text-gray-600 flex items-start gap-3 bg-gray-50 p-4 rounded-xl">
                       <span className="text-gray-400 mt-1">•</span>
                       {req}
                     </li>
@@ -151,11 +157,11 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
             {/* Deliverables */}
             {opportunity.deliverables && opportunity.deliverables.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium">Deliverables</h3>
-                <ul className="space-y-2">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Deliverables</h3>
+                <ul className="space-y-3">
                   {opportunity.deliverables.map((del, index) => (
-                    <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                    <li key={index} className="text-gray-600 flex items-start gap-3 bg-gray-50 p-4 rounded-xl">
                       <span className="text-gray-400 mt-1">•</span>
                       {del}
                     </li>
@@ -166,14 +172,14 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
             {/* Perks */}
             {opportunity.perks && opportunity.perks.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium">Perks</h3>
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Perks</h3>
                 <div className="flex flex-wrap gap-2">
                   {opportunity.perks.map((perk, index) => (
                     <Badge
                       key={index}
                       variant="secondary"
-                      className="bg-purple-50 text-purple-700 hover:bg-purple-100"
+                      className="bg-purple-50 text-purple-700 hover:bg-purple-100 px-4 py-2 rounded-full"
                     >
                       {perk}
                     </Badge>
