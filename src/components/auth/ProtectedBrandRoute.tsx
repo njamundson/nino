@@ -18,13 +18,14 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     let authSubscription: { unsubscribe: () => void } | null = null;
 
     const checkBrandAccess = async (userId: string) => {
-      if (!userId) {
-        console.error("No user ID provided for brand access check");
-        navigate('/');
-        return;
-      }
-
       try {
+        // Verify we have a valid session before proceeding
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+          console.error("Session error:", sessionError);
+          throw new Error("No valid session found");
+        }
+
         console.log("Checking brand profile for user:", userId);
         const { data: brand, error: brandError } = await supabase
           .from('brands')
@@ -65,14 +66,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
     const initialize = async () => {
       try {
-        // Get current session
+        // Get current session and ensure it's valid
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          throw sessionError;
-        }
-
-        if (!session?.user?.id) {
+        if (sessionError || !session?.user?.id) {
+          console.error("Session error or no user ID:", sessionError);
           toast({
             title: "Access denied",
             description: "Please sign in to continue.",
@@ -84,7 +82,10 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
         // Set up auth state change listener
         authSubscription = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+          console.log("Auth state changed:", event);
+          
           if (!currentSession?.user?.id || event === 'SIGNED_OUT') {
+            console.log("No session or signed out");
             navigate('/');
             return;
           }
