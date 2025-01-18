@@ -172,6 +172,15 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             </div>
           );
         })}
+
+        {Object.keys(chats).length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            {isBrand 
+              ? "Start a conversation with a creator"
+              : "No messages yet. Brands will contact you here."
+            }
+          </div>
+        )}
       </div>
 
       {showModal && (
