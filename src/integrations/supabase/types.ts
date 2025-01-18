@@ -407,6 +407,7 @@ export type Database = {
           description: string
           end_date: string | null
           id: string
+          image_url: string | null
           location: string | null
           payment_details: string | null
           perks: string[] | null
@@ -424,6 +425,7 @@ export type Database = {
           description: string
           end_date?: string | null
           id?: string
+          image_url?: string | null
           location?: string | null
           payment_details?: string | null
           perks?: string[] | null
@@ -441,6 +443,7 @@ export type Database = {
           description?: string
           end_date?: string | null
           id?: string
+          image_url?: string | null
           location?: string | null
           payment_details?: string | null
           perks?: string[] | null
