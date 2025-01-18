@@ -48,15 +48,6 @@ const ProjectHeader = ({
           </div>
         </div>
       </div>
-      <div className="absolute bottom-8 right-8">
-        <Button 
-          onClick={onApply}
-          size="lg"
-          className="bg-[#a55549] hover:bg-[#a55549]/90 text-white rounded-full px-8 transition-all"
-        >
-          Apply Now
-        </Button>
-      </div>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import ProjectCompensation from "./modal/ProjectCompensation";
 import ProjectRequirements from "./modal/ProjectRequirements";
 import ProjectDeliverables from "./modal/ProjectDeliverables";
 import ProjectPerks from "./modal/ProjectPerks";
+import { Button } from "@/components/ui/button";
 
 interface Brand {
   company_name: string;
@@ -93,8 +94,8 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
           onApply={handleApply}
         />
 
-        <div className="overflow-y-auto px-8 py-6">
-          <div className="max-w-3xl mx-auto space-y-8">
+        <div className="overflow-y-auto px-8 py-6 relative h-full">
+          <div className="max-w-3xl mx-auto space-y-8 pb-20">
             <ProjectDescription description={opportunity.description} />
             
             <Separator className="my-8" />
@@ -115,6 +116,16 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
             {opportunity.perks && (
               <ProjectPerks perks={opportunity.perks} />
             )}
+          </div>
+          
+          <div className="fixed bottom-8 right-8">
+            <Button 
+              onClick={handleApply}
+              size="lg"
+              className="bg-[#a55549] hover:bg-[#a55549]/90 text-white rounded-full px-8 transition-all"
+            >
+              Apply Now
+            </Button>
           </div>
         </div>
       </DialogContent>
