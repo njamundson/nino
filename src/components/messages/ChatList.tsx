@@ -4,7 +4,7 @@ import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CreatorSelectionModal from "./CreatorSelectionModal";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,7 +69,7 @@ export const ChatList = ({
   };
 
   // Call checkIfBrand when component mounts
-  useState(() => {
+  useEffect(() => {
     checkIfBrand();
   }, []);
 
