@@ -25,6 +25,24 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         return;
       }
 
+      // Get user's profile first
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!profile) {
+        console.error("Profile not found");
+        toast({
+          title: "Error",
+          description: "User profile not found.",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
+
       // Check if user has a creator profile
       const { data: creator, error } = await supabase
         .from('creators')
@@ -43,12 +61,27 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         return;
       }
 
+      // If no creator profile exists, create one
       if (!creator) {
-        toast({
-          title: "Access denied",
-          description: "You need a creator profile to access this area.",
-          variant: "destructive",
-        });
+        const { error: createError } = await supabase
+          .from('creators')
+          .insert({
+            user_id: session.user.id,
+            profile_id: profile.id,
+          });
+
+        if (createError) {
+          console.error("Error creating creator profile:", createError);
+          toast({
+            title: "Error",
+            description: "Failed to create creator profile. Please try again.",
+            variant: "destructive",
+          });
+          navigate('/');
+          return;
+        }
+
+        // Redirect to onboarding to complete profile
         navigate('/onboarding');
         return;
       }

@@ -315,6 +315,7 @@ export type Database = {
           is_verified: boolean | null
           location: string | null
           profile_id: string
+          profile_image_url: string | null
           specialties: string[] | null
           updated_at: string
           user_id: string | null
@@ -328,6 +329,7 @@ export type Database = {
           is_verified?: boolean | null
           location?: string | null
           profile_id: string
+          profile_image_url?: string | null
           specialties?: string[] | null
           updated_at?: string
           user_id?: string | null
@@ -341,6 +343,7 @@ export type Database = {
           is_verified?: boolean | null
           location?: string | null
           profile_id?: string
+          profile_image_url?: string | null
           specialties?: string[] | null
           updated_at?: string
           user_id?: string | null
