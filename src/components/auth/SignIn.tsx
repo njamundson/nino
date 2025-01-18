@@ -64,9 +64,9 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           .from('brands')
           .select('*')
           .eq('user_id', signInData.user.id)
-          .single();
+          .maybeSingle();
 
-        if (brandError && brandError.code !== 'PGRST116') {
+        if (brandError) {
           console.error("Error fetching brand profile:", brandError);
           toast({
             title: "Error",
@@ -85,7 +85,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
             .from('creators')
             .select('*')
             .eq('user_id', signInData.user.id)
-            .single();
+            .maybeSingle();
 
           if (creator) {
             console.log("Creator profile found, redirecting to creator dashboard");
