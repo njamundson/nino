@@ -18,7 +18,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
     const checkBrandAccess = async () => {
       try {
-        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -26,16 +25,22 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           throw new Error("Failed to get session");
         }
 
-        if (!session?.user?.id) {
-          console.log("No active session found");
-          throw new Error("No active session");
+        if (!session) {
+          console.log("No session found");
+          throw new Error("No session found");
         }
 
-        console.log("Checking brand profile for user:", session.user.id);
+        const userId = session.user?.id;
+        if (!userId) {
+          console.log("No user ID found in session");
+          throw new Error("No user ID found");
+        }
+
+        console.log("Checking brand profile for user:", userId);
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
-          .eq('user_id', session.user.id)
+          .eq('user_id', userId)
           .maybeSingle();
 
         if (brandError) {
@@ -69,12 +74,15 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       }
     };
 
+    // Initial check
+    checkBrandAccess();
+
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
+      console.log("Auth state changed:", event, "Session:", session?.user?.id ? "exists" : "none");
       
-      if (!session?.user?.id || event === 'SIGNED_OUT') {
-        console.log("No session or signed out");
+      if (event === 'SIGNED_OUT' || !session?.user?.id) {
+        console.log("User signed out or no valid session");
         navigate('/');
         return;
       }
@@ -84,9 +92,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       }
     });
 
-    // Initial check
-    checkBrandAccess();
-
+    // Cleanup
     return () => {
       mounted = false;
       subscription.unsubscribe();
