@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -17,6 +17,7 @@ interface EditCampaignModalProps {
     description: string;
     location: string | null;
     payment_details: string | null;
+    compensation_details: string | null;
   };
 }
 
@@ -30,6 +31,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
     description: campaign.description,
     location: campaign.location || "",
     payment_details: campaign.payment_details || "",
+    compensation_details: campaign.compensation_details || "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -51,6 +53,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
           description: formData.description,
           location: formData.location,
           payment_details: formData.payment_details,
+          compensation_details: formData.compensation_details,
         })
         .eq('id', campaign.id);
 
@@ -119,6 +122,15 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
               id="payment_details"
               name="payment_details"
               value={formData.payment_details}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="compensation_details" className="text-sm font-medium">Additional Compensation</label>
+            <Input
+              id="compensation_details"
+              name="compensation_details"
+              value={formData.compensation_details}
               onChange={handleChange}
             />
           </div>

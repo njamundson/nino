@@ -17,8 +17,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 
 const MyCampaigns = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
@@ -101,20 +102,77 @@ const MyCampaigns = () => {
       ) : campaigns && campaigns.length > 0 ? (
         <div className="grid gap-6">
           {campaigns.map((campaign) => (
-            <Card key={campaign.id} className="p-6">
+            <Card 
+              key={campaign.id} 
+              className="p-6 hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-white to-gray-50 border-2 rounded-2xl"
+            >
               <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">{campaign.title}</h3>
-                  <p className="text-muted-foreground mb-4">{campaign.description}</p>
-                  {campaign.location && (
-                    <p className="text-sm text-muted-foreground">📍 {campaign.location}</p>
+                <div className="space-y-4 flex-1">
+                  <div>
+                    <h3 className="text-2xl font-semibold mb-2 text-gray-900">{campaign.title}</h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed">{campaign.description}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      {campaign.location && (
+                        <p className="text-sm text-gray-600">📍 Location: {campaign.location}</p>
+                      )}
+                      {campaign.payment_details && (
+                        <p className="text-sm text-gray-600">💰 Payment: {campaign.payment_details}</p>
+                      )}
+                      {campaign.compensation_details && (
+                        <p className="text-sm text-gray-600">🎁 Additional Compensation: {campaign.compensation_details}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      {campaign.start_date && (
+                        <p className="text-sm text-gray-600">
+                          🗓️ Start: {format(new Date(campaign.start_date), 'MMM d, yyyy')}
+                        </p>
+                      )}
+                      {campaign.end_date && (
+                        <p className="text-sm text-gray-600">
+                          📅 End: {format(new Date(campaign.end_date), 'MMM d, yyyy')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {(campaign.requirements?.length > 0 || campaign.deliverables?.length > 0) && (
+                    <div className="grid grid-cols-2 gap-6 mt-4">
+                      {campaign.requirements?.length > 0 && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">Requirements</h4>
+                          <ul className="list-disc list-inside space-y-1">
+                            {campaign.requirements.map((req: string, index: number) => (
+                              <li key={index} className="text-sm text-gray-600">{req}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {campaign.deliverables?.length > 0 && (
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">Deliverables</h4>
+                          <ul className="list-disc list-inside space-y-1">
+                            {campaign.deliverables.map((del: string, index: number) => (
+                              <li key={index} className="text-sm text-gray-600">{del}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
-                <div className="flex gap-2">
+
+                <div className="flex gap-2 ml-6">
                   <Button
                     variant="outline"
                     size="icon"
                     onClick={() => setEditingCampaign(campaign)}
+                    className="hover:bg-gray-100"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -122,6 +180,7 @@ const MyCampaigns = () => {
                     variant="outline"
                     size="icon"
                     onClick={() => setDeletingCampaign(campaign.id)}
+                    className="hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
