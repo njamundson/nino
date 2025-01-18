@@ -30,9 +30,20 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         .from('creators')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error || !creator) {
+      if (error) {
+        console.error("Error checking creator profile:", error);
+        toast({
+          title: "Error",
+          description: "Failed to verify creator access. Please try again.",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
+
+      if (!creator) {
         toast({
           title: "Access denied",
           description: "You need a creator profile to access this area.",
