@@ -9,7 +9,9 @@ interface CreatorCardImageProps {
 }
 
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
-  const fullName = `${creator.firstName || ''} ${creator.lastName || ''}`.trim();
+  const fullName = creator.firstName && creator.lastName 
+    ? `${creator.firstName} ${creator.lastName}`.trim()
+    : 'Anonymous Creator';
 
   return (
     <div className="relative aspect-[3/4] overflow-hidden">
@@ -26,7 +28,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
           </p>
         )}
         <h3 className="text-xl font-semibold">
-          {fullName || 'Anonymous Creator'}
+          {fullName}
         </h3>
         {creator.specialties && creator.specialties.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
