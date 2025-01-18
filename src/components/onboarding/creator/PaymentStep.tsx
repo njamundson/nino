@@ -14,30 +14,34 @@ const PaymentStep = () => {
       if (!user) throw new Error("No authenticated user found");
 
       // Get the user's profile
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
+      if (profileError) throw profileError;
       if (!profile) throw new Error("Profile not found");
 
-      // Create creator profile if it doesn't exist
-      const { data: existingCreator } = await supabase
+      // Check if creator profile exists
+      const { data: existingCreator, error: creatorError } = await supabase
         .from('creators')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
+      if (creatorError) throw creatorError;
+
+      // Create creator profile if it doesn't exist
       if (!existingCreator) {
-        const { error: creatorError } = await supabase
+        const { error: insertError } = await supabase
           .from('creators')
           .insert({
             user_id: user.id,
             profile_id: profile.id,
           });
 
-        if (creatorError) throw creatorError;
+        if (insertError) throw insertError;
       }
       
       // Navigate to welcome page first
