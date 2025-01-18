@@ -1,11 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Plus } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
@@ -57,6 +52,26 @@ export const ChatList = ({
 }: ChatListProps) => {
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
   const { toast } = useToast();
+  const [isBrand, setIsBrand] = useState(false);
+
+  // Check if the user is a brand
+  const checkIfBrand = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: brands } = await supabase
+      .from('brands')
+      .select('id')
+      .eq('user_id', user.id)
+      .limit(1);
+
+    setIsBrand(!!brands && brands.length > 0);
+  };
+
+  // Call checkIfBrand when component mounts
+  useState(() => {
+    checkIfBrand();
+  }, []);
 
   const handleCreatorSelect = async (creatorId: string) => {
     try {
@@ -132,14 +147,16 @@ export const ChatList = ({
             className="pl-9 bg-white/50 rounded-full"
           />
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-full"
-          onClick={() => setIsCreatorModalOpen(true)}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
+        {isBrand && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            onClick={() => setIsCreatorModalOpen(true)}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       <ScrollArea className="flex-1">
