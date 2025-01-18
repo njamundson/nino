@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ChatHeader } from "@/components/messages/ChatHeader";
 import { ChatInput } from "@/components/messages/ChatInput";
-import { ChatList } from "@/components/messages/ChatList";
+import ChatList from "@/components/messages/ChatList";
 import { ChatMessages } from "@/components/messages/ChatMessages";
 import { useToast } from "@/hooks/use-toast";
 

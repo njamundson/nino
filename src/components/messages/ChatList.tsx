@@ -86,7 +86,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
-  // Call checkIfBrand when component mounts
   useEffect(() => {
     checkIfBrand();
   }, []);
@@ -179,7 +178,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         <CreatorSelectionModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
-          onSelectCreator={(creatorId) => {
+          onSelect={(creatorId) => {
             onSelectChat(creatorId);
             setShowModal(false);
           }}
