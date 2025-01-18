@@ -45,7 +45,10 @@ const CreatorGrid = ({ selectedSpecialties }: CreatorGridProps) => {
         profile: {
           first_name: creator.profiles?.first_name || '',
           last_name: creator.profiles?.last_name || ''
-        }
+        },
+        paymentDetails: '', // Adding the required field with a default empty string
+        creatorType: '', // Adding optional field
+        profileImage: null // Adding optional field
       })) || [];
     }
   });
