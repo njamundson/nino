@@ -54,6 +54,7 @@ const MyCampaigns = () => {
             creator:creators (
               id,
               profile_image_url,
+              user_id,
               profile:profiles (
                 first_name,
                 last_name
@@ -64,6 +65,7 @@ const MyCampaigns = () => {
         .eq('brand_id', brand.id)
         .order('created_at', { ascending: false });
 
+      console.log('Fetched campaigns data:', data); // Debug log
       return data || [];
     },
   });

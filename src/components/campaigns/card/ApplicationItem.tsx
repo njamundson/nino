@@ -13,9 +13,12 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
+  // Ensure we have access to the creator's profile information
   const creatorName = application.creator?.profile?.first_name && application.creator?.profile?.last_name
     ? `${application.creator.profile.first_name} ${application.creator.profile.last_name}`
     : 'Anonymous Creator';
+
+  console.log('Creator data:', application.creator); // Debug log
 
   return (
     <div className="p-6 rounded-lg bg-gray-50 flex items-start justify-between">
@@ -23,7 +26,7 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
         <Avatar className="h-16 w-16 rounded-full border-2 border-white shadow-sm overflow-hidden">
           {application.creator?.profile_image_url ? (
             <AvatarImage
-              src={`${application.creator.profile_image_url}?${new Date().getTime()}`}
+              src={application.creator.profile_image_url}
               alt={creatorName}
               className="h-full w-full object-cover"
             />
