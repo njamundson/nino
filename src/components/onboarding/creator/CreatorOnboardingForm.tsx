@@ -69,20 +69,22 @@ const CreatorOnboardingForm = () => {
       <div className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm">
         {renderStep()}
         
-        <div className="flex justify-between pt-6 border-t border-gray-100">
-          <Button
-            onClick={handleBack}
-            variant="outline"
-          >
-            Back
-          </Button>
-          <Button
-            onClick={handleNext}
-            variant="default"
-          >
-            {currentStep === 'payment' ? 'Complete' : 'Continue'}
-          </Button>
-        </div>
+        {currentStep !== 'payment' && (
+          <div className="flex justify-between pt-6 border-t border-gray-100">
+            <Button
+              onClick={handleBack}
+              variant="outline"
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleNext}
+              variant="default"
+            >
+              Continue
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
