@@ -69,6 +69,7 @@ const CreatorOnboardingForm = () => {
       <div className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm">
         {renderStep()}
         
+        {/* Only show navigation buttons when not on payment step */}
         {currentStep !== 'payment' && (
           <div className="flex justify-between pt-6 border-t border-gray-100">
             <Button
