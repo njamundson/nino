@@ -13,18 +13,15 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
-  const creatorProfile = application.creator?.profile;
-  const creatorName = creatorProfile?.first_name && creatorProfile?.last_name
-    ? `${creatorProfile.first_name} ${creatorProfile.last_name}`
+  // Ensure we have access to the creator's profile information
+  const creatorName = application.creator?.profile?.first_name && application.creator?.profile?.last_name
+    ? `${application.creator.profile.first_name} ${application.creator.profile.last_name}`
     : 'Anonymous Creator';
 
-  console.log('Creator profile data:', {
-    profile: creatorProfile,
-    fullCreator: application.creator
-  }); // Debug log
+  console.log('Creator data:', application.creator); // Debug log
 
   return (
-    <div className="p-6 rounded-lg bg-gray-50 flex items-start justify-between gap-6">
+    <div className="p-6 rounded-lg bg-gray-50 flex items-start justify-between">
       <div className="flex-1 flex items-start gap-6">
         <Avatar className="h-16 w-16 rounded-full border-2 border-white shadow-sm overflow-hidden">
           {application.creator?.profile_image_url ? (
@@ -36,29 +33,19 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
           ) : (
             <AvatarFallback className="bg-gray-100 text-gray-600">
               {getInitials(
-                creatorProfile?.first_name || '',
-                creatorProfile?.last_name || ''
+                application.creator?.profile?.first_name || '',
+                application.creator?.profile?.last_name || ''
               )}
             </AvatarFallback>
           )}
         </Avatar>
-        <div className="space-y-3 flex-1">
-          <div>
-            <h4 className="text-2xl font-medium text-gray-900 tracking-tight">
-              {creatorName}
-            </h4>
-            {application.creator?.location && (
-              <p className="text-sm text-gray-500">
-                📍 {application.creator.location}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <h5 className="font-medium text-gray-700">Application Message:</h5>
-            <p className="text-gray-600 leading-relaxed">
-              {application.cover_letter}
-            </p>
-          </div>
+        <div className="space-y-2 flex-1">
+          <h4 className="text-2xl font-medium text-gray-900 tracking-tight">
+            {creatorName}
+          </h4>
+          <p className="text-gray-600 leading-relaxed">
+            {application.cover_letter}
+          </p>
         </div>
       </div>
       <div className="flex gap-2">
