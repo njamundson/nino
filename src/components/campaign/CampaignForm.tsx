@@ -1,22 +1,16 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Camera, ImagePlus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import BasicInfo from "./steps/BasicInfo";
 import Requirements from "./steps/Requirements";
 import Compensation from "./steps/Compensation";
 import SuccessModal from "./SuccessModal";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import ImageUpload from "./ImageUpload";
+import FormProgress from "./FormProgress";
+import FormNavigation from "./FormNavigation";
 
-type Step = {
-  title: string;
-  description: string;
-  component: React.ComponentType<any>;
-};
-
-const steps: Step[] = [
+const steps = [
   {
     title: "Basic Information",
     description: "Let's start with the core details of your project",
@@ -53,9 +47,6 @@ const CampaignForm = () => {
     paymentDetails: "",
     compensationDetails: "",
   });
-
-  const CurrentStepComponent = steps[currentStep].component;
-  const progress = ((currentStep + 1) / steps.length) * 100;
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -161,68 +152,18 @@ const CampaignForm = () => {
     }
   };
 
+  const CurrentStepComponent = steps[currentStep].component;
+
   return (
     <div className="space-y-10">
-      <div className="space-y-2">
-        <h2 className="text-3xl font-semibold tracking-tight text-gray-900">
-          {steps[currentStep].title}
-        </h2>
-        <p className="text-lg text-gray-500">
-          {steps[currentStep].description}
-        </p>
-      </div>
-
-      <Progress value={progress} className="h-1 bg-gray-100" />
+      <FormProgress currentStep={currentStep} steps={steps} />
 
       {currentStep === 0 && (
-        <div className="flex flex-col items-center space-y-4 py-12">
-          <div className="relative group cursor-pointer transition-all duration-300">
-            <div 
-              className={`
-                w-80 h-56 rounded-2xl border-2 border-dashed 
-                flex items-center justify-center bg-white
-                transition-all duration-300 ease-in-out
-                group-hover:border-gray-400 group-hover:bg-gray-50
-                ${uploadedImage ? 'border-green-500 shadow-lg' : 'border-gray-200'}
-                ${isUploading ? 'animate-pulse' : ''}
-              `}
-            >
-              {uploadedImage ? (
-                <div className="relative w-full h-full overflow-hidden rounded-2xl">
-                  <img 
-                    src={uploadedImage} 
-                    alt="Campaign" 
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                    <ImagePlus className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center space-y-3 px-6 transition-all duration-300 group-hover:scale-105">
-                  <Camera className="mx-auto h-12 w-12 text-gray-300 group-hover:text-gray-400 transition-colors duration-300" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Upload campaign image</p>
-                    <p className="text-xs text-gray-500 mt-1">Recommended size: 1200x800px</p>
-                  </div>
-                </div>
-              )}
-            </div>
-            <input
-              type="file"
-              onChange={handleImageUpload}
-              accept="image/*"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              disabled={isUploading}
-            />
-          </div>
-          {isUploading && (
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
-              <p className="text-sm text-gray-600 font-medium">Uploading...</p>
-            </div>
-          )}
-        </div>
+        <ImageUpload
+          uploadedImage={uploadedImage}
+          isUploading={isUploading}
+          onImageUpload={handleImageUpload}
+        />
       )}
 
       <div className="min-h-[400px] py-4">
@@ -232,32 +173,13 @@ const CampaignForm = () => {
         />
       </div>
 
-      <div className="flex justify-between pt-6 border-t border-gray-100">
-        <Button
-          variant="ghost"
-          onClick={handleBack}
-          disabled={currentStep === 0}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          Back
-        </Button>
-        
-        {currentStep === steps.length - 1 ? (
-          <Button 
-            onClick={handleSubmit}
-            className="bg-black hover:bg-gray-900 text-white px-8"
-          >
-            Create Campaign
-          </Button>
-        ) : (
-          <Button 
-            onClick={handleNext}
-            className="bg-black hover:bg-gray-900 text-white px-8"
-          >
-            Continue
-          </Button>
-        )}
-      </div>
+      <FormNavigation
+        currentStep={currentStep}
+        totalSteps={steps.length}
+        onBack={handleBack}
+        onNext={handleNext}
+        onSubmit={handleSubmit}
+      />
 
       <SuccessModal 
         isOpen={showSuccessModal} 
