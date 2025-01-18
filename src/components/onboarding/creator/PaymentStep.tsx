@@ -55,14 +55,21 @@ const PaymentStep = () => {
             if (creatorError) throw creatorError;
           }
 
+          // Clear the URL parameters
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
+          // Navigate to welcome page first
+          navigate('/creator/welcome');
+          
+          // After 3 seconds, navigate to dashboard
+          setTimeout(() => {
+            navigate('/creator/dashboard');
+          }, 3000);
+
           toast({
             title: "Welcome to Nino!",
             description: "Your creator account has been set up successfully.",
           });
-
-          // Clear the URL parameters and redirect to dashboard
-          window.history.replaceState({}, document.title, window.location.pathname);
-          navigate('/creator/dashboard');
         } catch (error) {
           console.error('Error setting up creator account:', error);
           toast({
@@ -70,6 +77,7 @@ const PaymentStep = () => {
             title: "Setup Error",
             description: "There was a problem setting up your creator account. Please try again.",
           });
+          navigate('/onboarding');
         } finally {
           setIsLoading(false);
         }
