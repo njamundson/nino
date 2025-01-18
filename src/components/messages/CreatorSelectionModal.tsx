@@ -5,13 +5,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { Search } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 
 interface CreatorSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (creatorId: string) => void;
+}
+
+interface Creator {
+  id: string;
+  profile_image_url: string | null;
+  profiles: {
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
 }
 
 const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionModalProps) => {
@@ -36,7 +44,7 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Creator[];
     },
   });
 
