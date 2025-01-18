@@ -13,6 +13,10 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
+  const creatorName = application.creator?.profile?.first_name && application.creator?.profile?.last_name
+    ? `${application.creator.profile.first_name} ${application.creator.profile.last_name}`
+    : 'Anonymous Creator';
+
   return (
     <div className="p-6 rounded-lg bg-gray-50 flex items-start justify-between">
       <div className="flex-1 flex items-start gap-6">
@@ -20,7 +24,7 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
           {application.creator?.profile_image_url ? (
             <AvatarImage
               src={`${application.creator.profile_image_url}?${new Date().getTime()}`}
-              alt={`${application.creator?.profile?.first_name || ''} ${application.creator?.profile?.last_name || ''}`}
+              alt={creatorName}
               className="h-full w-full object-cover"
             />
           ) : (
@@ -34,7 +38,7 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
         </Avatar>
         <div className="space-y-2 flex-1">
           <h4 className="text-2xl font-medium text-gray-900 tracking-tight">
-            {application.creator?.profile?.first_name} {application.creator?.profile?.last_name}
+            {creatorName}
           </h4>
           <p className="text-gray-600 leading-relaxed">
             {application.cover_letter}
