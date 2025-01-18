@@ -61,6 +61,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         website: creator.website || '',
         location: creator.location || '',
         profileImage: creator.profile_image_url || '/placeholder.svg',
+        creatorType: creator.creator_type || '', // Added this line to include creatorType
         profile: {
           first_name: creator.profiles?.first_name || '',
           last_name: creator.profiles?.last_name || ''
