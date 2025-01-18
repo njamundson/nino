@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import SuccessModal from "./SuccessModal";
 
 export interface ApplicationFormProps {
   opportunity: {
@@ -32,6 +33,7 @@ export interface ApplicationFormProps {
 const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
   const [coverLetter, setCoverLetter] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,7 +82,7 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
         throw applicationError;
       }
 
-      onClose();
+      setShowSuccessModal(true);
     } catch (error) {
       toast({
         title: "Error",
@@ -91,6 +93,18 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
       setIsSubmitting(false);
     }
   };
+
+  if (showSuccessModal) {
+    return (
+      <SuccessModal 
+        isOpen={showSuccessModal} 
+        onOpenChange={(open) => {
+          setShowSuccessModal(open);
+          if (!open) onClose();
+        }}
+      />
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
