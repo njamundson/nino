@@ -1,85 +1,97 @@
-import { useEffect, useState } from "react";
-import CreatorCard from "./CreatorCard";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CreatorData } from "@/types/creator";
-import { useQuery } from "@tanstack/react-query";
+import CreatorCard from "./CreatorCard";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface CreatorGridProps {
-  selectedSpecialties: string[];
+  onInvite: (creatorId: string) => void;
 }
 
-const CreatorGrid = ({ selectedSpecialties }: CreatorGridProps) => {
-  const { data: creators, isLoading } = useQuery({
-    queryKey: ['creators', selectedSpecialties],
+const CreatorGrid = ({ onInvite }: CreatorGridProps) => {
+  const { toast } = useToast();
+
+  const { data: creators, isLoading, error } = useQuery({
+    queryKey: ["creators"],
     queryFn: async () => {
-      let query = supabase
-        .from('creators')
+      const { data, error } = await supabase
+        .from("creators")
         .select(`
-          id,
-          bio,
-          instagram,
-          website,
-          location,
-          specialties,
-          profiles (
+          *,
+          profiles:profile_id (
             first_name,
             last_name
           )
         `);
 
-      if (selectedSpecialties.length > 0) {
-        query = query.contains('specialties', selectedSpecialties);
-      }
-
-      const { data, error } = await query;
-
       if (error) {
-        console.error('Error fetching creators:', error);
+        console.error("Error fetching creators:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load creators. Please try again.",
+          variant: "destructive",
+        });
         throw error;
       }
 
-      return data?.map(creator => ({
-        ...creator,
-        firstName: creator.profiles?.[0]?.first_name || '',
-        lastName: creator.profiles?.[0]?.last_name || '',
-        profile: {
-          first_name: creator.profiles?.[0]?.first_name || '',
-          last_name: creator.profiles?.[0]?.last_name || ''
-        },
-        paymentDetails: '', // Adding the required field with a default empty string
-        creatorType: '', // Adding optional field
-        profileImage: null // Adding optional field
-      })) || [];
-    }
+      return data;
+    },
   });
+
+  const mappedCreators: CreatorData[] = creators
+    ? creators.map(creator => ({
+        ...creator,
+        firstName: creator.profiles?.first_name || '',
+        lastName: '', // Since we use a single field for the full name
+        profile: {
+          first_name: creator.profiles?.first_name || '',
+          last_name: ''
+        },
+        paymentDetails: '',
+        creatorType: '',
+        id: creator.id,
+        bio: creator.bio || '',
+        instagram: creator.instagram || '',
+        website: creator.website || '',
+        location: creator.location || '',
+        specialties: creator.specialties || [],
+        profileImage: null
+      }))
+    : [];
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
-          <div 
-            key={i}
-            className="h-64 bg-gray-100 rounded-lg animate-pulse"
-          />
-        ))}
+      <div className="flex items-center justify-center min-h-[200px]">
+        <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
       </div>
     );
   }
 
-  if (!creators || creators.length === 0) {
+  if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-lg text-gray-600">
-          No creators found matching your filters.
-        </p>
+      <div className="text-center text-nino-gray">
+        Failed to load creators. Please try again.
+      </div>
+    );
+  }
+
+  if (!mappedCreators.length) {
+    return (
+      <div className="text-center text-nino-gray">
+        No creators found.
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {creators.map((creator) => (
-        <CreatorCard key={creator.id} creator={creator} />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {mappedCreators.map((creator) => (
+        <CreatorCard
+          key={creator.id}
+          creator={creator}
+          onInvite={onInvite}
+        />
       ))}
     </div>
   );
