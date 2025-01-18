@@ -7,12 +7,17 @@ const StatsCards = () => {
   const { data: activeProjects } = useQuery({
     queryKey: ['active-projects'],
     queryFn: async () => {
-      const { data: creator } = await supabase
+      const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id')
         .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
+        .maybeSingle();
 
+      if (creatorError) {
+        console.error('Error fetching creator:', creatorError);
+        return 0;
+      }
+      
       if (!creator) return 0;
 
       const { count } = await supabase
@@ -28,11 +33,16 @@ const StatsCards = () => {
   const { data: newProposals } = useQuery({
     queryKey: ['new-proposals'],
     queryFn: async () => {
-      const { data: creator } = await supabase
+      const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id')
         .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
+        .maybeSingle();
+
+      if (creatorError) {
+        console.error('Error fetching creator:', creatorError);
+        return 0;
+      }
 
       if (!creator) return 0;
 
