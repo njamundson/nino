@@ -3,16 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = 'https://qeodzqcywmrucahqxldg.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlb2R6cWN5d21ydWNhaHF4bGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5Nzk1MDIsImV4cCI6MjA1MjU1NTUwMn0.WfvH4H2Vk3CNbXfYdxDzGVjVsl-WoCpdRJimdiAChXc';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-    storage: window.localStorage,
-    storageKey: 'nino-auth-token',
-  },
-});
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Add debug logging for initialization and auth state changes
 console.log('Supabase client initialized with URL:', supabaseUrl);
@@ -30,18 +21,7 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('User signed in successfully');
   } else if (event === 'SIGNED_OUT') {
     console.log('User signed out');
-    // Clear any stored tokens
-    window.localStorage.removeItem('nino-auth-token');
   } else if (event === 'TOKEN_REFRESHED') {
     console.log('Token refreshed successfully');
-  }
-});
-
-// Handle refresh token errors
-supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'TOKEN_REFRESHED' && !session) {
-    console.log('Token refresh failed, redirecting to login');
-    // Redirect to login page if token refresh fails
-    window.location.href = '/';
   }
 });
