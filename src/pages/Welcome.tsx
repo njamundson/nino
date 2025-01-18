@@ -1,17 +1,19 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 const Welcome = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isCreator = location.pathname.includes('/creator');
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/creator/dashboard");
+      navigate(isCreator ? "/creator/dashboard" : "/brand/dashboard");
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, isCreator]);
 
   return (
     <div className="min-h-screen bg-nino-bg flex items-center justify-center">

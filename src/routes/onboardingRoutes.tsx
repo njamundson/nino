@@ -4,6 +4,7 @@ import CreatorOnboarding from "@/components/onboarding/CreatorOnboarding";
 import BrandOnboarding from "@/components/onboarding/BrandOnboarding";
 import AccountManagersStep from "@/components/onboarding/brand/managers/AccountManagersStep";
 import InvitationAcceptance from "@/components/onboarding/brand/managers/InvitationAcceptance";
+import PaymentStep from "@/components/onboarding/brand/PaymentStep";
 
 export const onboardingRoutes = [
   {
@@ -21,6 +22,10 @@ export const onboardingRoutes = [
   {
     path: "/onboarding/brand/managers",
     element: <AccountManagersStep />,
+  },
+  {
+    path: "/onboarding/brand/payment",
+    element: <PaymentStep />,
   },
   {
     path: "/onboarding/brand/invitation/:token",
