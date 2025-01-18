@@ -33,14 +33,17 @@ const BrandSidebar = () => {
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        console.error("Error signing out:", error);
+        throw error;
+      }
       
+      // The navigation will be handled by the AuthWrapper in App.tsx
+      // through the onAuthStateChange listener
       toast({
         title: "Signed out successfully",
         description: "You have been logged out of your account.",
       });
-      
-      navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
