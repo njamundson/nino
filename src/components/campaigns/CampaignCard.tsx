@@ -182,7 +182,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
                       key={application.id}
                       className="p-6 rounded-lg bg-gray-50 flex items-start justify-between"
                     >
-                      <div className="flex items-start gap-6">
+                      <div className="flex-1 flex items-start gap-6">
                         <Avatar className="h-16 w-16 rounded-full border-2 border-white shadow-sm overflow-hidden">
                           {application.creator?.profile_image_url ? (
                             <AvatarImage
@@ -199,39 +199,34 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
                             </AvatarFallback>
                           )}
                         </Avatar>
-                        <div>
-                          <h4 className="font-medium text-gray-900">
+                        <div className="space-y-2">
+                          <h4 className="text-lg font-medium text-gray-900">
                             {application.creator?.profile?.first_name} {application.creator?.profile?.last_name}
                           </h4>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-sm text-gray-600">
                             {application.cover_letter}
                           </p>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end gap-3">
-                        <Badge className={getStatusColor(application.status)}>
-                          {application.status}
-                        </Badge>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleViewProfile(application)}
-                            className="text-gray-600 hover:text-gray-900"
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            View Profile
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleMessageCreator(application.creator?.user_id)}
-                            className="text-gray-600 hover:text-gray-900"
-                          >
-                            <MessageSquare className="h-4 w-4 mr-1" />
-                            Message
-                          </Button>
-                        </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleViewProfile(application)}
+                          className="text-gray-600 hover:text-gray-900"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View Profile
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleMessageCreator(application.creator?.user_id)}
+                          className="text-gray-600 hover:text-gray-900"
+                        >
+                          <MessageSquare className="h-4 w-4 mr-1" />
+                          Message
+                        </Button>
                       </div>
                     </div>
                   ))}
