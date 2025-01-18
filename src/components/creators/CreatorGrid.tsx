@@ -6,16 +6,17 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 interface CreatorGridProps {
+  selectedSpecialties: string[];
   onInvite: (creatorId: string) => void;
 }
 
-const CreatorGrid = ({ onInvite }: CreatorGridProps) => {
+const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
   const { toast } = useToast();
 
   const { data: creators, isLoading, error } = useQuery({
-    queryKey: ["creators"],
+    queryKey: ["creators", selectedSpecialties],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("creators")
         .select(`
           *,
@@ -24,6 +25,12 @@ const CreatorGrid = ({ onInvite }: CreatorGridProps) => {
             last_name
           )
         `);
+
+      if (selectedSpecialties.length > 0) {
+        query = query.contains('specialties', selectedSpecialties);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error("Error fetching creators:", error);
