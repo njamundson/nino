@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Camera } from "lucide-react";
 import BasicInfo from "./steps/BasicInfo";
 import Requirements from "./steps/Requirements";
 import Compensation from "./steps/Compensation";
@@ -36,6 +37,8 @@ const steps: Step[] = [
 const CampaignForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -54,7 +57,52 @@ const CampaignForm = () => {
   const CurrentStepComponent = steps[currentStep].component;
   const progress = ((currentStep + 1) / steps.length) * 100;
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('campaign-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('campaign-images')
+        .getPublicUrl(filePath);
+
+      setUploadedImage(publicUrl);
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleNext = () => {
+    if (currentStep === 0 && !uploadedImage) {
+      toast({
+        title: "Required Field",
+        description: "Please upload a campaign image before proceeding",
+        variant: "destructive",
+      });
+      return;
+    }
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -68,7 +116,6 @@ const CampaignForm = () => {
 
   const handleSubmit = async () => {
     try {
-      // Get the current user's brand ID
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -80,7 +127,6 @@ const CampaignForm = () => {
 
       if (!brand) throw new Error("Brand not found");
 
-      // Create the campaign
       const { error: insertError } = await supabase
         .from('opportunities')
         .insert({
@@ -94,13 +140,13 @@ const CampaignForm = () => {
           deliverables: formData.deliverables,
           payment_details: formData.paymentDetails,
           compensation_details: formData.compensationDetails,
+          image_url: uploadedImage,
         });
 
       if (insertError) throw insertError;
 
       setShowSuccessModal(true);
       
-      // After successful creation and modal is closed, redirect to My Campaigns
       setTimeout(() => {
         navigate('/brand/campaigns');
       }, 2000);
@@ -127,6 +173,35 @@ const CampaignForm = () => {
       </div>
 
       <Progress value={progress} className="h-1 bg-gray-100" />
+
+      {currentStep === 0 && (
+        <div className="flex flex-col items-center space-y-4 py-8">
+          <div className="relative group cursor-pointer">
+            <div className={`w-64 h-48 rounded-lg border-2 border-dashed flex items-center justify-center bg-gray-50 ${uploadedImage ? 'border-green-500' : 'border-gray-300'}`}>
+              {uploadedImage ? (
+                <img 
+                  src={uploadedImage} 
+                  alt="Campaign" 
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              ) : (
+                <div className="text-center">
+                  <Camera className="mx-auto h-12 w-12 text-gray-400" />
+                  <p className="mt-2 text-sm text-gray-500">Upload campaign image</p>
+                </div>
+              )}
+            </div>
+            <input
+              type="file"
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              disabled={isUploading}
+            />
+          </div>
+          {isUploading && <p className="text-sm text-gray-500">Uploading...</p>}
+        </div>
+      )}
 
       <div className="min-h-[400px] py-4">
         <CurrentStepComponent
