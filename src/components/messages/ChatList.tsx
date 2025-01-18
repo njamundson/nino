@@ -1,6 +1,3 @@
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
@@ -8,6 +5,7 @@ import { useState, useEffect } from "react";
 import CreatorSelectionModal from "./CreatorSelectionModal";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Message {
   id: string;
@@ -15,57 +13,77 @@ interface Message {
   receiver_id: string;
   content: string;
   created_at: string;
-  sender_profile?: {
-    first_name: string;
-    last_name: string;
-  };
-  receiver_profile?: {
-    first_name: string;
-    last_name: string;
-  };
-}
-
-interface Creator {
-  id: string;
-  profile: {
+  profiles: {
     first_name: string;
     last_name: string;
   };
 }
 
 interface ChatListProps {
-  messages: Message[] | undefined;
-  creators: Creator[] | undefined;
-  selectedChat: string | null;
-  setSelectedChat: (id: string) => void;
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
+  onSelectChat: (userId: string) => void;
+  selectedUserId: string | null;
 }
 
-export const ChatList = ({
-  messages = [],
-  creators = [],
-  selectedChat,
-  setSelectedChat,
-  searchQuery,
-  setSearchQuery,
-}: ChatListProps) => {
-  const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
-  const { toast } = useToast();
+const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
+  const [chats, setChats] = useState<{ [key: string]: Message[] }>({});
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [isBrand, setIsBrand] = useState(false);
+  const { toast } = useToast();
 
-  // Check if the user is a brand
+  const fetchChats = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select(`
+          *,
+          profiles:sender_id(first_name, last_name)
+        `)
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Group messages by conversation partner
+      const groupedChats: { [key: string]: Message[] } = {};
+      messages?.forEach((message: Message) => {
+        const partnerId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
+        if (!groupedChats[partnerId]) {
+          groupedChats[partnerId] = [];
+        }
+        groupedChats[partnerId].push(message);
+      });
+
+      setChats(groupedChats);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching chats:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load chats",
+        variant: "destructive",
+      });
+    }
+  };
+
   const checkIfBrand = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { data: brands } = await supabase
-      .from('brands')
-      .select('id')
-      .eq('user_id', user.id)
-      .limit(1);
+      const { data: brand } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    setIsBrand(!!brands && brands.length > 0);
+      setIsBrand(!!brand);
+    } catch (error) {
+      console.error('Error checking brand status:', error);
+    }
   };
 
   // Call checkIfBrand when component mounts
@@ -73,138 +91,102 @@ export const ChatList = ({
     checkIfBrand();
   }, []);
 
-  const handleCreatorSelect = async (creatorId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to send messages",
-          variant: "destructive",
-        });
-        return;
-      }
+  useEffect(() => {
+    fetchChats();
+    // Set up real-time subscription for new messages
+    const channel = supabase
+      .channel('messages')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          fetchChats();
+        }
+      )
+      .subscribe();
 
-      // Create an empty message to start the conversation
-      const { error } = await supabase.from("messages").insert({
-        content: "Started a conversation",
-        sender_id: user.id,
-        receiver_id: creatorId,
-        read: false,
-      });
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
-      if (error) {
-        console.error("Error creating conversation:", error);
-        toast({
-          title: "Error",
-          description: "Could not start conversation. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setSelectedChat(creatorId);
-      toast({
-        title: "Conversation started",
-        description: "You can now send messages to this creator.",
-      });
-    } catch (error) {
-      console.error("Error selecting creator:", error);
-      toast({
-        title: "Error",
-        description: "Could not start conversation. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Group messages by conversation partner
-  const conversations = messages.reduce((acc: { [key: string]: Message }, message) => {
-    const partnerId = message.sender_id === selectedChat ? message.receiver_id : message.sender_id;
-    if (!acc[partnerId] || new Date(acc[partnerId].created_at) < new Date(message.created_at)) {
-      acc[partnerId] = message;
-    }
-    return acc;
-  }, {});
-
-  const filteredConversations = Object.values(conversations).filter((message) => {
-    const senderName = `${message.sender_profile?.first_name} ${message.sender_profile?.last_name}`.toLowerCase();
-    const receiverName = `${message.receiver_profile?.first_name} ${message.receiver_profile?.last_name}`.toLowerCase();
-    return senderName.includes(searchQuery.toLowerCase()) || 
-           receiverName.includes(searchQuery.toLowerCase()) ||
-           message.content.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  if (loading) {
+    return (
+      <div className="space-y-4 p-4">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-4 border-b flex items-center justify-between">
-        <div className="relative flex-1 mr-2">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Search messages..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-white/50 rounded-full"
-          />
-        </div>
-        {isBrand && (
+    <div className="h-full flex flex-col">
+      {isBrand && (
+        <div className="p-4">
           <Button
+            onClick={() => setShowModal(true)}
+            className="w-full"
             variant="outline"
-            size="icon"
-            className="rounded-full"
-            onClick={() => setIsCreatorModalOpen(true)}
           >
-            <Plus className="h-4 w-4" />
+            New Conversation
           </Button>
-        )}
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto">
+        {Object.entries(chats).map(([userId, messages]) => {
+          const latestMessage = messages[0];
+          const isSelected = selectedUserId === userId;
+
+          return (
+            <div
+              key={userId}
+              className={`p-4 cursor-pointer hover:bg-gray-100 ${
+                isSelected ? "bg-gray-100" : ""
+              }`}
+              onClick={() => onSelectChat(userId)}
+            >
+              <div className="flex items-center space-x-4">
+                <Avatar>
+                  <AvatarFallback>
+                    {latestMessage.profiles.first_name?.[0]}
+                    {latestMessage.profiles.last_name?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {latestMessage.profiles.first_name} {latestMessage.profiles.last_name}
+                  </p>
+                  <p className="text-sm text-gray-500 truncate">
+                    {latestMessage.content}
+                  </p>
+                </div>
+                <span className="text-xs text-gray-500">
+                  {formatDate(latestMessage.created_at)}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
-          {filteredConversations.map((message) => {
-            const isReceived = message.receiver_id === selectedChat;
-            const profile = isReceived ? message.sender_profile : message.receiver_profile;
-            
-            return (
-              <div
-                key={message.id}
-                className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                  selectedChat === (isReceived ? message.sender_id : message.receiver_id)
-                    ? 'bg-gray-200'
-                    : 'hover:bg-gray-100'
-                }`}
-                onClick={() => setSelectedChat(isReceived ? message.sender_id : message.receiver_id)}
-              >
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback>
-                      {profile?.first_name?.[0]}
-                      {profile?.last_name?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-1">
-                      <p className="font-semibold text-sm">
-                        {profile?.first_name} {profile?.last_name}
-                      </p>
-                      <span className="text-xs text-gray-500">
-                        {formatDate(message.created_at)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 truncate">{message.content}</p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </ScrollArea>
-
-      <CreatorSelectionModal
-        isOpen={isCreatorModalOpen}
-        onClose={() => setIsCreatorModalOpen(false)}
-        onSelect={handleCreatorSelect}
-      />
+      {showModal && (
+        <CreatorSelectionModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onSelectCreator={(creatorId) => {
+            onSelectChat(creatorId);
+            setShowModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };
+
+export default ChatList;
