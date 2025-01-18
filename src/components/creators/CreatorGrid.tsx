@@ -16,6 +16,8 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
   const { data: creators, isLoading, error } = useQuery({
     queryKey: ["creators", selectedSpecialties],
     queryFn: async () => {
+      console.log("Fetching creators with specialties:", selectedSpecialties);
+      
       let query = supabase
         .from("creators")
         .select(`
@@ -23,7 +25,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
           profiles!creators_profile_id_fkey (
             first_name,
             last_name,
-            id
+            avatar_url
           )
         `);
 
@@ -43,7 +45,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         throw error;
       }
 
-      console.log("Fetched creators:", data);
+      console.log("Fetched creators data:", data);
       return data || [];
     },
   });
