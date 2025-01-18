@@ -5,7 +5,6 @@ import {
   PlusCircle,
   List,
   Users,
-  FileText,
   Calendar,
   MessageSquare,
   Settings,
@@ -24,7 +23,6 @@ const BrandSidebar = () => {
     { icon: PlusCircle, label: "New Campaign", path: "/brand/campaigns/new" },
     { icon: List, label: "My Campaigns", path: "/brand/campaigns" },
     { icon: Users, label: "View Creators", path: "/brand/creators" },
-    { icon: FileText, label: "Proposals", path: "/brand/proposals" },
     { icon: Calendar, label: "Bookings", path: "/brand/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/brand/messages" },
     { icon: Settings, label: "Settings", path: "/brand/settings" },
@@ -38,8 +36,6 @@ const BrandSidebar = () => {
         throw error;
       }
       
-      // The navigation will be handled by the AuthWrapper in App.tsx
-      // through the onAuthStateChange listener
       toast({
         title: "Signed out successfully",
         description: "You have been logged out of your account.",

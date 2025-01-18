@@ -5,7 +5,6 @@ import Dashboard from "@/pages/Dashboard";
 import NewCampaign from "@/pages/NewCampaign";
 import MyCampaigns from "@/pages/MyCampaigns";
 import ViewCreators from "@/pages/ViewCreators";
-import Proposals from "@/pages/Proposals";
 import Bookings from "@/pages/Bookings";
 import Messages from "@/pages/Messages";
 import Settings from "@/pages/Settings";
@@ -56,16 +55,6 @@ export const brandRoutes = [
       <ProtectedBrandRoute>
         <BrandLayout>
           <ViewCreators />
-        </BrandLayout>
-      </ProtectedBrandRoute>
-    ),
-  },
-  {
-    path: "/brand/proposals",
-    element: (
-      <ProtectedBrandRoute>
-        <BrandLayout>
-          <Proposals />
         </BrandLayout>
       </ProtectedBrandRoute>
     ),
