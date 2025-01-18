@@ -39,9 +39,8 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         console.log("Checking brand profile for user:", userId);
         const { data: brands, error: brandError } = await supabase
           .from('brands')
-          .select()
-          .eq('user_id', userId)
-          .limit(1);
+          .select('id, company_name')
+          .eq('user_id', userId);
 
         if (brandError) {
           console.error("Error checking brand profile:", brandError);
