@@ -1,15 +1,34 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { format } from "date-fns";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Avatar } from "@/components/ui/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface CampaignCardProps {
   campaign: any;
   onEdit: (campaign: any) => void;
   onDelete: (id: string) => void;
+  applications?: any[];
+  onUpdateApplicationStatus?: (applicationId: string, newStatus: 'accepted' | 'rejected') => void;
 }
 
-const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
+const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateApplicationStatus }: CampaignCardProps) => {
+  const [showApplications, setShowApplications] = useState(false);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'accepted':
+        return 'bg-green-100 text-green-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-yellow-100 text-yellow-800';
+    }
+  };
+
   return (
     <Card className="overflow-hidden backdrop-blur-lg bg-white/80 border-0 shadow-lg rounded-2xl transition-all duration-300 hover:shadow-xl">
       <div className="p-8">
@@ -112,6 +131,78 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
             </Button>
           </div>
         </div>
+
+        {applications.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <Button
+              variant="ghost"
+              className="w-full justify-between"
+              onClick={() => setShowApplications(!showApplications)}
+            >
+              <span className="font-medium">
+                Applications ({applications.length})
+              </span>
+              {showApplications ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+
+            {showApplications && (
+              <div className="mt-4 space-y-4">
+                {applications.map((application) => (
+                  <div
+                    key={application.id}
+                    className="p-4 rounded-lg bg-gray-50 flex items-start justify-between"
+                  >
+                    <div className="flex items-start gap-4">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage
+                          src={application.creator?.profile_image_url || "/placeholder.svg"}
+                          alt={application.creator?.profile?.first_name || "Creator"}
+                        />
+                      </Avatar>
+                      <div>
+                        <h4 className="font-medium text-gray-900">
+                          {application.creator?.profile?.first_name} {application.creator?.profile?.last_name}
+                        </h4>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {application.cover_letter}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className={getStatusColor(application.status)}>
+                        {application.status}
+                      </Badge>
+                      {application.status === 'pending' && onUpdateApplicationStatus && (
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => onUpdateApplicationStatus(application.id, 'accepted')}
+                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          >
+                            Accept
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => onUpdateApplicationStatus(application.id, 'rejected')}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </Card>
   );

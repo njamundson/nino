@@ -46,6 +46,19 @@ const MyCampaigns = () => {
             company_name,
             brand_type,
             location
+          ),
+          applications (
+            id,
+            status,
+            cover_letter,
+            creator:creators (
+              id,
+              profile_image_url,
+              profile:profiles (
+                first_name,
+                last_name
+              )
+            )
           )
         `)
         .eq('brand_id', brand.id)
@@ -54,6 +67,30 @@ const MyCampaigns = () => {
       return data || [];
     },
   });
+
+  const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected') => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: newStatus })
+        .eq('id', applicationId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Application ${newStatus} successfully`,
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update application status",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleDelete = async () => {
     if (!deletingCampaign) return;
@@ -102,8 +139,10 @@ const MyCampaigns = () => {
             <CampaignCard
               key={campaign.id}
               campaign={campaign}
+              applications={campaign.applications}
               onEdit={setEditingCampaign}
               onDelete={setDeletingCampaign}
+              onUpdateApplicationStatus={handleUpdateApplicationStatus}
             />
           ))}
         </div>
