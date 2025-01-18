@@ -44,7 +44,17 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
         throw error;
       }
 
-      return data as Creator[];
+      // Ensure the data matches our Creator type by explicitly typing the response
+      const typedData = (data || []).map((item: any): Creator => ({
+        id: item.id,
+        profile_image_url: item.profile_image_url,
+        profiles: item.profiles ? {
+          first_name: item.profiles.first_name,
+          last_name: item.profiles.last_name
+        } : null
+      }));
+
+      return typedData;
     },
   });
 
