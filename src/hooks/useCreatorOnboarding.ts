@@ -72,7 +72,8 @@ export const useCreatorOnboarding = () => {
           website: creatorData.website,
           location: creatorData.location,
           specialties: creatorData.specialties,
-          profile_image_url: creatorData.profileImage
+          profile_image_url: creatorData.profileImage,
+          creator_type: creatorData.creatorType // Make sure this column exists in your database
         });
 
         if (creatorError) {
