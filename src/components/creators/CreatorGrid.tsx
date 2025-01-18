@@ -20,7 +20,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         .from("creators")
         .select(`
           *,
-          profiles:profile_id (
+          profiles (
             first_name,
             last_name
           )
@@ -42,7 +42,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         throw error;
       }
 
-      return data;
+      return data || [];
     },
   });
 
@@ -50,10 +50,10 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
     ? creators.map(creator => ({
         ...creator,
         firstName: creator.profiles?.first_name || '',
-        lastName: '', // Since we use a single field for the full name
+        lastName: creator.profiles?.last_name || '',
         profile: {
           first_name: creator.profiles?.first_name || '',
-          last_name: ''
+          last_name: creator.profiles?.last_name || ''
         },
         paymentDetails: '',
         creatorType: '',
