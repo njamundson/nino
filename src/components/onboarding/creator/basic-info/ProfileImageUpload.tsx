@@ -62,6 +62,16 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
         .from('avatars')
         .getPublicUrl(filePath);
 
+      // Update the creators table with the profile image URL
+      const { error: updateError } = await supabase
+        .from('creators')
+        .update({ profile_image_url: publicUrl })
+        .eq('user_id', session.user.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
       onUpdateImage(publicUrl);
       
       toast({
