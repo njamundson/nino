@@ -22,7 +22,7 @@ const ProjectHeader = ({
     <div className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 border-b border-gray-100 p-8">
       <div className="max-w-3xl mx-auto">
         <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-start">
+          <div className="relative">
             <div>
               <p className="text-sm font-medium text-gray-500 mb-2">
                 {companyName}
@@ -31,13 +31,6 @@ const ProjectHeader = ({
                 {title}
               </h2>
             </div>
-            <Button 
-              onClick={onApply}
-              size="lg"
-              className="bg-black hover:bg-gray-800 text-white rounded-full px-8 transition-all"
-            >
-              Apply Now
-            </Button>
           </div>
 
           <div className="flex flex-wrap gap-3 mt-2">
@@ -54,6 +47,15 @@ const ProjectHeader = ({
             )}
           </div>
         </div>
+      </div>
+      <div className="absolute bottom-8 right-8">
+        <Button 
+          onClick={onApply}
+          size="lg"
+          className="bg-[#a55549] hover:bg-[#a55549]/90 text-white rounded-full px-8 transition-all"
+        >
+          Apply Now
+        </Button>
       </div>
     </div>
   );
