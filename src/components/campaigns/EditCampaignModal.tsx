@@ -1,4 +1,3 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +18,7 @@ interface EditCampaignModalProps {
     id: string;
     title: string;
     description: string;
+    requirements: string[];
     location: string | null;
     payment_details: string | null;
     compensation_details: string | null;
@@ -28,13 +28,14 @@ interface EditCampaignModalProps {
 }
 
 const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps) => {
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     title: campaign.title,
     description: campaign.description,
+    requirements: campaign.requirements,
     location: campaign.location || "",
     payment_details: campaign.payment_details || "",
     compensation_details: campaign.compensation_details || "",
@@ -66,6 +67,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
         .update({
           title: formData.title,
           description: formData.description,
+          requirements: formData.requirements,
           location: formData.location,
           payment_details: formData.payment_details,
           compensation_details: formData.compensation_details,
@@ -80,7 +82,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
         title: "Success",
         description: "Campaign updated successfully",
       });
-      
+
       queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
       onClose();
     } catch (error) {
@@ -94,16 +96,13 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Campaign</DialogTitle>
-          <DialogDescription>
-            Make changes to your campaign here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-2xl font-semibold mb-6">Edit Campaign</h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="title" className="text-sm font-medium">Title</label>
             <Input
@@ -133,66 +132,72 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
               onChange={handleChange}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Start Date</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.start_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.start_date ? (
-                      format(new Date(formData.start_date), "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formData.start_date ? new Date(formData.start_date) : undefined}
-                    onSelect={handleDateSelect('start_date')}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">End Date</label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.end_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.end_date ? (
-                      format(new Date(formData.end_date), "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formData.end_date ? new Date(formData.end_date) : undefined}
-                    onSelect={handleDateSelect('end_date')}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+          
+          <div className="space-y-4">
+            <h3 className="text-base font-medium">Campaign Duration</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Start Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal rounded-full border-gray-200 hover:bg-gray-50/50 hover:border-gray-300 transition-colors",
+                        !formData.start_date && "text-gray-500"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
+                      {formData.start_date ? (
+                        format(new Date(formData.start_date), "MMMM do, yyyy")
+                      ) : (
+                        <span>Select date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.start_date ? new Date(formData.start_date) : undefined}
+                      onSelect={handleDateSelect('start_date')}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">End Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal rounded-full border-gray-200 hover:bg-gray-50/50 hover:border-gray-300 transition-colors",
+                        !formData.end_date && "text-gray-500"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
+                      {formData.end_date ? (
+                        format(new Date(formData.end_date), "MMMM do, yyyy")
+                      ) : (
+                        <span>Select date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.end_date ? new Date(formData.end_date) : undefined}
+                      onSelect={handleDateSelect('end_date')}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
           </div>
+
           <div className="space-y-2">
             <label htmlFor="payment_details" className="text-sm font-medium">Payment Details</label>
             <Input
@@ -203,7 +208,7 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="compensation_details" className="text-sm font-medium">Additional Compensation</label>
+            <label htmlFor="compensation_details" className="text-sm font-medium">Compensation Details</label>
             <Input
               id="compensation_details"
               name="compensation_details"
@@ -211,18 +216,31 @@ const EditCampaignModal = ({ isOpen, onClose, campaign }: EditCampaignModalProps
               onChange={handleChange}
             />
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div className="flex justify-end gap-3 mt-8">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Save Changes
+            <Button
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 
