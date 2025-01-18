@@ -13,9 +13,6 @@ export const createCheckoutSession = async ({ returnUrl }: CreateCheckoutOptions
 
   const { data, error } = await supabase.functions.invoke('create-checkout', {
     body: { returnUrl },
-    headers: {
-      Authorization: `Bearer ${session.access_token}`,
-    },
   });
 
   if (error) {
@@ -23,7 +20,7 @@ export const createCheckoutSession = async ({ returnUrl }: CreateCheckoutOptions
     if (error.message.includes("Already subscribed")) {
       throw new Error("You are already subscribed to Nino Pro");
     }
-    throw new Error(error.message);
+    throw new Error(error.message || 'Failed to create checkout session');
   }
 
   if (!data?.url) {

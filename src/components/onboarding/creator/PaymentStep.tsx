@@ -30,11 +30,12 @@ const PaymentStep = () => {
       const checkoutUrl = await createCheckoutSession({
         returnUrl: `${window.location.origin}/creator/welcome`,
       });
-      
+
       if (!checkoutUrl) {
         throw new Error("No checkout URL received");
       }
 
+      // Redirect to Stripe checkout
       window.location.href = checkoutUrl;
     } catch (error) {
       console.error('Subscription error:', error);
