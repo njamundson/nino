@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -18,15 +18,35 @@ const queryClient = new QueryClient();
 const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-      if (event === 'SIGNED_OUT') {
+    // Check initial session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.log('No active session found during initialization');
         navigate('/');
+      }
+      setIsInitialized(true);
+    };
+
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event);
+      
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
         toast({
           title: "Session ended",
           description: "Please sign in again to continue.",
         });
+        navigate('/');
+      } else if (event === 'SIGNED_IN') {
+        console.log('User signed in');
+        // Don't navigate here - let the protected routes handle the navigation
       }
     });
 
@@ -34,6 +54,11 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
+
+  // Show nothing until we've checked the session
+  if (!isInitialized) {
+    return null;
+  }
 
   return <>{children}</>;
 };
