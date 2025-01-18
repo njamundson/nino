@@ -2,37 +2,17 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/hooks/useSubscription";
 import { CreditCard, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { createCheckoutSession } from "@/utils/stripe";
 import { useToast } from "@/hooks/use-toast";
 
 const SubscriptionSettings = () => {
   const { data: subscriptionData, isLoading } = useSubscription();
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleManageSubscription = async () => {
-    try {
-      if (!subscriptionData?.subscribed) {
-        const checkoutUrl = await createCheckoutSession({
-          returnUrl: `${window.location.origin}/settings`,
-        });
-        window.location.href = checkoutUrl;
-      } else {
-        // TODO: Implement customer portal for subscription management
-        toast({
-          title: "Coming Soon",
-          description: "Subscription management will be available soon.",
-        });
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to manage subscription. Please try again.",
-      });
-    }
+    toast({
+      title: "Coming Soon",
+      description: "Subscription management will be available soon.",
+    });
   };
 
   if (isLoading) {
