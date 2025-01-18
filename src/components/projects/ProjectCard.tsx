@@ -28,6 +28,7 @@ interface Opportunity {
   compensation_details: string | null;
   deliverables: string[] | null;
   brand: Brand;
+  image_url: string | null;
 }
 
 interface ProjectCardProps {
@@ -63,7 +64,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
         onClick={() => setShowModal(true)}
       >
         <img
-          src="/placeholder.svg"
+          src={opportunity.image_url || "/placeholder.svg"}
           alt={opportunity.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
