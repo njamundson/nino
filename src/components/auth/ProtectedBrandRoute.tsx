@@ -37,17 +37,18 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         }
 
         console.log("Checking brand profile for user:", userId);
-        const { data, error: brandError } = await supabase
+        const { data: brands, error: brandError } = await supabase
           .from('brands')
           .select()
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .limit(1);
 
         if (brandError) {
           console.error("Error checking brand profile:", brandError);
           throw brandError;
         }
 
-        if (!data || data.length === 0) {
+        if (!brands || brands.length === 0) {
           console.log("No brand profile found");
           toast({
             title: "Access denied",
@@ -58,7 +59,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        console.log("Brand profile found:", data[0]);
+        console.log("Brand profile found:", brands[0]);
         if (mounted) {
           setIsLoading(false);
         }
