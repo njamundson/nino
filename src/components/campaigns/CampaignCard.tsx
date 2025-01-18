@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Pencil, Trash2, ChevronDown, ChevronUp, Eye, MessageSquare, CheckSquare, XSquare } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
+import { AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface CampaignCardProps {
   campaign: any;
@@ -17,6 +19,7 @@ interface CampaignCardProps {
 
 const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateApplicationStatus }: CampaignCardProps) => {
   const [showApplications, setShowApplications] = useState(false);
+  const navigate = useNavigate();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -27,6 +30,18 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
       default:
         return 'bg-yellow-100 text-yellow-800';
     }
+  };
+
+  const handleMessageCreator = (userId: string) => {
+    navigate(`/brand/messages?userId=${userId}`);
+  };
+
+  const handleViewProfile = (creatorId: string) => {
+    navigate(`/brand/creators/${creatorId}`);
+  };
+
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
   return (
@@ -110,6 +125,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
                 )}
               </div>
             </div>
+
           </div>
 
           <div className="flex gap-2 ml-6">
@@ -157,11 +173,17 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
                     className="p-4 rounded-lg bg-gray-50 flex items-start justify-between"
                   >
                     <div className="flex items-start gap-4">
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="h-12 w-12 rounded-full border-2 border-white shadow-sm">
                         <AvatarImage
                           src={application.creator?.profile_image_url || "/placeholder.svg"}
-                          alt={application.creator?.profile?.first_name || "Creator"}
+                          alt={`${application.creator?.profile?.first_name || ''} ${application.creator?.profile?.last_name || ''}`}
                         />
+                        <AvatarFallback className="bg-gray-100 text-gray-600">
+                          {getInitials(
+                            application.creator?.profile?.first_name || '',
+                            application.creator?.profile?.last_name || ''
+                          )}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
                         <h4 className="font-medium text-gray-900">
@@ -170,9 +192,29 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
                         <p className="text-sm text-gray-600 mt-1">
                           {application.cover_letter}
                         </p>
+                        <div className="flex gap-2 mt-3">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleViewProfile(application.creator?.id)}
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View Profile
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleMessageCreator(application.creator?.user_id)}
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            <MessageSquare className="h-4 w-4 mr-1" />
+                            Message
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col items-end gap-2">
                       <Badge className={getStatusColor(application.status)}>
                         {application.status}
                       </Badge>
@@ -181,17 +223,25 @@ const CampaignCard = ({ campaign, onEdit, onDelete, applications = [], onUpdateA
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => onUpdateApplicationStatus(application.id, 'accepted')}
+                            onClick={() => {
+                              onUpdateApplicationStatus(application.id, 'accepted');
+                              toast.success("Application accepted successfully");
+                            }}
                             className="text-green-600 hover:text-green-700 hover:bg-green-50"
                           >
+                            <CheckSquare className="h-4 w-4 mr-1" />
                             Accept
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => onUpdateApplicationStatus(application.id, 'rejected')}
+                            onClick={() => {
+                              onUpdateApplicationStatus(application.id, 'rejected');
+                              toast.error("Application rejected");
+                            }}
                             className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
+                            <XSquare className="h-4 w-4 mr-1" />
                             Reject
                           </Button>
                         </div>
