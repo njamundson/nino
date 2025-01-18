@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ImagePlus, Loader2 } from "lucide-react";
 import BasicInfo from "./steps/BasicInfo";
 import Requirements from "./steps/Requirements";
 import Compensation from "./steps/Compensation";
@@ -39,7 +36,6 @@ const steps: Step[] = [
 const CampaignForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -53,48 +49,10 @@ const CampaignForm = () => {
     deliverables: [] as string[],
     paymentDetails: "",
     compensationDetails: "",
-    imageUrl: "",
   });
 
   const CurrentStepComponent = steps[currentStep].component;
   const progress = ((currentStep + 1) / steps.length) * 100;
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setIsUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${crypto.randomUUID()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('campaign-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('campaign-images')
-        .getPublicUrl(filePath);
-
-      setFormData(prev => ({ ...prev, imageUrl: publicUrl }));
-      
-      toast({
-        title: "Success",
-        description: "Image uploaded successfully",
-      });
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast({
-        title: "Error",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -109,16 +67,8 @@ const CampaignForm = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.imageUrl) {
-      toast({
-        title: "Required Field",
-        description: "Please upload an image for your campaign",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
+      // Get the current user's brand ID
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -130,6 +80,7 @@ const CampaignForm = () => {
 
       if (!brand) throw new Error("Brand not found");
 
+      // Create the campaign
       const { error: insertError } = await supabase
         .from('opportunities')
         .insert({
@@ -143,13 +94,13 @@ const CampaignForm = () => {
           deliverables: formData.deliverables,
           payment_details: formData.paymentDetails,
           compensation_details: formData.compensationDetails,
-          image_url: formData.imageUrl,
         });
 
       if (insertError) throw insertError;
 
       setShowSuccessModal(true);
       
+      // After successful creation and modal is closed, redirect to My Campaigns
       setTimeout(() => {
         navigate('/brand/campaigns');
       }, 2000);
@@ -177,70 +128,11 @@ const CampaignForm = () => {
 
       <Progress value={progress} className="h-1 bg-gray-100" />
 
-      <div className="space-y-8">
-        <div className="space-y-4">
-          <Label htmlFor="campaign-image" className="text-base">Campaign Image</Label>
-          <div className="flex items-start space-x-4">
-            {formData.imageUrl ? (
-              <div className="relative w-40 h-40 rounded-lg overflow-hidden">
-                <img 
-                  src={formData.imageUrl} 
-                  alt="Campaign preview" 
-                  className="w-full h-full object-cover"
-                />
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className="absolute bottom-2 right-2"
-                  onClick={() => setFormData(prev => ({ ...prev, imageUrl: "" }))}
-                >
-                  Change
-                </Button>
-              </div>
-            ) : (
-              <Label
-                htmlFor="campaign-image"
-                className="flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 cursor-pointer transition-colors"
-              >
-                {isUploading ? (
-                  <div className="flex flex-col items-center space-y-2">
-                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-                    <span className="text-sm text-gray-500">Uploading...</span>
-                  </div>
-                ) : (
-                  <>
-                    <ImagePlus className="w-8 h-8 text-gray-400" />
-                    <span className="mt-2 text-sm text-gray-500">Upload image</span>
-                  </>
-                )}
-              </Label>
-            )}
-            <Input
-              id="campaign-image"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageUpload}
-              disabled={isUploading}
-            />
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium text-gray-700">Campaign Image Requirements</p>
-              <ul className="text-sm text-gray-500 list-disc list-inside">
-                <li>Minimum dimensions: 800x600 pixels</li>
-                <li>Maximum file size: 5MB</li>
-                <li>Supported formats: JPG, PNG</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="min-h-[400px] py-4">
-          <CurrentStepComponent
-            formData={formData}
-            setFormData={setFormData}
-          />
-        </div>
+      <div className="min-h-[400px] py-4">
+        <CurrentStepComponent
+          formData={formData}
+          setFormData={setFormData}
+        />
       </div>
 
       <div className="flex justify-between pt-6 border-t border-gray-100">
