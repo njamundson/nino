@@ -40,11 +40,11 @@ const CreatorGrid = ({ selectedSpecialties }: CreatorGridProps) => {
 
       return data?.map(creator => ({
         ...creator,
-        firstName: creator.profiles?.first_name || '',
-        lastName: creator.profiles?.last_name || '',
+        firstName: creator.profiles?.[0]?.first_name || '',
+        lastName: creator.profiles?.[0]?.last_name || '',
         profile: {
-          first_name: creator.profiles?.first_name || '',
-          last_name: creator.profiles?.last_name || ''
+          first_name: creator.profiles?.[0]?.first_name || '',
+          last_name: creator.profiles?.[0]?.last_name || ''
         },
         paymentDetails: '', // Adding the required field with a default empty string
         creatorType: '', // Adding optional field
