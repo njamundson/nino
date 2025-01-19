@@ -4,19 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useApplications = () => {
   return useQuery({
-    queryKey: ['received-applications'],
+    queryKey: ['applications'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: brand } = await supabase
-        .from('brands')
+      // First get the creator profile for the current user
+      const { data: creator } = await supabase
+        .from('creators')
         .select('id')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (!brand) throw new Error("Brand profile not found");
-
+      // Then get both received applications (for brands) and submitted applications (for creators)
       const { data, error } = await supabase
         .from('applications')
         .select(`
@@ -30,7 +30,8 @@ export const useApplications = () => {
             compensation_details,
             brand:brands (
               company_name,
-              brand_type
+              brand_type,
+              location
             )
           ),
           creator:creators (
@@ -42,7 +43,11 @@ export const useApplications = () => {
             user_id
           )
         `)
-        .eq('opportunity.brand_id', brand.id);
+        .or(
+          creator ? 
+          `creator_id.eq.${creator.id}` : 
+          'creator_id.is.null'
+        );
 
       if (error) throw error;
 
