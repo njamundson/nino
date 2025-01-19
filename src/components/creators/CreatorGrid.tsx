@@ -29,8 +29,12 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
           )
         `);
 
+      // Only apply specialty filter if specialties are selected
       if (selectedSpecialties.length > 0) {
-        query = query.contains('specialties', selectedSpecialties);
+        // Use && operator to ensure all selected specialties are present
+        selectedSpecialties.forEach(specialty => {
+          query = query.contains('specialties', [specialty]);
+        });
       }
 
       const { data, error } = await query;
@@ -61,7 +65,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         website: creator.website || '',
         location: creator.location || '',
         profileImage: creator.profile_image_url || '/placeholder.svg',
-        creatorType: creator.creator_type || '', // Added this line to include creatorType
+        creatorType: creator.creator_type || '',
         profile: {
           first_name: creator.profiles?.first_name || '',
           last_name: creator.profiles?.last_name || ''
@@ -88,7 +92,9 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
   if (!mappedCreators.length) {
     return (
       <div className="text-center text-nino-gray">
-        No creators found.
+        {selectedSpecialties.length > 0 
+          ? "No creators found with the selected specialties."
+          : "No creators found."}
       </div>
     );
   }

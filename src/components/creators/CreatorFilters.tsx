@@ -7,12 +7,13 @@ interface CreatorFiltersProps {
 }
 
 const CreatorFilters = ({ selectedSpecialties, onSpecialtyChange }: CreatorFiltersProps) => {
+  // Updated to match the specialties in the database
   const specialties = [
-    "UGC",
-    "Videography",
-    "Photography",
+    "UGC Creator",
+    "Videographer",
+    "Photographer",
     "Model/Talent",
-    "Public Relations"
+    "Public Relations/Writer"
   ];
 
   return (
