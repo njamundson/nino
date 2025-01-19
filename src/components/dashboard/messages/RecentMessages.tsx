@@ -3,8 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 const RecentMessages = () => {
+  const navigate = useNavigate();
+  
   const { data: recentMessages } = useQuery({
     queryKey: ['recent-messages'],
     queryFn: async () => {
@@ -40,7 +43,10 @@ const RecentMessages = () => {
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-nino-text">Recent Messages</h3>
-          <button className="p-2 hover:bg-nino-bg rounded-full transition-colors">
+          <button 
+            onClick={() => navigate('/brand/messages')}
+            className="p-2 hover:bg-nino-bg rounded-full transition-colors"
+          >
             <MessageSquare className="w-5 h-5 text-nino-primary" />
           </button>
         </div>
