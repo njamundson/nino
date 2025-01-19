@@ -55,6 +55,7 @@ const ProfileSettings = () => {
       if (error) throw error;
       
       if (brand) {
+        console.log("Fetched brand data:", brand);
         setBrandData({
           company_name: brand.company_name || "",
           brand_type: brand.brand_type || "hotel",

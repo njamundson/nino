@@ -45,31 +45,43 @@ export const useBrandOnboarding = () => {
           .single();
 
         if (existingBrand) {
-          // If brand exists, just move to the next step
-          setCurrentStep('details');
-          return;
+          // If brand exists, update it
+          const { error: updateError } = await supabase
+            .from('brands')
+            .update({
+              company_name: brandData.brandName,
+              description: brandData.brandBio,
+              website: brandData.website,
+              instagram: brandData.instagram,
+              location: brandData.homeLocation,
+              brand_type: brandData.brandType,
+              profile_image_url: profileImage,
+            })
+            .eq('id', existingBrand.id);
+
+          if (updateError) throw updateError;
+        } else {
+          // Create new brand profile if it doesn't exist
+          const { error: brandError } = await supabase
+            .from('brands')
+            .insert({
+              user_id: user.id,
+              company_name: brandData.brandName,
+              description: brandData.brandBio,
+              website: brandData.website,
+              instagram: brandData.instagram,
+              location: brandData.homeLocation,
+              brand_type: brandData.brandType,
+              profile_image_url: profileImage,
+            });
+
+          if (brandError) throw brandError;
         }
 
-        // Create the brand profile if it doesn't exist
-        const { error: brandError } = await supabase.from('brands').insert({
-          user_id: user.id,
-          company_name: brandData.brandName,
-          description: brandData.brandBio,
-          website: brandData.website,
-          instagram: brandData.instagram,
-          location: brandData.location,
-          brand_type: brandData.brandType,
+        console.log("Brand data saved successfully:", {
+          ...brandData,
+          profileImage,
         });
-
-        if (brandError) {
-          console.error("Error creating brand:", brandError);
-          toast({
-            title: "Error",
-            description: "Failed to create brand profile. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
       } catch (error) {
         console.error("Error in brand creation:", error);
         toast({
