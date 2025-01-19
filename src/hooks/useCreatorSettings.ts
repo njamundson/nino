@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const useCreatorSettings = () => {
   const { toast } = useToast();
@@ -99,7 +99,7 @@ export const useCreatorSettings = () => {
 
       if (profileError) throw profileError;
 
-      // Get creator id first
+      // Get creator record
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id')
@@ -130,7 +130,7 @@ export const useCreatorSettings = () => {
         description: "Profile updated successfully",
       });
     } catch (error) {
-      console.error('Error saving creator data:', error);
+      console.error('Error in handleSave:', error);
       toast({
         title: "Error",
         description: "Failed to save changes. Please try again.",
