@@ -85,7 +85,7 @@ const ApplicationDetailsModal = ({ isOpen, onClose, application }: ApplicationDe
           <div className="mt-4">
             <Badge 
               variant={application.status === 'pending' ? 'secondary' : 
-                      application.status === 'accepted' ? 'success' : 'destructive'}
+                      application.status === 'accepted' ? 'default' : 'destructive'}
               className="px-3 py-1"
             >
               {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
