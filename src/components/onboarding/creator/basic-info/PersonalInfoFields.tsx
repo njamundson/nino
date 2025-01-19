@@ -18,12 +18,17 @@ const PersonalInfoFields = ({
   onUpdateField,
 }: PersonalInfoFieldsProps) => {
   const handleFullNameChange = (value: string) => {
-    const names = value.split(/\s+/);
-    const firstNameValue = names[0] || '';
-    const lastNameValue = names.slice(1).join(' ');
+    const firstSpaceIndex = value.indexOf(' ');
     
-    onUpdateField("firstName", firstNameValue);
-    onUpdateField("lastName", lastNameValue);
+    if (firstSpaceIndex === -1) {
+      // No space found, entire value is first name
+      onUpdateField("firstName", value);
+      onUpdateField("lastName", "");
+    } else {
+      // Split at first space
+      onUpdateField("firstName", value.substring(0, firstSpaceIndex));
+      onUpdateField("lastName", value.substring(firstSpaceIndex + 1));
+    }
   };
 
   return (
