@@ -18,29 +18,27 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     ? `${creatorProfile.first_name} ${creatorProfile.last_name}`
     : 'Anonymous Creator';
 
-  console.log('Creator profile data:', {
-    profile: creatorProfile,
-    fullCreator: application.creator
-  }); // Debug log
+  console.log('Application data:', {
+    application,
+    creator: application.creator,
+    profileImageUrl: application.creator?.profile_image_url
+  });
 
   return (
     <div className="p-6 rounded-lg bg-gray-50 flex items-start justify-between gap-6">
       <div className="flex-1 flex items-start gap-6">
         <Avatar className="h-16 w-16 rounded-full border-2 border-white shadow-sm overflow-hidden">
-          {application.creator?.profile_image_url ? (
-            <AvatarImage
-              src={application.creator.profile_image_url}
-              alt={creatorName}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <AvatarFallback className="bg-gray-100 text-gray-600">
-              {getInitials(
-                creatorProfile?.first_name || '',
-                creatorProfile?.last_name || ''
-              )}
-            </AvatarFallback>
-          )}
+          <AvatarImage
+            src={application.creator?.profile_image_url}
+            alt={creatorName}
+            className="h-full w-full object-cover"
+          />
+          <AvatarFallback className="bg-gray-100 text-gray-600">
+            {getInitials(
+              creatorProfile?.first_name || '',
+              creatorProfile?.last_name || ''
+            )}
+          </AvatarFallback>
         </Avatar>
         <div className="space-y-3 flex-1">
           <div>

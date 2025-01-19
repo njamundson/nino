@@ -24,6 +24,12 @@ const CreatorProfileModal = ({
   onUpdateStatus,
   onMessageCreator
 }: CreatorProfileModalProps) => {
+  console.log('Creator data in modal:', {
+    creator,
+    profileImage: creator?.profile_image_url,
+    profile: creator?.profile
+  });
+
   const handleAccept = () => {
     onUpdateStatus('accepted');
     toast.success("Application accepted successfully");
