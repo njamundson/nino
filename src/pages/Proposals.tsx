@@ -35,19 +35,21 @@ const Proposals = () => {
   const rejectedApplications = applications?.filter(app => app.status === 'rejected') || [];
 
   return (
-    <div className="space-y-8">
+    <div className="p-8 max-w-7xl mx-auto">
       <PageHeader 
         title="Proposals" 
         description="Track the status of your project applications and manage brand invitations"
       />
       
-      <ProposalsTabs
-        pendingApplications={pendingApplications}
-        myInvites={myInvites}
-        rejectedApplications={rejectedApplications}
-        isLoading={isLoadingApplications}
-        onUpdateStatus={handleUpdateApplicationStatus}
-      />
+      <div className="mt-8">
+        <ProposalsTabs
+          pendingApplications={pendingApplications}
+          myInvites={myInvites}
+          rejectedApplications={rejectedApplications}
+          isLoading={isLoadingApplications}
+          onUpdateStatus={handleUpdateApplicationStatus}
+        />
+      </div>
     </div>
   );
 };
