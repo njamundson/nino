@@ -6,25 +6,29 @@ interface ProposalActionsProps {
   onUpdateStatus: (status: 'accepted' | 'rejected') => void;
   onViewProposals: () => void;
   opportunityId: string;
+  type: 'proposal' | 'application';
 }
 
 const ProposalActions = ({ 
   status, 
   onUpdateStatus, 
   onViewProposals,
-  opportunityId 
+  opportunityId,
+  type
 }: ProposalActionsProps) => {
   return (
     <div className="flex gap-3">
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-2"
-        onClick={onViewProposals}
-      >
-        <Users className="w-4 h-4" />
-        View Proposals
-      </Button>
+      {type === 'proposal' && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={onViewProposals}
+        >
+          <Users className="w-4 h-4" />
+          View Proposals
+        </Button>
+      )}
       
       <Button
         variant="outline"
