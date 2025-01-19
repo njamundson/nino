@@ -48,12 +48,12 @@ const CreatorProfileModal = ({
           <div className="p-8">
             <DialogHeader>
               <div className="flex flex-col items-center space-y-6">
-                <Avatar className="w-28 h-28 border-4 border-nino-white shadow-lg">
+                <Avatar className="w-40 h-40 border-4 border-nino-white shadow-lg">
                   <AvatarImage 
                     src={creator?.profile_image_url} 
                     alt={`${creator?.profile?.first_name} ${creator?.profile?.last_name}`}
                   />
-                  <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-2xl font-medium">
+                  <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-3xl font-medium">
                     {getInitials(
                       creator?.profile?.first_name || '',
                       creator?.profile?.last_name || ''
