@@ -73,6 +73,7 @@ const PersonalInfoFields = ({
 
       if (error) {
         console.error('Location search error:', error);
+        setSuggestions([]);
         return;
       }
 
@@ -81,9 +82,12 @@ const PersonalInfoFields = ({
           description: result.formatted,
         }));
         setSuggestions(formattedSuggestions);
+      } else {
+        setSuggestions([]);
       }
     } catch (error) {
       console.error('Error searching locations:', error);
+      setSuggestions([]);
     }
   };
 
@@ -149,7 +153,7 @@ const PersonalInfoFields = ({
           } else {
             throw new Error('No location data found');
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Geocoding error:', error);
           toast({
             title: "Error",
@@ -202,27 +206,29 @@ const PersonalInfoFields = ({
                 required
               />
             </PopoverTrigger>
-            <PopoverContent className="p-0" align="start">
-              <Command>
-                <CommandInput placeholder="Search location..." />
-                <CommandEmpty>No location found.</CommandEmpty>
-                <CommandGroup>
-                  {suggestions.map((suggestion, index) => (
-                    <CommandItem
-                      key={index}
-                      onSelect={() => {
-                        onUpdateField("location", suggestion.description);
-                        setLocationInput(suggestion.description);
-                        setOpen(false);
-                      }}
-                    >
-                      <MapPin className="mr-2 h-4 w-4" />
-                      {suggestion.description}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </Command>
-            </PopoverContent>
+            {suggestions.length > 0 && (
+              <PopoverContent className="p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Search location..." />
+                  <CommandEmpty>No location found.</CommandEmpty>
+                  <CommandGroup>
+                    {suggestions.map((suggestion, index) => (
+                      <CommandItem
+                        key={index}
+                        onSelect={() => {
+                          onUpdateField("location", suggestion.description);
+                          setLocationInput(suggestion.description);
+                          setOpen(false);
+                        }}
+                      >
+                        <MapPin className="mr-2 h-4 w-4" />
+                        {suggestion.description}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            )}
           </Popover>
           <Button
             type="button"
