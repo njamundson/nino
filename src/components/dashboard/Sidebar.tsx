@@ -5,7 +5,6 @@ import {
   FileText,
   Calendar,
   MessageSquare,
-  Settings,
   LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -23,7 +22,6 @@ const Sidebar = () => {
     { icon: FileText, label: "Proposals", path: "/creator/proposals" },
     { icon: Calendar, label: "Bookings", path: "/creator/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/creator/messages" },
-    { icon: Settings, label: "Settings", path: "/creator/settings" },
   ];
 
   const handleSignOut = async () => {
