@@ -26,7 +26,7 @@ export const useCreatorSettings = () => {
         return;
       }
 
-      // First get profile data
+      // Get profile data
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -38,7 +38,7 @@ export const useCreatorSettings = () => {
         throw profileError;
       }
 
-      // Then get creator data
+      // Get creator data
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('*')
@@ -50,17 +50,17 @@ export const useCreatorSettings = () => {
         throw creatorError;
       }
 
-      setCreatorData({
-        firstName: profile?.first_name || "",
-        lastName: profile?.last_name || "",
-        bio: creator?.bio || "",
-        location: creator?.location || "",
-        instagram: creator?.instagram || "",
-        website: creator?.website || "",
-        specialties: creator?.specialties || [],
-      });
+      if (creator && profile) {
+        setCreatorData({
+          firstName: profile.first_name || "",
+          lastName: profile.last_name || "",
+          bio: creator.bio || "",
+          location: creator.location || "",
+          instagram: creator.instagram || "",
+          website: creator.website || "",
+          specialties: creator.specialties || [],
+        });
 
-      if (creator?.profile_image_url) {
         setProfileImage(creator.profile_image_url);
       }
 
@@ -102,6 +102,17 @@ export const useCreatorSettings = () => {
 
       if (profileError) throw profileError;
 
+      // Get creator record
+      const { data: creator } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!creator) {
+        throw new Error('Creator profile not found');
+      }
+
       // Update creator
       const { error: creatorError } = await supabase
         .from('creators')
@@ -114,7 +125,7 @@ export const useCreatorSettings = () => {
           profile_image_url: profileImage,
           updated_at: new Date().toISOString(),
         })
-        .eq('user_id', user.id);
+        .eq('id', creator.id);
 
       if (creatorError) throw creatorError;
 
