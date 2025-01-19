@@ -12,11 +12,6 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 interface PersonalInfoFieldsProps {
   firstName: string;
@@ -36,7 +31,6 @@ const PersonalInfoFields = ({
   const { toast } = useToast();
   const [locationInput, setLocationInput] = useState(location);
   const [suggestions, setSuggestions] = useState<Array<{ description: string }>>([]);
-  const [open, setOpen] = useState(false);
   const searchTimeout = useRef<NodeJS.Timeout>();
   
   useEffect(() => {
@@ -81,7 +75,6 @@ const PersonalInfoFields = ({
           description: result.formatted,
         }));
         setSuggestions(formattedSuggestions);
-        setOpen(true);
       } else {
         setSuggestions([]);
       }
@@ -129,25 +122,24 @@ const PersonalInfoFields = ({
             required
           />
           {suggestions.length > 0 && (
-            <div className="absolute w-full z-10 mt-1 bg-white rounded-md shadow-lg">
-              <Command>
-                <CommandGroup>
-                  {suggestions.map((suggestion, index) => (
-                    <CommandItem
-                      key={index}
-                      onSelect={() => {
-                        onUpdateField("location", suggestion.description);
-                        setLocationInput(suggestion.description);
-                        setSuggestions([]);
-                      }}
-                    >
-                      <MapPin className="mr-2 h-4 w-4" />
-                      {suggestion.description}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </Command>
-            </div>
+            <Command className="absolute w-full z-10 mt-1 bg-white rounded-md shadow-lg border border-gray-200">
+              <CommandGroup>
+                {suggestions.map((suggestion, index) => (
+                  <CommandItem
+                    key={index}
+                    onSelect={() => {
+                      onUpdateField("location", suggestion.description);
+                      setLocationInput(suggestion.description);
+                      setSuggestions([]);
+                    }}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    <MapPin className="mr-2 h-4 w-4" />
+                    {suggestion.description}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Command>
           )}
         </div>
       </div>
