@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import CreatorSelectionModal from "./CreatorSelectionModal";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +36,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [loading, setLoading] = useState(true);
   const [creators, setCreators] = useState<any[]>([]);
   const [isBrand, setIsBrand] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
   const fetchCreators = async () => {
@@ -168,16 +169,24 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   return (
     <div className="h-full flex flex-col">
       {isBrand && (
-        <div className="p-4">
+        <div className="p-4 flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+            <Input
+              placeholder="Search conversations..."
+              className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size="icon"
-                className="w-full flex items-center justify-center gap-2"
+                className="shrink-0"
               >
                 <Plus className="h-4 w-4" />
-                <span>New Conversation</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
