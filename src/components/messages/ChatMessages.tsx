@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -29,15 +30,15 @@ interface Message {
 interface ChatMessagesProps {
   messages?: Message[];
   selectedChat: string | null;
-  onEditMessage?: (message: { id: string; content: string }) => void;
 }
 
 const REACTION_EMOJIS = ['❤️', '👍', '😊', '😂', '🎉'];
 
-export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMessagesProps) => {
+export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [typingStatus, setTypingStatus] = useState<boolean>(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -89,9 +90,20 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
           emoji,
         });
 
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error adding reaction",
+          description: "Please try again later",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error adding reaction:', error);
+      toast({
+        title: "Error adding reaction",
+        description: "Please try again later",
+        variant: "destructive",
+      });
     }
   };
 
@@ -103,9 +115,20 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
         .eq('id', messageId)
         .eq('sender_id', currentUserId);
 
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error deleting message",
+          description: "Please try again later",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error deleting message:', error);
+      toast({
+        title: "Error deleting message",
+        description: "Please try again later",
+        variant: "destructive",
+      });
     }
   };
 
