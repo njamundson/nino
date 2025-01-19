@@ -1,10 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
-import CampaignProposalsModal from "./CampaignProposalsModal";
 import ProposalStatusBadge from "./ProposalStatusBadge";
 import ProposalActions from "./ProposalActions";
 import ProposalMetadata from "./ProposalMetadata";
+import InvitationModal from "./modals/InvitationModal";
+import ApplicationDetailsModal from "./modals/ApplicationDetailsModal";
 
 interface ProposalCardProps {
   application: any;
@@ -13,7 +14,7 @@ interface ProposalCardProps {
 }
 
 const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) => {
-  const [showProposals, setShowProposals] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const creatorName = application.creator?.profile?.first_name && application.creator?.profile?.last_name
     ? `${application.creator.profile.first_name} ${application.creator.profile.last_name}`
@@ -27,9 +28,22 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
 
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
 
+  const handleAccept = () => {
+    onUpdateStatus(application.id, 'accepted');
+    setShowDetails(false);
+  };
+
+  const handleDecline = () => {
+    onUpdateStatus(application.id, 'rejected');
+    setShowDetails(false);
+  };
+
   return (
     <>
-      <Card className="p-6 hover:shadow-md transition-shadow duration-200">
+      <Card 
+        className="p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer"
+        onClick={() => setShowDetails(true)}
+      >
         <div className="space-y-6">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
@@ -55,7 +69,7 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
               <h4 className="text-sm font-medium text-gray-700 mb-2">
                 {type === 'proposal' ? 'Invitation Message' : 'Cover Letter'}
               </h4>
-              <p className="text-sm text-gray-600 whitespace-pre-line">
+              <p className="text-sm text-gray-600 line-clamp-3">
                 {application.cover_letter}
               </p>
             </div>
@@ -78,7 +92,7 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
             <ProposalActions
               status={application.status}
               onUpdateStatus={(status) => onUpdateStatus(application.id, status)}
-              onViewProposals={() => setShowProposals(true)}
+              onViewProposals={() => setShowDetails(true)}
               opportunityId={application.opportunity_id}
               type={type}
             />
@@ -86,12 +100,21 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
         </div>
       </Card>
 
-      <CampaignProposalsModal
-        isOpen={showProposals}
-        onOpenChange={setShowProposals}
-        campaignId={application.opportunity_id}
-        campaignTitle={application.opportunity?.title}
-      />
+      {type === 'proposal' ? (
+        <InvitationModal
+          isOpen={showDetails}
+          onClose={() => setShowDetails(false)}
+          opportunity={application.opportunity}
+          onAccept={handleAccept}
+          onDecline={handleDecline}
+        />
+      ) : (
+        <ApplicationDetailsModal
+          isOpen={showDetails}
+          onClose={() => setShowDetails(false)}
+          application={application}
+        />
+      )}
     </>
   );
 };
