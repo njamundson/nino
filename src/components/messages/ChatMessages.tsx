@@ -69,35 +69,32 @@ export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
                 {date}
               </span>
             </div>
-            {dateMessages.map((message) => {
-              const isCurrentUser = message.sender_id !== selectedChat;
-              return (
+            {dateMessages.map((message) => (
+              <div
+                key={message.id}
+                className={cn(
+                  "flex",
+                  message.sender_id === selectedChat ? "justify-start" : "justify-end"
+                )}
+              >
                 <div
-                  key={message.id}
                   className={cn(
-                    "flex",
-                    isCurrentUser ? "justify-end" : "justify-start"
+                    "max-w-[70%] px-4 py-2 rounded-2xl text-sm",
+                    message.sender_id === selectedChat
+                      ? "bg-gray-100 text-gray-900"
+                      : "bg-nino-primary text-white"
                   )}
                 >
-                  <div
-                    className={cn(
-                      "max-w-[70%] px-4 py-2 rounded-2xl text-sm",
-                      isCurrentUser
-                        ? "bg-nino-primary text-white"
-                        : "bg-gray-100 text-gray-900"
-                    )}
-                  >
-                    <p className="leading-relaxed">{message.content}</p>
-                    <p className="text-[10px] mt-1 opacity-70">
-                      {new Date(message.created_at).toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit'
-                      })}
-                    </p>
-                  </div>
+                  <p className="leading-relaxed">{message.content}</p>
+                  <p className="text-[10px] mt-1 opacity-70">
+                    {new Date(message.created_at).toLocaleTimeString([], { 
+                      hour: '2-digit', 
+                      minute: '2-digit'
+                    })}
+                  </p>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         ))}
         <div ref={scrollRef} />
