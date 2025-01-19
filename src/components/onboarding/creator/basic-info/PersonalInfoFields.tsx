@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PersonalInfoFieldsProps {
   firstName: string;
@@ -53,15 +54,21 @@ const PersonalInfoFields = ({
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          const response = await fetch(
-            `https://api.opencagedata.com/geocode/v1/json?q=${position.coords.latitude}+${position.coords.longitude}&key=YOUR_API_KEY&language=en`
-          );
-          const data = await response.json();
+          const { data, error } = await supabase.functions.invoke('geocode', {
+            body: {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            },
+          })
+
+          if (error) throw error;
+
           if (data.results && data.results[0]) {
             const locationString = data.results[0].formatted.split(',').slice(1).join(',').trim();
             onUpdateField("location", locationString);
           }
         } catch (error) {
+          console.error('Geocoding error:', error);
           toast({
             title: "Error",
             description: "Could not fetch location details",
