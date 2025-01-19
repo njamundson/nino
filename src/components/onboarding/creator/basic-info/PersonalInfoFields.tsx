@@ -141,12 +141,15 @@ const PersonalInfoFields = ({
             className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base w-full"
             required
           />
-          {showSuggestions && (
+          {showSuggestions && suggestions && (
             <div className="absolute w-full z-10 mt-1">
               <Command className="w-full bg-white rounded-md shadow-lg border border-gray-200">
-                <CommandInput placeholder="Search locations..." value={locationInput} className="hidden" />
+                <CommandInput 
+                  placeholder="Search locations..." 
+                  value={locationInput} 
+                />
                 <CommandGroup>
-                  {suggestions && suggestions.length > 0 ? (
+                  {suggestions.length > 0 ? (
                     suggestions.map((suggestion, index) => (
                       <CommandItem
                         key={index}
