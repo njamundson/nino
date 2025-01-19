@@ -1,18 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { formatDate } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ChatSearch } from "./chat-list/ChatSearch";
+import { NewChatButton } from "./chat-list/NewChatButton";
+import { ChatItem } from "./chat-list/ChatItem";
+import { EmptyState } from "./chat-list/EmptyState";
 
 interface Message {
   id: string;
@@ -136,7 +129,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   useEffect(() => {
     fetchChats();
-    // Set up real-time subscription for new messages
     const channel = supabase
       .channel('messages')
       .on(
@@ -171,98 +163,24 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     <div className="h-full flex flex-col">
       {isBrand && (
         <div className="p-4 flex items-center gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Search conversations..."
-              className="pl-9"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px]">
-              {creators.map((creator) => (
-                <DropdownMenuItem
-                  key={creator.id}
-                  onClick={() => startNewChat(creator.profile_id)}
-                  className="cursor-pointer"
-                >
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback>
-                        {creator.profiles?.first_name?.[0]}
-                        {creator.profiles?.last_name?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>
-                      {creator.profiles?.first_name} {creator.profiles?.last_name}
-                    </span>
-                  </div>
-                </DropdownMenuItem>
-              ))}
-              {creators.length === 0 && (
-                <DropdownMenuItem disabled>
-                  No creators found
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ChatSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          <NewChatButton creators={creators} onStartChat={startNewChat} />
         </div>
       )}
 
       <div className="flex-1 overflow-y-auto">
-        {Object.entries(chats).map(([userId, messages]) => {
-          const latestMessage = messages[0];
-          const isSelected = selectedUserId === userId;
-
-          return (
-            <div
-              key={userId}
-              className={`p-4 cursor-pointer hover:bg-gray-100 ${
-                isSelected ? "bg-gray-100" : ""
-              }`}
-              onClick={() => onSelectChat(userId)}
-            >
-              <div className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarFallback>
-                    {latestMessage.profiles.first_name?.[0]}
-                    {latestMessage.profiles.last_name?.[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {latestMessage.profiles.first_name} {latestMessage.profiles.last_name}
-                  </p>
-                  <p className="text-sm text-gray-500 truncate">
-                    {latestMessage.content}
-                  </p>
-                </div>
-                <span className="text-xs text-gray-500">
-                  {formatDate(latestMessage.created_at)}
-                </span>
-              </div>
-            </div>
-          );
-        })}
+        {Object.entries(chats).map(([userId, messages]) => (
+          <ChatItem
+            key={userId}
+            userId={userId}
+            message={messages[0]}
+            isSelected={selectedUserId === userId}
+            onClick={() => onSelectChat(userId)}
+          />
+        ))}
 
         {Object.keys(chats).length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            {isBrand 
-              ? "Start a conversation with a creator"
-              : "No messages yet. Brands will contact you here."
-            }
-          </div>
+          <EmptyState isBrand={isBrand} />
         )}
       </div>
     </div>
