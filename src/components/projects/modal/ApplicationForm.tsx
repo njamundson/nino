@@ -1,30 +1,15 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useApplicationSubmit } from "@/hooks/useApplicationSubmit";
+import ApplicationFormHeader from "./ApplicationFormHeader";
 
 export interface ApplicationFormProps {
   opportunity: {
     id: string;
     title: string;
-    description: string;
-    location: string | null;
-    start_date: string | null;
-    end_date: string | null;
-    perks: string[] | null;
-    requirements: string[] | null;
-    payment_details: string | null;
-    compensation_details: string | null;
-    deliverables: string[] | null;
     brand: {
       company_name: string;
-      brand_type: string;
-      location: string | null;
-      description: string;
-      website: string;
-      instagram: string;
     };
   };
   onClose: () => void;
@@ -32,120 +17,22 @@ export interface ApplicationFormProps {
 
 const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
   const [coverLetter, setCoverLetter] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const { isSubmitting, submitApplication } = useApplicationSubmit({
+    opportunityId: opportunity.id,
+    onClose,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to apply",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Get the creator profile for the current user
-      const { data: creatorData, error: creatorError } = await supabase
-        .from('creators')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (creatorError) {
-        toast({
-          title: "Error",
-          description: "Failed to fetch creator profile",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!creatorData) {
-        toast({
-          title: "Error",
-          description: "Could not find your creator profile. Please complete your profile first.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Check if application already exists
-      const { data: existingApplication, error: applicationError } = await supabase
-        .from('applications')
-        .select('id')
-        .eq('opportunity_id', opportunity.id)
-        .eq('creator_id', creatorData.id)
-        .maybeSingle();
-
-      if (applicationError) {
-        toast({
-          title: "Error",
-          description: "Failed to check existing applications",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (existingApplication) {
-        toast({
-          title: "Already Applied",
-          description: "You have already applied to this opportunity",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Submit the application
-      const { error: submitError } = await supabase
-        .from('applications')
-        .insert({
-          opportunity_id: opportunity.id,
-          creator_id: creatorData.id,
-          cover_letter: coverLetter,
-          status: 'pending'
-        });
-
-      if (submitError) {
-        throw submitError;
-      }
-
-      toast({
-        title: "Success",
-        description: "Your application has been submitted successfully!",
-      });
-      
-      // Close the modal and navigate back to projects
-      onClose();
-      navigate("/creator/projects");
-      
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to submit application. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    await submitApplication(coverLetter);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Apply to {opportunity.title}</h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          Tell {opportunity.brand.company_name} why you'd be a great fit for this opportunity.
-        </p>
-      </div>
+      <ApplicationFormHeader 
+        title={opportunity.title}
+        companyName={opportunity.brand.company_name}
+      />
 
       <div className="space-y-2">
         <label htmlFor="coverLetter" className="text-sm font-medium">
