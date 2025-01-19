@@ -39,8 +39,8 @@ export const ChatInput = ({
   };
 
   return (
-    <div className="p-4 border-t bg-white/50">
-      <div className="flex gap-3 items-center">
+    <div className="p-4 border-t bg-white/50 backdrop-blur-lg">
+      <div className="flex gap-3 items-center max-w-4xl mx-auto">
         <input
           type="file"
           id="file-upload"
@@ -51,7 +51,7 @@ export const ChatInput = ({
         <Button
           variant="ghost"
           size="icon"
-          className="text-gray-500"
+          className="text-gray-500 hover:bg-gray-100"
           onClick={() => document.getElementById('file-upload')?.click()}
         >
           <Paperclip className="w-5 h-5" />
@@ -59,7 +59,7 @@ export const ChatInput = ({
         <Button
           variant="ghost"
           size="icon"
-          className={`text-gray-500 ${isRecording ? 'bg-red-50' : ''}`}
+          className={`text-gray-500 hover:bg-gray-100 ${isRecording ? 'bg-red-50' : ''}`}
           onClick={handleVoiceRecord}
         >
           <Mic className="w-5 h-5" />
@@ -67,17 +67,20 @@ export const ChatInput = ({
         <Input
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message..."
-          className="bg-white rounded-full"
+          placeholder="Message"
+          className="bg-gray-100 border-0 rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
               handleSendMessage();
             }
           }}
         />
         <Button
           onClick={handleSendMessage}
-          className="bg-nino-primary hover:bg-nino-primary/90 text-white"
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full"
+          size="icon"
+          disabled={!newMessage.trim()}
         >
           <Send className="w-4 h-4" />
         </Button>

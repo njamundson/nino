@@ -2,6 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDate } from "@/lib/utils";
 import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 
 interface Message {
   id: string;
@@ -48,30 +49,52 @@ export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
     markMessagesAsRead();
   }, [selectedChat, messages]);
 
+  // Group messages by date
+  const groupedMessages = filteredMessages?.reduce((groups: { [key: string]: Message[] }, message) => {
+    const date = new Date(message.created_at).toLocaleDateString();
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(message);
+    return groups;
+  }, {});
+
   return (
-    <ScrollArea className="flex-1 p-4">
-      <div className="space-y-4">
-        {filteredMessages?.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${
-              message.sender_id === selectedChat
-                ? "justify-start"
-                : "justify-end"
-            }`}
-          >
-            <div
-              className={`max-w-[70%] p-4 rounded-2xl animate-fade-in ${
-                message.sender_id === selectedChat
-                  ? "bg-gray-100 text-nino-text"
-                  : "bg-nino-primary text-white"
-              }`}
-            >
-              <p className="text-sm leading-relaxed">{message.content}</p>
-              <p className="text-xs mt-1 opacity-70">
-                {formatDate(message.created_at)}
-              </p>
+    <ScrollArea className="flex-1 px-4">
+      <div className="space-y-6 py-4">
+        {groupedMessages && Object.entries(groupedMessages).map(([date, dateMessages]) => (
+          <div key={date} className="space-y-4">
+            <div className="sticky top-0 z-10 flex justify-center">
+              <span className="bg-gray-100 px-3 py-1 rounded-full text-xs text-gray-500">
+                {date}
+              </span>
             </div>
+            {dateMessages.map((message) => (
+              <div
+                key={message.id}
+                className={cn(
+                  "flex",
+                  message.sender_id === selectedChat ? "justify-start" : "justify-end"
+                )}
+              >
+                <div
+                  className={cn(
+                    "max-w-[70%] px-4 py-2 rounded-2xl text-sm",
+                    message.sender_id === selectedChat
+                      ? "bg-gray-100 text-gray-900"
+                      : "bg-nino-primary text-white"
+                  )}
+                >
+                  <p className="leading-relaxed">{message.content}</p>
+                  <p className="text-[10px] mt-1 opacity-70">
+                    {new Date(message.created_at).toLocaleTimeString([], { 
+                      hour: '2-digit', 
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         ))}
         <div ref={scrollRef} />
