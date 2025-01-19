@@ -6,6 +6,13 @@ import CreatorSelectionModal from "./CreatorSelectionModal";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Plus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Message {
   id: string;
@@ -27,9 +34,34 @@ interface ChatListProps {
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [chats, setChats] = useState<{ [key: string]: Message[] }>({});
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [creators, setCreators] = useState<any[]>([]);
   const [isBrand, setIsBrand] = useState(false);
   const { toast } = useToast();
+
+  const fetchCreators = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('creators')
+        .select(`
+          id,
+          profile_image_url,
+          profiles (
+            first_name,
+            last_name
+          )
+        `);
+
+      if (error) throw error;
+      setCreators(data || []);
+    } catch (error) {
+      console.error('Error fetching creators:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load creators",
+        variant: "destructive",
+      });
+    }
+  };
 
   const fetchChats = async () => {
     try {
@@ -47,7 +79,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
       if (error) throw error;
 
-      // Group messages by conversation partner
       const groupedChats: { [key: string]: Message[] } = {};
       messages?.forEach((message: Message) => {
         const partnerId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
@@ -81,9 +112,20 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         .maybeSingle();
 
       setIsBrand(!!brand);
+      if (!!brand) {
+        fetchCreators();
+      }
     } catch (error) {
       console.error('Error checking brand status:', error);
     }
+  };
+
+  const startNewChat = async (creatorId: string) => {
+    onSelectChat(creatorId);
+    toast({
+      title: "Chat started",
+      description: "You can now send messages to this creator",
+    });
   };
 
   useEffect(() => {
@@ -127,13 +169,44 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     <div className="h-full flex flex-col">
       {isBrand && (
         <div className="p-4">
-          <Button
-            onClick={() => setShowModal(true)}
-            className="w-full"
-            variant="outline"
-          >
-            New Conversation
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span>New Conversation</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[200px]">
+              {creators.map((creator) => (
+                <DropdownMenuItem
+                  key={creator.id}
+                  onClick={() => startNewChat(creator.id)}
+                  className="cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarFallback>
+                        {creator.profiles?.first_name?.[0]}
+                        {creator.profiles?.last_name?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>
+                      {creator.profiles?.first_name} {creator.profiles?.last_name}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+              {creators.length === 0 && (
+                <DropdownMenuItem disabled>
+                  No creators found
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
 
@@ -182,17 +255,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           </div>
         )}
       </div>
-
-      {showModal && (
-        <CreatorSelectionModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onSelect={(creatorId) => {
-            onSelectChat(creatorId);
-            setShowModal(false);
-          }}
-        />
-      )}
     </div>
   );
 };
