@@ -57,7 +57,7 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
         .from('creators')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (creatorError || !creatorData) {
         toast({
@@ -74,7 +74,7 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
         .select('id')
         .eq('opportunity_id', opportunity.id)
         .eq('creator_id', creatorData.id)
-        .single();
+        .maybeSingle();
 
       if (existingApplication) {
         toast({
