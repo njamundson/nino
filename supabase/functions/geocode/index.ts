@@ -14,27 +14,39 @@ serve(async (req) => {
     const { lat, lng } = await req.json()
     const apiKey = Deno.env.get('OPENCAGE_API_KEY')
     
-    console.log('Received coordinates:', { lat, lng })
-    console.log('API Key exists:', !!apiKey)
+    console.log('Request received for coordinates:', { lat, lng })
+    console.log('API Key status:', apiKey ? 'Present' : 'Missing')
 
     if (!apiKey) {
-      throw new Error('OpenCage API key not configured')
+      throw new Error('OpenCage API key not found in environment variables')
+    }
+
+    if (!lat || !lng) {
+      throw new Error('Invalid coordinates provided')
     }
 
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}&language=en`
-    console.log('Fetching from URL:', url)
+    console.log('Making request to OpenCage API')
 
     const response = await fetch(url)
     const data = await response.json()
     
+    console.log('OpenCage API response status:', response.status)
     console.log('OpenCage API response:', data)
 
-    if (data.status?.code === 401) {
-      throw new Error('Invalid API key or API key has expired')
+    if (data.status?.code === 401 || data.status?.code === 403) {
+      console.error('API Key authentication failed:', data.status)
+      throw new Error('OpenCage API key authentication failed')
     }
 
     if (!response.ok) {
+      console.error('OpenCage API error:', data.status)
       throw new Error(`OpenCage API error: ${data.status?.message || response.statusText}`)
+    }
+
+    if (!data.results || data.results.length === 0) {
+      console.warn('No results found for coordinates')
+      throw new Error('No location data found for these coordinates')
     }
 
     return new Response(
@@ -51,7 +63,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        details: error.toString()
+        details: error.toString(),
+        timestamp: new Date().toISOString()
       }),
       { 
         status: 400,

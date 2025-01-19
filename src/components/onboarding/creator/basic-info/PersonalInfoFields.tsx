@@ -28,11 +28,9 @@ const PersonalInfoFields = ({
     let firstNameValue, lastNameValue;
     
     if (firstSpaceIndex === -1) {
-      // No space found, entire value is first name
       firstNameValue = value;
       lastNameValue = '';
     } else {
-      // Split at first space
       firstNameValue = value.substring(0, firstSpaceIndex);
       lastNameValue = value.substring(firstSpaceIndex + 1);
     }
@@ -73,7 +71,14 @@ const PersonalInfoFields = ({
 
           console.log('Geocoding response:', { data, error });
 
-          if (error) throw error;
+          if (error) {
+            console.error('Supabase function error:', error);
+            throw new Error(error.message || 'Failed to fetch location details');
+          }
+
+          if (!data) {
+            throw new Error('No response from geocoding service');
+          }
 
           if (data.results && data.results[0]) {
             const locationString = data.results[0].formatted.split(',').slice(1).join(',').trim();
