@@ -51,37 +51,61 @@ const PersonalInfoFields = ({
       return;
     }
 
+    toast({
+      title: "Getting location",
+      description: "Please wait while we fetch your location...",
+    });
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
+          console.log('Getting coordinates:', {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+
           const { data, error } = await supabase.functions.invoke('geocode', {
             body: {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
             },
-          })
+          });
+
+          console.log('Geocoding response:', { data, error });
 
           if (error) throw error;
 
           if (data.results && data.results[0]) {
             const locationString = data.results[0].formatted.split(',').slice(1).join(',').trim();
             onUpdateField("location", locationString);
+            toast({
+              title: "Success",
+              description: "Location updated successfully",
+            });
+          } else {
+            throw new Error('No location data found');
           }
         } catch (error) {
           console.error('Geocoding error:', error);
           toast({
             title: "Error",
-            description: "Could not fetch location details",
+            description: error.message || "Could not fetch location details",
             variant: "destructive",
           });
         }
       },
-      () => {
+      (error) => {
+        console.error('Geolocation error:', error);
         toast({
           title: "Error",
           description: "Unable to retrieve your location",
           variant: "destructive",
         });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
       }
     );
   };
