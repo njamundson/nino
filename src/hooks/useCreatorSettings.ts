@@ -61,12 +61,6 @@ export const useCreatorSettings = () => {
           specialties: creator.specialties || [],
         });
         setProfileImage(creator.profile_image_url);
-      } else {
-        toast({
-          title: "No Profile Found",
-          description: "Please complete your creator onboarding first",
-          variant: "destructive",
-        });
       }
     } catch (error) {
       console.error('Error in fetchCreatorData:', error);
@@ -84,7 +78,15 @@ export const useCreatorSettings = () => {
     try {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // Update profile
       const { error: profileError } = await supabase
@@ -117,7 +119,7 @@ export const useCreatorSettings = () => {
         description: "Profile updated successfully",
       });
     } catch (error) {
-      console.error('Error updating creator data:', error);
+      console.error('Error saving creator data:', error);
       toast({
         title: "Error",
         description: "Failed to update profile",
