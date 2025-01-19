@@ -31,8 +31,7 @@ const Proposals = () => {
   };
 
   const pendingApplications = applications?.filter(app => app.status === 'pending') || [];
-  const myInvites = applications?.filter(app => app.status === 'invited') || [];
-  const rejectedApplications = applications?.filter(app => app.status === 'rejected') || [];
+  const myApplications = applications?.filter(app => app.status === 'submitted') || [];
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -44,8 +43,7 @@ const Proposals = () => {
       <div className="mt-8">
         <ProposalsTabs
           pendingApplications={pendingApplications}
-          myInvites={myInvites}
-          rejectedApplications={rejectedApplications}
+          myInvites={myApplications}
           isLoading={isLoadingApplications}
           onUpdateStatus={handleUpdateApplicationStatus}
         />

@@ -1,11 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Send, Inbox, XCircle } from "lucide-react";
+import { Send, Inbox } from "lucide-react";
 import ProposalsList from "./ProposalsList";
 
 interface ProposalsTabsProps {
   pendingApplications: any[];
   myInvites: any[];
-  rejectedApplications: any[];
   isLoading: boolean;
   onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
 }
@@ -13,13 +12,12 @@ interface ProposalsTabsProps {
 const ProposalsTabs = ({
   pendingApplications,
   myInvites,
-  rejectedApplications,
   isLoading,
   onUpdateStatus
 }: ProposalsTabsProps) => {
   return (
     <Tabs defaultValue="pending" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 lg:w-[600px] p-1 rounded-full bg-nino-bg">
+      <TabsList className="grid w-full grid-cols-2 lg:w-[400px] p-1 rounded-full bg-nino-bg">
         <TabsTrigger 
           value="pending" 
           className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
@@ -28,18 +26,11 @@ const ProposalsTabs = ({
           Pending Proposals
         </TabsTrigger>
         <TabsTrigger 
-          value="invites" 
+          value="applications" 
           className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
         >
           <Send className="w-4 h-4" />
-          My Invites
-        </TabsTrigger>
-        <TabsTrigger 
-          value="rejected" 
-          className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
-        >
-          <XCircle className="w-4 h-4" />
-          Rejected
+          My Applications
         </TabsTrigger>
       </TabsList>
       
@@ -51,17 +42,9 @@ const ProposalsTabs = ({
         />
       </TabsContent>
       
-      <TabsContent value="invites" className="mt-6">
+      <TabsContent value="applications" className="mt-6">
         <ProposalsList
           applications={myInvites}
-          isLoading={isLoading}
-          onUpdateStatus={onUpdateStatus}
-        />
-      </TabsContent>
-
-      <TabsContent value="rejected" className="mt-6">
-        <ProposalsList
-          applications={rejectedApplications}
           isLoading={isLoading}
           onUpdateStatus={onUpdateStatus}
         />
