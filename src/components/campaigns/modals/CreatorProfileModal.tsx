@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CheckSquare, XSquare, MessageSquare, Instagram, Globe } from "lucide-react";
+import { MessageSquare, Instagram, Globe, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 interface CreatorProfileModalProps {
@@ -43,12 +43,12 @@ const CreatorProfileModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-nino-bg rounded-3xl">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-nino-bg">
         <div className="relative">
           <div className="p-8">
             <DialogHeader>
               <div className="flex flex-col items-center space-y-6">
-                <Avatar className="w-28 h-28 border-4 border-white shadow-lg">
+                <Avatar className="w-28 h-28 border-4 border-nino-white shadow-lg">
                   <AvatarImage 
                     src={creator?.profile_image_url} 
                     alt={`${creator?.profile?.first_name} ${creator?.profile?.last_name}`}
@@ -65,7 +65,7 @@ const CreatorProfileModal = ({
                     {creator?.profile?.first_name} {creator?.profile?.last_name}
                   </h2>
                   {creator?.location && (
-                    <p className="text-nino-gray text-sm">📍 {creator.location}</p>
+                    <p className="text-nino-gray">📍 {creator.location}</p>
                   )}
                 </div>
               </div>
@@ -74,63 +74,59 @@ const CreatorProfileModal = ({
             <div className="mt-8 space-y-6">
               {/* Social Links */}
               <div className="flex justify-center gap-4">
+                <Button
+                  onClick={onMessageCreator}
+                  variant="outline"
+                  className="bg-nino-white hover:bg-nino-primary/5 border-nino-primary/20 text-nino-primary hover:text-nino-primary space-x-2"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Message</span>
+                </Button>
                 {creator?.instagram && (
-                  <a
-                    href={`https://instagram.com/${creator.instagram}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-5 py-2.5 rounded-2xl bg-gradient-to-r from-nino-primary/90 to-nino-primary text-white hover:opacity-90 transition-all duration-300 shadow-sm hover:shadow-md"
+                  <Button
+                    variant="outline"
+                    className="bg-nino-white hover:bg-nino-primary/5 border-nino-primary/20 text-nino-primary hover:text-nino-primary space-x-2"
+                    onClick={() => window.open(`https://instagram.com/${creator.instagram}`, '_blank')}
                   >
-                    <Instagram className="w-5 h-5 mr-2" />
-                    Instagram
-                  </a>
+                    <Instagram className="w-4 h-4" />
+                    <span>Instagram</span>
+                  </Button>
                 )}
                 {creator?.website && (
-                  <a
-                    href={creator.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-5 py-2.5 rounded-2xl bg-nino-text text-white hover:bg-nino-text/90 transition-all duration-300 shadow-sm hover:shadow-md"
+                  <Button
+                    variant="outline"
+                    className="bg-nino-white hover:bg-nino-primary/5 border-nino-primary/20 text-nino-primary hover:text-nino-primary space-x-2"
+                    onClick={() => window.open(creator.website, '_blank')}
                   >
-                    <Globe className="w-5 h-5 mr-2" />
-                    Website
-                  </a>
+                    <Globe className="w-4 h-4" />
+                    <span>Website</span>
+                  </Button>
                 )}
               </div>
 
               {/* Application Message */}
-              <div className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl border border-nino-primary/10">
+              <div className="bg-nino-white rounded-xl p-6 shadow-sm border border-nino-primary/10">
                 <h3 className="font-medium text-nino-text mb-3">Application Message</h3>
                 <p className="text-nino-gray leading-relaxed">{coverLetter}</p>
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-4 pt-4">
+              <div className="grid grid-cols-2 gap-4 pt-4">
                 <Button
-                  onClick={onMessageCreator}
-                  className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                  onClick={handleAccept}
+                  className="bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-xl"
                 >
-                  <MessageSquare className="w-5 h-5 mr-2" />
-                  Begin Chat
+                  <CheckCircle2 className="w-5 h-5 mr-2" />
+                  Accept
                 </Button>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    onClick={handleAccept}
-                    className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
-                  >
-                    <CheckSquare className="w-5 h-5 mr-2" />
-                    Accept
-                  </Button>
-                  <Button
-                    onClick={handleReject}
-                    variant="outline"
-                    className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
-                  >
-                    <XSquare className="w-5 h-5 mr-2" />
-                    Reject
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleReject}
+                  variant="outline"
+                  className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-xl"
+                >
+                  <XCircle className="w-5 h-5 mr-2" />
+                  Reject
+                </Button>
               </div>
             </div>
           </div>
