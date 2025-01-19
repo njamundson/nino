@@ -145,7 +145,7 @@ const ProfileSettings = () => {
   };
 
   return (
-    <Card className="p-6 bg-white/50 backdrop-blur-xl border shadow-sm space-y-8">
+    <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm space-y-8">
       <div className="space-y-6">
         <ProfileImageSection 
           profileImage={profileImage} 
