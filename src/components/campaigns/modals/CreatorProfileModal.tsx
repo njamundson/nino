@@ -3,8 +3,6 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Globe, Instagram, MessageSquare } from "lucide-react";
-import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface CreatorProfileModalProps {
@@ -22,7 +20,6 @@ const CreatorProfileModal = ({
   creator, 
   coverLetter,
   onUpdateStatus,
-  onMessageCreator
 }: CreatorProfileModalProps) => {
   console.log('Creator data in modal:', {
     creator,
@@ -32,13 +29,11 @@ const CreatorProfileModal = ({
 
   const handleAccept = () => {
     onUpdateStatus('accepted');
-    toast.success("Application accepted successfully");
     onClose();
   };
 
   const handleReject = () => {
     onUpdateStatus('rejected');
-    toast.error("Application rejected");
     onClose();
   };
 
@@ -46,96 +41,98 @@ const CreatorProfileModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl p-0 rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm border-0 shadow-xl">
-        <div className="flex h-[600px]">
-          {/* Left side - Profile Photo */}
-          <div className="w-1/2 relative bg-[#F1F0FB]">
-            <div className="w-full h-full flex items-center justify-center p-8">
-              <Avatar className="w-full h-full rounded-2xl shadow-lg">
-                <AvatarImage 
-                  src={creator?.profile_image_url} 
-                  alt={fullName}
-                  className="object-cover rounded-2xl"
-                />
-                <AvatarFallback className="text-6xl bg-[#9b87f5] text-white rounded-2xl">
-                  {creator?.profile?.first_name?.[0]}{creator?.profile?.last_name?.[0]}
-                </AvatarFallback>
-              </Avatar>
-            </div>
+      <DialogContent className="max-w-4xl p-0 rounded-2xl overflow-hidden bg-white">
+        <div className="flex flex-col">
+          {/* Header */}
+          <div className="p-6 border-b">
+            <h1 className="text-2xl font-semibold">Project Application</h1>
           </div>
 
-          {/* Right side - Information */}
-          <div className="w-1/2 p-8 flex flex-col">
-            {/* Header Section */}
-            <div className="mb-6">
-              <h2 className="text-3xl font-semibold text-[#1A1F2C] mb-2">
-                {fullName}
-              </h2>
-              {creator?.location && (
-                <p className="text-gray-600 flex items-center gap-1">
-                  <span>📍</span> {creator.location}
-                </p>
-              )}
-            </div>
-
-            {/* Social Links */}
-            <div className="flex gap-3 mb-6">
-              {creator?.instagram && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full hover:bg-[#F1F0FB]"
-                  onClick={() => window.open(`https://instagram.com/${creator.instagram}`, '_blank')}
-                >
-                  <Instagram className="w-5 h-5 text-[#9b87f5]" />
-                </Button>
-              )}
-              {creator?.website && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full hover:bg-[#F1F0FB]"
-                  onClick={() => window.open(creator.website, '_blank')}
-                >
-                  <Globe className="w-5 h-5 text-[#9b87f5]" />
-                </Button>
-              )}
-              {onMessageCreator && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full hover:bg-[#F1F0FB]"
-                  onClick={() => onMessageCreator(creator.user_id)}
-                >
-                  <MessageSquare className="w-5 h-5 text-[#9b87f5]" />
-                </Button>
-              )}
-            </div>
-
-            {/* Proposal Section */}
-            <div className="flex-1 overflow-y-auto">
-              <h3 className="text-lg font-semibold text-[#1A1F2C] mb-3">Proposal</h3>
-              <div className="bg-[#F1F0FB] p-4 rounded-xl text-gray-700 leading-relaxed">
-                {coverLetter}
+          {/* Content */}
+          <div className="flex">
+            {/* Left side - Profile Photo */}
+            <div className="w-1/2 relative">
+              <div className="w-full aspect-square">
+                <Avatar className="w-full h-full rounded-none">
+                  <AvatarImage 
+                    src={creator?.profile_image_url} 
+                    alt={fullName}
+                    className="object-cover w-full h-full"
+                  />
+                  <AvatarFallback className="text-6xl bg-gray-100 text-gray-400 rounded-none">
+                    {creator?.profile?.first_name?.[0]}{creator?.profile?.last_name?.[0]}
+                  </AvatarFallback>
+                </Avatar>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="pt-6 space-y-3 mt-auto">
-              <Button
-                onClick={handleAccept}
-                className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white"
-              >
-                Accept Application
-              </Button>
-              <Button
-                onClick={handleReject}
-                variant="outline"
-                className="w-full border-[#D946EF] text-[#D946EF] hover:bg-[#FFDEE2]"
-              >
-                Reject Application
-              </Button>
+            {/* Right side - Information */}
+            <div className="w-1/2 bg-[#2A2A2A] text-white">
+              <div className="p-6 space-y-6">
+                {/* Brand Info */}
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-semibold">{fullName}</h2>
+                  <p className="text-gray-400">
+                    {new Date().toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                  {creator?.location && (
+                    <p className="text-gray-400">{creator.location}</p>
+                  )}
+                </div>
+
+                {/* Project Description */}
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">Project description:</h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {coverLetter}
+                  </p>
+                </div>
+
+                {/* Payment Details */}
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium mb-1">Payment:</h3>
+                    <p className="text-gray-300">$0.00</p>
+                  </div>
+
+                  <div>
+                    <h3 className="font-medium mb-1">Compensation:</h3>
+                    <p className="text-gray-300">{creator?.compensation || 'Not specified'}</p>
+                  </div>
+
+                  <div>
+                    <h3 className="font-medium mb-1">Project Deliverables:</h3>
+                    <p className="text-gray-300">{creator?.deliverables || 'Not specified'}</p>
+                  </div>
+
+                  <div>
+                    <h3 className="font-medium mb-1">Requirements:</h3>
+                    <p className="text-gray-300">{creator?.requirements || 'Not specified'}</p>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Footer with Actions */}
+          <div className="p-6 border-t flex justify-between items-center">
+            <Button
+              onClick={handleReject}
+              variant="outline"
+              className="border-red-500 text-red-500 hover:bg-red-50"
+            >
+              Delete Proposal
+            </Button>
+            <Button
+              onClick={handleAccept}
+              className="bg-[#4CAF50] hover:bg-[#4CAF50]/90 text-white"
+            >
+              Accept Proposal
+            </Button>
           </div>
         </div>
       </DialogContent>
