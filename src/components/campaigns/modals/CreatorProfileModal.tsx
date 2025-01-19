@@ -4,9 +4,10 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageSquare, Instagram, Globe, CheckCircle2, XCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { CheckSquare, Globe, Instagram, MessageSquare, X, XSquare } from "lucide-react";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ interface CreatorProfileModalProps {
   creator: any;
   coverLetter: string;
   onUpdateStatus: (status: 'accepted' | 'rejected') => void;
-  onMessageCreator: () => void;
+  onMessageCreator: (userId: string) => void;
 }
 
 const CreatorProfileModal = ({ 
@@ -37,97 +38,125 @@ const CreatorProfileModal = ({
     onClose();
   };
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
-  };
+  const fullName = `${creator?.profile?.first_name || ''} ${creator?.profile?.last_name || ''}`.trim();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-nino-bg">
-        <div className="relative">
-          <div className="p-8">
-            <DialogHeader>
-              <div className="flex flex-col items-center space-y-6">
-                <Avatar className="w-40 h-40 border-4 border-nino-white shadow-lg">
-                  <AvatarImage 
-                    src={creator?.profile_image_url} 
-                    alt={`${creator?.profile?.first_name} ${creator?.profile?.last_name}`}
-                  />
-                  <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-3xl font-medium">
-                    {getInitials(
-                      creator?.profile?.first_name || '',
-                      creator?.profile?.last_name || ''
-                    )}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-center space-y-2">
-                  <h2 className="text-2xl font-semibold text-nino-text">
-                    {creator?.profile?.first_name} {creator?.profile?.last_name}
-                  </h2>
-                  {creator?.location && (
-                    <p className="text-nino-gray">📍 {creator.location}</p>
-                  )}
-                </div>
-              </div>
-            </DialogHeader>
+      <DialogContent className="max-w-2xl p-0 rounded-2xl overflow-hidden bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+        <DialogHeader className="p-6 relative bg-gradient-to-b from-gray-50 to-white border-b">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute right-4 top-4 hover:bg-gray-100 rounded-full"
+            onClick={onClose}
+          >
+            <X className="h-4 w-4 text-gray-500" />
+          </Button>
+          <div className="flex flex-col items-center space-y-4">
+            <Avatar className="w-24 h-24 ring-4 ring-white shadow-lg">
+              <AvatarImage src={creator?.profile_image_url} alt={fullName} />
+              <AvatarFallback className="text-xl bg-nino-primary text-white">
+                {creator?.profile?.first_name?.[0]}{creator?.profile?.last_name?.[0]}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-1">
+                {fullName}
+              </h2>
+              {creator?.location && (
+                <p className="text-gray-600 flex items-center justify-center gap-1">
+                  <span>📍</span> {creator.location}
+                </p>
+              )}
+            </div>
+          </div>
+        </DialogHeader>
 
-            <div className="mt-8 space-y-6">
-              {/* Social Links */}
-              <div className="flex justify-center gap-4">
-                <Button
-                  onClick={onMessageCreator}
-                  variant="outline"
-                  className="bg-nino-white hover:bg-nino-primary/5 border-nino-primary/20 text-nino-primary hover:text-nino-primary space-x-2"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Message</span>
-                </Button>
-                {creator?.instagram && (
-                  <Button
+        <div className="p-6 space-y-6">
+          {/* Bio Section */}
+          {creator?.bio && (
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-gray-900">About</h3>
+              <p className="text-gray-600 leading-relaxed">{creator.bio}</p>
+            </div>
+          )}
+
+          {/* Social Links */}
+          <div className="flex gap-3">
+            {creator?.instagram && (
+              <Button
+                variant="outline"
+                className="flex-1 gap-2"
+                onClick={() => window.open(`https://instagram.com/${creator.instagram}`, '_blank')}
+              >
+                <Instagram className="w-4 h-4" />
+                Instagram
+              </Button>
+            )}
+            {creator?.website && (
+              <Button
+                variant="outline"
+                className="flex-1 gap-2"
+                onClick={() => window.open(creator.website, '_blank')}
+              >
+                <Globe className="w-4 h-4" />
+                Website
+              </Button>
+            )}
+          </div>
+
+          {/* Specialties */}
+          {creator?.specialties && creator.specialties.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-gray-900">Specialties</h3>
+              <div className="flex flex-wrap gap-2">
+                {creator.specialties.map((specialty: string, index: number) => (
+                  <Badge 
+                    key={index}
                     variant="outline"
-                    className="bg-nino-white hover:bg-nino-primary/5 border-nino-primary/20 text-nino-primary hover:text-nino-primary space-x-2"
-                    onClick={() => window.open(`https://instagram.com/${creator.instagram}`, '_blank')}
+                    className="px-3 py-1 rounded-full border-2 border-nino-primary/20 bg-nino-primary/5 text-nino-primary hover:bg-nino-primary/10"
                   >
-                    <Instagram className="w-4 h-4" />
-                    <span>Instagram</span>
-                  </Button>
-                )}
-                {creator?.website && (
-                  <Button
-                    variant="outline"
-                    className="bg-nino-white hover:bg-nino-primary/5 border-nino-primary/20 text-nino-primary hover:text-nino-primary space-x-2"
-                    onClick={() => window.open(creator.website, '_blank')}
-                  >
-                    <Globe className="w-4 h-4" />
-                    <span>Website</span>
-                  </Button>
-                )}
+                    {specialty}
+                  </Badge>
+                ))}
               </div>
+            </div>
+          )}
 
-              {/* Application Message */}
-              <div className="bg-nino-white rounded-xl p-6 shadow-sm border border-nino-primary/10">
-                <h3 className="font-medium text-nino-text mb-3">Application Message</h3>
-                <p className="text-nino-gray leading-relaxed">{coverLetter}</p>
-              </div>
+          {/* Application Message */}
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-900">Application Message</h3>
+            <div className="bg-gray-50/80 backdrop-blur-sm p-4 rounded-xl border text-gray-600 leading-relaxed">
+              {coverLetter}
+            </div>
+          </div>
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-4 pt-4">
-                <Button
-                  onClick={handleAccept}
-                  className="bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-xl"
-                >
-                  <CheckCircle2 className="w-5 h-5 mr-2" />
-                  Accept
-                </Button>
-                <Button
-                  onClick={handleReject}
-                  variant="outline"
-                  className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-xl"
-                >
-                  <XCircle className="w-5 h-5 mr-2" />
-                  Reject
-                </Button>
-              </div>
+          {/* Action Buttons */}
+          <div className="space-y-3 pt-4">
+            <Button
+              className="w-full gap-2 bg-nino-primary hover:bg-nino-primary/90"
+              onClick={() => onMessageCreator(creator.user_id)}
+            >
+              <MessageSquare className="w-4 h-4" />
+              Begin Chat
+            </Button>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                onClick={handleAccept}
+                className="w-full bg-green-500 hover:bg-green-600 text-white"
+              >
+                <CheckSquare className="w-4 h-4 mr-2" />
+                Accept
+              </Button>
+              <Button
+                onClick={handleReject}
+                variant="outline"
+                className="w-full border-red-500 text-red-500 hover:bg-red-50"
+              >
+                <XSquare className="w-4 h-4 mr-2" />
+                Reject
+              </Button>
             </div>
           </div>
         </div>

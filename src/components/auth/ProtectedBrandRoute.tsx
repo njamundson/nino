@@ -22,29 +22,18 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         
         if (sessionError) {
           console.error("Session error:", sessionError);
-          if (sessionError.message.includes("refresh_token_not_found")) {
-            await supabase.auth.signOut();
-            toast({
-              title: "Session expired",
-              description: "Please sign in again to continue.",
-              variant: "destructive",
-            });
-          }
-          navigate('/');
-          return;
+          throw new Error("Failed to get session");
         }
 
         if (!session) {
           console.log("No session found");
-          navigate('/');
-          return;
+          throw new Error("No session found");
         }
 
         const userId = session.user?.id;
         if (!userId) {
           console.log("No user ID found in session");
-          navigate('/');
-          return;
+          throw new Error("No user ID found");
         }
 
         console.log("Checking brand profile for user:", userId);
@@ -95,10 +84,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         console.log("User signed out or no valid session");
         navigate('/');
         return;
-      }
-
-      if (event === 'TOKEN_REFRESHED') {
-        console.log("Token refreshed successfully");
       }
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
