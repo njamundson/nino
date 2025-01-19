@@ -50,16 +50,23 @@ export const useCreatorSettings = () => {
         throw creatorError;
       }
 
-      if (profile && creator) {
-        setCreatorData({
+      if (profile) {
+        setCreatorData(prevData => ({
+          ...prevData,
           firstName: profile.first_name || "",
           lastName: profile.last_name || "",
+        }));
+      }
+
+      if (creator) {
+        setCreatorData(prevData => ({
+          ...prevData,
           bio: creator.bio || "",
           location: creator.location || "",
           instagram: creator.instagram || "",
           website: creator.website || "",
           specialties: creator.specialties || [],
-        });
+        }));
         setProfileImage(creator.profile_image_url);
       }
     } catch (error) {
