@@ -25,9 +25,11 @@ const RecentMessages = () => {
           )
         `)
         .eq('receiver_id', user.id)
+        .is('deleted_at', null)  // Only show non-deleted messages
         .order('created_at', { ascending: false })
         .limit(3);
       
+      console.log('Recent messages:', data);
       return data || [];
     }
   });
