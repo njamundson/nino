@@ -19,6 +19,18 @@ interface ChatMessagesProps {
 
 export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUserId(user.id);
+      }
+    };
+    getCurrentUser();
+  }, []);
+
   const filteredMessages = messages?.filter(
     (m) => m.sender_id === selectedChat || m.receiver_id === selectedChat
   ).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
@@ -33,21 +45,18 @@ export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
   // Mark messages as read
   useEffect(() => {
     const markMessagesAsRead = async () => {
-      if (!selectedChat) return;
+      if (!selectedChat || !currentUserId) return;
       
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       await supabase
         .from('messages')
         .update({ read: true })
         .eq('sender_id', selectedChat)
-        .eq('receiver_id', user.id)
+        .eq('receiver_id', currentUserId)
         .eq('read', false);
     };
 
     markMessagesAsRead();
-  }, [selectedChat, messages]);
+  }, [selectedChat, messages, currentUserId]);
 
   // Group messages by date
   const groupedMessages = filteredMessages?.reduce((groups: { [key: string]: Message[] }, message) => {
@@ -69,32 +78,36 @@ export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
                 {date}
               </span>
             </div>
-            {dateMessages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  "flex",
-                  message.sender_id === selectedChat ? "justify-start" : "justify-end"
-                )}
-              >
+            {dateMessages.map((message) => {
+              const isCurrentUser = message.sender_id === currentUserId;
+              
+              return (
                 <div
+                  key={message.id}
                   className={cn(
-                    "max-w-[70%] px-4 py-2 rounded-2xl text-sm",
-                    message.sender_id === selectedChat
-                      ? "bg-gray-100 text-gray-900"
-                      : "bg-nino-primary text-white"
+                    "flex",
+                    isCurrentUser ? "justify-end" : "justify-start"
                   )}
                 >
-                  <p className="leading-relaxed">{message.content}</p>
-                  <p className="text-[10px] mt-1 opacity-70">
-                    {new Date(message.created_at).toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit'
-                    })}
-                  </p>
+                  <div
+                    className={cn(
+                      "max-w-[70%] px-4 py-2 rounded-2xl text-sm",
+                      isCurrentUser
+                        ? "bg-nino-primary text-white"
+                        : "bg-gray-100 text-gray-900"
+                    )}
+                  >
+                    <p className="leading-relaxed">{message.content}</p>
+                    <p className="text-[10px] mt-1 opacity-70">
+                      {new Date(message.created_at).toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ))}
         <div ref={scrollRef} />

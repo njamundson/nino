@@ -31,7 +31,7 @@ const Messages = () => {
   const { toast } = useToast();
 
   const { data: messages, refetch } = useQuery({
-    queryKey: ["messages"],
+    queryKey: ["messages", selectedChat],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
@@ -62,16 +62,16 @@ const Messages = () => {
 
   useEffect(() => {
     const channel = supabase
-      .channel('public:messages')
+      .channel('messages')
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
           table: 'messages'
         },
-        () => {
-          console.log('New message received, refetching...');
+        (payload) => {
+          console.log('Message change received:', payload);
           refetch();
         }
       )
@@ -123,7 +123,6 @@ const Messages = () => {
       }
 
       setNewMessage("");
-      await refetch();
     } catch (error) {
       console.error("Error sending message:", error);
       toast({
