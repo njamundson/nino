@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useRef } from "react";
 import {
@@ -60,26 +60,40 @@ const PersonalInfoFields = ({
     }
 
     try {
+      console.log('Searching locations for query:', query);
       const { data, error } = await supabase.functions.invoke('geocode', {
         body: { query },
       });
 
       if (error) {
         console.error('Location search error:', error);
+        toast({
+          title: "Error searching locations",
+          description: "Please try again later",
+          variant: "destructive",
+        });
         setSuggestions([]);
         return;
       }
+
+      console.log('Location search response:', data);
 
       if (data?.results) {
         const formattedSuggestions = data.results.map((result: any) => ({
           description: result.formatted,
         }));
+        console.log('Formatted suggestions:', formattedSuggestions);
         setSuggestions(formattedSuggestions);
       } else {
         setSuggestions([]);
       }
     } catch (error) {
       console.error('Error searching locations:', error);
+      toast({
+        title: "Error searching locations",
+        description: "Please try again later",
+        variant: "destructive",
+      });
       setSuggestions([]);
     }
   };

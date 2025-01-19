@@ -1,8 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 console.log("Geocoding function started")
 
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
     const { lat, lng, query } = await req.json()
     const apiKey = Deno.env.get('OPENCAGE_API_KEY')
@@ -44,17 +54,14 @@ serve(async (req) => {
       throw new Error(`OpenCage API error: ${data.status?.message || response.statusText}`)
     }
 
-    if (!data.results || data.results.length === 0) {
-      console.warn('No results found')
-      return new Response(
-        JSON.stringify({ results: [] }),
-        { headers: { "Content-Type": "application/json" } }
-      )
-    }
-
     return new Response(
       JSON.stringify(data),
-      { headers: { "Content-Type": "application/json" } }
+      { 
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        } 
+      }
     )
   } catch (error) {
     console.error('Error in geocoding function:', error)
@@ -66,7 +73,10 @@ serve(async (req) => {
       }),
       { 
         status: 400,
-        headers: { "Content-Type": "application/json" }
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
       }
     )
   }
