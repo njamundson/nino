@@ -5,6 +5,19 @@ import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect, useRef } from "react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface PersonalInfoFieldsProps {
   firstName: string;
@@ -22,7 +35,15 @@ const PersonalInfoFields = ({
   onUpdateField,
 }: PersonalInfoFieldsProps) => {
   const { toast } = useToast();
+  const [locationInput, setLocationInput] = useState(location);
+  const [suggestions, setSuggestions] = useState<Array<{ description: string }>>([]);
+  const [open, setOpen] = useState(false);
+  const searchTimeout = useRef<NodeJS.Timeout>();
   
+  useEffect(() => {
+    setLocationInput(location);
+  }, [location]);
+
   const handleFullNameChange = (value: string) => {
     const firstSpaceIndex = value.indexOf(' ');
     let firstNameValue, lastNameValue;
@@ -37,6 +58,43 @@ const PersonalInfoFields = ({
     
     onUpdateField("firstName", firstNameValue);
     onUpdateField("lastName", lastNameValue);
+  };
+
+  const searchLocations = async (query: string) => {
+    if (!query || query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('geocode', {
+        body: { query },
+      });
+
+      if (error) {
+        console.error('Location search error:', error);
+        return;
+      }
+
+      if (data?.results) {
+        const formattedSuggestions = data.results.map((result: any) => ({
+          description: result.formatted,
+        }));
+        setSuggestions(formattedSuggestions);
+      }
+    } catch (error) {
+      console.error('Error searching locations:', error);
+    }
+  };
+
+  const handleLocationInputChange = (value: string) => {
+    setLocationInput(value);
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+    searchTimeout.current = setTimeout(() => {
+      searchLocations(value);
+    }, 300);
   };
 
   const getLocation = () => {
@@ -83,6 +141,7 @@ const PersonalInfoFields = ({
           if (data.results && data.results[0]) {
             const locationString = data.results[0].formatted.split(',').slice(1).join(',').trim();
             onUpdateField("location", locationString);
+            setLocationInput(locationString);
             toast({
               title: "Success",
               description: "Location updated successfully",
@@ -132,14 +191,39 @@ const PersonalInfoFields = ({
       <div className="space-y-2">
         <Label htmlFor="location" className="text-base">Location *</Label>
         <div className="flex gap-2">
-          <Input
-            id="location"
-            value={location}
-            onChange={(e) => onUpdateField("location", e.target.value)}
-            placeholder="Enter your location"
-            className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base flex-1"
-            required
-          />
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Input
+                id="location"
+                value={locationInput}
+                onChange={(e) => handleLocationInputChange(e.target.value)}
+                placeholder="Enter your location"
+                className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base flex-1"
+                required
+              />
+            </PopoverTrigger>
+            <PopoverContent className="p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Search location..." />
+                <CommandEmpty>No location found.</CommandEmpty>
+                <CommandGroup>
+                  {suggestions.map((suggestion, index) => (
+                    <CommandItem
+                      key={index}
+                      onSelect={() => {
+                        onUpdateField("location", suggestion.description);
+                        setLocationInput(suggestion.description);
+                        setOpen(false);
+                      }}
+                    >
+                      <MapPin className="mr-2 h-4 w-4" />
+                      {suggestion.description}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
           <Button
             type="button"
             variant="outline"

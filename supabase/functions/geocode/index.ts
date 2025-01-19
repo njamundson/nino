@@ -1,31 +1,31 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+console.log("Geocoding function started")
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
-
   try {
-    const { lat, lng } = await req.json()
+    const { lat, lng, query } = await req.json()
     const apiKey = Deno.env.get('OPENCAGE_API_KEY')
     
-    console.log('Request received for coordinates:', { lat, lng })
+    console.log('Request received:', { lat, lng, query })
     console.log('API Key status:', apiKey ? 'Present' : 'Missing')
 
     if (!apiKey) {
       throw new Error('OpenCage API key not found in environment variables')
     }
 
-    if (!lat || !lng) {
-      throw new Error('Invalid coordinates provided')
+    let url: string;
+    
+    if (query) {
+      // Forward geocoding (search by query)
+      url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(query)}&key=${apiKey}&language=en&limit=5`
+    } else if (lat && lng) {
+      // Reverse geocoding (coordinates to address)
+      url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}&language=en`
+    } else {
+      throw new Error('Invalid request: must provide either coordinates or search query')
     }
 
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}&language=en`
     console.log('Making request to OpenCage API')
 
     const response = await fetch(url)
@@ -45,21 +45,19 @@ serve(async (req) => {
     }
 
     if (!data.results || data.results.length === 0) {
-      console.warn('No results found for coordinates')
-      throw new Error('No location data found for these coordinates')
+      console.warn('No results found')
+      return new Response(
+        JSON.stringify({ results: [] }),
+        { headers: { "Content-Type": "application/json" } }
+      )
     }
 
     return new Response(
       JSON.stringify(data),
-      { 
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
-      },
+      { headers: { "Content-Type": "application/json" } }
     )
   } catch (error) {
-    console.error('Error in geocode function:', error)
+    console.error('Error in geocoding function:', error)
     return new Response(
       JSON.stringify({ 
         error: error.message,
@@ -68,11 +66,8 @@ serve(async (req) => {
       }),
       { 
         status: 400,
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json',
-        },
-      },
+        headers: { "Content-Type": "application/json" }
+      }
     )
   }
 })
