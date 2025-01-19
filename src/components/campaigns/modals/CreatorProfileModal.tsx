@@ -2,7 +2,6 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,40 +43,35 @@ const CreatorProfileModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-gradient-to-b from-nino-bg to-white">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-nino-bg rounded-3xl">
         <div className="relative">
           <div className="p-8">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-semibold text-center mb-6">
-                Creator Profile
-              </DialogTitle>
-            </DialogHeader>
-
-            <div className="space-y-8">
-              {/* Profile Section */}
-              <div className="flex flex-col items-center space-y-4">
-                <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+              <div className="flex flex-col items-center space-y-6">
+                <Avatar className="w-28 h-28 border-4 border-white shadow-lg">
                   <AvatarImage 
                     src={creator?.profile_image_url} 
                     alt={`${creator?.profile?.first_name} ${creator?.profile?.last_name}`}
                   />
-                  <AvatarFallback className="bg-nino-bg text-nino-text text-xl">
+                  <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-2xl font-medium">
                     {getInitials(
                       creator?.profile?.first_name || '',
                       creator?.profile?.last_name || ''
                     )}
                   </AvatarFallback>
                 </Avatar>
-                <div className="text-center">
-                  <h3 className="text-xl font-semibold text-nino-text">
+                <div className="text-center space-y-2">
+                  <h2 className="text-2xl font-semibold text-nino-text">
                     {creator?.profile?.first_name} {creator?.profile?.last_name}
-                  </h3>
+                  </h2>
                   {creator?.location && (
-                    <p className="text-nino-gray text-sm mt-1">📍 {creator.location}</p>
+                    <p className="text-nino-gray text-sm">📍 {creator.location}</p>
                   )}
                 </div>
               </div>
+            </DialogHeader>
 
+            <div className="mt-8 space-y-6">
               {/* Social Links */}
               <div className="flex justify-center gap-4">
                 {creator?.instagram && (
@@ -85,9 +79,9 @@ const CreatorProfileModal = ({
                     href={`https://instagram.com/${creator.instagram}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-nino-primary/90 to-nino-primary text-white hover:opacity-90 transition-opacity"
+                    className="inline-flex items-center px-5 py-2.5 rounded-2xl bg-gradient-to-r from-nino-primary/90 to-nino-primary text-white hover:opacity-90 transition-all duration-300 shadow-sm hover:shadow-md"
                   >
-                    <Instagram className="w-4 h-4 mr-2" />
+                    <Instagram className="w-5 h-5 mr-2" />
                     Instagram
                   </a>
                 )}
@@ -96,44 +90,44 @@ const CreatorProfileModal = ({
                     href={creator.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 rounded-full bg-nino-text text-white hover:bg-nino-text/90 transition-colors"
+                    className="inline-flex items-center px-5 py-2.5 rounded-2xl bg-nino-text text-white hover:bg-nino-text/90 transition-all duration-300 shadow-sm hover:shadow-md"
                   >
-                    <Globe className="w-4 h-4 mr-2" />
+                    <Globe className="w-5 h-5 mr-2" />
                     Website
                   </a>
                 )}
               </div>
 
-              {/* Proposal Section */}
-              <div className="space-y-4 bg-nino-bg/50 p-6 rounded-2xl">
-                <h4 className="font-medium text-nino-text">Application Message</h4>
+              {/* Application Message */}
+              <div className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl border border-nino-primary/10">
+                <h3 className="font-medium text-nino-text mb-3">Application Message</h3>
                 <p className="text-nino-gray leading-relaxed">{coverLetter}</p>
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-4">
+              <div className="space-y-4 pt-4">
                 <Button
                   onClick={onMessageCreator}
-                  className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
+                  className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
                 >
-                  <MessageSquare className="w-4 h-4 mr-2" />
+                  <MessageSquare className="w-5 h-5 mr-2" />
                   Begin Chat
                 </Button>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <Button
                     onClick={handleAccept}
-                    className="bg-green-500 hover:bg-green-600 text-white"
+                    className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
                   >
-                    <CheckSquare className="w-4 h-4 mr-2" />
+                    <CheckSquare className="w-5 h-5 mr-2" />
                     Accept
                   </Button>
                   <Button
                     onClick={handleReject}
                     variant="outline"
-                    className="border-red-500 text-red-500 hover:bg-red-50"
+                    className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
                   >
-                    <XSquare className="w-4 h-4 mr-2" />
+                    <XSquare className="w-5 h-5 mr-2" />
                     Reject
                   </Button>
                 </div>
