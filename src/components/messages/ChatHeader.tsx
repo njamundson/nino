@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Phone, Video } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface ChatHeaderProps {
@@ -23,17 +21,6 @@ export const ChatHeader = ({ senderFirstName, senderLastName }: ChatHeaderProps)
           </h3>
           <p className="text-xs text-gray-500">Active now</p>
         </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-100">
-          <Phone className="w-5 h-5" />
-        </Button>
-        <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-100">
-          <Video className="w-5 h-5" />
-        </Button>
-        <Button variant="ghost" size="icon" className="text-gray-500 hover:bg-gray-100">
-          <MoreHorizontal className="w-5 h-5" />
-        </Button>
       </div>
     </div>
   );

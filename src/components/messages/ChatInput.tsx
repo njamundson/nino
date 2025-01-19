@@ -78,11 +78,10 @@ export const ChatInput = ({
         />
         <Button
           onClick={handleSendMessage}
-          className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full"
-          size="icon"
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full w-12 h-12 p-0 flex items-center justify-center transition-transform active:scale-95"
           disabled={!newMessage.trim()}
         >
-          <Send className="w-4 h-4" />
+          <Send className="w-5 h-5" />
         </Button>
       </div>
     </div>
