@@ -31,6 +31,7 @@ const PersonalInfoFields = ({
   const { toast } = useToast();
   const [locationInput, setLocationInput] = useState(location);
   const [suggestions, setSuggestions] = useState<Array<{ description: string }>>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const searchTimeout = useRef<NodeJS.Timeout>();
   
   useEffect(() => {
@@ -56,6 +57,7 @@ const PersonalInfoFields = ({
   const searchLocations = async (query: string) => {
     if (!query || query.length < 3) {
       setSuggestions([]);
+      setShowSuggestions(false);
       return;
     }
 
@@ -73,6 +75,7 @@ const PersonalInfoFields = ({
           variant: "destructive",
         });
         setSuggestions([]);
+        setShowSuggestions(false);
         return;
       }
 
@@ -84,8 +87,10 @@ const PersonalInfoFields = ({
         }));
         console.log('Formatted suggestions:', formattedSuggestions);
         setSuggestions(formattedSuggestions);
+        setShowSuggestions(true);
       } else {
         setSuggestions([]);
+        setShowSuggestions(false);
       }
     } catch (error) {
       console.error('Error searching locations:', error);
@@ -95,6 +100,7 @@ const PersonalInfoFields = ({
         variant: "destructive",
       });
       setSuggestions([]);
+      setShowSuggestions(false);
     }
   };
 
@@ -135,7 +141,7 @@ const PersonalInfoFields = ({
             className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base w-full"
             required
           />
-          {suggestions.length > 0 && (
+          {showSuggestions && suggestions.length > 0 && (
             <Command className="absolute w-full z-10 mt-1 bg-white rounded-md shadow-lg border border-gray-200">
               <CommandGroup>
                 {suggestions.map((suggestion, index) => (
@@ -145,6 +151,7 @@ const PersonalInfoFields = ({
                       onUpdateField("location", suggestion.description);
                       setLocationInput(suggestion.description);
                       setSuggestions([]);
+                      setShowSuggestions(false);
                     }}
                     className="cursor-pointer hover:bg-gray-100"
                   >
