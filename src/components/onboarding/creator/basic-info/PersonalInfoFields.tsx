@@ -17,20 +17,6 @@ const PersonalInfoFields = ({
   location,
   onUpdateField,
 }: PersonalInfoFieldsProps) => {
-  const handleFullNameChange = (value: string) => {
-    const firstSpaceIndex = value.indexOf(' ');
-    
-    if (firstSpaceIndex === -1) {
-      // No space found, entire value is first name
-      onUpdateField("firstName", value);
-      onUpdateField("lastName", "");
-    } else {
-      // Split at first space
-      onUpdateField("firstName", value.substring(0, firstSpaceIndex));
-      onUpdateField("lastName", value.substring(firstSpaceIndex + 1));
-    }
-  };
-
   return (
     <>
       <div className="space-y-2">
@@ -38,7 +24,12 @@ const PersonalInfoFields = ({
         <Input
           id="fullName"
           value={`${firstName}${lastName ? ' ' + lastName : ''}`}
-          onChange={(e) => handleFullNameChange(e.target.value)}
+          onChange={(e) => {
+            const fullName = e.target.value;
+            const parts = fullName.split(' ');
+            onUpdateField('firstName', parts[0] || '');
+            onUpdateField('lastName', parts.slice(1).join(' '));
+          }}
           placeholder="Enter your full name"
           className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
           required
