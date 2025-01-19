@@ -1,43 +1,47 @@
-import AccountSettings from "@/components/settings/AccountSettings";
-import NotificationSettings from "@/components/settings/NotificationSettings";
-import ProfileSettings from "@/components/settings/ProfileSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, User, Shield } from "lucide-react";
+import { User, Bell, CreditCard } from "lucide-react";
+import PageHeader from "@/components/shared/PageHeader";
+import ProfileSettings from "@/components/settings/profile/CreatorProfileSettings";
+import NotificationSettings from "@/components/settings/NotificationSettings";
+import SubscriptionSettings from "@/components/settings/SubscriptionSettings";
 
 const Settings = () => {
   return (
-    <div className="container mx-auto p-4 space-y-4">
-      <div className="bg-white/50 backdrop-blur-xl w-full justify-start space-x-2 h-12 p-1">
-        <h1 className="text-2xl font-semibold text-nino-text">Settings</h1>
-      </div>
-
+    <div className="p-8 max-w-5xl mx-auto space-y-8">
+      <PageHeader
+        title="Settings"
+        description="Manage your creator profile, notifications, and subscription"
+      />
+      
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="w-4 h-4" />
+        <TabsList className="bg-white/50 backdrop-blur-xl w-full justify-start space-x-2 h-12 p-1">
+          <TabsTrigger value="profile" className="flex-1 data-[state=active]:bg-white">
+            <User className="w-4 h-4 mr-2" />
             Profile
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
-            <Bell className="w-4 h-4" />
+          <TabsTrigger value="notifications" className="flex-1 data-[state=active]:bg-white">
+            <Bell className="w-4 h-4 mr-2" />
             Notifications
           </TabsTrigger>
-          <TabsTrigger value="account" className="flex items-center gap-2">
-            <Shield className="w-4 h-4" />
-            Account
+          <TabsTrigger value="subscription" className="flex-1 data-[state=active]:bg-white">
+            <CreditCard className="w-4 h-4 mr-2" />
+            Subscription
           </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="profile">
-          <ProfileSettings />
-        </TabsContent>
-
-        <TabsContent value="notifications">
-          <NotificationSettings />
-        </TabsContent>
-
-        <TabsContent value="account">
-          <AccountSettings />
-        </TabsContent>
+        
+        <div className="mt-8 space-y-8">
+          <TabsContent value="profile" className="animate-fadeIn">
+            <ProfileSettings />
+          </TabsContent>
+          
+          <TabsContent value="notifications" className="animate-fadeIn">
+            <NotificationSettings />
+          </TabsContent>
+          
+          <TabsContent value="subscription" className="animate-fadeIn">
+            <SubscriptionSettings />
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );
