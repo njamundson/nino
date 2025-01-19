@@ -45,6 +45,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         .from('creators')
         .select(`
           id,
+          profile_id,
           profile_image_url,
           profiles (
             first_name,
@@ -121,8 +122,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
-  const startNewChat = async (creatorId: string) => {
-    onSelectChat(creatorId);
+  const startNewChat = async (profileId: string) => {
+    onSelectChat(profileId);
     toast({
       title: "Chat started",
       description: "You can now send messages to this creator",
@@ -193,7 +194,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
               {creators.map((creator) => (
                 <DropdownMenuItem
                   key={creator.id}
-                  onClick={() => startNewChat(creator.id)}
+                  onClick={() => startNewChat(creator.profile_id)}
                   className="cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
