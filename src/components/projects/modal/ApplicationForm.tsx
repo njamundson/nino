@@ -59,22 +59,40 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (creatorError || !creatorData) {
+      if (creatorError) {
         toast({
           title: "Error",
-          description: "Could not find your creator profile",
+          description: "Failed to fetch creator profile",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!creatorData) {
+        toast({
+          title: "Error",
+          description: "Could not find your creator profile. Please complete your profile first.",
           variant: "destructive",
         });
         return;
       }
 
       // Check if application already exists
-      const { data: existingApplication } = await supabase
+      const { data: existingApplication, error: applicationError } = await supabase
         .from('applications')
         .select('id')
         .eq('opportunity_id', opportunity.id)
         .eq('creator_id', creatorData.id)
         .maybeSingle();
+
+      if (applicationError) {
+        toast({
+          title: "Error",
+          description: "Failed to check existing applications",
+          variant: "destructive",
+        });
+        return;
+      }
 
       if (existingApplication) {
         toast({
@@ -87,7 +105,7 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
       }
 
       // Submit the application
-      const { error: applicationError } = await supabase
+      const { error: submitError } = await supabase
         .from('applications')
         .insert({
           opportunity_id: opportunity.id,
@@ -96,8 +114,8 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
           status: 'pending'
         });
 
-      if (applicationError) {
-        throw applicationError;
+      if (submitError) {
+        throw submitError;
       }
 
       setShowSuccessModal(true);
