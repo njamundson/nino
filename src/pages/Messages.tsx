@@ -145,11 +145,6 @@ const Messages = () => {
     }
   };
 
-  const handleEditMessage = (message: { id: string; content: string }) => {
-    setEditingMessage(message);
-    setNewMessage(message.content);
-  };
-
   const selectedChatProfile = messages?.find(m => {
     if (m.sender_id === selectedChat) {
       return m.sender_profile;
@@ -183,7 +178,6 @@ const Messages = () => {
               <ChatMessages
                 messages={messages}
                 selectedChat={selectedChat}
-                onEditMessage={handleEditMessage}
               />
               <ChatInput
                 newMessage={newMessage}
