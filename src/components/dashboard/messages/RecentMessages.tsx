@@ -24,7 +24,7 @@ const RecentMessages = () => {
             last_name
           )
         `)
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .eq('receiver_id', user.id)
         .order('created_at', { ascending: false })
         .limit(3);
       
