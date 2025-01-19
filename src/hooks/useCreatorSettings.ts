@@ -20,12 +20,9 @@ export const useCreatorSettings = () => {
     try {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
-        toast({
-          title: "Error",
-          description: "No authenticated user found",
-          variant: "destructive",
-        });
+        console.error('No authenticated user found');
         return;
       }
 
