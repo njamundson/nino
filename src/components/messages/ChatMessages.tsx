@@ -22,6 +22,7 @@ interface Message {
   media_url?: string;
   media_type?: string;
   is_edited?: boolean;
+  deleted_at?: string;
   reactions?: { emoji: string; user_id: string }[];
 }
 
