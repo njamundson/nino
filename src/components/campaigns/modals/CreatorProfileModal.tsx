@@ -3,7 +3,7 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Globe, Instagram, MessageSquare, X } from "lucide-react";
+import { Globe, Instagram, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -50,14 +50,6 @@ const CreatorProfileModal = ({
         <div className="flex h-[600px]">
           {/* Left side - Profile Photo */}
           <div className="w-1/2 relative bg-[#F1F0FB]">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="absolute right-4 top-4 z-10 hover:bg-white/20 rounded-full"
-              onClick={onClose}
-            >
-              <X className="h-4 w-4 text-[#1A1F2C]" />
-            </Button>
             <div className="w-full h-full flex items-center justify-center p-8">
               <Avatar className="w-full h-full rounded-2xl shadow-lg">
                 <AvatarImage 
