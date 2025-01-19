@@ -10,6 +10,7 @@ interface BrandDetailsFormProps {
     description: string;
     website: string;
     instagram: string;
+    location: string;
   };
   loading: boolean;
   onUpdateField: (field: string, value: string) => void;
@@ -58,6 +59,19 @@ const BrandDetailsForm = ({ brandData, loading, onUpdateField }: BrandDetailsFor
             onChange={(e) => onUpdateField("description", e.target.value)}
             disabled={loading}
             className="bg-white/50 min-h-[100px]"
+            placeholder="Tell us about your brand..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="location">Location</Label>
+          <Input
+            id="location"
+            value={brandData.location}
+            onChange={(e) => onUpdateField("location", e.target.value)}
+            disabled={loading}
+            className="bg-white/50"
+            placeholder="Where is your brand based?"
           />
         </div>
 
@@ -70,6 +84,7 @@ const BrandDetailsForm = ({ brandData, loading, onUpdateField }: BrandDetailsFor
               onChange={(e) => onUpdateField("website", e.target.value)}
               disabled={loading}
               className="bg-white/50"
+              placeholder="https://"
             />
           </div>
           <div className="space-y-2">
@@ -80,6 +95,7 @@ const BrandDetailsForm = ({ brandData, loading, onUpdateField }: BrandDetailsFor
               onChange={(e) => onUpdateField("instagram", e.target.value)}
               disabled={loading}
               className="bg-white/50"
+              placeholder="@username"
             />
           </div>
         </div>

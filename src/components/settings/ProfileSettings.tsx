@@ -37,7 +37,14 @@ const ProfileSettings = () => {
   const fetchBrandData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { data: brand, error } = await supabase
         .from('brands')
@@ -106,7 +113,14 @@ const ProfileSettings = () => {
     try {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { error } = await supabase
         .from('brands')
