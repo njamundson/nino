@@ -2,7 +2,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useRef } from "react";
@@ -101,83 +100,6 @@ const PersonalInfoFields = ({
     }, 300);
   };
 
-  const getLocation = () => {
-    if (!navigator.geolocation) {
-      toast({
-        title: "Error",
-        description: "Geolocation is not supported by your browser",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Getting location",
-      description: "Please wait while we fetch your location...",
-    });
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          console.log('Getting coordinates:', {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-
-          const { data, error } = await supabase.functions.invoke('geocode', {
-            body: {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            },
-          });
-
-          console.log('Geocoding response:', { data, error });
-
-          if (error) {
-            console.error('Supabase function error:', error);
-            throw new Error(error.message || 'Failed to fetch location details');
-          }
-
-          if (!data) {
-            throw new Error('No response from geocoding service');
-          }
-
-          if (data.results && data.results[0]) {
-            const locationString = data.results[0].formatted.split(',').slice(1).join(',').trim();
-            onUpdateField("location", locationString);
-            setLocationInput(locationString);
-            toast({
-              title: "Success",
-              description: "Location updated successfully",
-            });
-          } else {
-            throw new Error('No location data found');
-          }
-        } catch (error: any) {
-          console.error('Geocoding error:', error);
-          toast({
-            title: "Error",
-            description: error.message || "Could not fetch location details",
-            variant: "destructive",
-          });
-        }
-      },
-      (error) => {
-        console.error('Geolocation error:', error);
-        toast({
-          title: "Error",
-          description: "Unable to retrieve your location",
-          variant: "destructive",
-        });
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      }
-    );
-  };
-
   return (
     <>
       <div className="space-y-2">
@@ -194,51 +116,41 @@ const PersonalInfoFields = ({
 
       <div className="space-y-2">
         <Label htmlFor="location" className="text-base">Location *</Label>
-        <div className="flex gap-2">
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Input
-                id="location"
-                value={locationInput}
-                onChange={(e) => handleLocationInputChange(e.target.value)}
-                placeholder="Enter your location"
-                className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base flex-1"
-                required
-              />
-            </PopoverTrigger>
-            {suggestions.length > 0 && (
-              <PopoverContent className="p-0" align="start">
-                <Command>
-                  <CommandInput placeholder="Search location..." />
-                  <CommandEmpty>No location found.</CommandEmpty>
-                  <CommandGroup>
-                    {suggestions.map((suggestion, index) => (
-                      <CommandItem
-                        key={index}
-                        onSelect={() => {
-                          onUpdateField("location", suggestion.description);
-                          setLocationInput(suggestion.description);
-                          setOpen(false);
-                        }}
-                      >
-                        <MapPin className="mr-2 h-4 w-4" />
-                        {suggestion.description}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            )}
-          </Popover>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-12 px-3"
-            onClick={getLocation}
-          >
-            <MapPin className="h-5 w-5" />
-          </Button>
-        </div>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Input
+              id="location"
+              value={locationInput}
+              onChange={(e) => handleLocationInputChange(e.target.value)}
+              placeholder="Start typing your location..."
+              className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base w-full"
+              required
+            />
+          </PopoverTrigger>
+          {suggestions.length > 0 && (
+            <PopoverContent className="p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Search location..." />
+                <CommandEmpty>No location found.</CommandEmpty>
+                <CommandGroup>
+                  {suggestions.map((suggestion, index) => (
+                    <CommandItem
+                      key={index}
+                      onSelect={() => {
+                        onUpdateField("location", suggestion.description);
+                        setLocationInput(suggestion.description);
+                        setOpen(false);
+                      }}
+                    >
+                      <MapPin className="mr-2 h-4 w-4" />
+                      {suggestion.description}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          )}
+        </Popover>
       </div>
 
       <div className="space-y-2">
