@@ -34,6 +34,15 @@ const Settings = () => {
     }
   };
 
+  const handleFullNameChange = (value: string) => {
+    const names = value.trim().split(' ');
+    const firstNameValue = names[0] || '';
+    const lastNameValue = names.slice(1).join(' ') || '';
+    
+    handleUpdateField("firstName", firstNameValue);
+    handleUpdateField("lastName", lastNameValue);
+  };
+
   return (
     <div className="bg-white min-h-screen p-8 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
       <h1 className="text-2xl font-semibold text-nino-text mb-6">Settings</h1>
@@ -76,27 +85,18 @@ const Settings = () => {
               {/* Basic Information */}
               <div className="space-y-6">
                 <h2 className="text-lg font-medium text-nino-text">Basic Information</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      value={creatorData.firstName}
-                      onChange={(e) => handleUpdateField("firstName", e.target.value)}
-                      disabled={loading}
-                      className="bg-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      value={creatorData.lastName}
-                      onChange={(e) => handleUpdateField("lastName", e.target.value)}
-                      disabled={loading}
-                      className="bg-white/50"
-                    />
-                  </div>
+                
+                {/* Full Name Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name or Family Name</Label>
+                  <Input
+                    id="fullName"
+                    value={`${creatorData.firstName} ${creatorData.lastName}`.trim()}
+                    onChange={(e) => handleFullNameChange(e.target.value)}
+                    disabled={loading}
+                    className="bg-white/50"
+                    placeholder="Enter your full name"
+                  />
                 </div>
 
                 <div className="space-y-2">
