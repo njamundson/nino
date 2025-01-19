@@ -32,7 +32,7 @@ export const useCreatorSettings = () => {
           .from('profiles')
           .select('first_name, last_name')
           .eq('id', user.id)
-          .maybeSingle();
+          .single();
 
         if (profileError) {
           console.error('Error fetching profile:', profileError);
@@ -44,7 +44,7 @@ export const useCreatorSettings = () => {
           .from('creators')
           .select('*')
           .eq('user_id', user.id)
-          .maybeSingle();
+          .single();
 
         if (creatorError) {
           console.error('Error fetching creator:', creatorError);
@@ -104,7 +104,7 @@ export const useCreatorSettings = () => {
         .from('creators')
         .select('id')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
       if (creatorError) throw creatorError;
       if (!creator) throw new Error('Creator profile not found');
