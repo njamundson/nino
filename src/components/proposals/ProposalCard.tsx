@@ -9,9 +9,10 @@ import ProposalMetadata from "./ProposalMetadata";
 interface ProposalCardProps {
   application: any;
   onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
+  type: 'proposal' | 'application';
 }
 
-const ProposalCard = ({ application, onUpdateStatus }: ProposalCardProps) => {
+const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) => {
   const [showProposals, setShowProposals] = useState(false);
 
   const creatorName = application.creator?.profile?.first_name && application.creator?.profile?.last_name
@@ -24,6 +25,8 @@ const ProposalCard = ({ application, onUpdateStatus }: ProposalCardProps) => {
     .join('')
     .toUpperCase();
 
+  const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
+
   return (
     <>
       <Card className="p-6 hover:shadow-md transition-shadow duration-200">
@@ -31,15 +34,15 @@ const ProposalCard = ({ application, onUpdateStatus }: ProposalCardProps) => {
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               <Avatar className="h-12 w-12">
-                <AvatarFallback>{creatorInitials}</AvatarFallback>
+                <AvatarFallback>{type === 'proposal' ? brandName[0] : creatorInitials}</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
                 <h3 className="text-xl font-semibold text-gray-900">
                   {application.opportunity?.title}
                 </h3>
                 <ProposalMetadata
-                  creatorName={creatorName}
-                  location={application.creator?.location}
+                  name={type === 'proposal' ? brandName : creatorName}
+                  location={type === 'proposal' ? application.opportunity?.brand?.location : application.creator?.location}
                   startDate={application.opportunity?.start_date}
                 />
               </div>
@@ -49,7 +52,9 @@ const ProposalCard = ({ application, onUpdateStatus }: ProposalCardProps) => {
 
           {application.cover_letter && (
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Cover Letter</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                {type === 'proposal' ? 'Invitation Message' : 'Cover Letter'}
+              </h4>
               <p className="text-sm text-gray-600 whitespace-pre-line">
                 {application.cover_letter}
               </p>
@@ -75,6 +80,7 @@ const ProposalCard = ({ application, onUpdateStatus }: ProposalCardProps) => {
               onUpdateStatus={(status) => onUpdateStatus(application.id, status)}
               onViewProposals={() => setShowProposals(true)}
               opportunityId={application.opportunity_id}
+              type={type}
             />
           </div>
         </div>

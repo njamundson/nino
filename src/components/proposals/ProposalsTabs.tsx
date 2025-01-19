@@ -3,15 +3,15 @@ import { Send, Inbox } from "lucide-react";
 import ProposalsList from "./ProposalsList";
 
 interface ProposalsTabsProps {
-  pendingApplications: any[];
-  myInvites: any[];
+  pendingProposals: any[];
+  myApplications: any[];
   isLoading: boolean;
   onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
 }
 
 const ProposalsTabs = ({
-  pendingApplications,
-  myInvites,
+  pendingProposals,
+  myApplications,
   isLoading,
   onUpdateStatus
 }: ProposalsTabsProps) => {
@@ -23,30 +23,32 @@ const ProposalsTabs = ({
           className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
         >
           <Inbox className="w-4 h-4" />
-          Pending Proposals
+          Pending Proposals ({pendingProposals.length})
         </TabsTrigger>
         <TabsTrigger 
           value="applications" 
           className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
         >
           <Send className="w-4 h-4" />
-          My Applications
+          My Applications ({myApplications.length})
         </TabsTrigger>
       </TabsList>
       
       <TabsContent value="pending" className="mt-6">
         <ProposalsList
-          applications={pendingApplications}
+          applications={pendingProposals}
           isLoading={isLoading}
           onUpdateStatus={onUpdateStatus}
+          type="proposal"
         />
       </TabsContent>
       
       <TabsContent value="applications" className="mt-6">
         <ProposalsList
-          applications={myInvites}
+          applications={myApplications}
           isLoading={isLoading}
           onUpdateStatus={onUpdateStatus}
+          type="application"
         />
       </TabsContent>
     </Tabs>

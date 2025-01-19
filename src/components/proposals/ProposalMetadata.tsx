@@ -1,18 +1,17 @@
 import { User, MapPin, CalendarDays } from "lucide-react";
-import { formatDate } from "@/lib/utils";
 
 interface ProposalMetadataProps {
-  creatorName: string;
+  name: string;
   location?: string;
   startDate?: string;
 }
 
-const ProposalMetadata = ({ creatorName, location, startDate }: ProposalMetadataProps) => {
+const ProposalMetadata = ({ name, location, startDate }: ProposalMetadataProps) => {
   return (
     <div className="space-y-1">
       <p className="text-sm text-gray-500 flex items-center gap-2">
         <User className="w-4 h-4" />
-        {creatorName}
+        {name}
       </p>
       <div className="flex flex-wrap gap-4 text-sm text-gray-500">
         {location && (
@@ -24,7 +23,7 @@ const ProposalMetadata = ({ creatorName, location, startDate }: ProposalMetadata
         {startDate && (
           <div className="flex items-center gap-1.5">
             <CalendarDays className="w-4 h-4" />
-            {formatDate(startDate)}
+            {new Date(startDate).toLocaleDateString()}
           </div>
         )}
       </div>
