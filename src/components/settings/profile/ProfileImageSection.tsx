@@ -2,7 +2,7 @@ import { Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProfileImageSectionProps {
   profileImage: string | null;
@@ -18,18 +18,32 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
     if (file) {
       try {
         setLoading(true);
+        
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('No authenticated user found');
+
         const fileExt = file.name.split('.').pop();
-        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+        const filePath = `${user.id}-${Date.now()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from('avatars')
-          .upload(filePath, file);
+          .upload(filePath, file, {
+            upsert: true
+          });
 
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
           .from('avatars')
           .getPublicUrl(filePath);
+
+        // Update the creator's profile_image_url
+        const { error: updateError } = await supabase
+          .from('creators')
+          .update({ profile_image_url: publicUrl })
+          .eq('user_id', user.id);
+
+        if (updateError) throw updateError;
 
         setProfileImage(publicUrl);
         
@@ -75,7 +89,7 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
         />
       </div>
       <p className="text-sm text-nino-gray">
-        {loading ? "Uploading..." : "Upload your brand logo"}
+        {loading ? "Uploading..." : "Upload your profile photo"}
       </p>
     </div>
   );
