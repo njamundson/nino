@@ -38,7 +38,7 @@ const Proposals = () => {
     <div className="space-y-8">
       <PageHeader 
         title="Proposals" 
-        description="Manage creator applications and send invites for your campaigns" 
+        description="Track the status of your project applications and manage brand invitations"
       />
       
       <ProposalsTabs

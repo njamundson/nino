@@ -7,6 +7,7 @@ import { ChatInput } from "@/components/messages/ChatInput";
 import ChatList from "@/components/messages/ChatList";
 import { ChatMessages } from "@/components/messages/ChatMessages";
 import { useToast } from "@/hooks/use-toast";
+import PageHeader from "@/components/shared/PageHeader";
 
 interface Message {
   id: string;
@@ -160,7 +161,11 @@ const Messages = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-4rem)]">
-      <div className="flex h-full gap-6">
+      <PageHeader
+        title="Messages"
+        description="Connect and communicate with brands and creators about your collaborations"
+      />
+      <div className="flex h-full gap-6 mt-8">
         <Card className="w-96 bg-white/80 backdrop-blur-xl border-0 shadow-sm overflow-hidden">
           <ChatList
             onSelectChat={setSelectedChat}

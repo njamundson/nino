@@ -87,7 +87,10 @@ const Bookings = () => {
   if (isLoading) {
     return (
       <div className="p-8 max-w-7xl mx-auto space-y-8">
-        <Skeleton className="h-8 w-48" />
+        <PageHeader
+          title="Bookings"
+          description="Manage your confirmed collaborations and schedule upcoming content creation"
+        />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <Skeleton className="h-[600px] w-full" />
@@ -102,7 +105,7 @@ const Bookings = () => {
     <div className="p-8 max-w-7xl mx-auto">
       <PageHeader
         title="Bookings"
-        description="View and manage your confirmed bookings"
+        description="Manage your confirmed collaborations and schedule upcoming content creation"
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">

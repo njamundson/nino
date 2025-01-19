@@ -5,6 +5,7 @@ import { Loader2, AlertCircle } from "lucide-react";
 import ProjectsHeader from "@/components/projects/ProjectsHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import EmptyProjects from "@/components/projects/EmptyProjects";
+import PageHeader from "@/components/shared/PageHeader";
 
 const Projects = () => {
   const { data: opportunities, isLoading, error } = useQuery({
@@ -40,7 +41,10 @@ const Projects = () => {
   if (isLoading) {
     return (
       <div className="container py-8 space-y-8">
-        <ProjectsHeader />
+        <PageHeader 
+          title="Available Projects" 
+          description="Browse and apply to brand collaboration opportunities that match your expertise"
+        />
         <div className="flex justify-center items-center min-h-[400px]">
           <Loader2 className="w-8 h-8 animate-spin text-nino-primary" />
         </div>
@@ -51,7 +55,10 @@ const Projects = () => {
   if (error) {
     return (
       <div className="container py-8 space-y-8">
-        <ProjectsHeader />
+        <PageHeader 
+          title="Available Projects" 
+          description="Browse and apply to brand collaboration opportunities that match your expertise"
+        />
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -65,7 +72,10 @@ const Projects = () => {
   if (!opportunities || opportunities.length === 0) {
     return (
       <div className="container py-8 space-y-8">
-        <ProjectsHeader />
+        <PageHeader 
+          title="Available Projects" 
+          description="Browse and apply to brand collaboration opportunities that match your expertise"
+        />
         <EmptyProjects />
       </div>
     );
@@ -73,7 +83,10 @@ const Projects = () => {
 
   return (
     <div className="container py-8 space-y-8">
-      <ProjectsHeader />
+      <PageHeader 
+        title="Available Projects" 
+        description="Browse and apply to brand collaboration opportunities that match your expertise"
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {opportunities.map((opportunity) => (
           <ProjectCard key={opportunity.id} opportunity={opportunity} />
