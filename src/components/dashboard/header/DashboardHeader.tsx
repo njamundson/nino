@@ -7,11 +7,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useState } from 'react';
 import { cn } from "@/lib/utils";
+import { useNavigate } from 'react-router-dom';
 
 const DashboardHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -34,7 +42,6 @@ const DashboardHeader = () => {
     }
   });
 
-  // Fetch notifications with error handling
   const { data: notifications, error: notificationsError } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
@@ -56,13 +63,15 @@ const DashboardHeader = () => {
       
       return data || [];
     },
-    retry: 1, // Only retry once if the query fails
+    retry: 1,
   });
 
   const hasUnreadNotifications = notifications && notifications.length > 0;
 
-  // If there's an error fetching notifications, we'll still render the header
-  // but without the notification count
+  const handleSettingsClick = () => {
+    navigate('/creator/settings');
+  };
+
   return (
     <div className="flex justify-end items-center space-x-4 mb-8">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -106,12 +115,22 @@ const DashboardHeader = () => {
           </div>
         </PopoverContent>
       </Popover>
-      <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20">
-        <AvatarImage src="" alt="Profile" />
-        <AvatarFallback className="bg-nino-primary text-nino-white">
-          {profile?.first_name?.[0]}{profile?.last_name?.[0]}
-        </AvatarFallback>
-      </Avatar>
+      
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20 cursor-pointer">
+            <AvatarImage src="" alt="Profile" />
+            <AvatarFallback className="bg-nino-primary text-nino-white">
+              {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+            </AvatarFallback>
+          </Avatar>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={handleSettingsClick} className="cursor-pointer">
+            Settings
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };

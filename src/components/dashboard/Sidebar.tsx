@@ -5,6 +5,7 @@ import {
   FileText,
   Calendar,
   MessageSquare,
+  Settings,
   LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
