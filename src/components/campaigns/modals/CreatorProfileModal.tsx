@@ -1,9 +1,12 @@
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CheckSquare, XSquare, MessageSquare, Instagram, Globe } from "lucide-react";
+import { toast } from "sonner";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -11,7 +14,7 @@ interface CreatorProfileModalProps {
   creator: any;
   coverLetter: string;
   onUpdateStatus: (status: 'accepted' | 'rejected') => void;
-  onMessageCreator?: (userId: string) => void;
+  onMessageCreator: () => void;
 }
 
 const CreatorProfileModal = ({ 
@@ -20,113 +23,116 @@ const CreatorProfileModal = ({
   creator, 
   coverLetter,
   onUpdateStatus,
+  onMessageCreator
 }: CreatorProfileModalProps) => {
-  console.log('Creator data in modal:', {
-    creator,
-    profileImage: creator?.profile_image_url,
-    profile: creator?.profile
-  });
-
   const handleAccept = () => {
     onUpdateStatus('accepted');
+    toast.success("Application accepted successfully");
     onClose();
   };
 
   const handleReject = () => {
     onUpdateStatus('rejected');
+    toast.error("Application rejected");
     onClose();
   };
 
-  const fullName = `${creator?.profile?.first_name || ''} ${creator?.profile?.last_name || ''}`.trim();
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl p-0 rounded-3xl overflow-hidden bg-white shadow-2xl">
-        <div className="flex flex-col h-[80vh]">
-          <div className="flex flex-1 overflow-hidden">
-            {/* Left side - Profile Photo */}
-            <div className="w-1/2 relative bg-[#F5F5F7]">
-              <div className="w-full h-full">
-                <Avatar className="w-full h-full rounded-none">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-nino-bg rounded-3xl">
+        <div className="relative">
+          <div className="p-8">
+            <DialogHeader>
+              <div className="flex flex-col items-center space-y-6">
+                <Avatar className="w-28 h-28 border-4 border-white shadow-lg">
                   <AvatarImage 
                     src={creator?.profile_image_url} 
-                    alt={fullName}
-                    className="object-cover w-full h-full"
+                    alt={`${creator?.profile?.first_name} ${creator?.profile?.last_name}`}
                   />
-                  <AvatarFallback className="text-8xl bg-[#F5F5F7] text-[#86868B] rounded-none h-full">
-                    {creator?.profile?.first_name?.[0]}{creator?.profile?.last_name?.[0]}
+                  <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-2xl font-medium">
+                    {getInitials(
+                      creator?.profile?.first_name || '',
+                      creator?.profile?.last_name || ''
+                    )}
                   </AvatarFallback>
                 </Avatar>
-              </div>
-            </div>
-
-            {/* Right side - Information */}
-            <div className="w-1/2 bg-[#1D1D1F] text-white overflow-y-auto">
-              <div className="p-10 space-y-8">
-                {/* Creator Info */}
-                <div className="space-y-3">
-                  <h2 className="text-3xl font-medium tracking-tight">{fullName}</h2>
-                  <p className="text-[#86868B] text-lg">
-                    {new Date().toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </p>
+                <div className="text-center space-y-2">
+                  <h2 className="text-2xl font-semibold text-nino-text">
+                    {creator?.profile?.first_name} {creator?.profile?.last_name}
+                  </h2>
                   {creator?.location && (
-                    <p className="text-[#86868B] text-lg">{creator.location}</p>
+                    <p className="text-nino-gray text-sm">📍 {creator.location}</p>
                   )}
                 </div>
+              </div>
+            </DialogHeader>
 
-                {/* Project Description */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-medium">Project Description</h3>
-                  <p className="text-[#86868B] leading-relaxed text-lg">
-                    {coverLetter}
-                  </p>
-                </div>
+            <div className="mt-8 space-y-6">
+              {/* Social Links */}
+              <div className="flex justify-center gap-4">
+                {creator?.instagram && (
+                  <a
+                    href={`https://instagram.com/${creator.instagram}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-5 py-2.5 rounded-2xl bg-gradient-to-r from-nino-primary/90 to-nino-primary text-white hover:opacity-90 transition-all duration-300 shadow-sm hover:shadow-md"
+                  >
+                    <Instagram className="w-5 h-5 mr-2" />
+                    Instagram
+                  </a>
+                )}
+                {creator?.website && (
+                  <a
+                    href={creator.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-5 py-2.5 rounded-2xl bg-nino-text text-white hover:bg-nino-text/90 transition-all duration-300 shadow-sm hover:shadow-md"
+                  >
+                    <Globe className="w-5 h-5 mr-2" />
+                    Website
+                  </a>
+                )}
+              </div>
 
-                {/* Payment Details */}
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-medium">Payment</h3>
-                    <p className="text-[#86868B] text-lg">$0.00</p>
-                  </div>
+              {/* Application Message */}
+              <div className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl border border-nino-primary/10">
+                <h3 className="font-medium text-nino-text mb-3">Application Message</h3>
+                <p className="text-nino-gray leading-relaxed">{coverLetter}</p>
+              </div>
 
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-medium">Compensation</h3>
-                    <p className="text-[#86868B] text-lg">{creator?.compensation || 'Not specified'}</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-medium">Project Deliverables</h3>
-                    <p className="text-[#86868B] text-lg">{creator?.deliverables || 'Not specified'}</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-medium">Requirements</h3>
-                    <p className="text-[#86868B] text-lg">{creator?.requirements || 'Not specified'}</p>
-                  </div>
+              {/* Action Buttons */}
+              <div className="space-y-4 pt-4">
+                <Button
+                  onClick={onMessageCreator}
+                  className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  <MessageSquare className="w-5 h-5 mr-2" />
+                  Begin Chat
+                </Button>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <Button
+                    onClick={handleAccept}
+                    className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                  >
+                    <CheckSquare className="w-5 h-5 mr-2" />
+                    Accept
+                  </Button>
+                  <Button
+                    onClick={handleReject}
+                    variant="outline"
+                    className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                  >
+                    <XSquare className="w-5 h-5 mr-2" />
+                    Reject
+                  </Button>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Footer with Actions */}
-          <div className="p-6 bg-[#1D1D1F] border-t border-[#2D2D2F] flex justify-between items-center">
-            <Button
-              onClick={handleReject}
-              variant="outline"
-              className="px-8 py-6 text-red-500 border-red-500 hover:bg-red-500/10 transition-colors duration-200"
-            >
-              Delete Proposal
-            </Button>
-            <Button
-              onClick={handleAccept}
-              className="px-8 py-6 bg-[#2ED477] hover:bg-[#2ED477]/90 text-white transition-colors duration-200"
-            >
-              Accept Proposal
-            </Button>
           </div>
         </div>
       </DialogContent>

@@ -31,13 +31,7 @@ const CampaignCard = ({
   };
 
   const handleViewProfile = (application: any) => {
-    // Ensure we pass the complete creator object with profile image
-    const creator = {
-      ...application.creator,
-      profile: application.creator?.profile,
-      profile_image_url: application.creator?.profile_image_url
-    };
-    setSelectedCreator(creator);
+    setSelectedCreator(application.creator);
     setSelectedApplication(application);
   };
 
