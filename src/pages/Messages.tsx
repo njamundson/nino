@@ -50,7 +50,7 @@ const Messages = () => {
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
       if (error) {
         console.error("Error fetching messages:", error);
@@ -70,8 +70,8 @@ const Messages = () => {
           schema: 'public',
           table: 'messages'
         },
-        (payload) => {
-          console.log('New message received:', payload);
+        () => {
+          console.log('New message received, refetching...');
           refetch();
         }
       )
@@ -92,35 +92,46 @@ const Messages = () => {
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to send messages",
-        variant: "destructive",
-      });
-      return;
-    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to send messages",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    const { error } = await supabase.from("messages").insert({
-      content: newMessage,
-      sender_id: user.id,
-      receiver_id: selectedChat,
-      read: false,
-    });
+      const { error } = await supabase
+        .from("messages")
+        .insert({
+          content: newMessage,
+          sender_id: user.id,
+          receiver_id: selectedChat,
+          read: false,
+        });
 
-    if (error) {
+      if (error) {
+        console.error("Error sending message:", error);
+        toast({
+          title: "Error sending message",
+          description: "Please try again later",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setNewMessage("");
+      await refetch();
+    } catch (error) {
       console.error("Error sending message:", error);
       toast({
         title: "Error sending message",
         description: "Please try again later",
         variant: "destructive",
       });
-      return;
     }
-
-    setNewMessage("");
-    refetch();
   };
 
   const selectedChatProfile = messages?.find(m => {
