@@ -20,7 +20,14 @@ export const useCreatorSettings = () => {
     try {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // First get profile data
       const { data: profile, error: profileError } = await supabase
@@ -29,7 +36,10 @@ export const useCreatorSettings = () => {
         .eq('id', user.id)
         .maybeSingle();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        throw profileError;
+      }
 
       // Then get creator data
       const { data: creator, error: creatorError } = await supabase
@@ -38,7 +48,10 @@ export const useCreatorSettings = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (creatorError) throw creatorError;
+      if (creatorError) {
+        console.error('Error fetching creator:', creatorError);
+        throw creatorError;
+      }
 
       if (profile && creator) {
         setCreatorData({
@@ -51,9 +64,15 @@ export const useCreatorSettings = () => {
           specialties: creator.specialties || [],
         });
         setProfileImage(creator.profile_image_url);
+      } else {
+        toast({
+          title: "No Profile Found",
+          description: "Please complete your creator onboarding first",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error('Error fetching creator data:', error);
+      console.error('Error in fetchCreatorData:', error);
       toast({
         title: "Error",
         description: "Failed to load creator data",
