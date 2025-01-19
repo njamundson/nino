@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 export const useCreatorSettings = () => {
   const { toast } = useToast();
@@ -67,7 +67,7 @@ export const useCreatorSettings = () => {
         console.error('Error in fetchCreatorData:', error);
         toast({
           title: "Error",
-          description: "Failed to load creator data",
+          description: "Failed to load creator data. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -99,7 +99,7 @@ export const useCreatorSettings = () => {
 
       if (profileError) throw profileError;
 
-      // Get creator record
+      // Get creator id first
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id')
@@ -133,7 +133,7 @@ export const useCreatorSettings = () => {
       console.error('Error saving creator data:', error);
       toast({
         title: "Error",
-        description: "Failed to update profile",
+        description: "Failed to save changes. Please try again.",
         variant: "destructive",
       });
     } finally {
