@@ -23,27 +23,51 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Check initial session
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        console.log('No active session found during initialization');
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          if (error.message.includes('refresh_token_not_found')) {
+            console.log('Refresh token not found, signing out');
+            await supabase.auth.signOut();
+            toast({
+              title: "Session expired",
+              description: "Please sign in again to continue.",
+              variant: "destructive",
+            });
+            navigate('/');
+            return;
+          }
+          throw error;
+        }
+
+        if (!session) {
+          console.log('No active session found during initialization');
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('Session check error:', error);
         navigate('/');
+      } finally {
+        setIsInitialized(true);
       }
-      setIsInitialized(true);
     };
 
     checkSession();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        console.log('User signed out or deleted');
         toast({
           title: "Session ended",
           description: "Please sign in again to continue.",
         });
         navigate('/');
+      } else if (event === 'TOKEN_REFRESHED') {
+        console.log('Token refreshed successfully');
       } else if (event === 'SIGNED_IN') {
         console.log('User signed in');
         // Don't navigate here - let the protected routes handle the navigation
