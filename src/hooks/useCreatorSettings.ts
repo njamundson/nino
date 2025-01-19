@@ -50,25 +50,20 @@ export const useCreatorSettings = () => {
         throw creatorError;
       }
 
-      if (profile) {
-        setCreatorData(prevData => ({
-          ...prevData,
-          firstName: profile.first_name || "",
-          lastName: profile.last_name || "",
-        }));
-      }
+      setCreatorData({
+        firstName: profile?.first_name || "",
+        lastName: profile?.last_name || "",
+        bio: creator?.bio || "",
+        location: creator?.location || "",
+        instagram: creator?.instagram || "",
+        website: creator?.website || "",
+        specialties: creator?.specialties || [],
+      });
 
-      if (creator) {
-        setCreatorData(prevData => ({
-          ...prevData,
-          bio: creator.bio || "",
-          location: creator.location || "",
-          instagram: creator.instagram || "",
-          website: creator.website || "",
-          specialties: creator.specialties || [],
-        }));
+      if (creator?.profile_image_url) {
         setProfileImage(creator.profile_image_url);
       }
+
     } catch (error) {
       console.error('Error in fetchCreatorData:', error);
       toast({
