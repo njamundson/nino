@@ -30,9 +30,15 @@ const Proposals = () => {
     }
   };
 
-  // Filter applications based on their type
-  const pendingProposals = applications?.filter(app => app.status === 'pending' && app.type === 'invitation') || [];
-  const myApplications = applications?.filter(app => app.type === 'application') || [];
+  // Filter applications based on their type and status
+  const pendingProposals = applications?.filter(app => 
+    app.status === 'pending' && app.type === 'invitation'
+  ) || [];
+  
+  // Show all applications regardless of status
+  const myApplications = applications?.filter(app => 
+    app.type === 'application'
+  ) || [];
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
