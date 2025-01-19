@@ -1,106 +1,81 @@
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Bell, Mail, MessageSquare, Calendar, Star } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-interface NotificationSettings {
-  push_enabled: boolean;
-  email_enabled: boolean;
-  message_notifications: boolean;
-  application_updates: boolean;
-  marketing_updates: boolean;
-}
-
-const defaultSettings: NotificationSettings = {
-  push_enabled: true,
-  email_enabled: true,
-  message_notifications: true,
-  application_updates: true,
-  marketing_updates: true,
-};
+import { useToast } from "@/hooks/use-toast";
 
 const NotificationSettings = () => {
   const { toast } = useToast();
-  const [settings, setSettings] = useState<NotificationSettings>(defaultSettings);
-  const [brandId, setBrandId] = useState<string | null>(null);
+  const [settings, setSettings] = useState({
+    push_enabled: true,
+    email_enabled: true,
+    message_notifications: true,
+    application_updates: true,
+    marketing_updates: false,
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchBrandId = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+    fetchNotificationSettings();
+  }, []);
 
-        const { data: brandData, error: brandError } = await supabase
-          .from('brands')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        
-        if (brandError) throw brandError;
-        if (!brandData) return;
+  const fetchNotificationSettings = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-        setBrandId(brandData.id);
+      const { data: brand } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
 
-        const { data: notificationSettings, error: settingsError } = await supabase
+      if (brand) {
+        const { data: notificationSettings } = await supabase
           .from('brand_notification_settings')
           .select('*')
-          .eq('brand_id', brandData.id)
-          .maybeSingle();
-        
-        if (settingsError) throw settingsError;
+          .eq('brand_id', brand.id)
+          .single();
 
         if (notificationSettings) {
           setSettings(notificationSettings);
-        } else {
-          // Create default settings
-          const { data: newSettings, error: createError } = await supabase
-            .from('brand_notification_settings')
-            .insert([{ 
-              brand_id: brandData.id,
-              ...defaultSettings 
-            }])
-            .select()
-            .single();
-          
-          if (createError) throw createError;
-          if (newSettings) {
-            setSettings(newSettings);
-          }
         }
-      } catch (error) {
-        console.error('Error fetching notification settings:', error);
+      }
+    } catch (error) {
+      console.error('Error fetching notification settings:', error);
+    }
+  };
+
+  const handleToggle = async (field: string, value: boolean) => {
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: brand } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (brand) {
+        const { error } = await supabase
+          .from('brand_notification_settings')
+          .upsert({
+            brand_id: brand.id,
+            [field]: value,
+          });
+
+        if (error) throw error;
+
+        setSettings(prev => ({ ...prev, [field]: value }));
         toast({
-          title: "Error",
-          description: "Failed to load notification settings",
-          variant: "destructive",
+          title: "Success",
+          description: "Notification settings updated",
         });
       }
-    };
-
-    fetchBrandId();
-  }, [toast]);
-
-  const handleToggle = async (setting: keyof NotificationSettings) => {
-    if (!brandId) return;
-
-    try {
-      const newSettings = { ...settings, [setting]: !settings[setting] };
-      setSettings(newSettings);
-
-      const { error } = await supabase
-        .from('brand_notification_settings')
-        .update(newSettings)
-        .eq('brand_id', brandId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Notification settings updated",
-      });
     } catch (error) {
       console.error('Error updating notification settings:', error);
       toast({
@@ -108,87 +83,76 @@ const NotificationSettings = () => {
         description: "Failed to update notification settings",
         variant: "destructive",
       });
-      setSettings(settings); // Revert on error
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm">
-      <h3 className="text-xl font-semibold text-nino-text mb-6">Notifications</h3>
-      
+      <div className="flex items-center gap-2 mb-6">
+        <Bell className="w-5 h-5 text-nino-primary" />
+        <h3 className="text-xl font-semibold text-nino-text">Notifications</h3>
+      </div>
+
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Bell className="w-5 h-5 text-nino-primary" />
-            <div>
-              <Label htmlFor="push-notifications" className="text-base">Push Notifications</Label>
-              <p className="text-sm text-nino-gray">Receive notifications on your device</p>
-            </div>
+          <div className="space-y-0.5">
+            <Label className="text-base">Push Notifications</Label>
+            <p className="text-sm text-nino-gray">Receive notifications on your device</p>
           </div>
-          <Switch 
-            id="push-notifications" 
+          <Switch
             checked={settings.push_enabled}
-            onCheckedChange={() => handleToggle('push_enabled')} 
+            onCheckedChange={(checked) => handleToggle('push_enabled', checked)}
+            disabled={loading}
           />
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Mail className="w-5 h-5 text-nino-primary" />
-            <div>
-              <Label htmlFor="email-notifications" className="text-base">Email Notifications</Label>
-              <p className="text-sm text-nino-gray">Receive updates via email</p>
-            </div>
+          <div className="space-y-0.5">
+            <Label className="text-base">Email Notifications</Label>
+            <p className="text-sm text-nino-gray">Receive updates via email</p>
           </div>
-          <Switch 
-            id="email-notifications" 
+          <Switch
             checked={settings.email_enabled}
-            onCheckedChange={() => handleToggle('email_enabled')} 
+            onCheckedChange={(checked) => handleToggle('email_enabled', checked)}
+            disabled={loading}
           />
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <MessageSquare className="w-5 h-5 text-nino-primary" />
-            <div>
-              <Label htmlFor="message-notifications" className="text-base">Message Notifications</Label>
-              <p className="text-sm text-nino-gray">Get notified about new messages</p>
-            </div>
+          <div className="space-y-0.5">
+            <Label className="text-base">Message Notifications</Label>
+            <p className="text-sm text-nino-gray">Get notified about new messages</p>
           </div>
-          <Switch 
-            id="message-notifications" 
+          <Switch
             checked={settings.message_notifications}
-            onCheckedChange={() => handleToggle('message_notifications')} 
+            onCheckedChange={(checked) => handleToggle('message_notifications', checked)}
+            disabled={loading}
           />
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Calendar className="w-5 h-5 text-nino-primary" />
-            <div>
-              <Label htmlFor="application-updates" className="text-base">Application Updates</Label>
-              <p className="text-sm text-nino-gray">Get notified about new applications</p>
-            </div>
+          <div className="space-y-0.5">
+            <Label className="text-base">Application Updates</Label>
+            <p className="text-sm text-nino-gray">Get notified about application status changes</p>
           </div>
-          <Switch 
-            id="application-updates" 
+          <Switch
             checked={settings.application_updates}
-            onCheckedChange={() => handleToggle('application_updates')} 
+            onCheckedChange={(checked) => handleToggle('application_updates', checked)}
+            disabled={loading}
           />
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Star className="w-5 h-5 text-nino-primary" />
-            <div>
-              <Label htmlFor="marketing-updates" className="text-base">Marketing Updates</Label>
-              <p className="text-sm text-nino-gray">Stay informed about new features</p>
-            </div>
+          <div className="space-y-0.5">
+            <Label className="text-base">Marketing Updates</Label>
+            <p className="text-sm text-nino-gray">Receive marketing and promotional emails</p>
           </div>
-          <Switch 
-            id="marketing-updates" 
+          <Switch
             checked={settings.marketing_updates}
-            onCheckedChange={() => handleToggle('marketing_updates')} 
+            onCheckedChange={(checked) => handleToggle('marketing_updates', checked)}
+            disabled={loading}
           />
         </div>
       </div>
