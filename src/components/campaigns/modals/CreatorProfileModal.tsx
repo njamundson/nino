@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckSquare, XSquare, Instagram, Link, MessageSquare } from "lucide-react";
+import { CheckSquare, XSquare, Instagram, Link } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -46,10 +46,10 @@ const CreatorProfileModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-nino-bg/95 backdrop-blur-sm border-0 shadow-xl">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-[#F1F0FB] border-0 shadow-xl rounded-3xl">
         <DialogHeader className="text-center pb-6">
           <div className="flex flex-col items-center space-y-4">
-            <Avatar className="h-32 w-32 ring-4 ring-white shadow-lg">
+            <Avatar className="h-32 w-32 ring-4 ring-[#9b87f5] shadow-lg">
               {creator?.profile_image_url ? (
                 <AvatarImage
                   src={creator.profile_image_url}
@@ -57,7 +57,7 @@ const CreatorProfileModal = ({
                   className="object-cover"
                 />
               ) : (
-                <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-3xl font-medium">
+                <AvatarFallback className="bg-[#E5DEFF] text-[#6E59A5] text-3xl font-medium">
                   {getInitials(
                     creator?.profile?.first_name || '',
                     creator?.profile?.last_name || ''
@@ -66,11 +66,11 @@ const CreatorProfileModal = ({
               )}
             </Avatar>
             <div className="space-y-2">
-              <h2 className="text-3xl font-semibold text-nino-text tracking-tight">
+              <h2 className="text-3xl font-semibold text-[#1A1F2C] tracking-tight">
                 {creatorName}
               </h2>
               {creator?.location && (
-                <p className="text-nino-gray flex items-center justify-center gap-2">
+                <p className="text-[#8E9196] flex items-center justify-center gap-2">
                   <span>📍</span> {creator.location}
                 </p>
               )}
@@ -86,7 +86,7 @@ const CreatorProfileModal = ({
                 href={`https://instagram.com/${creator.instagram}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-nino-text hover:bg-nino-primary/10 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9b87f5] text-white hover:bg-[#7E69AB] transition-colors"
               >
                 <Instagram className="w-5 h-5" />
                 <span>Instagram</span>
@@ -97,7 +97,7 @@ const CreatorProfileModal = ({
                 href={creator.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-nino-text hover:bg-nino-primary/10 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#9b87f5] text-white hover:bg-[#7E69AB] transition-colors"
               >
                 <Link className="w-5 h-5" />
                 <span>Website</span>
@@ -107,22 +107,22 @@ const CreatorProfileModal = ({
 
           {/* Bio Section */}
           {creator?.bio && (
-            <div className="space-y-3 bg-white/50 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-nino-text">About</h3>
-              <p className="text-nino-gray leading-relaxed">{creator.bio}</p>
+            <div className="space-y-3 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-[#1A1F2C]">About</h3>
+              <p className="text-[#8E9196] leading-relaxed">{creator.bio}</p>
             </div>
           )}
 
           {/* Specialties Section */}
           {creator?.specialties && creator.specialties.length > 0 && (
-            <div className="space-y-3 bg-white/50 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
+            <div className="space-y-3 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-[#1A1F2C]">Specialties</h3>
               <div className="flex flex-wrap gap-2">
                 {creator.specialties.map((specialty: string, index: number) => (
                   <Badge 
                     key={index}
                     variant="outline"
-                    className="px-3 py-1 rounded-full bg-white/80"
+                    className="px-3 py-1 rounded-full bg-[#E5DEFF] text-[#6E59A5] border-[#9b87f5] hover:bg-[#D6BCFA]"
                   >
                     {specialty}
                   </Badge>
@@ -132,9 +132,9 @@ const CreatorProfileModal = ({
           )}
 
           {/* Application Message */}
-          <div className="space-y-3 bg-white/50 rounded-2xl p-6">
-            <h3 className="text-lg font-semibold text-nino-text">Application Message</h3>
-            <p className="text-nino-gray leading-relaxed bg-white/80 p-4 rounded-xl">
+          <div className="space-y-3 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-[#1A1F2C]">Application Message</h3>
+            <p className="text-[#8E9196] leading-relaxed bg-[#F1F0FB] p-4 rounded-xl">
               {coverLetter}
             </p>
           </div>
@@ -143,7 +143,7 @@ const CreatorProfileModal = ({
           <div className="grid grid-cols-2 gap-4 pt-4">
             <Button
               onClick={handleAccept}
-              className="bg-green-500 hover:bg-green-600 text-white col-span-1"
+              className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white col-span-1 shadow-sm transition-all duration-300 hover:shadow-md"
             >
               <CheckSquare className="w-5 h-5 mr-2" />
               Accept Application
@@ -151,7 +151,7 @@ const CreatorProfileModal = ({
             <Button
               onClick={handleReject}
               variant="outline"
-              className="border-red-500 text-red-500 hover:bg-red-50 col-span-1"
+              className="border-[#D946EF] text-[#D946EF] hover:bg-[#FFDEE2] hover:text-[#D946EF] col-span-1 shadow-sm transition-all duration-300 hover:shadow-md"
             >
               <XSquare className="w-5 h-5 mr-2" />
               Reject Application
