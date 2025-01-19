@@ -25,6 +25,7 @@ const RecentMessages = () => {
           )
         `)
         .eq('receiver_id', user.id)
+        .neq('sender_id', user.id) // Exclude messages sent by the user themselves
         .is('deleted_at', null)  // Only show non-deleted messages
         .order('created_at', { ascending: false })
         .limit(3);
