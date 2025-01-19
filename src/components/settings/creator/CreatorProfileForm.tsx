@@ -54,6 +54,7 @@ const CreatorProfileForm = ({
           value={creatorData.bio}
           onChange={(e) => onUpdateField("bio", e.target.value)}
           disabled={loading}
+          placeholder="Tell us about yourself..."
           className="bg-white/50 resize-none h-32"
         />
       </div>
