@@ -28,15 +28,18 @@ const RecentMessages = () => {
           )
         `)
         .eq('receiver_id', user.id)
-        .neq('sender_id', user.id) // Exclude messages sent by the user themselves
-        .is('deleted_at', null)  // Only show non-deleted messages
+        .neq('sender_id', user.id)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(3);
       
-      console.log('Recent messages:', data);
       return data || [];
     }
   });
+
+  const handleMessagesClick = () => {
+    navigate('/creator/messages');
+  };
 
   return (
     <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
@@ -44,7 +47,7 @@ const RecentMessages = () => {
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-nino-text">Recent Messages</h3>
           <button 
-            onClick={() => navigate('/brand/messages')}
+            onClick={handleMessagesClick}
             className="p-2 hover:bg-nino-bg rounded-full transition-colors"
           >
             <MessageSquare className="w-5 h-5 text-nino-primary" />
