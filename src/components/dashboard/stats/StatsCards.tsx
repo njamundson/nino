@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
 import { Briefcase, FilePlus } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const StatsCards = () => {
+  const queryClient = useQueryClient();
+
   const { data: activeProjects } = useQuery({
     queryKey: ['active-projects'],
     queryFn: async () => {
