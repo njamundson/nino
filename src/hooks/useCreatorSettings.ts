@@ -16,65 +16,67 @@ export const useCreatorSettings = () => {
     specialties: [] as string[],
   });
 
-  const fetchCreatorData = async () => {
-    try {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.error('No authenticated user found');
-        return;
-      }
+  useEffect(() => {
+    const fetchCreatorData = async () => {
+      try {
+        setLoading(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          console.error('No authenticated user found');
+          return;
+        }
 
-      // Get profile data
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
+        // Get profile data
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', user.id)
+          .maybeSingle();
 
-      if (profileError) {
-        console.error('Error fetching profile:', profileError);
-        throw profileError;
-      }
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          throw profileError;
+        }
 
-      // Get creator data
-      const { data: creator, error: creatorError } = await supabase
-        .from('creators')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        // Get creator data
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (creatorError) {
-        console.error('Error fetching creator:', creatorError);
-        throw creatorError;
-      }
+        if (creatorError) {
+          console.error('Error fetching creator:', creatorError);
+          throw creatorError;
+        }
 
-      if (creator && profile) {
-        setCreatorData({
-          firstName: profile.first_name || "",
-          lastName: profile.last_name || "",
-          bio: creator.bio || "",
-          location: creator.location || "",
-          instagram: creator.instagram || "",
-          website: creator.website || "",
-          specialties: creator.specialties || [],
+        if (profile && creator) {
+          setCreatorData({
+            firstName: profile.first_name || "",
+            lastName: profile.last_name || "",
+            bio: creator.bio || "",
+            location: creator.location || "",
+            instagram: creator.instagram || "",
+            website: creator.website || "",
+            specialties: creator.specialties || [],
+          });
+          setProfileImage(creator.profile_image_url);
+        }
+      } catch (error) {
+        console.error('Error in fetchCreatorData:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load creator data",
+          variant: "destructive",
         });
-
-        setProfileImage(creator.profile_image_url);
+      } finally {
+        setLoading(false);
       }
+    };
 
-    } catch (error) {
-      console.error('Error in fetchCreatorData:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load profile data",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchCreatorData();
+  }, [toast]);
 
   const handleSave = async () => {
     try {
@@ -82,12 +84,7 @@ export const useCreatorSettings = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast({
-          title: "Error",
-          description: "No authenticated user found",
-          variant: "destructive",
-        });
-        return;
+        throw new Error('No authenticated user found');
       }
 
       // Update profile
@@ -103,18 +100,17 @@ export const useCreatorSettings = () => {
       if (profileError) throw profileError;
 
       // Get creator record
-      const { data: creator } = await supabase
+      const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (!creator) {
-        throw new Error('Creator profile not found');
-      }
+      if (creatorError) throw creatorError;
+      if (!creator) throw new Error('Creator profile not found');
 
       // Update creator
-      const { error: creatorError } = await supabase
+      const { error: updateError } = await supabase
         .from('creators')
         .update({
           bio: creatorData.bio,
@@ -127,7 +123,7 @@ export const useCreatorSettings = () => {
         })
         .eq('id', creator.id);
 
-      if (creatorError) throw creatorError;
+      if (updateError) throw updateError;
 
       toast({
         title: "Success",
@@ -144,10 +140,6 @@ export const useCreatorSettings = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchCreatorData();
-  }, []);
 
   return {
     loading,
