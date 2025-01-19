@@ -3,30 +3,35 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 import ProfileImageSection from "./profile/ProfileImageSection";
 import BrandDetailsForm from "./profile/BrandDetailsForm";
 import ContactInformationForm from "./profile/ContactInformationForm";
-import AccountManagersSection from "./profile/AccountManagersSection";
+import SecuritySettings from "./profile/SecuritySettings";
+import NotificationPreferences from "./profile/NotificationPreferences";
 
 const ProfileSettings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [loginHistory, setLoginHistory] = useState([]);
   const [brandData, setBrandData] = useState({
     company_name: "",
+    brand_type: "hotel",
     description: "",
     website: "",
     instagram: "",
     location: "",
     phone_number: "",
     support_email: "",
-    email: "",
-    profile_image_url: "",
+    sms_notifications_enabled: false,
+    two_factor_enabled: false,
   });
 
   useEffect(() => {
     fetchBrandData();
+    fetchLoginHistory();
   }, []);
 
   const fetchBrandData = async () => {
@@ -38,21 +43,22 @@ const ProfileSettings = () => {
         .from('brands')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       
       if (brand) {
         setBrandData({
           company_name: brand.company_name || "",
+          brand_type: brand.brand_type || "hotel",
           description: brand.description || "",
           website: brand.website || "",
           instagram: brand.instagram || "",
           location: brand.location || "",
           phone_number: brand.phone_number || "",
           support_email: brand.support_email || "",
-          email: user.email || "",
-          profile_image_url: brand.profile_image_url || "",
+          sms_notifications_enabled: brand.sms_notifications_enabled || false,
+          two_factor_enabled: brand.two_factor_enabled || false,
         });
         setProfileImage(brand.profile_image_url);
       }
@@ -63,6 +69,32 @@ const ProfileSettings = () => {
         description: "Failed to load brand data",
         variant: "destructive",
       });
+    }
+  };
+
+  const fetchLoginHistory = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: brand } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (brand) {
+        const { data: history } = await supabase
+          .from('brand_login_history')
+          .select('*')
+          .eq('brand_id', brand.id)
+          .order('login_timestamp', { ascending: false })
+          .limit(5);
+
+        setLoginHistory(history || []);
+      }
+    } catch (error) {
+      console.error('Error fetching login history:', error);
     }
   };
 
@@ -80,12 +112,15 @@ const ProfileSettings = () => {
         .from('brands')
         .update({
           company_name: brandData.company_name,
+          brand_type: brandData.brand_type,
           description: brandData.description,
           website: brandData.website,
           instagram: brandData.instagram,
           location: brandData.location,
           phone_number: brandData.phone_number,
           support_email: brandData.support_email,
+          sms_notifications_enabled: brandData.sms_notifications_enabled,
+          two_factor_enabled: brandData.two_factor_enabled,
           profile_image_url: profileImage,
           updated_at: new Date().toISOString(),
         })
@@ -129,7 +164,18 @@ const ProfileSettings = () => {
           onUpdateField={handleUpdateField}
         />
 
-        <AccountManagersSection />
+        <NotificationPreferences 
+          brandData={brandData}
+          loading={loading}
+          onUpdateField={handleUpdateField}
+        />
+
+        <SecuritySettings 
+          brandData={brandData}
+          loading={loading}
+          loginHistory={loginHistory}
+          onUpdateField={handleUpdateField}
+        />
 
         <div className="flex justify-end">
           <Button
@@ -139,7 +185,7 @@ const ProfileSettings = () => {
           >
             {loading ? (
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 <span>Saving...</span>
               </div>
             ) : (
