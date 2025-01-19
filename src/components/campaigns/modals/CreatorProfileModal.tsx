@@ -65,8 +65,9 @@ const CreatorProfileModal = ({
           </div>
 
           {/* Right side - Information */}
-          <div className="w-1/2 p-8 space-y-6">
-            <div>
+          <div className="w-1/2 p-8 flex flex-col">
+            {/* Header Section */}
+            <div className="mb-6">
               <h2 className="text-3xl font-semibold text-[#1A1F2C] mb-2">
                 {fullName}
               </h2>
@@ -77,14 +78,8 @@ const CreatorProfileModal = ({
               )}
             </div>
 
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-[#1A1F2C]">Proposal</h3>
-              <div className="bg-[#F1F0FB] p-4 rounded-xl text-gray-700 leading-relaxed">
-                {coverLetter}
-              </div>
-            </div>
-
-            <div className="flex gap-3">
+            {/* Social Links */}
+            <div className="flex gap-3 mb-6">
               {creator?.instagram && (
                 <Button
                   variant="outline"
@@ -117,7 +112,16 @@ const CreatorProfileModal = ({
               )}
             </div>
 
-            <div className="pt-4 space-y-3">
+            {/* Proposal Section */}
+            <div className="flex-1 overflow-y-auto">
+              <h3 className="text-lg font-semibold text-[#1A1F2C] mb-3">Proposal</h3>
+              <div className="bg-[#F1F0FB] p-4 rounded-xl text-gray-700 leading-relaxed">
+                {coverLetter}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-6 space-y-3 mt-auto">
               <Button
                 onClick={handleAccept}
                 className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white"
