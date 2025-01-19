@@ -2,7 +2,7 @@ import { Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface ProfileImageSectionProps {
   profileImage: string | null;
@@ -21,6 +21,17 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
         
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('No authenticated user found');
+
+        // First get the creator record
+        const { data: creator } = await supabase
+          .from('creators')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (!creator) {
+          throw new Error('Creator profile not found');
+        }
 
         const fileExt = file.name.split('.').pop();
         const filePath = `${user.id}-${Date.now()}.${fileExt}`;
@@ -41,7 +52,7 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
         const { error: updateError } = await supabase
           .from('creators')
           .update({ profile_image_url: publicUrl })
-          .eq('user_id', user.id);
+          .eq('id', creator.id);
 
         if (updateError) throw updateError;
 
@@ -55,7 +66,7 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
         console.error('Error uploading image:', error);
         toast({
           title: "Error",
-          description: "Failed to upload image",
+          description: "Failed to upload image. Please try again.",
           variant: "destructive",
         });
       } finally {
