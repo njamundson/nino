@@ -126,7 +126,7 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
     <ScrollArea className="flex-1 px-4">
       <div className="space-y-6 py-4">
         {groupedMessages && Object.entries(groupedMessages).map(([date, dateMessages]) => (
-          <div key={date} className="space-y-4">
+          <div key={date} className="space-y-6">
             <div className="sticky top-0 z-10 flex justify-center">
               <span className="bg-gray-100 px-3 py-1 rounded-full text-xs text-gray-500">
                 {date}
@@ -139,17 +139,20 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
                 <div
                   key={message.id}
                   className={cn(
-                    "flex",
+                    "flex w-full mb-4",
                     isCurrentUser ? "justify-end" : "justify-start"
                   )}
                 >
-                  <div className="group relative">
+                  <div className={cn(
+                    "group relative max-w-[80%] animate-fadeIn",
+                    isCurrentUser ? "items-end" : "items-start"
+                  )}>
                     <div
                       className={cn(
-                        "max-w-[70%] px-4 py-2 rounded-2xl text-sm",
+                        "px-6 py-4 rounded-2xl shadow-sm transition-all duration-200",
                         isCurrentUser
-                          ? "bg-nino-primary text-white"
-                          : "bg-gray-100 text-gray-900"
+                          ? "bg-nino-primary text-white rounded-br-sm"
+                          : "bg-gray-100 text-gray-900 rounded-bl-sm"
                       )}
                     >
                       {message.message_type === 'image' ? (
@@ -168,14 +171,14 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
                           📎 {message.content}
                         </a>
                       ) : (
-                        <p className="leading-relaxed">{message.content}</p>
+                        <p className="leading-relaxed text-[15px]">{message.content}</p>
                       )}
                       
                       {message.is_edited && (
-                        <span className="text-[10px] opacity-70">(edited)</span>
+                        <span className="text-[10px] opacity-70 ml-2">(edited)</span>
                       )}
                       
-                      <p className="text-[10px] mt-1 opacity-70">
+                      <p className="text-[10px] mt-2 opacity-70">
                         {new Date(message.created_at).toLocaleTimeString([], { 
                           hour: '2-digit', 
                           minute: '2-digit'
@@ -185,7 +188,7 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
                       {message.reactions?.length > 0 && (
                         <div className="flex gap-1 mt-2">
                           {message.reactions.map((reaction, index) => (
-                            <span key={index} className="text-sm">
+                            <span key={index} className="text-sm bg-white/10 px-2 py-1 rounded-full">
                               {reaction.emoji}
                             </span>
                           ))}
@@ -193,14 +196,17 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
                       )}
                     </div>
 
-                    <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className={cn(
+                      "absolute top-0 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1",
+                      isCurrentUser ? "left-0 -translate-x-full pl-2" : "right-0 translate-x-full pr-2"
+                    )}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
                             <Smile className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align={isCurrentUser ? "end" : "start"}>
                           {REACTION_EMOJIS.map((emoji) => (
                             <DropdownMenuItem
                               key={emoji}
@@ -217,7 +223,7 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8"
+                            className="h-8 w-8 p-0 hover:bg-gray-100"
                             onClick={() => onEditMessage?.({ id: message.id, content: message.content })}
                           >
                             <Edit className="h-4 w-4" />
@@ -225,7 +231,7 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8"
+                            className="h-8 w-8 p-0 hover:bg-gray-100"
                             onClick={() => handleDeleteMessage(message.id)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -240,8 +246,12 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
           </div>
         ))}
         {typingStatus && (
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <div className="animate-pulse">●●●</div>
+          <div className="flex items-center gap-2 text-sm text-gray-500 animate-pulse">
+            <div className="flex gap-1">
+              <span className="opacity-60">●</span>
+              <span className="opacity-80">●</span>
+              <span>●</span>
+            </div>
             Someone is typing...
           </div>
         )}
