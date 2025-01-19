@@ -22,19 +22,23 @@ export const useCreatorSettings = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch profile data
-      const { data: profile } = await supabase
+      // First get profile data
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      // Fetch creator data
-      const { data: creator } = await supabase
+      if (profileError) throw profileError;
+
+      // Then get creator data
+      const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (creatorError) throw creatorError;
 
       if (profile && creator) {
         setCreatorData({
