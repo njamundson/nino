@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Heart, ThumbsUp, Smile } from "lucide-react";
+import { Smile, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -174,10 +174,6 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
                         <p className="leading-relaxed text-[15px]">{message.content}</p>
                       )}
                       
-                      {message.is_edited && (
-                        <span className="text-[10px] opacity-70 ml-2">(edited)</span>
-                      )}
-                      
                       <p className="text-[10px] mt-2 opacity-70">
                         {new Date(message.created_at).toLocaleTimeString([], { 
                           hour: '2-digit', 
@@ -219,24 +215,14 @@ export const ChatMessages = ({ messages, selectedChat, onEditMessage }: ChatMess
                       </DropdownMenu>
 
                       {isCurrentUser && (
-                        <>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 hover:bg-gray-100"
-                            onClick={() => onEditMessage?.({ id: message.id, content: message.content })}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 hover:bg-gray-100"
-                            onClick={() => handleDeleteMessage(message.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 hover:bg-gray-100"
+                          onClick={() => handleDeleteMessage(message.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       )}
                     </div>
                   </div>
