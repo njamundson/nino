@@ -81,6 +81,7 @@ const PersonalInfoFields = ({
           description: result.formatted,
         }));
         setSuggestions(formattedSuggestions);
+        setOpen(true);
       } else {
         setSuggestions([]);
       }
@@ -92,6 +93,8 @@ const PersonalInfoFields = ({
 
   const handleLocationInputChange = (value: string) => {
     setLocationInput(value);
+    onUpdateField("location", value);
+    
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current);
     }
@@ -116,22 +119,18 @@ const PersonalInfoFields = ({
 
       <div className="space-y-2">
         <Label htmlFor="location" className="text-base">Location *</Label>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Input
-              id="location"
-              value={locationInput}
-              onChange={(e) => handleLocationInputChange(e.target.value)}
-              placeholder="Start typing your location..."
-              className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base w-full"
-              required
-            />
-          </PopoverTrigger>
+        <div className="relative">
+          <Input
+            id="location"
+            value={locationInput}
+            onChange={(e) => handleLocationInputChange(e.target.value)}
+            placeholder="Start typing your location..."
+            className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base w-full"
+            required
+          />
           {suggestions.length > 0 && (
-            <PopoverContent className="p-0" align="start">
+            <div className="absolute w-full z-10 mt-1 bg-white rounded-md shadow-lg">
               <Command>
-                <CommandInput placeholder="Search location..." />
-                <CommandEmpty>No location found.</CommandEmpty>
                 <CommandGroup>
                   {suggestions.map((suggestion, index) => (
                     <CommandItem
@@ -139,7 +138,7 @@ const PersonalInfoFields = ({
                       onSelect={() => {
                         onUpdateField("location", suggestion.description);
                         setLocationInput(suggestion.description);
-                        setOpen(false);
+                        setSuggestions([]);
                       }}
                     >
                       <MapPin className="mr-2 h-4 w-4" />
@@ -148,9 +147,9 @@ const PersonalInfoFields = ({
                   ))}
                 </CommandGroup>
               </Command>
-            </PopoverContent>
+            </div>
           )}
-        </Popover>
+        </div>
       </div>
 
       <div className="space-y-2">
