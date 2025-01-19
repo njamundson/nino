@@ -141,24 +141,29 @@ const PersonalInfoFields = ({
             className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base w-full"
             required
           />
-          {showSuggestions && suggestions.length > 0 && (
+          {showSuggestions && (
             <Command className="absolute w-full z-10 mt-1 bg-white rounded-md shadow-lg border border-gray-200">
+              <CommandInput placeholder="Search locations..." className="hidden" />
               <CommandGroup>
-                {suggestions.map((suggestion, index) => (
-                  <CommandItem
-                    key={index}
-                    onSelect={() => {
-                      onUpdateField("location", suggestion.description);
-                      setLocationInput(suggestion.description);
-                      setSuggestions([]);
-                      setShowSuggestions(false);
-                    }}
-                    className="cursor-pointer hover:bg-gray-100"
-                  >
-                    <MapPin className="mr-2 h-4 w-4" />
-                    {suggestion.description}
-                  </CommandItem>
-                ))}
+                {suggestions.length > 0 ? (
+                  suggestions.map((suggestion, index) => (
+                    <CommandItem
+                      key={index}
+                      onSelect={() => {
+                        onUpdateField("location", suggestion.description);
+                        setLocationInput(suggestion.description);
+                        setSuggestions([]);
+                        setShowSuggestions(false);
+                      }}
+                      className="cursor-pointer hover:bg-gray-100"
+                    >
+                      <MapPin className="mr-2 h-4 w-4" />
+                      {suggestion.description}
+                    </CommandItem>
+                  ))
+                ) : (
+                  <CommandEmpty>No locations found</CommandEmpty>
+                )}
               </CommandGroup>
             </Command>
           )}
