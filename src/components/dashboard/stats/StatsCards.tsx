@@ -7,17 +7,15 @@ const StatsCards = () => {
   const { data: activeProjects } = useQuery({
     queryKey: ['active-projects'],
     queryFn: async () => {
-      const { data: creator, error: creatorError } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
+      const { data: creator } = await supabase
         .from('creators')
         .select('id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
-      if (creatorError) {
-        console.error('Error fetching creator:', creatorError);
-        return 0;
-      }
-      
       if (!creator) return 0;
 
       const { count } = await supabase
@@ -33,16 +31,14 @@ const StatsCards = () => {
   const { data: newProposals } = useQuery({
     queryKey: ['new-proposals'],
     queryFn: async () => {
-      const { data: creator, error: creatorError } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
+      const { data: creator } = await supabase
         .from('creators')
         .select('id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', user.id)
         .maybeSingle();
-
-      if (creatorError) {
-        console.error('Error fetching creator:', creatorError);
-        return 0;
-      }
 
       if (!creator) return 0;
 
@@ -55,6 +51,30 @@ const StatsCards = () => {
       return count || 0;
     }
   });
+
+  // Set up real-time subscription for updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('applications-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'applications'
+        },
+        () => {
+          // Refetch both queries when applications table changes
+          queryClient.invalidateQueries({ queryKey: ['active-projects'] });
+          queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
