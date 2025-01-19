@@ -13,6 +13,7 @@ const ProfileSettings = () => {
     loading,
     profileImage,
     brandData,
+    loginHistory,
     setProfileImage,
     setBrandData,
     handleSave,
@@ -48,6 +49,7 @@ const ProfileSettings = () => {
         <SecuritySettings 
           brandData={brandData}
           loading={loading}
+          loginHistory={loginHistory}
           onUpdateField={handleUpdateField}
         />
 

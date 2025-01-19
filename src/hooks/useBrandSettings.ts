@@ -6,6 +6,7 @@ export const useBrandSettings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [loginHistory, setLoginHistory] = useState<any[]>([]);
   const [brandData, setBrandData] = useState({
     company_name: "",
     brand_type: "hotel",
@@ -18,6 +19,22 @@ export const useBrandSettings = () => {
     sms_notifications_enabled: false,
     two_factor_enabled: false,
   });
+
+  const fetchLoginHistory = async (brandId: string) => {
+    try {
+      const { data: history, error } = await supabase
+        .from('brand_login_history')
+        .select('*')
+        .eq('brand_id', brandId)
+        .order('login_timestamp', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      setLoginHistory(history || []);
+    } catch (error) {
+      console.error('Error fetching login history:', error);
+    }
+  };
 
   const fetchBrandData = async () => {
     try {
@@ -54,6 +71,9 @@ export const useBrandSettings = () => {
           two_factor_enabled: brand.two_factor_enabled || false,
         });
         setProfileImage(brand.profile_image_url);
+        
+        // Fetch login history after getting brand data
+        await fetchLoginHistory(brand.id);
       }
     } catch (error) {
       console.error('Error fetching brand data:', error);
@@ -113,6 +133,7 @@ export const useBrandSettings = () => {
     loading,
     profileImage,
     brandData,
+    loginHistory,
     setProfileImage,
     setBrandData,
     handleSave,
