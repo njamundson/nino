@@ -14,6 +14,10 @@ interface Message {
   receiver_id: string;
   content: string;
   created_at: string;
+  message_type?: string;
+  media_url?: string;
+  media_type?: string;
+  is_edited?: boolean;
   sender_profile?: {
     first_name: string;
     last_name: string;
@@ -28,6 +32,7 @@ const Messages = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [editingMessage, setEditingMessage] = useState<{ id: string; content: string; } | null>(null);
   const { toast } = useToast();
 
   const { data: messages, refetch } = useQuery({
@@ -47,7 +52,8 @@ const Messages = () => {
           receiver_profile:profiles!messages_receiver_id_fkey(
             first_name,
             last_name
-          )
+          ),
+          reactions:message_reactions(*)
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .order("created_at", { ascending: true });
@@ -103,23 +109,29 @@ const Messages = () => {
         return;
       }
 
-      const { error } = await supabase
-        .from("messages")
-        .insert({
-          content: newMessage,
-          sender_id: user.id,
-          receiver_id: selectedChat,
-          read: false,
-        });
+      if (editingMessage) {
+        const { error } = await supabase
+          .from("messages")
+          .update({
+            content: newMessage,
+            is_edited: true,
+          })
+          .eq('id', editingMessage.id);
 
-      if (error) {
-        console.error("Error sending message:", error);
-        toast({
-          title: "Error sending message",
-          description: "Please try again later",
-          variant: "destructive",
-        });
-        return;
+        if (error) throw error;
+        setEditingMessage(null);
+      } else {
+        const { error } = await supabase
+          .from("messages")
+          .insert({
+            content: newMessage,
+            sender_id: user.id,
+            receiver_id: selectedChat,
+            message_type: 'text',
+            read: false,
+          });
+
+        if (error) throw error;
       }
 
       setNewMessage("");
@@ -131,6 +143,11 @@ const Messages = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleEditMessage = (message: { id: string; content: string }) => {
+    setEditingMessage(message);
+    setNewMessage(message.content);
   };
 
   const selectedChatProfile = messages?.find(m => {
@@ -166,6 +183,7 @@ const Messages = () => {
               <ChatMessages
                 messages={messages}
                 selectedChat={selectedChat}
+                onEditMessage={handleEditMessage}
               />
               <ChatInput
                 newMessage={newMessage}
@@ -173,6 +191,9 @@ const Messages = () => {
                 handleSendMessage={handleSendMessage}
                 isRecording={isRecording}
                 setIsRecording={setIsRecording}
+                selectedChat={selectedChat}
+                editingMessage={editingMessage}
+                setEditingMessage={setEditingMessage}
               />
             </>
           ) : (

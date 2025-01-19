@@ -359,30 +359,93 @@ export type Database = {
           },
         ]
       }
+      message_reactions: {
+        Row: {
+          created_at: string | null
+          emoji: string
+          id: string
+          message_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          emoji: string
+          id?: string
+          message_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          emoji?: string
+          id?: string
+          message_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
           created_at: string
+          deleted_at: string | null
           id: string
+          is_edited: boolean | null
+          media_type: string | null
+          media_url: string | null
+          message_type: string | null
+          pinned: boolean | null
           read: boolean | null
           receiver_id: string | null
+          reply_to: string | null
           sender_id: string | null
+          status: string | null
         }
         Insert: {
           content: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
+          is_edited?: boolean | null
+          media_type?: string | null
+          media_url?: string | null
+          message_type?: string | null
+          pinned?: boolean | null
           read?: boolean | null
           receiver_id?: string | null
+          reply_to?: string | null
           sender_id?: string | null
+          status?: string | null
         }
         Update: {
           content?: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
+          is_edited?: boolean | null
+          media_type?: string | null
+          media_url?: string | null
+          message_type?: string | null
+          pinned?: boolean | null
           read?: boolean | null
           receiver_id?: string | null
+          reply_to?: string | null
           sender_id?: string | null
+          status?: string | null
         }
         Relationships: [
           {
@@ -390,6 +453,13 @@ export type Database = {
             columns: ["receiver_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
           {
@@ -492,6 +562,74 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      typing_status: {
+        Row: {
+          chat_with: string | null
+          id: string
+          is_typing: boolean | null
+          last_updated: string | null
+          user_id: string | null
+        }
+        Insert: {
+          chat_with?: string | null
+          id?: string
+          is_typing?: boolean | null
+          last_updated?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          chat_with?: string | null
+          id?: string
+          is_typing?: boolean | null
+          last_updated?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "typing_status_chat_with_fkey"
+            columns: ["chat_with"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "typing_status_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_presence: {
+        Row: {
+          id: string
+          is_online: boolean | null
+          last_seen: string | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          is_online?: boolean | null
+          last_seen?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          is_online?: boolean | null
+          last_seen?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       verification_history: {
         Row: {

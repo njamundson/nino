@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Paperclip, Mic } from "lucide-react";
+import { Send, Paperclip, Mic, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatInputProps {
   newMessage: string;
@@ -9,6 +11,12 @@ interface ChatInputProps {
   handleSendMessage: () => void;
   isRecording: boolean;
   setIsRecording: (isRecording: boolean) => void;
+  selectedChat: string | null;
+  editingMessage?: {
+    id: string;
+    content: string;
+  } | null;
+  setEditingMessage?: (message: { id: string; content: string; } | null) => void;
 }
 
 export const ChatInput = ({
@@ -17,17 +25,103 @@ export const ChatInput = ({
   handleSendMessage,
   isRecording,
   setIsRecording,
+  selectedChat,
+  editingMessage,
+  setEditingMessage,
 }: ChatInputProps) => {
   const { toast } = useToast();
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (!selectedChat) return;
+
+    const updateTypingStatus = async (isTyping: boolean) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      await supabase
+        .from('typing_status')
+        .upsert({
+          user_id: user.id,
+          chat_with: selectedChat,
+          is_typing: isTyping,
+        }, {
+          onConflict: 'user_id,chat_with'
+        });
+    };
+
+    if (isTyping) {
+      updateTypingStatus(true);
+    }
+
+    return () => {
+      updateTypingStatus(false);
+    };
+  }, [isTyping, selectedChat]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    setIsTyping(true);
+
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      setIsTyping(false);
+    }, 1000);
+
+    setTypingTimeout(timeout);
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    toast({
-      title: "Coming soon",
-      description: "File upload feature will be available soon",
-    });
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !selectedChat) {
+        toast({
+          title: "Error",
+          description: "You must be logged in and have a chat selected to send files",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await supabase.functions.invoke('upload-attachment', {
+        body: formData,
+      });
+
+      if (response.error) throw response.error;
+
+      const { url, type } = response.data;
+
+      await supabase.from('messages').insert({
+        sender_id: user.id,
+        receiver_id: selectedChat,
+        content: file.name,
+        message_type: type.startsWith('image/') ? 'image' : 'file',
+        media_url: url,
+        media_type: type,
+      });
+
+      toast({
+        title: "Success",
+        description: "File uploaded successfully",
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload file",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleVoiceRecord = () => {
@@ -45,7 +139,7 @@ export const ChatInput = ({
           type="file"
           id="file-upload"
           className="hidden"
-          accept="image/*,video/*"
+          accept="image/*,video/*,application/pdf"
           onChange={handleFileUpload}
         />
         <Button
@@ -66,8 +160,8 @@ export const ChatInput = ({
         </Button>
         <Input
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Message"
+          onChange={handleInputChange}
+          placeholder={editingMessage ? "Edit message..." : "Message"}
           className="bg-gray-100 border-0 rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -81,7 +175,11 @@ export const ChatInput = ({
           className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full w-14 h-14 p-0 flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
           disabled={!newMessage.trim()}
         >
-          <Send className="w-6 h-6" />
+          {editingMessage ? (
+            <Edit className="w-6 h-6" />
+          ) : (
+            <Send className="w-6 h-6" />
+          )}
         </Button>
       </div>
     </div>
