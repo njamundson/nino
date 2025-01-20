@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Instagram, Globe } from "lucide-react";
+import { formatInstagramUrl, formatWebsiteUrl } from "@/utils/socialMediaUtils";
 
 interface CreatorSocialLinksProps {
   instagram: string | null;
@@ -16,7 +17,10 @@ const CreatorSocialLinks = ({ instagram, website }: CreatorSocialLinksProps) => 
           variant="outline"
           size="lg"
           className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
-          onClick={() => window.open(`https://instagram.com/${instagram}`, '_blank')}
+          onClick={() => {
+            const url = formatInstagramUrl(instagram);
+            if (url) window.open(url, '_blank');
+          }}
         >
           <Instagram className="w-5 h-5" />
           Instagram
@@ -28,7 +32,10 @@ const CreatorSocialLinks = ({ instagram, website }: CreatorSocialLinksProps) => 
           variant="outline"
           size="lg"
           className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
-          onClick={() => window.open(website, '_blank')}
+          onClick={() => {
+            const url = formatWebsiteUrl(website);
+            if (url) window.open(url, '_blank');
+          }}
         >
           <Globe className="w-5 h-5" />
           Website
