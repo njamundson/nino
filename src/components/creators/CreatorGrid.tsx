@@ -27,7 +27,11 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
           throw brandError;
         }
 
-        const brandProfileIds = brandProfiles?.map(b => b.user_id).filter(Boolean) || [];
+        // Filter out any null values and create a clean array of IDs
+        const brandProfileIds = brandProfiles
+          ?.map(b => b.user_id)
+          .filter(id => id !== null && id !== undefined);
+          
         console.log("Brand profile IDs to exclude:", brandProfileIds);
 
         // Then fetch creators excluding those profiles
@@ -43,8 +47,8 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
           .not('user_id', 'is', null);
 
         // Only add the brand profile filter if we have IDs to exclude
-        if (brandProfileIds.length > 0) {
-          query = query.not('user_id', 'in', `(${brandProfileIds.join(',')})`);
+        if (brandProfileIds && brandProfileIds.length > 0) {
+          query = query.not('user_id', 'in', brandProfileIds);
         }
 
         // Only apply specialty filter if specialties are selected
