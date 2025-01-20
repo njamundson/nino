@@ -17,7 +17,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
 
   useEffect(() => {
     let mounted = true;
-    console.log("AuthWrapper mounted, checking session...");
+    let initialCheck = true;
 
     const initAuth = async () => {
       try {
@@ -26,60 +26,60 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
         if (error) {
           console.error("Session check error:", error);
           if (mounted) {
-            toast({
-              title: "Authentication Error",
-              description: "There was a problem checking your session. Please try logging in again.",
-              variant: "destructive",
-            });
-            navigate('/');
+            setIsLoading(false);
+            if (initialCheck) {
+              toast({
+                title: "Authentication Error",
+                description: "There was a problem checking your session. Please try logging in again.",
+                variant: "destructive",
+              });
+              navigate('/');
+            }
           }
           return;
         }
 
-        if (!session) {
+        if (!session && initialCheck) {
           console.log("No active session, redirecting to login");
           if (mounted) {
+            setIsLoading(false);
             navigate('/');
           }
           return;
         }
 
-        console.log("Valid session found for user:", session.user.id);
-        
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-      } finally {
         if (mounted) {
           setIsLoading(false);
         }
+        
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        if (mounted) {
+          setIsLoading(false);
+        }
+      } finally {
+        initialCheck = false;
       }
     };
 
-    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
       
-      console.log("Auth state changed:", event, "Session:", session?.user?.id ? "exists" : "none");
-      
       if (event === 'SIGNED_OUT' || !session) {
-        console.log("User signed out or session expired");
-        navigate('/');
+        if (window.location.pathname !== '/') {
+          navigate('/');
+        }
         return;
       }
 
       if (event === 'SIGNED_IN') {
-        console.log("User signed in successfully");
-      }
-
-      if (event === 'TOKEN_REFRESHED') {
-        console.log("Session token refreshed successfully");
+        setIsLoading(false);
       }
     });
 
     initAuth();
 
     return () => {
-      console.log("AuthWrapper unmounting, cleaning up...");
       mounted = false;
       subscription.unsubscribe();
     };
