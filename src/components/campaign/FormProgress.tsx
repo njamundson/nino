@@ -12,11 +12,11 @@ const FormProgress = ({ currentStep, steps }: FormProgressProps) => {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       <p className="text-sm font-medium text-gray-500">
         {steps[currentStep].description}
       </p>
-      <Progress value={progress} className="h-1 bg-gray-100" />
+      <Progress value={progress} className="h-0.5 bg-gray-100" />
     </div>
   );
 };

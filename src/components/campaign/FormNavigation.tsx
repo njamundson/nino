@@ -16,12 +16,12 @@ const FormNavigation = ({
   onSubmit 
 }: FormNavigationProps) => {
   return (
-    <div className="flex justify-between pt-6 border-t border-gray-100">
+    <div className="flex justify-between pt-4 border-t border-gray-100">
       <Button
         variant="ghost"
         onClick={onBack}
         disabled={currentStep === 0}
-        className="text-gray-600 hover:text-gray-900"
+        className="text-gray-500 hover:text-gray-900"
       >
         Back
       </Button>
