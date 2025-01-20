@@ -41,6 +41,38 @@ const CampaignCard = ({
     setSelectedApplication(application);
   };
 
+  const checkExistingChat = async (creatorUserId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const { data: messages } = await supabase
+      .from('messages')
+      .select('id')
+      .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+      .or(`sender_id.eq.${creatorUserId},receiver_id.eq.${creatorUserId}`)
+      .limit(1);
+
+    return messages && messages.length > 0;
+  };
+
+  const createInitialMessage = async (creatorUserId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const { error: messageError } = await supabase
+      .from('messages')
+      .insert({
+        sender_id: user.id,
+        receiver_id: creatorUserId,
+        content: `Hi! I've accepted your application. Let's discuss the next steps!`,
+        message_type: 'text'
+      });
+
+    if (messageError) throw messageError;
+  };
+
   const handleUpdateStatus = (applicationId: string) => async (newStatus: 'accepted' | 'rejected') => {
     if (onUpdateApplicationStatus) {
       try {
@@ -49,7 +81,6 @@ const CampaignCard = ({
         await onUpdateApplicationStatus(applicationId, newStatus);
         
         if (newStatus === 'rejected') {
-          // Delete the application from the database
           const { error } = await supabase
             .from('applications')
             .delete()
@@ -57,27 +88,17 @@ const CampaignCard = ({
 
           if (error) throw error;
 
-          // Remove from local state
           setLocalApplications(prevApps => 
             prevApps.filter(app => app.id !== applicationId)
           );
 
           toast.success("Application rejected and removed");
         } else if (newStatus === 'accepted') {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (!user) {
-            throw new Error('User not authenticated');
+          const chatExists = await checkExistingChat(selectedCreator.user_id);
+          
+          if (!chatExists) {
+            await createInitialMessage(selectedCreator.user_id);
           }
-
-          // Send initial message to creator
-          const { error: messageError } = await supabase.from('messages').insert({
-            sender_id: user.id,
-            receiver_id: selectedCreator.user_id,
-            content: `Hi! I've accepted your application. Let's discuss the next steps!`,
-            message_type: 'text'
-          });
-
-          if (messageError) throw messageError;
 
           // Update opportunity status
           const { error: opportunityError } = await supabase
