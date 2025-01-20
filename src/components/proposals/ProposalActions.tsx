@@ -8,6 +8,7 @@ interface ProposalActionsProps {
   opportunityId: string;
   type: 'proposal' | 'application';
   onDeleteProposal?: () => void;
+  onViewOpportunity?: () => void;
 }
 
 const ProposalActions = ({ 
@@ -16,7 +17,8 @@ const ProposalActions = ({
   onViewProposals,
   opportunityId,
   type,
-  onDeleteProposal
+  onDeleteProposal,
+  onViewOpportunity
 }: ProposalActionsProps) => {
   return (
     <div className="flex gap-3">
@@ -59,7 +61,7 @@ const ProposalActions = ({
             variant="outline"
             size="sm"
             className="gap-2"
-            onClick={() => window.open(`/opportunities/${opportunityId}`, '_blank')}
+            onClick={onViewOpportunity}
           >
             View Opportunity
             <ExternalLink className="w-4 h-4" />

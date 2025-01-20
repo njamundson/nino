@@ -6,6 +6,7 @@ import ProposalActions from "./ProposalActions";
 import ProposalMetadata from "./ProposalMetadata";
 import InvitationModal from "./modals/InvitationModal";
 import ApplicationDetailsModal from "./modals/ApplicationDetailsModal";
+import ProjectModal from "@/components/projects/ProjectModal";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,6 +18,7 @@ interface ProposalCardProps {
 
 const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
   const { toast } = useToast();
 
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
@@ -87,6 +89,7 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
               opportunityId={application.opportunity_id}
               type={type}
               onDeleteProposal={type === 'application' ? handleDeleteProposal : undefined}
+              onViewOpportunity={() => setShowProjectModal(true)}
             />
           </div>
         </div>
@@ -105,6 +108,14 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
           isOpen={showDetails}
           onClose={() => setShowDetails(false)}
           application={application}
+        />
+      )}
+
+      {showProjectModal && (
+        <ProjectModal
+          isOpen={showProjectModal}
+          onClose={() => setShowProjectModal(false)}
+          opportunity={application.opportunity}
         />
       )}
     </>
