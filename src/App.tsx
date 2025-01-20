@@ -62,8 +62,6 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    checkSession();
-
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
@@ -81,7 +79,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       } else if (event === 'SIGNED_IN') {
         console.log('User signed in');
         // Don't navigate here - let the protected routes handle the navigation
-      } else if (event === 'USER_DELETED' || event === 'USER_UPDATED') {
+      } else if (event === 'USER_UPDATED') {
         // Handle user account changes
         checkSession();
       }
