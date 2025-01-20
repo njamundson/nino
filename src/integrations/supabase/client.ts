@@ -7,7 +7,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true,
     storage: {
       getItem: (key) => {
         try {
@@ -32,6 +32,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
           console.error('Error removing from localStorage:', error);
         }
       }
+    },
+    flowType: 'pkce',
+    debug: true
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web'
     }
   }
 });
@@ -40,7 +47,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 console.log('Supabase client initialized with URL:', supabaseUrl);
 
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth state changed:', event, session);
+  console.log('Auth state changed:', event, session ? 'Session exists' : 'No session');
   
   if (!session) {
     console.log('No active session');
