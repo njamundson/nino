@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Instagram, Globe, MessageSquare } from "lucide-react";
+import { MessageSquare, Instagram, Globe } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface Creator {
@@ -88,7 +88,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
                 className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
                 onClick={() => {}} // Chat functionality to be implemented
               >
-                <MessageSquare className="w-5 h-5" strokeWidth={2} />
+                <MessageSquare className="h-5 w-5" strokeWidth={1.5} />
                 Chat
               </Button>
               
@@ -99,7 +99,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
                   className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
                   onClick={() => window.open(`https://instagram.com/${creator.instagram}`, '_blank')}
                 >
-                  <Instagram className="w-5 h-5" strokeWidth={2} />
+                  <Instagram className="h-5 w-5" strokeWidth={1.5} />
                   Instagram
                 </Button>
               )}
@@ -111,7 +111,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
                   className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
                   onClick={() => window.open(creator.website!, '_blank')}
                 >
-                  <Globe className="w-5 h-5" strokeWidth={2} />
+                  <Globe className="h-5 w-5" strokeWidth={1.5} />
                   Website
                 </Button>
               )}
