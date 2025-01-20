@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Instagram } from "lucide-react";
+import { Instagram, Globe, MessageSquare } from "lucide-react";
 
 interface CreatorBioProps {
   bio: string | null;
@@ -17,10 +17,12 @@ const CreatorBio = ({ bio, specialties, location }: CreatorBioProps) => {
       )}
       
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-nino-text flex items-center gap-2">
+        <div className="flex items-center gap-4 mb-3">
           <Instagram className="w-5 h-5 text-nino-primary" />
-          About
-        </h3>
+          <Globe className="w-5 h-5 text-nino-primary" />
+          <MessageSquare className="w-5 h-5 text-nino-primary" />
+        </div>
+        <h3 className="text-lg font-semibold text-nino-text">About</h3>
         <p className="text-base leading-relaxed text-nino-text/90">
           {bio || "No bio available"}
         </p>
