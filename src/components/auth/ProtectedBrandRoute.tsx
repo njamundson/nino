@@ -12,6 +12,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -51,14 +52,15 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         const { data: brands, error: brandError } = await supabase
           .from('brands')
           .select('id, company_name')
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .maybeSingle();
 
         if (brandError) {
           console.error("Error checking brand profile:", brandError);
           throw brandError;
         }
 
-        if (!brands || brands.length === 0) {
+        if (!brands) {
           console.log("No brand profile found");
           toast({
             title: "Access denied",
@@ -69,8 +71,9 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        console.log("Brand profile found:", brands[0]);
+        console.log("Brand profile found:", brands);
         if (mounted) {
+          setHasAccess(true);
           setIsLoading(false);
         }
       } catch (error) {
@@ -93,6 +96,10 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       
       if (event === 'SIGNED_OUT' || !session?.user?.id) {
         console.log("User signed out or no valid session");
+        if (mounted) {
+          setHasAccess(false);
+          setIsLoading(false);
+        }
         navigate('/');
         return;
       }
@@ -115,10 +122,14 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-nino-bg">
         <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
       </div>
     );
+  }
+
+  if (!hasAccess) {
+    return null;
   }
 
   return <>{children}</>;

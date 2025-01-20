@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
@@ -13,18 +13,31 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // Check initial session
     const checkSession = async () => {
       try {
+        setIsLoading(true);
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -50,7 +63,10 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
         console.error('Session check error:', error);
         navigate('/');
       } finally {
-        setIsInitialized(true);
+        if (mounted) {
+          setIsInitialized(true);
+          setIsLoading(false);
+        }
       }
     };
 
@@ -71,18 +87,21 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
         console.log('Token refreshed successfully');
       } else if (event === 'SIGNED_IN') {
         console.log('User signed in');
-        // Don't navigate here - let the protected routes handle the navigation
       }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
 
-  // Show nothing until we've checked the session
-  if (!isInitialized) {
-    return null;
+  if (!isInitialized || isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-nino-bg">
+        <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
+      </div>
+    );
   }
 
   return <>{children}</>;
@@ -127,6 +146,7 @@ const App = () => {
                     element={route.element}
                   />
                 ))}
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </AuthWrapper>
           </TooltipProvider>
