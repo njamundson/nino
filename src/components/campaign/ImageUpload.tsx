@@ -5,9 +5,10 @@ interface ImageUploadProps {
   uploadedImage: string | null;
   isUploading: boolean;
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  compact?: boolean;
 }
 
-const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadProps) => {
+const ImageUpload = ({ uploadedImage, isUploading, onImageUpload, compact = false }: ImageUploadProps) => {
   const { toast } = useToast();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +23,6 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
       return;
     }
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast({
         title: "Error",
@@ -32,7 +32,6 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast({
         title: "Error",
@@ -46,11 +45,12 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4 py-12">
+    <div className={`flex flex-col items-center space-y-4 ${compact ? 'py-4' : 'py-12'}`}>
       <div className="relative group cursor-pointer transition-all duration-300">
         <div 
           className={`
-            w-80 h-56 rounded-2xl border-2 border-dashed 
+            ${compact ? 'w-full aspect-video' : 'w-80 h-56'} 
+            rounded-2xl border-2 border-dashed 
             flex items-center justify-center bg-white
             transition-all duration-300 ease-in-out
             group-hover:border-gray-400 group-hover:bg-gray-50
@@ -70,11 +70,11 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
               </div>
             </div>
           ) : (
-            <div className="text-center space-y-3 px-6 transition-all duration-300 group-hover:scale-105">
-              <Camera className="mx-auto h-12 w-12 text-gray-300 group-hover:text-gray-400 transition-colors duration-300" />
+            <div className="text-center space-y-2 px-4">
+              <Camera className="mx-auto h-8 w-8 text-gray-300 group-hover:text-gray-400 transition-colors duration-300" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Upload campaign image</p>
-                <p className="text-xs text-gray-500 mt-1">Recommended size: 1200x800px</p>
+                <p className={`${compact ? 'text-sm' : 'text-base'} font-medium text-gray-900`}>Upload image</p>
+                <p className="text-xs text-gray-500 mt-1">1200x800px recommended</p>
               </div>
             </div>
           )}

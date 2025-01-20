@@ -10,6 +10,10 @@ import ImageUpload from "./ImageUpload";
 import FormProgress from "./FormProgress";
 import FormNavigation from "./FormNavigation";
 
+interface CampaignFormProps {
+  compact?: boolean;
+}
+
 const steps = [
   {
     title: "Basic Information",
@@ -28,7 +32,7 @@ const steps = [
   },
 ];
 
-const CampaignForm = () => {
+const CampaignForm = ({ compact = false }: CampaignFormProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -165,22 +169,28 @@ const CampaignForm = () => {
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="space-y-10">
-      <FormProgress currentStep={currentStep} steps={steps} />
-
-      {currentStep === 0 && (
-        <ImageUpload
-          uploadedImage={uploadedImage}
-          isUploading={isUploading}
-          onImageUpload={handleImageUpload}
-        />
-      )}
-
-      <div className="min-h-[400px] py-4">
-        <CurrentStepComponent
-          formData={formData}
-          setFormData={setFormData}
-        />
+    <div className={`space-y-6 ${compact ? 'max-h-[calc(100vh-28rem)]' : ''}`}>
+      <div className="flex items-center gap-6">
+        {currentStep === 0 && (
+          <div className={`${compact ? 'w-1/3' : 'w-1/2'}`}>
+            <ImageUpload
+              uploadedImage={uploadedImage}
+              isUploading={isUploading}
+              onImageUpload={handleImageUpload}
+              compact={compact}
+            />
+          </div>
+        )}
+        <div className={`flex-1 ${currentStep === 0 ? '' : 'w-full'}`}>
+          <FormProgress currentStep={currentStep} steps={steps} compact={compact} />
+          <div className={`py-4 ${compact ? 'min-h-[280px]' : 'min-h-[400px]'}`}>
+            <CurrentStepComponent
+              formData={formData}
+              setFormData={setFormData}
+              compact={compact}
+            />
+          </div>
+        </div>
       </div>
 
       <FormNavigation
