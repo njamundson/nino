@@ -74,7 +74,7 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
         <Button
           size="sm"
           variant="outline"
-          onClick={onMessageCreator}
+          onClick={() => onMessageCreator()}
           className="text-gray-600 hover:text-gray-900"
         >
           <MessageSquare className="h-4 w-4 mr-1" />
