@@ -34,39 +34,59 @@ const CreatorProfileModal = ({
   opportunityId
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const handleAcceptConfirm = async () => {
+    if (isProcessing) return;
+    
     try {
+      setIsProcessing(true);
+      
+      // First update the application status
       onUpdateStatus('accepted');
       
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from('messages').insert({
-          sender_id: user.id,
-          receiver_id: creator.user_id,
-          content: `Hi! I've accepted your application. Let's discuss the next steps!`,
-          message_type: 'text'
-        });
-
-        if (opportunityId) {
-          await supabase
-            .from('opportunities')
-            .update({ status: 'active' })
-            .eq('id', opportunityId);
-        }
+      if (!user) {
+        throw new Error('User not authenticated');
       }
 
+      // Send initial message to creator
+      const { error: messageError } = await supabase.from('messages').insert({
+        sender_id: user.id,
+        receiver_id: creator.user_id,
+        content: `Hi! I've accepted your application. Let's discuss the next steps!`,
+        message_type: 'text'
+      });
+
+      if (messageError) throw messageError;
+
+      // Update opportunity status if needed
+      if (opportunityId) {
+        const { error: opportunityError } = await supabase
+          .from('opportunities')
+          .update({ status: 'active' })
+          .eq('id', opportunityId);
+
+        if (opportunityError) throw opportunityError;
+      }
+
+      // Success flow
       toast.success("Application accepted successfully");
       setShowAcceptDialog(false);
       onClose();
       
+      // Invalidate queries before navigation
+      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+      
+      // Navigate after everything is done
       navigate('/brand/bookings');
-      queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
     } catch (error) {
       console.error('Error accepting application:', error);
-      toast.error("Failed to accept application");
+      toast.error("Failed to accept application. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -123,6 +143,7 @@ const CreatorProfileModal = ({
                 <ActionButtons
                   onAccept={() => setShowAcceptDialog(true)}
                   onReject={handleReject}
+                  isProcessing={isProcessing}
                 />
               </div>
             </div>
@@ -135,6 +156,7 @@ const CreatorProfileModal = ({
         onOpenChange={setShowAcceptDialog}
         onConfirm={handleAcceptConfirm}
         creatorName={fullName}
+        isProcessing={isProcessing}
       />
     </>
   );
