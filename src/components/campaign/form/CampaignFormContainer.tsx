@@ -18,8 +18,8 @@ interface FormData {
   location: string;
   payment_details: string;
   compensation_details: string;
-  start_date: string | null;
-  end_date: string | null;
+  startDate: string | null;  // Changed from start_date to match BasicInfo props
+  endDate: string | null;    // Changed from end_date to match BasicInfo props
 }
 
 const steps = [
@@ -46,8 +46,8 @@ const CampaignFormContainer = () => {
     location: "",
     payment_details: "",
     compensation_details: "",
-    start_date: null,
-    end_date: null,
+    startDate: null,  // Changed from start_date to startDate
+    endDate: null,    // Changed from end_date to endDate
   });
 
   const handleImageUpload = async (file: File) => {
@@ -89,7 +89,13 @@ const CampaignFormContainer = () => {
   };
 
   const handleSubmit = () => {
-    submitCampaign(formData, uploadedImage);
+    // Transform the data back to snake_case for API submission
+    const submissionData = {
+      ...formData,
+      start_date: formData.startDate,
+      end_date: formData.endDate
+    };
+    submitCampaign(submissionData, uploadedImage);
   };
 
   const renderStep = () => {
