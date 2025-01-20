@@ -168,25 +168,33 @@ const CampaignForm = () => {
     }
   };
 
-  const CurrentStepComponent = steps[currentStep].component;
+  const renderCurrentStep = () => {
+    const CurrentStepComponent = steps[currentStep].component;
+
+    if (currentStep === steps.length - 1) {
+      return (
+        <ImageUpload
+          uploadedImage={uploadedImage}
+          isUploading={isUploading}
+          onImageUpload={handleImageUpload}
+        />
+      );
+    }
+
+    return (
+      <CurrentStepComponent
+        formData={formData}
+        setFormData={setFormData}
+      />
+    );
+  };
 
   return (
     <div className="space-y-6">
       <FormProgress currentStep={currentStep} steps={steps} />
 
       <div className="min-h-[400px]">
-        {currentStep === steps.length - 1 ? (
-          <CurrentStepComponent
-            uploadedImage={uploadedImage}
-            isUploading={isUploading}
-            onImageUpload={handleImageUpload}
-          />
-        ) : (
-          <CurrentStepComponent
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )}
+        {renderCurrentStep()}
       </div>
 
       <FormNavigation
