@@ -64,17 +64,6 @@ export const useSignInWithEmail = () => {
 
       console.log("Profile status:", profileStatus);
 
-      // If user has neither profile, send to onboarding
-      if (!profileStatus.has_brand && !profileStatus.has_creator) {
-        console.log("No profile found, redirecting to onboarding...");
-        navigate('/onboarding');
-        toast({
-          title: "Welcome!",
-          description: "Please complete your profile setup.",
-        });
-        return;
-      }
-
       // If user has a brand profile, send to brand dashboard
       if (profileStatus.has_brand) {
         console.log("Brand profile found, redirecting to dashboard...");
@@ -96,6 +85,14 @@ export const useSignInWithEmail = () => {
         });
         return;
       }
+
+      // Only if user has no profile at all, send to onboarding
+      console.log("No profile found, redirecting to onboarding...");
+      navigate('/onboarding');
+      toast({
+        title: "Welcome!",
+        description: "Please complete your profile setup.",
+      });
 
     } catch (error) {
       console.error("Authentication error:", error);
