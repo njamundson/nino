@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 
 const BrandStatsCards = () => {
   const queryClient = useQueryClient();
@@ -123,10 +122,7 @@ const BrandStatsCards = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      <Card 
-        className={cardClasses}
-        onClick={() => navigate('/brand/campaigns')}
-      >
+      <Card className={cardClasses}>
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
@@ -144,10 +140,7 @@ const BrandStatsCards = () => {
         </CardContent>
       </Card>
 
-      <Card 
-        className={cardClasses}
-        onClick={() => navigate('/brand/campaigns')}
-      >
+      <Card className={cardClasses}>
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
