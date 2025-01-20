@@ -76,13 +76,24 @@ const PersonalInfoFields = ({
                   control: (provided) => ({
                     ...provided,
                     backgroundColor: 'var(--nino-bg)',
-                    border: 'none',
+                    border: '1px solid transparent',
                     minHeight: '48px',
                     borderRadius: '0.375rem',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                    '&:hover': {
+                      border: '1px solid transparent',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    },
+                    '&:focus-within': {
+                      border: '1px solid transparent',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      outline: 'none',
+                      ring: 'none',
+                    }
                   }),
                   input: (provided) => ({
                     ...provided,
-                    color: 'var(--nino-text)',
+                    color: '#282828',
                     fontSize: '1rem',
                   }),
                   option: (provided, state) => ({
@@ -99,7 +110,7 @@ const PersonalInfoFields = ({
                   menu: (provided) => ({
                     ...provided,
                     backgroundColor: 'white',
-                    border: '1px solid #A55549',
+                    border: '1px solid transparent',
                     borderRadius: '0.375rem',
                     marginTop: '4px',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -110,7 +121,7 @@ const PersonalInfoFields = ({
                   }),
                 },
                 classNames: {
-                  control: () => "bg-nino-bg border-transparent focus:border-nino-primary",
+                  control: () => "bg-nino-bg border-transparent focus:border-transparent focus:ring-0",
                 },
               }}
             />
