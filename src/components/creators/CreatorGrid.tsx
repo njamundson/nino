@@ -16,7 +16,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
   const { data: creators, isLoading, error } = useQuery({
     queryKey: ["creators", selectedSpecialties],
     queryFn: async () => {
-      console.log("Fetching creators with specialties:", selectedSpecialties);
+      console.log("Starting creator fetch with selected specialties:", selectedSpecialties);
       
       let query = supabase
         .from("creators")
@@ -31,7 +31,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
       // Only apply specialty filter if specialties are selected
       if (selectedSpecialties.length > 0) {
-        // Use overlaps operator to find creators with any of the selected specialties
+        console.log("Applying specialty filter with:", selectedSpecialties);
         query = query.overlaps('specialties', selectedSpecialties);
       }
 
@@ -49,14 +49,29 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
       console.log("Raw creators data:", data);
       
+      // Debug each creator's specialties
+      data?.forEach(creator => {
+        console.log(`Creator ${creator.id}:`, {
+          name: `${creator.profiles?.first_name} ${creator.profiles?.last_name}`,
+          specialties: creator.specialties,
+          isArray: Array.isArray(creator.specialties),
+          length: creator.specialties?.length
+        });
+      });
+      
       // Filter out creators with null or empty specialties
       const filteredData = data?.filter(creator => {
         const hasSpecialties = Array.isArray(creator.specialties) && creator.specialties.length > 0;
-        console.log(`Creator ${creator.id} specialties:`, creator.specialties, "Has specialties:", hasSpecialties);
+        console.log(`Creator ${creator.id} specialties check:`, {
+          hasSpecialties,
+          specialties: creator.specialties,
+          matchesFilter: !selectedSpecialties.length || 
+            (hasSpecialties && selectedSpecialties.some(s => creator.specialties.includes(s)))
+        });
         return !selectedSpecialties.length || (hasSpecialties && selectedSpecialties.some(s => creator.specialties.includes(s)));
       });
 
-      console.log("Filtered creators data:", filteredData);
+      console.log("Final filtered creators data:", filteredData);
       return filteredData || [];
     },
   });
