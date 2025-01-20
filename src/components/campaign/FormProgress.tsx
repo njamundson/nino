@@ -16,7 +16,11 @@ const FormProgress = ({ currentStep, steps }: FormProgressProps) => {
       <p className="text-xs font-medium text-gray-400">
         {steps[currentStep].description}
       </p>
-      <Progress value={progress} className="h-0.5 bg-gray-100" />
+      <Progress 
+        value={progress} 
+        className="h-1.5 bg-gray-100" 
+        indicatorClassName="bg-nino-primary"
+      />
     </div>
   );
 };
