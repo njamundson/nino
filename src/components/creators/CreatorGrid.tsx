@@ -16,6 +16,8 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
   const { data: creators, isLoading, error } = useQuery({
     queryKey: ["creators", selectedSpecialties],
     queryFn: async () => {
+      console.log('Fetching creators with specialties:', selectedSpecialties);
+      
       let query = supabase
         .from("creators")
         .select(`
@@ -29,7 +31,8 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
       // Only apply specialty filter if specialties are selected
       if (selectedSpecialties.length > 0) {
-        query = query.contains('specialties', selectedSpecialties);
+        // Use overlap operator to find creators that have ANY of the selected specialties
+        query = query.overlaps('specialties', selectedSpecialties);
       }
 
       const { data, error } = await query;
@@ -44,6 +47,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         throw error;
       }
 
+      console.log('Fetched creators:', data);
       return data || [];
     },
   });
