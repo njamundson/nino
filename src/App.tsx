@@ -13,7 +13,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,7 +22,7 @@ const queryClient = new QueryClient({
       retry: 3,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
     },
   },
 });
@@ -31,6 +32,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const MAX_RETRIES = 3;
 
@@ -46,6 +48,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       navigate('/');
     } catch (error) {
       console.error('Error during sign out:', error);
+      setError('Failed to sign out. Please try refreshing the page.');
     } finally {
       setIsInitialized(true);
       setIsLoading(false);
@@ -54,6 +57,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
 
   const verifySession = async () => {
     try {
+      setError(null);
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
@@ -73,13 +77,18 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       return true;
     } catch (error: any) {
       console.error('Session verification error:', error);
+      
       if (error.message?.includes('Failed to fetch') && retryCount < MAX_RETRIES) {
         setRetryCount(prev => prev + 1);
         return new Promise(resolve => setTimeout(() => resolve(verifySession()), 2000));
       }
+      
       if (error.message?.includes('session_not_found')) {
         await handleSessionError();
+      } else {
+        setError('Failed to verify session. Please check your connection and try again.');
       }
+      
       return false;
     }
   };
@@ -90,6 +99,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
     const initializeAuth = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const isValid = await verifySession();
         
         if (!isValid) {
@@ -103,16 +113,15 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       } catch (error) {
         console.error('Auth initialization error:', error);
         if (mounted) {
+          setError('Failed to initialize authentication. Please refresh the page.');
           setIsInitialized(true);
           setIsLoading(false);
         }
       }
     };
 
-    // Initial auth check
     initializeAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       
@@ -140,6 +149,17 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-nino-bg">
         <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-nino-bg p-4">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       </div>
     );
   }
