@@ -18,10 +18,10 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
   const navigate = useNavigate();
 
   const handleSignIn = async (email: string, password: string) => {
+    if (loading) return;
     setLoading(true);
     
     try {
-      console.log("Starting sign in process...");
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -52,55 +52,45 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         return;
       }
 
-      if (signInData.user) {
-        // Ensure the session is properly stored
-        await supabase.auth.setSession({
-          access_token: signInData.session?.access_token!,
-          refresh_token: signInData.session?.refresh_token!,
-        });
+      if (!signInData.user) {
+        throw new Error("No user data returned");
+      }
 
-        // Check if user has a brand profile
-        const { data: brand, error: brandError } = await supabase
-          .from('brands')
-          .select('*')
+      // Set session immediately after successful sign in
+      if (signInData.session) {
+        await supabase.auth.setSession({
+          access_token: signInData.session.access_token,
+          refresh_token: signInData.session.refresh_token,
+        });
+      }
+
+      // Check user profile type and redirect accordingly
+      const { data: brand } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', signInData.user.id)
+        .maybeSingle();
+
+      if (brand) {
+        navigate('/brand/dashboard');
+      } else {
+        const { data: creator } = await supabase
+          .from('creators')
+          .select('id')
           .eq('user_id', signInData.user.id)
           .maybeSingle();
 
-        if (brandError) {
-          console.error("Error fetching brand profile:", brandError);
-          toast({
-            title: "Error",
-            description: "Failed to fetch user profile. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        if (brand) {
-          console.log("Brand profile found, redirecting to dashboard");
-          navigate('/brand/dashboard');
+        if (creator) {
+          navigate('/creator/dashboard');
         } else {
-          // Check if user has a creator profile
-          const { data: creator, error: creatorError } = await supabase
-            .from('creators')
-            .select('*')
-            .eq('user_id', signInData.user.id)
-            .maybeSingle();
-
-          if (creator) {
-            console.log("Creator profile found, redirecting to creator dashboard");
-            navigate('/creator/dashboard');
-          } else {
-            console.log("No profile found, redirecting to onboarding");
-            navigate('/onboarding');
-          }
+          navigate('/onboarding');
         }
-
-        toast({
-          title: "Welcome back!",
-          description: "Successfully signed in.",
-        });
       }
+
+      toast({
+        title: "Welcome back!",
+        description: "Successfully signed in.",
+      });
     } catch (error) {
       console.error("Authentication error:", error);
       toast({
@@ -130,6 +120,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           type="button"
           onClick={() => setShowResetPassword(true)}
           className="text-sm text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+          disabled={loading}
         >
           Forgot password?
         </button>
@@ -141,6 +132,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           type="button"
           onClick={onToggleAuth}
           className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+          disabled={loading}
         >
           Create one
         </button>
