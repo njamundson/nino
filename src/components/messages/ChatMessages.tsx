@@ -23,9 +23,10 @@ export interface Message {
 interface ChatMessagesProps {
   messages?: Message[];
   selectedChat: string | null;
+  onMessageUpdate?: () => void;
 }
 
-export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
+export const ChatMessages = ({ messages, selectedChat, onMessageUpdate }: ChatMessagesProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [typingStatus, setTypingStatus] = useState<boolean>(false);
@@ -48,7 +49,7 @@ export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
   }, [messages]);
 
   useEffect(() => {
-    if (!selectedChat) return;
+    if (!selectedChat || !currentUserId) return;
 
     const channel = supabase
       .channel('typing-status')
@@ -81,13 +82,8 @@ export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
           emoji,
         });
 
-      if (error) {
-        toast({
-          title: "Error adding reaction",
-          description: "Please try again later",
-          variant: "destructive",
-        });
-      }
+      if (error) throw error;
+      if (onMessageUpdate) onMessageUpdate();
     } catch (error) {
       console.error('Error adding reaction:', error);
       toast({
@@ -106,13 +102,8 @@ export const ChatMessages = ({ messages, selectedChat }: ChatMessagesProps) => {
         .eq('id', messageId)
         .eq('sender_id', currentUserId);
 
-      if (error) {
-        toast({
-          title: "Error deleting message",
-          description: "Please try again later",
-          variant: "destructive",
-        });
-      }
+      if (error) throw error;
+      if (onMessageUpdate) onMessageUpdate();
     } catch (error) {
       console.error('Error deleting message:', error);
       toast({

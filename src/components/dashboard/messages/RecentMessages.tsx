@@ -1,14 +1,15 @@
 import { MessageSquare } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const RecentMessages = () => {
   const navigate = useNavigate();
   
-  const { data: recentMessages } = useQuery({
+  const { data: recentMessages, refetch } = useQuery({
     queryKey: ['recent-messages'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -20,11 +21,13 @@ const RecentMessages = () => {
           *,
           sender_profile:profiles!messages_sender_id_fkey(
             first_name,
-            last_name
+            last_name,
+            id
           ),
           receiver_profile:profiles!messages_receiver_id_fkey(
             first_name,
-            last_name
+            last_name,
+            id
           )
         `)
         .eq('receiver_id', user.id)
@@ -37,8 +40,36 @@ const RecentMessages = () => {
     }
   });
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('messages')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
+
   const handleMessagesClick = () => {
-    navigate('/creator/messages');
+    navigate('/brand/messages');
+  };
+
+  const formatMessagePreview = (content: string) => {
+    if (content.length > 50) {
+      return content.substring(0, 50) + '...';
+    }
+    return content;
   };
 
   return (
@@ -58,6 +89,7 @@ const RecentMessages = () => {
           {recentMessages?.map((message: any) => (
             <div key={message.id} className="flex items-start gap-3 p-3 rounded-2xl bg-nino-bg/50">
               <Avatar className="w-8 h-8">
+                <AvatarImage src={message.sender_profile?.profile_image_url} />
                 <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-xs">
                   {message.sender_profile?.first_name?.[0]}{message.sender_profile?.last_name?.[0]}
                 </AvatarFallback>
@@ -67,7 +99,7 @@ const RecentMessages = () => {
                   {message.sender_profile?.first_name} {message.sender_profile?.last_name}
                 </p>
                 <p className="text-sm text-nino-gray line-clamp-2">
-                  {message.content}
+                  {formatMessagePreview(message.content)}
                 </p>
               </div>
             </div>

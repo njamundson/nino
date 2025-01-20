@@ -93,21 +93,23 @@ export const ChatInput = ({
         return;
       }
 
-      const response = await supabase.functions.invoke('upload-attachment', {
-        body: formData,
-      });
+      const { data, error } = await supabase.storage
+        .from('message-attachments')
+        .upload(`${user.id}/${file.name}`, file);
 
-      if (response.error) throw response.error;
+      if (error) throw error;
 
-      const { url, type } = response.data;
+      const { data: { publicUrl } } = supabase.storage
+        .from('message-attachments')
+        .getPublicUrl(data.path);
 
       await supabase.from('messages').insert({
         sender_id: user.id,
         receiver_id: selectedChat,
         content: file.name,
-        message_type: type.startsWith('image/') ? 'image' : 'file',
-        media_url: url,
-        media_type: type,
+        message_type: file.type.startsWith('image/') ? 'image' : 'file',
+        media_url: publicUrl,
+        media_type: file.type,
       });
 
       toast({
