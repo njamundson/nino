@@ -9,12 +9,17 @@ interface FormProgressProps {
 }
 
 const FormProgress = ({ currentStep, steps }: FormProgressProps) => {
+  // Add null check and default empty array
+  if (!steps || steps.length === 0) {
+    return null;
+  }
+
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
     <div className="space-y-2">
       <p className="text-sm font-medium text-gray-500">
-        {steps[currentStep].description}
+        {steps[currentStep]?.description || ""}
       </p>
       <Progress 
         value={progress} 
