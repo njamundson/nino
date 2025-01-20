@@ -173,7 +173,7 @@ const CampaignForm = () => {
 
     if (currentStep === steps.length - 1) {
       return (
-        <ImageUpload
+        <CurrentStepComponent
           uploadedImage={uploadedImage}
           isUploading={isUploading}
           onImageUpload={handleImageUpload}
