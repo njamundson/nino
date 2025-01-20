@@ -13,7 +13,7 @@ import FormNavigation from "./FormNavigation";
 const steps = [
   {
     title: "Basic Information",
-    description: "Let's start with the core details of your project",
+    description: "Let's start with the core details",
     component: BasicInfo,
   },
   {
@@ -23,7 +23,7 @@ const steps = [
   },
   {
     title: "Compensation",
-    description: "Set your budget and additional perks",
+    description: "Set your budget and perks",
     component: Compensation,
   },
 ];
@@ -165,22 +165,26 @@ const CampaignForm = () => {
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <FormProgress currentStep={currentStep} steps={steps} />
 
-      {currentStep === 0 && (
-        <ImageUpload
-          uploadedImage={uploadedImage}
-          isUploading={isUploading}
-          onImageUpload={handleImageUpload}
-        />
-      )}
-
-      <div className="min-h-[400px] py-4">
-        <CurrentStepComponent
-          formData={formData}
-          setFormData={setFormData}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {currentStep === 0 && (
+          <div className="md:col-span-1">
+            <ImageUpload
+              uploadedImage={uploadedImage}
+              isUploading={isUploading}
+              onImageUpload={handleImageUpload}
+            />
+          </div>
+        )}
+        
+        <div className={`md:col-span-${currentStep === 0 ? '1' : '2'} min-h-[300px]`}>
+          <CurrentStepComponent
+            formData={formData}
+            setFormData={setFormData}
+          />
+        </div>
       </div>
 
       <FormNavigation
