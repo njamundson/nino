@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, X, Users, ExternalLink } from "lucide-react";
+import { Users, ExternalLink, Trash2 } from "lucide-react";
 
 interface ProposalActionsProps {
   status: string;
@@ -7,6 +7,7 @@ interface ProposalActionsProps {
   onViewProposals: () => void;
   opportunityId: string;
   type: 'proposal' | 'application';
+  onDeleteProposal?: () => void;
 }
 
 const ProposalActions = ({ 
@@ -14,11 +15,12 @@ const ProposalActions = ({
   onUpdateStatus, 
   onViewProposals,
   opportunityId,
-  type
+  type,
+  onDeleteProposal
 }: ProposalActionsProps) => {
   return (
     <div className="flex gap-3">
-      {type === 'proposal' && (
+      {type === 'proposal' ? (
         <>
           <Button
             variant="outline"
@@ -38,7 +40,6 @@ const ProposalActions = ({
                 onClick={() => onUpdateStatus('accepted')}
                 className="gap-2"
               >
-                <Check className="w-4 h-4" />
                 Accept
               </Button>
               <Button
@@ -47,23 +48,34 @@ const ProposalActions = ({
                 onClick={() => onUpdateStatus('rejected')}
                 className="gap-2"
               >
-                <X className="w-4 h-4" />
                 Reject
               </Button>
             </>
           )}
         </>
+      ) : (
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => window.open(`/opportunities/${opportunityId}`, '_blank')}
+          >
+            View Opportunity
+            <ExternalLink className="w-4 h-4" />
+          </Button>
+          {onDeleteProposal && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onDeleteProposal}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       )}
-      
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-2"
-        onClick={() => window.open(`/opportunities/${opportunityId}`, '_blank')}
-      >
-        View Opportunity
-        <ExternalLink className="w-4 h-4" />
-      </Button>
     </div>
   );
 };

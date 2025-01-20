@@ -6,6 +6,8 @@ import ProposalActions from "./ProposalActions";
 import ProposalMetadata from "./ProposalMetadata";
 import InvitationModal from "./modals/InvitationModal";
 import ApplicationDetailsModal from "./modals/ApplicationDetailsModal";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProposalCardProps {
   application: any;
@@ -15,6 +17,7 @@ interface ProposalCardProps {
 
 const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) => {
   const [showDetails, setShowDetails] = useState(false);
+  const { toast } = useToast();
 
   const creatorName = application.creator?.profile?.first_name && application.creator?.profile?.last_name
     ? `${application.creator.profile.first_name} ${application.creator.profile.last_name}`
@@ -38,11 +41,32 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
     setShowDetails(false);
   };
 
+  const handleDeleteProposal = async () => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .delete()
+        .eq('id', application.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Proposal deleted",
+        description: "Your proposal has been successfully deleted.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete proposal. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <Card 
-        className="p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer"
-        onClick={() => setShowDetails(true)}
+        className="p-6 hover:shadow-md transition-shadow duration-200"
       >
         <div className="space-y-6">
           <div className="flex items-start justify-between">
@@ -64,37 +88,14 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
             <ProposalStatusBadge status={application.status} />
           </div>
 
-          {application.cover_letter && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">
-                {type === 'proposal' ? 'Invitation Message' : 'Cover Letter'}
-              </h4>
-              <p className="text-sm text-gray-600 line-clamp-3">
-                {application.cover_letter}
-              </p>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="space-y-1">
-              {application.opportunity?.payment_details && (
-                <p className="text-sm text-gray-600">
-                  💰 {application.opportunity.payment_details}
-                </p>
-              )}
-              {application.opportunity?.compensation_details && (
-                <p className="text-sm text-gray-600">
-                  🎁 {application.opportunity.compensation_details}
-                </p>
-              )}
-            </div>
-            
+          <div className="flex items-center justify-end">
             <ProposalActions
               status={application.status}
               onUpdateStatus={(status) => onUpdateStatus(application.id, status)}
               onViewProposals={() => setShowDetails(true)}
               opportunityId={application.opportunity_id}
               type={type}
+              onDeleteProposal={type === 'application' ? handleDeleteProposal : undefined}
             />
           </div>
         </div>
