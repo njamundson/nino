@@ -44,11 +44,11 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4 w-full max-w-3xl mx-auto px-4">
+    <div className="flex flex-col items-center space-y-4 w-full max-w-2xl mx-auto">
       <div className="relative group cursor-pointer w-full">
         <div 
           className={`
-            w-full aspect-[2/1] rounded-2xl border-2 border-dashed
+            w-full aspect-video rounded-xl border-2 border-dashed
             flex items-center justify-center bg-white/50
             transition-all duration-300 ease-in-out
             group-hover:border-nino-primary/30 group-hover:bg-gray-50/50
@@ -58,7 +58,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
           `}
         >
           {uploadedImage ? (
-            <div className="relative w-full h-full overflow-hidden rounded-2xl">
+            <div className="relative w-full h-full overflow-hidden rounded-xl">
               <img 
                 src={uploadedImage} 
                 alt="Campaign" 
@@ -69,9 +69,12 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
               </div>
             </div>
           ) : (
-            <div className="text-center space-y-3 px-4">
+            <div className="text-center space-y-3 px-4 py-12">
               <Camera className="mx-auto h-8 w-8 text-gray-400 group-hover:text-gray-500 transition-colors duration-300" />
-              <p className="text-sm text-gray-500 group-hover:text-gray-600">Upload Campaign Image</p>
+              <div>
+                <p className="text-sm font-medium text-gray-900">Upload Campaign Image</p>
+                <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 5MB</p>
+              </div>
             </div>
           )}
         </div>

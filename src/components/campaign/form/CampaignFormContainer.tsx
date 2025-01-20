@@ -52,17 +52,17 @@ const CampaignFormContainer = () => {
     try {
       setIsUploading(true);
       const fileExt = file.name.split(".").pop();
-      const filePath = `${crypto.randomUUID()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("campaign-images")
-        .upload(filePath, file);
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from("campaign-images")
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       setUploadedImage(publicUrl);
       toast({
@@ -94,8 +94,22 @@ const CampaignFormContainer = () => {
 
   const handleSubmit = async () => {
     try {
+      // Get the current user's brand ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No authenticated user");
+
+      const { data: brandData, error: brandError } = await supabase
+        .from("brands")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (brandError) throw brandError;
+      if (!brandData) throw new Error("No brand found for user");
+
       const { error } = await supabase.from("opportunities").insert({
         ...formData,
+        brand_id: brandData.id,
         image_url: uploadedImage,
       });
 
@@ -142,9 +156,9 @@ const CampaignFormContainer = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto">
       <FormProgress currentStep={currentStep} steps={steps} />
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
         {renderStep()}
         <FormNavigation
           currentStep={currentStep}
