@@ -10,7 +10,27 @@ import ImageUpload from "./ImageUpload";
 import FormProgress from "./FormProgress";
 import FormNavigation from "./FormNavigation";
 
-const steps = [
+interface FormData {
+  title: string;
+  description: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  requirements: string[];
+  deliverables: string[];
+  paymentDetails: string;
+  compensationDetails: string;
+}
+
+type StepComponent = typeof BasicInfo | typeof Requirements | typeof Compensation | typeof ImageUpload;
+
+interface Step {
+  title: string;
+  description: string;
+  component: StepComponent;
+}
+
+const steps: Step[] = [
   {
     title: "Basic Information",
     description: "Let's start with the core details",
@@ -41,14 +61,14 @@ const CampaignForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
     location: "",
     startDate: "",
     endDate: "",
-    requirements: [] as string[],
-    deliverables: [] as string[],
+    requirements: [],
+    deliverables: [],
     paymentDetails: "",
     compensationDetails: "",
   });
