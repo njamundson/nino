@@ -12,6 +12,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -36,6 +37,10 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
         if (!session) {
           console.log("No session found");
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
           navigate('/');
           return;
         }
@@ -43,6 +48,10 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         const userId = session.user?.id;
         if (!userId) {
           console.log("No user ID found in session");
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
           navigate('/');
           return;
         }
@@ -51,15 +60,20 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         const { data: brands, error: brandError } = await supabase
           .from('brands')
           .select('id, company_name')
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .maybeSingle();
 
         if (brandError) {
           console.error("Error checking brand profile:", brandError);
           throw brandError;
         }
 
-        if (!brands || brands.length === 0) {
+        if (!brands) {
           console.log("No brand profile found");
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
           toast({
             title: "Access denied",
             description: "You need a brand profile to access this area.",
@@ -69,12 +83,17 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        console.log("Brand profile found:", brands[0]);
+        console.log("Brand profile found:", brands);
         if (mounted) {
+          setIsAuthenticated(true);
           setIsLoading(false);
         }
       } catch (error) {
         console.error("Error in checkBrandAccess:", error);
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+        }
         toast({
           title: "Access denied",
           description: "Please sign in to continue.",
@@ -93,15 +112,16 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       
       if (event === 'SIGNED_OUT' || !session?.user?.id) {
         console.log("User signed out or no valid session");
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+        }
         navigate('/');
         return;
       }
 
-      if (event === 'TOKEN_REFRESHED') {
-        console.log("Token refreshed successfully");
-      }
-
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      // Only recheck access on specific events
+      if (['SIGNED_IN', 'TOKEN_REFRESHED', 'USER_UPDATED'].includes(event)) {
         await checkBrandAccess();
       }
     });
@@ -119,6 +139,10 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null;
   }
 
   return <>{children}</>;
