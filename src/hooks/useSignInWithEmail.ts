@@ -102,6 +102,7 @@ export const useSignInWithEmail = () => {
         variant: "destructive",
       });
     } finally {
+      console.log("Sign in process completed, setting loading to false");
       setLoading(false);
     }
   };
