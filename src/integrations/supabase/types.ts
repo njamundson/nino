@@ -681,6 +681,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_user_profile_status: {
+        Args: {
+          user_uuid: string
+        }
+        Returns: {
+          has_brand: boolean
+          has_creator: boolean
+          brand_id: string
+          creator_id: string
+        }[]
+      }
       get_admin_analytics: {
         Args: Record<PropertyKey, never>
         Returns: {

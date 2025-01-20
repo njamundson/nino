@@ -49,21 +49,22 @@ export const useSignInWithEmail = () => {
         throw new Error("No user data returned");
       }
 
-      console.log("Successfully signed in, checking for user profile...");
+      console.log("Successfully signed in, checking profile status...");
 
-      // Check for existing profiles
-      const { data: brand, error: brandError } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', signInData.user.id)
-        .maybeSingle();
+      // Use our new debug function to check profile status
+      const { data: profileStatus, error: profileError } = await supabase
+        .rpc('check_user_profile_status', {
+          user_uuid: signInData.user.id
+        });
 
-      if (brandError) {
-        console.error("Error checking brand profile:", brandError);
-        throw brandError;
+      if (profileError) {
+        console.error("Error checking profile status:", profileError);
+        throw profileError;
       }
 
-      if (brand) {
+      console.log("Profile status:", profileStatus);
+
+      if (profileStatus.has_brand) {
         console.log("Brand profile found, redirecting to dashboard...");
         navigate('/brand/dashboard');
         toast({
@@ -73,18 +74,7 @@ export const useSignInWithEmail = () => {
         return;
       }
 
-      const { data: creator, error: creatorError } = await supabase
-        .from('creators')
-        .select('id')
-        .eq('user_id', signInData.user.id)
-        .maybeSingle();
-
-      if (creatorError) {
-        console.error("Error checking creator profile:", creatorError);
-        throw creatorError;
-      }
-
-      if (creator) {
+      if (profileStatus.has_creator) {
         console.log("Creator profile found, redirecting to dashboard...");
         navigate('/creator/dashboard');
         toast({
