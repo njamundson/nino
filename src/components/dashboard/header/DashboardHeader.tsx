@@ -16,14 +16,7 @@ const DashboardHeader = () => {
   const isBrandDashboard = location.pathname.includes('/brand/');
 
   return (
-    <header className="flex items-center justify-between pb-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your campaigns and view analytics
-        </p>
-      </div>
-
+    <header className="flex items-center justify-end pb-6">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
