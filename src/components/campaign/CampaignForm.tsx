@@ -22,12 +22,16 @@ interface FormData {
   compensationDetails: string;
 }
 
-type StepComponent = typeof BasicInfo | typeof Requirements | typeof Compensation | typeof ImageUpload;
+type StepComponentProps = {
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+};
 
 interface Step {
   title: string;
   description: string;
-  component: StepComponent;
+  component: React.ComponentType<StepComponentProps | ImageUploadProps>;
+  type: 'form' | 'image';
 }
 
 const steps: Step[] = [
@@ -35,21 +39,25 @@ const steps: Step[] = [
     title: "Basic Information",
     description: "Let's start with the core details",
     component: BasicInfo,
+    type: 'form'
   },
   {
     title: "Requirements",
     description: "Define what you're looking for",
     component: Requirements,
+    type: 'form'
   },
   {
     title: "Compensation",
     description: "Set your budget and perks",
     component: Compensation,
+    type: 'form'
   },
   {
     title: "Campaign Image",
     description: "Add a visual to your campaign",
     component: ImageUpload,
+    type: 'image'
   },
 ];
 
@@ -189,9 +197,10 @@ const CampaignForm = () => {
   };
 
   const renderCurrentStep = () => {
-    const CurrentStepComponent = steps[currentStep].component;
+    const CurrentStep = steps[currentStep].component;
+    const stepType = steps[currentStep].type;
 
-    if (CurrentStepComponent === ImageUpload) {
+    if (stepType === 'image') {
       return (
         <ImageUpload
           uploadedImage={uploadedImage}
@@ -202,7 +211,7 @@ const CampaignForm = () => {
     }
 
     return (
-      <CurrentStepComponent
+      <CurrentStep
         formData={formData}
         setFormData={setFormData}
       />
