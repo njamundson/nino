@@ -1,9 +1,7 @@
 import { Suspense } from "react";
 import DashboardHeader from "./header/DashboardHeader";
-import CampaignFormContainer from "../campaign/form/CampaignFormContainer";
-import QuickNotes from "./notes/QuickNotes";
-import { Card } from "../ui/card";
-import BrandStatsCards from "./stats/BrandStatsCards";
+import BrandStatsCards from "./brand/stats/BrandStatsCards";
+import DashboardContent from "./brand/content/DashboardContent";
 import { Loader2 } from "lucide-react";
 
 const LoadingSpinner = () => (
@@ -21,18 +19,7 @@ const BrandDashboard = () => {
         <BrandStatsCards />
       </Suspense>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-white shadow-sm rounded-3xl overflow-hidden p-6">
-          <h3 className="text-xl font-semibold text-nino-text mb-6">New Campaign</h3>
-          <Suspense fallback={<LoadingSpinner />}>
-            <CampaignFormContainer />
-          </Suspense>
-        </Card>
-        
-        <Suspense fallback={<LoadingSpinner />}>
-          <QuickNotes />
-        </Suspense>
-      </div>
+      <DashboardContent />
     </div>
   );
 };
