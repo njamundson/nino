@@ -1,5 +1,5 @@
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProfileImageSection from "./ProfileImageSection";
@@ -28,12 +28,19 @@ const BrandProfileForm = ({
 }: BrandProfileFormProps) => {
   return (
     <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium">Brand Profile</h3>
+        <p className="text-sm text-gray-500">
+          Update your brand information and online presence
+        </p>
+      </div>
+
       <ProfileImageSection 
         profileImage={profileImage}
         setProfileImage={onUpdateImage}
       />
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="company_name">Brand Name</Label>
           <Input
@@ -63,7 +70,7 @@ const BrandProfileForm = ({
           </Select>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 md:col-span-2">
           <Label htmlFor="description">Brand Description</Label>
           <Textarea
             id="description"
@@ -76,6 +83,30 @@ const BrandProfileForm = ({
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="website">Website</Label>
+          <Input
+            id="website"
+            value={brandData.website}
+            onChange={(e) => onUpdateField("website", e.target.value)}
+            disabled={loading}
+            className="bg-white/50"
+            placeholder="https://"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="instagram">Instagram</Label>
+          <Input
+            id="instagram"
+            value={brandData.instagram}
+            onChange={(e) => onUpdateField("instagram", e.target.value)}
+            disabled={loading}
+            className="bg-white/50"
+            placeholder="@username"
+          />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
           <Label htmlFor="location">Location</Label>
           <Input
             id="location"
@@ -85,31 +116,6 @@ const BrandProfileForm = ({
             className="bg-white/50"
             placeholder="Where is your brand based?"
           />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="website">Website</Label>
-            <Input
-              id="website"
-              value={brandData.website}
-              onChange={(e) => onUpdateField("website", e.target.value)}
-              disabled={loading}
-              className="bg-white/50"
-              placeholder="https://"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="instagram">Instagram</Label>
-            <Input
-              id="instagram"
-              value={brandData.instagram}
-              onChange={(e) => onUpdateField("instagram", e.target.value)}
-              disabled={loading}
-              className="bg-white/50"
-              placeholder="@username"
-            />
-          </div>
         </div>
       </div>
     </div>
