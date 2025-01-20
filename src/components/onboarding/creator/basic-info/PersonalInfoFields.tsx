@@ -23,6 +23,7 @@ const PersonalInfoFields = ({
 }: PersonalInfoFieldsProps) => {
   const [apiKey, setApiKey] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -46,6 +47,24 @@ const PersonalInfoFields = ({
         if (data?.GOOGLE_PLACES_API_KEY) {
           console.log('API key retrieved successfully');
           setApiKey(data.GOOGLE_PLACES_API_KEY);
+          
+          // Load Google Places script
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${data.GOOGLE_PLACES_API_KEY}&libraries=places`;
+          script.async = true;
+          script.onload = () => {
+            console.log('Google Places script loaded successfully');
+            setScriptLoaded(true);
+          };
+          script.onerror = () => {
+            console.error('Error loading Google Places script');
+            toast({
+              title: "Error",
+              description: "Failed to load location search. Please enter location manually.",
+              variant: "destructive",
+            });
+          };
+          document.head.appendChild(script);
         } else {
           console.error('No API key in response:', data);
           toast({
@@ -62,6 +81,14 @@ const PersonalInfoFields = ({
     };
 
     fetchApiKey();
+
+    // Cleanup function to remove the script
+    return () => {
+      const script = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+      if (script) {
+        document.head.removeChild(script);
+      }
+    };
   }, [toast]);
 
   return (
@@ -85,7 +112,7 @@ const PersonalInfoFields = ({
 
       <div className="space-y-2">
         <Label htmlFor="location" className="text-base">Location *</Label>
-        {!isLoading && apiKey ? (
+        {!isLoading && apiKey && scriptLoaded ? (
           <div className="relative">
             <GooglePlacesAutocomplete
               apiKey={apiKey}
