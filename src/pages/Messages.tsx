@@ -33,6 +33,7 @@ const Messages = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [editingMessage, setEditingMessage] = useState<{ id: string; content: string; } | null>(null);
   const { toast } = useToast();
 
   const { data: messages, refetch } = useQuery({
@@ -66,7 +67,6 @@ const Messages = () => {
     },
   });
 
-  // Subscribe to real-time updates
   useEffect(() => {
     const channel = supabase
       .channel('messages')
@@ -89,27 +89,6 @@ const Messages = () => {
     };
   }, [refetch]);
 
-  // Handle typing status
-  useEffect(() => {
-    if (!selectedChat) return;
-
-    const channel = supabase
-      .channel('typing')
-      .on(
-        'presence',
-        { event: 'sync' },
-        () => {
-          const state = channel.presenceState();
-          console.log('Typing status synced:', state);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [selectedChat]);
-
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedChat) {
       toast({
@@ -131,17 +110,31 @@ const Messages = () => {
         return;
       }
 
-      const { error } = await supabase
-        .from("messages")
-        .insert({
-          content: newMessage,
-          sender_id: user.id,
-          receiver_id: selectedChat,
-          message_type: 'text',
-          read: false,
-        });
+      if (editingMessage) {
+        const { error } = await supabase
+          .from("messages")
+          .update({
+            content: newMessage,
+            is_edited: true,
+          })
+          .eq('id', editingMessage.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        setEditingMessage(null);
+      } else {
+        const { error } = await supabase
+          .from("messages")
+          .insert({
+            content: newMessage,
+            sender_id: user.id,
+            receiver_id: selectedChat,
+            message_type: 'text',
+            read: false,
+          });
+
+        if (error) throw error;
+      }
+
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -198,6 +191,8 @@ const Messages = () => {
                 isRecording={isRecording}
                 setIsRecording={setIsRecording}
                 selectedChat={selectedChat}
+                editingMessage={editingMessage}
+                setEditingMessage={setEditingMessage}
               />
             </>
           ) : (
