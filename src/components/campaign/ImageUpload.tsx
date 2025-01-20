@@ -46,20 +46,20 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex flex-col items-center space-y-4 py-12">
       <div className="relative group cursor-pointer transition-all duration-300">
         <div 
           className={`
-            w-64 h-44 rounded-lg border-2 border-dashed 
+            w-80 h-56 rounded-2xl border-2 border-dashed 
             flex items-center justify-center bg-white
             transition-all duration-300 ease-in-out
             group-hover:border-gray-400 group-hover:bg-gray-50
-            ${uploadedImage ? 'border-green-500 shadow-sm' : 'border-gray-200'}
+            ${uploadedImage ? 'border-green-500 shadow-lg' : 'border-gray-200'}
             ${isUploading ? 'animate-pulse' : ''}
           `}
         >
           {uploadedImage ? (
-            <div className="relative w-full h-full overflow-hidden rounded-lg">
+            <div className="relative w-full h-full overflow-hidden rounded-2xl">
               <img 
                 src={uploadedImage} 
                 alt="Campaign" 
@@ -70,11 +70,11 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
               </div>
             </div>
           ) : (
-            <div className="text-center space-y-2 px-4">
-              <Camera className="mx-auto h-8 w-8 text-gray-300 group-hover:text-gray-400 transition-colors duration-300" />
+            <div className="text-center space-y-3 px-6 transition-all duration-300 group-hover:scale-105">
+              <Camera className="mx-auto h-12 w-12 text-gray-300 group-hover:text-gray-400 transition-colors duration-300" />
               <div>
                 <p className="text-sm font-medium text-gray-900">Upload campaign image</p>
-                <p className="text-xs text-gray-500">Recommended: 1200x800px</p>
+                <p className="text-xs text-gray-500 mt-1">Recommended size: 1200x800px</p>
               </div>
             </div>
           )}
@@ -89,8 +89,8 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
       </div>
       {isUploading && (
         <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
-          <p className="text-sm text-gray-600">Uploading...</p>
+          <div className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
+          <p className="text-sm text-gray-600 font-medium">Uploading...</p>
         </div>
       )}
     </div>

@@ -165,10 +165,10 @@ const CampaignForm = () => {
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <FormProgress currentStep={currentStep} steps={steps} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {currentStep === 0 && (
           <div className="md:col-span-1">
             <ImageUpload
@@ -179,7 +179,7 @@ const CampaignForm = () => {
           </div>
         )}
         
-        <div className={`md:col-span-${currentStep === 0 ? '1' : '2'} min-h-[250px]`}>
+        <div className={`md:col-span-${currentStep === 0 ? '1' : '2'} min-h-[300px]`}>
           <CurrentStepComponent
             formData={formData}
             setFormData={setFormData}
