@@ -12,11 +12,7 @@ import { Outlet } from "react-router-dom";
 const brandRoutes: RouteObject[] = [
   {
     path: "brand",
-    element: (
-      <BrandLayout>
-        <Outlet />
-      </BrandLayout>
-    ),
+    element: <BrandLayout><Outlet /></BrandLayout>,
     children: [
       {
         path: "dashboard",
