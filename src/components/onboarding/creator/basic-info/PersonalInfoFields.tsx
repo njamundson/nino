@@ -72,7 +72,6 @@ const PersonalInfoFields = ({
                   onUpdateField("location", newValue?.label || '');
                 },
                 placeholder: "Enter your location",
-                className: "bg-nino-bg",
                 styles: {
                   control: (provided) => ({
                     ...provided,
@@ -84,16 +83,30 @@ const PersonalInfoFields = ({
                   input: (provided) => ({
                     ...provided,
                     color: 'var(--nino-text)',
+                    fontSize: '1rem',
                   }),
                   option: (provided, state) => ({
                     ...provided,
                     backgroundColor: state.isFocused ? 'var(--nino-primary)' : 'white',
                     color: state.isFocused ? 'white' : 'var(--nino-text)',
+                    cursor: 'pointer',
+                    padding: '8px 12px',
                   }),
-                  container: (provided) => ({
+                  menu: (provided) => ({
                     ...provided,
-                    width: '100%',
+                    backgroundColor: 'white',
+                    border: '1px solid var(--nino-primary)',
+                    borderRadius: '0.375rem',
+                    marginTop: '4px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }),
+                  placeholder: (provided) => ({
+                    ...provided,
+                    color: 'var(--nino-gray)',
+                  }),
+                },
+                classNames: {
+                  control: () => "bg-nino-bg border-transparent focus:border-nino-primary",
                 },
               }}
             />
