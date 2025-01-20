@@ -3,7 +3,7 @@ import { CheckCircle2 } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface SuccessModalProps {
+export interface SuccessModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }

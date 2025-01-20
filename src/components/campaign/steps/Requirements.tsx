@@ -6,8 +6,12 @@ import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
-interface RequirementsProps {
-  formData: any;
+export interface RequirementsProps {
+  formData: {
+    requirements: string[];
+    perks: string[];
+    deliverables: string[];
+  };
   setFormData: (data: any) => void;
 }
 

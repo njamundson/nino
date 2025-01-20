@@ -11,31 +11,37 @@ import { useCampaignSubmit } from "@/hooks/useCampaignSubmit";
 const steps = ["basic", "requirements", "compensation"] as const;
 type Step = typeof steps[number];
 
+interface FormData {
+  title: string;
+  description: string;
+  requirements: string[];
+  perks: string[];
+  deliverables: string[];
+  location: string;
+  payment_details: string;
+  compensation_details: string;
+  startDate: string | null;
+  endDate: string | null;
+}
+
 const CampaignFormContainer = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<Step>("basic");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const { isSuccessModalOpen, setIsSuccessModalOpen, submitCampaign } = useCampaignSubmit();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
-    requirements: [] as string[],
-    perks: [] as string[],
-    deliverables: [] as string[],
+    requirements: [],
+    perks: [],
+    deliverables: [],
     location: "",
     payment_details: "",
     compensation_details: "",
-    start_date: null as string | null,
-    end_date: null as string | null,
+    startDate: null,
+    endDate: null,
   });
-
-  const updateFormData = (field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
 
   const handleNext = () => {
     const currentIndex = steps.indexOf(currentStep);
@@ -62,31 +68,24 @@ const CampaignFormContainer = () => {
       case "basic":
         return (
           <BasicInfo
-            title={formData.title}
-            description={formData.description}
-            location={formData.location}
+            formData={formData}
+            setFormData={setFormData}
             uploadedImage={uploadedImage}
-            onUpdateField={updateFormData}
             onImageUpload={setUploadedImage}
           />
         );
       case "requirements":
         return (
           <Requirements
-            requirements={formData.requirements}
-            perks={formData.perks}
-            deliverables={formData.deliverables}
-            onUpdateField={updateFormData}
+            formData={formData}
+            setFormData={setFormData}
           />
         );
       case "compensation":
         return (
           <Compensation
-            paymentDetails={formData.payment_details}
-            compensationDetails={formData.compensation_details}
-            startDate={formData.start_date}
-            endDate={formData.end_date}
-            onUpdateField={updateFormData}
+            formData={formData}
+            setFormData={setFormData}
           />
         );
       default:
@@ -111,10 +110,7 @@ const CampaignFormContainer = () => {
 
       <SuccessModal
         isOpen={isSuccessModalOpen}
-        onClose={() => {
-          setIsSuccessModalOpen(false);
-          navigate("/brand/campaigns");
-        }}
+        onOpenChange={setIsSuccessModalOpen}
       />
     </div>
   );

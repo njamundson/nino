@@ -7,13 +7,22 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import ImageUpload from "../ImageUpload";
 
-interface BasicInfoProps {
-  formData: any;
+export interface BasicInfoProps {
+  formData: {
+    title: string;
+    description: string;
+    location: string;
+    startDate: string | null;
+    endDate: string | null;
+  };
   setFormData: (data: any) => void;
+  uploadedImage: string | null;
+  onImageUpload: (image: string) => void;
 }
 
-const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
+const BasicInfo = ({ formData, setFormData, uploadedImage, onImageUpload }: BasicInfoProps) => {
   const handleDateSelect = (field: string) => (date: Date | undefined) => {
     if (date) {
       setFormData({ ...formData, [field]: date.toISOString() });
