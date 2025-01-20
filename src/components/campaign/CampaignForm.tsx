@@ -176,7 +176,7 @@ const CampaignForm = () => {
 
       <div className="min-h-[300px]">
         {currentStep === steps.length - 1 ? (
-          <ImageUpload
+          <CurrentStepComponent
             uploadedImage={uploadedImage}
             isUploading={isUploading}
             onImageUpload={handleImageUpload}
