@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Instagram, Globe } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import CreatorBio from "./profile/CreatorBio";
+import CreatorImage from "./profile/CreatorImage";
+import CreatorSocialLinks from "./profile/CreatorSocialLinks";
 
 interface Creator {
   id: string;
@@ -28,85 +28,22 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-        <div className="relative w-full">
-          <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
-            {creator.profile_image_url ? (
-              <img
-                src={creator.profile_image_url}
-                alt={fullName}
-                className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                <Avatar className="w-32 h-32">
-                  <AvatarImage src={creator.profile_image_url || ''} alt={fullName} />
-                  <AvatarFallback className="text-4xl">
-                    {fullName.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-            )}
-          </div>
-        </div>
+        <CreatorImage 
+          profileImageUrl={creator.profile_image_url} 
+          fullName={fullName} 
+        />
         
         <div className="flex flex-col h-full">
-          <div className="flex-grow space-y-6">
-            {creator.location && (
-              <p className="text-nino-gray flex items-center gap-2">
-                <span className="text-lg">📍</span> {creator.location}
-              </p>
-            )}
-            
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-nino-text">About</h3>
-              <p className="text-base leading-relaxed text-nino-text/90">
-                {creator.bio || "No bio available"}
-              </p>
-            </div>
+          <CreatorBio 
+            bio={creator.bio}
+            location={creator.location}
+            specialties={creator.specialties}
+          />
 
-            {creator.specialties && creator.specialties.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
-                <div className="flex flex-wrap gap-2 max-w-full">
-                  {creator.specialties.map((specialty, index) => (
-                    <Badge 
-                      key={index}
-                      variant="outline" 
-                      className="px-3 py-1 rounded-full border-2 border-nino-primary text-nino-primary bg-white/50 hover:bg-white transition-colors whitespace-nowrap"
-                    >
-                      {specialty}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-3 flex-wrap">
-              {creator.instagram && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
-                  onClick={() => window.open(`https://instagram.com/${creator.instagram}`, '_blank')}
-                >
-                  <Instagram className="w-5 h-5" />
-                  Instagram
-                </Button>
-              )}
-              
-              {creator.website && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
-                  onClick={() => window.open(creator.website!, '_blank')}
-                >
-                  <Globe className="w-5 h-5" />
-                  Website
-                </Button>
-              )}
-            </div>
-          </div>
+          <CreatorSocialLinks 
+            instagram={creator.instagram}
+            website={creator.website}
+          />
 
           <div className="mt-6">
             <Button
