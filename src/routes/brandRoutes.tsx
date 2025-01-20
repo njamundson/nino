@@ -7,11 +7,16 @@ import MyCampaigns from "@/pages/MyCampaigns";
 import NewCampaign from "@/pages/NewCampaign";
 import ViewCreators from "@/pages/ViewCreators";
 import Proposals from "@/pages/Proposals";
+import { Outlet } from "react-router-dom";
 
-const brandRoutes: RouteObject[] = [
+export const brandRoutes: RouteObject[] = [
   {
     path: "brand",
-    element: <BrandLayout />,
+    element: (
+      <BrandLayout>
+        <Outlet />
+      </BrandLayout>
+    ),
     children: [
       {
         path: "dashboard",

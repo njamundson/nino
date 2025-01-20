@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import { brandRoutes } from "./routes/brandRoutes";
+import brandRoutes from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
 import { useEffect, useState } from "react";
