@@ -9,12 +9,19 @@ interface CompensationProps {
 
 const Compensation = ({ formData, setFormData }: CompensationProps) => {
   const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Remove any non-numeric characters except decimal points
-    const value = e.target.value.replace(/[^0-9.]/g, '');
+    let value = e.target.value;
     
-    // Allow empty input or valid numbers
-    if (value === '' || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0)) {
-      setFormData({ ...formData, paymentDetails: value ? `$${value}` : '$0' });
+    // Remove the $ symbol if present
+    if (value.startsWith('$')) {
+      value = value.substring(1);
+    }
+    
+    // Allow empty input or numbers (including decimal points)
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      setFormData({ 
+        ...formData, 
+        paymentDetails: value === '' ? '' : `$${value}`
+      });
     }
   };
 
@@ -25,7 +32,7 @@ const Compensation = ({ formData, setFormData }: CompensationProps) => {
         <Input
           id="paymentDetails"
           placeholder="$0 – Set your own terms: payment, trade, or compensation"
-          value={formData.paymentDetails.startsWith('$') ? formData.paymentDetails : `$${formData.paymentDetails}`}
+          value={formData.paymentDetails}
           onChange={handlePaymentChange}
           className="h-12 text-[15px] bg-gray-50/50 border-0 rounded-xl shadow-sm ring-1 ring-gray-200/70 focus:ring-2 focus:ring-gray-300 transition-shadow duration-200 placeholder:text-gray-400"
         />
