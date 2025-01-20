@@ -8,6 +8,7 @@ interface ProposalCardHeaderProps {
   location?: string;
   startDate?: string;
   status: string;
+  profileImage?: string;
 }
 
 const ProposalCardHeader = ({ 
@@ -15,7 +16,8 @@ const ProposalCardHeader = ({
   title, 
   location, 
   startDate, 
-  status 
+  status,
+  profileImage
 }: ProposalCardHeaderProps) => {
   const brandInitial = brandName[0].toUpperCase();
 
@@ -23,7 +25,7 @@ const ProposalCardHeader = ({
     <div className="flex items-start justify-between">
       <div className="flex items-start gap-4">
         <Avatar className="h-12 w-12">
-          <AvatarImage src={`/brand-profile-image.jpg`} />
+          <AvatarImage src={profileImage} alt={brandName} />
           <AvatarFallback className="bg-nino-bg text-nino-gray">
             {brandInitial}
           </AvatarFallback>
