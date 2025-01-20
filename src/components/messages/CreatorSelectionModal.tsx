@@ -28,6 +28,7 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
   const { data: creators, isLoading } = useQuery({
     queryKey: ["creators-for-messages"],
     queryFn: async () => {
+      // First get all creators
       const { data, error } = await supabase
         .from("creators")
         .select(`
@@ -35,7 +36,8 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
           profile_image_url,
           profiles (
             first_name,
-            last_name
+            last_name,
+            id
           )
         `);
 
@@ -44,7 +46,7 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
         throw error;
       }
 
-      // Ensure the data matches our Creator type by explicitly typing the response
+      // Ensure the data matches our Creator type
       const typedData = (data || []).map((item: any): Creator => ({
         id: item.id,
         profile_image_url: item.profile_image_url,
@@ -92,7 +94,7 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   key={creator.id}
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                   onClick={() => {
-                    onSelect(creator.id);
+                    onSelect(creator.profiles?.id || '');
                     onClose();
                   }}
                 >
