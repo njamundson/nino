@@ -6,7 +6,7 @@ import BasicInfo from "./steps/BasicInfo";
 import Requirements from "./steps/Requirements";
 import Compensation from "./steps/Compensation";
 import SuccessModal from "./SuccessModal";
-import ImageUpload from "./ImageUpload";
+import ImageUpload, { ImageUploadProps } from "./ImageUpload";
 import FormProgress from "./FormProgress";
 import FormNavigation from "./FormNavigation";
 
