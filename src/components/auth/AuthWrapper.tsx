@@ -14,13 +14,14 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sessionChecked, setSessionChecked] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
     const checkSession = async () => {
-      if (!mounted) return;
+      if (!mounted || sessionChecked) return;
 
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -30,15 +31,15 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
           return;
         }
 
-        // Only redirect if not on index page and no session
         if (!session && location.pathname !== '/') {
-          navigate('/');
+          navigate('/', { replace: true });
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
       } finally {
         if (mounted) {
           setIsLoading(false);
+          setSessionChecked(true);
         }
       }
     };
@@ -48,7 +49,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
 
       if (event === 'SIGNED_OUT' || !session) {
         if (location.pathname !== '/') {
-          navigate('/');
+          navigate('/', { replace: true });
         }
         return;
       }
@@ -64,7 +65,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, location.pathname]);
+  }, [navigate, location.pathname, sessionChecked]);
 
   if (isError) {
     toast({
@@ -72,11 +73,10 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
       description: "There was a problem with your session. Please try logging in again.",
       variant: "destructive",
     });
-    navigate('/');
+    navigate('/', { replace: true });
     return null;
   }
 
-  // Only show loading state during initial auth check
   if (!isInitialized && isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
