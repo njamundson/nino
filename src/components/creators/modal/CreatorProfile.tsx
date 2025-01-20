@@ -57,14 +57,12 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
               </p>
             )}
             
-            {creator.bio && (
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-nino-text">About</h3>
-                <p className="text-base leading-relaxed text-nino-text/90">
-                  {creator.bio}
-                </p>
-              </div>
-            )}
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-nino-text">About</h3>
+              <p className="text-base leading-relaxed text-nino-text/90">
+                {creator.bio || "No bio available"}
+              </p>
+            </div>
 
             {creator.specialties && creator.specialties.length > 0 && (
               <div className="space-y-3">
