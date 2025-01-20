@@ -9,7 +9,7 @@ import ViewCreators from "@/pages/ViewCreators";
 import Proposals from "@/pages/Proposals";
 import { Outlet } from "react-router-dom";
 
-export const brandRoutes: RouteObject[] = [
+const brandRoutes: RouteObject[] = [
   {
     path: "brand",
     element: (
