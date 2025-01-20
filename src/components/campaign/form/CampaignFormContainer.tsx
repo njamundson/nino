@@ -1,202 +1,120 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import FormProgress from "../FormProgress";
 import FormNavigation from "../FormNavigation";
 import BasicInfo from "../steps/BasicInfo";
 import Requirements from "../steps/Requirements";
 import Compensation from "../steps/Compensation";
-import ImageUpload from "../ImageUpload";
 import SuccessModal from "../SuccessModal";
+import { useCampaignSubmit } from "@/hooks/useCampaignSubmit";
 
-const steps = [
-  {
-    title: "Basic Information",
-    description: "Add campaign details and timeline",
-  },
-  {
-    title: "Requirements",
-    description: "Set campaign requirements and deliverables",
-  },
-  {
-    title: "Compensation",
-    description: "Define payment and compensation details",
-  },
-  {
-    title: "Campaign Image",
-    description: "Upload your campaign image",
-  },
-];
+const steps = ["basic", "requirements", "compensation"] as const;
+type Step = typeof steps[number];
 
 const CampaignFormContainer = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState<Step>("basic");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const { isSuccessModalOpen, setIsSuccessModalOpen, submitCampaign } = useCampaignSubmit();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    requirements: [] as string[],
+    perks: [] as string[],
+    deliverables: [] as string[],
     location: "",
-    startDate: "",
-    endDate: "",
-    requirements: [""],
-    deliverables: [""],
-    paymentDetails: "",
-    compensationDetails: "",
+    payment_details: "",
+    compensation_details: "",
+    start_date: null as string | null,
+    end_date: null as string | null,
   });
 
-  const handleImageUpload = async (file: File) => {
-    try {
-      setIsUploading(true);
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("campaign-images")
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from("campaign-images")
-        .getPublicUrl(fileName);
-
-      setUploadedImage(publicUrl);
-      toast({
-        description: "Image uploaded successfully",
-      });
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast({
-        title: "Error",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
+  const updateFormData = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex < steps.length - 1) {
+      setCurrentStep(steps[currentIndex + 1]);
     }
   };
 
   const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex > 0) {
+      setCurrentStep(steps[currentIndex - 1]);
+    } else {
+      navigate(-1);
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError) {
-        console.error("Auth error:", userError);
-        toast({
-          title: "Authentication Error",
-          description: "Please sign in again.",
-          variant: "destructive",
-        });
-        navigate('/auth');
-        return;
-      }
-
-      if (!user) {
-        toast({
-          title: "Error",
-          description: "No authenticated user found",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { data: brandData, error: brandError } = await supabase
-        .from("brands")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (brandError) throw brandError;
-      if (!brandData) throw new Error("No brand found for user");
-
-      const { error: insertError } = await supabase.from("opportunities").insert({
-        brand_id: brandData.id,
-        title: formData.title,
-        description: formData.description,
-        location: formData.location,
-        start_date: formData.startDate,
-        end_date: formData.endDate,
-        requirements: formData.requirements,
-        deliverables: formData.deliverables,
-        payment_details: formData.paymentDetails,
-        compensation_details: formData.compensationDetails,
-        image_url: uploadedImage,
-      });
-
-      if (insertError) throw insertError;
-
-      setIsSuccessModalOpen(true);
-    } catch (error) {
-      console.error("Error creating campaign:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create campaign. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleSubmit = () => {
+    submitCampaign(formData, uploadedImage);
   };
 
   const renderStep = () => {
-    const stepContent = (() => {
-      switch (currentStep) {
-        case 0:
-          return <BasicInfo formData={formData} setFormData={setFormData} />;
-        case 1:
-          return <Requirements formData={formData} setFormData={setFormData} />;
-        case 2:
-          return <Compensation formData={formData} setFormData={setFormData} />;
-        case 3:
-          return (
-            <ImageUpload
-              uploadedImage={uploadedImage}
-              isUploading={isUploading}
-              onImageUpload={handleImageUpload}
-            />
-          );
-        default:
-          return null;
-      }
-    })();
-
-    return (
-      <div className="py-6">
-        {stepContent}
-      </div>
-    );
+    switch (currentStep) {
+      case "basic":
+        return (
+          <BasicInfo
+            title={formData.title}
+            description={formData.description}
+            location={formData.location}
+            uploadedImage={uploadedImage}
+            onUpdateField={updateFormData}
+            onImageUpload={setUploadedImage}
+          />
+        );
+      case "requirements":
+        return (
+          <Requirements
+            requirements={formData.requirements}
+            perks={formData.perks}
+            deliverables={formData.deliverables}
+            onUpdateField={updateFormData}
+          />
+        );
+      case "compensation":
+        return (
+          <Compensation
+            paymentDetails={formData.payment_details}
+            compensationDetails={formData.compensation_details}
+            startDate={formData.start_date}
+            endDate={formData.end_date}
+            onUpdateField={updateFormData}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <FormProgress currentStep={currentStep} steps={steps} />
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <FormProgress currentStep={currentStep} />
+      
+      <div className="mt-8 space-y-8">
         {renderStep()}
-        <FormNavigation
-          currentStep={currentStep}
-          totalSteps={steps.length}
-          onBack={handleBack}
-          onNext={handleNext}
-          onSubmit={handleSubmit}
-        />
       </div>
+
+      <FormNavigation
+        currentStep={currentStep}
+        onNext={handleNext}
+        onBack={handleBack}
+        onSubmit={handleSubmit}
+      />
+
       <SuccessModal
         isOpen={isSuccessModalOpen}
-        onOpenChange={setIsSuccessModalOpen}
+        onClose={() => {
+          setIsSuccessModalOpen(false);
+          navigate("/brand/campaigns");
+        }}
       />
     </div>
   );
