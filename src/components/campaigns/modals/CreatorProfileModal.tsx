@@ -31,7 +31,6 @@ interface CreatorProfileModalProps {
   onUpdateStatus: (status: 'accepted' | 'rejected') => void;
   onMessageCreator: () => void;
   opportunityId?: string;
-  applicationId?: string; // Add applicationId prop
 }
 
 const CreatorProfileModal = ({ 
@@ -41,8 +40,7 @@ const CreatorProfileModal = ({
   coverLetter,
   onUpdateStatus,
   onMessageCreator,
-  opportunityId,
-  applicationId // Destructure applicationId
+  opportunityId
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const navigate = useNavigate();
@@ -90,15 +88,11 @@ const CreatorProfileModal = ({
       // First update the application status
       onUpdateStatus('rejected');
       
-      if (!applicationId) {
-        throw new Error('Application ID is missing');
-      }
-
-      // Update the specific application using its ID
+      // Then update the application in the database
       const { error } = await supabase
         .from('applications')
         .update({ status: 'rejected' })
-        .eq('id', applicationId);
+        .eq('creator_id', creator.id);
 
       if (error) throw error;
 
