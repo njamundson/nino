@@ -38,6 +38,8 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
             bio={creator.bio}
             location={creator.location}
             specialties={creator.specialties}
+            instagram={creator.instagram}
+            website={creator.website}
           />
 
           <CreatorSocialLinks 
