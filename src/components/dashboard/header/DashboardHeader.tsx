@@ -69,7 +69,7 @@ const DashboardHeader = () => {
   const hasUnreadNotifications = notifications && notifications.length > 0;
 
   const handleSettingsClick = () => {
-    navigate('/brand/settings'); // Changed from '/creator/settings' to '/brand/settings'
+    navigate('/brand/settings');
   };
 
   return (
