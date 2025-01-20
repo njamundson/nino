@@ -98,6 +98,7 @@ const CampaignCard = ({
           coverLetter={selectedApplication.cover_letter}
           onUpdateStatus={handleUpdateStatus(selectedApplication.id)}
           onMessageCreator={() => handleMessageCreator(selectedCreator.user_id)}
+          opportunityId={campaign.id}
         />
       )}
     </>

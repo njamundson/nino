@@ -77,6 +77,9 @@ const CreatorProfileModal = ({
       
       // Navigate to bookings page
       navigate('/brand/bookings');
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
     } catch (error) {
       console.error('Error accepting application:', error);
       toast.error("Failed to accept application");
@@ -85,10 +88,9 @@ const CreatorProfileModal = ({
 
   const handleReject = async () => {
     try {
-      // First update the application status
       onUpdateStatus('rejected');
       
-      // Then update the application in the database
+      // Update the application status in the database
       const { error } = await supabase
         .from('applications')
         .update({ status: 'rejected' })
