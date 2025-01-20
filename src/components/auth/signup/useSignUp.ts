@@ -65,6 +65,25 @@ export const useSignUp = (onToggleAuth: () => void) => {
       }
 
       if (signUpData?.session) {
+        // Create initial profile with empty specialties array
+        const { error: creatorError } = await supabase
+          .from('creators')
+          .insert({
+            user_id: signUpData.user.id,
+            profile_id: signUpData.user.id,
+            specialties: [], // Initialize with empty array
+          });
+
+        if (creatorError) {
+          console.error("Error creating creator profile:", creatorError);
+          toast({
+            title: "Error",
+            description: "Failed to create creator profile. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
