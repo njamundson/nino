@@ -7,7 +7,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false
+    detectSessionInUrl: false,
+    flowType: 'pkce',
+    storage: window.localStorage
   }
 });
 
@@ -15,3 +17,17 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session ? 'Session exists' : 'No session');
 });
+
+// Add error handling for failed requests
+supabase.handleFailedRequest = (error: any) => {
+  console.error('Supabase request failed:', error);
+  if (error.message === 'Failed to fetch') {
+    console.log('Network error occurred, checking session...');
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        console.log('No valid session found, redirecting to login...');
+        window.location.href = '/';
+      }
+    });
+  }
+};

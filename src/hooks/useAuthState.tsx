@@ -7,24 +7,20 @@ export const useAuthState = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const checkSession = async () => {
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
       
       if (error) {
-        if (error.message.includes('refresh_token_not_found')) {
-          console.log('Refresh token not found, signing out');
-          await supabase.auth.signOut();
-          localStorage.clear();
-          toast({
-            title: "Session expired",
-            description: "Please sign in again to continue.",
-            variant: "destructive",
-          });
-          navigate('/');
+        if (error.message.includes('Failed to fetch')) {
+          console.log('Network error during session check, retrying...');
+          // Retry after a short delay
+          setTimeout(checkSession, 1000);
           return;
         }
+        
         throw error;
       }
 
@@ -32,11 +28,12 @@ export const useAuthState = () => {
         console.log('No active session found during initialization');
         navigate('/');
       }
+      
+      setIsInitialized(true);
     } catch (error) {
       console.error('Session check error:', error);
-      await supabase.auth.signOut();
-      localStorage.clear();
-      navigate('/');
+      setIsError(true);
+      setIsInitialized(true);
     }
   };
 
@@ -46,6 +43,8 @@ export const useAuthState = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       
+      if (!mounted) return;
+
       if (event === 'SIGNED_OUT') {
         console.log('User signed out');
         localStorage.clear();
@@ -58,15 +57,12 @@ export const useAuthState = () => {
         console.log('Token refreshed successfully');
       } else if (event === 'SIGNED_IN') {
         console.log('User signed in');
-      } else if (event === 'USER_UPDATED') {
-        checkSession();
+        setIsInitialized(true);
       }
     });
 
-    // Set initialized after subscription is set up
-    if (mounted) {
-      setIsInitialized(true);
-    }
+    // Initial session check
+    checkSession();
 
     return () => {
       mounted = false;
@@ -74,5 +70,5 @@ export const useAuthState = () => {
     };
   }, [navigate, toast]);
 
-  return { isInitialized };
+  return { isInitialized, isError };
 };
