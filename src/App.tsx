@@ -22,6 +22,8 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
     // Check initial session
     const checkSession = async () => {
       try {
@@ -31,6 +33,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
           if (error.message.includes('refresh_token_not_found')) {
             console.log('Refresh token not found, signing out');
             await supabase.auth.signOut();
+            localStorage.clear(); // Clear all local storage
             toast({
               title: "Session expired",
               description: "Please sign in again to continue.",
@@ -48,9 +51,14 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (error) {
         console.error('Session check error:', error);
+        // Clear any potentially corrupted auth state
+        await supabase.auth.signOut();
+        localStorage.clear();
         navigate('/');
       } finally {
-        setIsInitialized(true);
+        if (mounted) {
+          setIsInitialized(true);
+        }
       }
     };
 
@@ -62,6 +70,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       
       if (event === 'SIGNED_OUT') {
         console.log('User signed out');
+        localStorage.clear(); // Clear all local storage on sign out
         toast({
           title: "Session ended",
           description: "Please sign in again to continue.",
@@ -72,10 +81,14 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       } else if (event === 'SIGNED_IN') {
         console.log('User signed in');
         // Don't navigate here - let the protected routes handle the navigation
+      } else if (event === 'USER_DELETED' || event === 'USER_UPDATED') {
+        // Handle user account changes
+        checkSession();
       }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
