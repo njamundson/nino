@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { CreatorData } from "@/types/creator";
-
-type OnboardingStep = 'basic' | 'professional' | 'social' | 'payment';
 
 export const useCreatorOnboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('basic');
+  const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social' | 'payment'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
     id: crypto.randomUUID(),
     firstName: "",
@@ -26,9 +24,6 @@ export const useCreatorOnboarding = () => {
 
   const updateField = (field: keyof CreatorData, value: any) => {
     console.log('Updating creator field:', field, 'with value:', value);
-    if (field === 'specialties') {
-      console.log('Updating specialties array:', value);
-    }
     setCreatorData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -36,10 +31,6 @@ export const useCreatorOnboarding = () => {
     if (currentStep === 'basic') {
       setCurrentStep('professional');
     } else if (currentStep === 'professional') {
-      console.log('Moving from professional step with data:', {
-        creatorType: creatorData.creatorType,
-        specialties: creatorData.specialties
-      });
       setCurrentStep('social');
     } else if (currentStep === 'social') {
       setCurrentStep('payment');
@@ -71,32 +62,21 @@ export const useCreatorOnboarding = () => {
           return;
         }
 
-        // Ensure specialties is an array before saving
-        const specialties = Array.isArray(creatorData.specialties) 
-          ? creatorData.specialties 
-          : [];
+        console.log('Creating creator profile with specialties:', creatorData.specialties);
 
-        console.log('Saving creator with specialties:', specialties);
-
-        const creatorInsertData = {
-          user_id: user.id,
-          profile_id: profile.id,
-          bio: creatorData.bio,
-          instagram: creatorData.instagram,
-          website: creatorData.website,
-          location: creatorData.location,
-          specialties: specialties,
-          profile_image_url: creatorData.profileImage,
-          creator_type: creatorData.creatorType
-        };
-
-        console.log('Creating creator profile with data:', creatorInsertData);
-
-        const { data: creatorResult, error: creatorError } = await supabase
+        const { error: creatorError } = await supabase
           .from('creators')
-          .insert(creatorInsertData)
-          .select()
-          .single();
+          .insert({
+            user_id: user.id,
+            profile_id: profile.id,
+            bio: creatorData.bio,
+            instagram: creatorData.instagram,
+            website: creatorData.website,
+            location: creatorData.location,
+            specialties: creatorData.specialties,
+            profile_image_url: creatorData.profileImage,
+            creator_type: creatorData.creatorType
+          });
 
         if (creatorError) {
           console.error("Error creating creator profile:", creatorError);
@@ -107,8 +87,6 @@ export const useCreatorOnboarding = () => {
           });
           return;
         }
-
-        console.log('Creator profile created successfully:', creatorResult);
 
         toast({
           title: "Success!",

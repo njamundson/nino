@@ -16,8 +16,6 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
   const { data: creators, isLoading, error } = useQuery({
     queryKey: ["creators", selectedSpecialties],
     queryFn: async () => {
-      console.log("Starting creator fetch with selected specialties:", selectedSpecialties);
-      
       let query = supabase
         .from("creators")
         .select(`
@@ -31,7 +29,6 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
       // Only apply specialty filter if specialties are selected
       if (selectedSpecialties.length > 0) {
-        console.log("Applying specialty filter with:", selectedSpecialties);
         query = query.contains('specialties', selectedSpecialties);
       }
 
@@ -46,18 +43,6 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         });
         throw error;
       }
-
-      console.log("Raw creators data:", data);
-      
-      // Debug each creator's specialties
-      data?.forEach(creator => {
-        console.log(`Creator ${creator.id}:`, {
-          name: `${creator.profiles?.first_name} ${creator.profiles?.last_name}`,
-          specialties: creator.specialties,
-          isArray: Array.isArray(creator.specialties),
-          length: creator.specialties?.length
-        });
-      });
 
       return data || [];
     },
