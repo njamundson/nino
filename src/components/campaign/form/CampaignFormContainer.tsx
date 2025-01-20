@@ -99,8 +99,6 @@ const CampaignFormContainer = () => {
           <BasicInfo
             formData={formData}
             setFormData={setFormData}
-            uploadedImage={uploadedImage}
-            onImageUpload={setUploadedImage}
           />
         );
       case "requirements":
@@ -112,10 +110,20 @@ const CampaignFormContainer = () => {
         );
       case "compensation":
         return (
-          <Compensation
-            formData={formData}
-            setFormData={setFormData}
-          />
+          <div className="space-y-8">
+            <Compensation
+              formData={formData}
+              setFormData={setFormData}
+            />
+            <div className="pt-8 border-t border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Image</h3>
+              <ImageUpload
+                uploadedImage={uploadedImage}
+                isUploading={isUploading}
+                onImageUpload={handleImageUpload}
+              />
+            </div>
+          </div>
         );
       default:
         return null;
@@ -133,15 +141,6 @@ const CampaignFormContainer = () => {
       
       <div className="mt-8 space-y-8">
         {renderStep()}
-        
-        <div className="pt-8 border-t border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Image</h3>
-          <ImageUpload
-            uploadedImage={uploadedImage}
-            isUploading={isUploading}
-            onImageUpload={handleImageUpload}
-          />
-        </div>
       </div>
 
       <FormNavigation
