@@ -6,44 +6,30 @@ interface SocialIconButtonProps {
   onClick?: () => void;
   tooltipText: string;
   isActive: boolean;
-  label?: string;
 }
 
 const SocialIconButton = ({ 
   icon: Icon, 
   onClick, 
   tooltipText, 
-  isActive,
-  label
+  isActive 
 }: SocialIconButtonProps) => {
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button 
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300
-              ${isActive 
-                ? 'bg-white hover:bg-white/90 cursor-pointer shadow-sm hover:shadow-md' 
-                : 'bg-white/20 cursor-not-allowed opacity-50'
-              }
-            `}
+          <div 
+            className={`p-3 rounded-2xl ${isActive ? 'bg-white/40 hover:bg-white/90 cursor-pointer' : 'bg-white/20 cursor-not-allowed'} transition-all duration-300 shadow-sm hover:shadow-md backdrop-blur-sm group`}
             onClick={onClick}
-            disabled={!isActive}
           >
             <Icon 
-              className={`w-[18px] h-[18px] ${isActive ? 'text-nino-primary' : 'text-nino-gray/50'}`}
+              className={`w-[18px] h-[18px] ${isActive ? 'text-nino-primary/80 group-hover:text-nino-primary' : 'text-nino-gray/50'} transition-colors`}
               strokeWidth={1.25} 
             />
-            {label && (
-              <span className={`text-sm font-medium ${isActive ? 'text-nino-text' : 'text-nino-gray/50'}`}>
-                {label}
-              </span>
-            )}
-          </button>
+          </div>
         </TooltipTrigger>
         <TooltipContent>
-          <p className="text-sm">{tooltipText}</p>
+          {tooltipText}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
