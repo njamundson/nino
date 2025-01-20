@@ -19,6 +19,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
     const checkBrandAccess = async () => {
       try {
+        // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -52,41 +53,51 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        const { data: brand, error: brandError } = await supabase
-          .from('brands')
-          .select('id, company_name')
-          .eq('user_id', userId)
-          .maybeSingle();
+        // Fetch brand profile with retry logic
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+          try {
+            const { data: brand, error: brandError } = await supabase
+              .from('brands')
+              .select('id, company_name')
+              .eq('user_id', userId)
+              .maybeSingle();
 
-        if (brandError) {
-          console.error("Error checking brand profile:", brandError);
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
+            if (brandError) {
+              throw brandError;
+            }
+
+            if (!brand) {
+              console.log("No brand profile found");
+              if (mounted) {
+                setIsAuthenticated(false);
+                setIsLoading(false);
+              }
+              toast({
+                title: "Access denied",
+                description: "You need a brand profile to access this area.",
+                variant: "destructive",
+              });
+              navigate('/onboarding');
+              return;
+            }
+
+            console.log("Brand profile found:", brand);
+            if (mounted) {
+              setIsAuthenticated(true);
+              setIsLoading(false);
+            }
+            return;
+          } catch (error) {
+            retryCount++;
+            if (retryCount === maxRetries) {
+              throw error;
+            }
+            // Wait before retrying (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
           }
-          navigate('/');
-          return;
-        }
-
-        if (!brand) {
-          console.log("No brand profile found");
-          if (mounted) {
-            setIsAuthenticated(false);
-            setIsLoading(false);
-          }
-          toast({
-            title: "Access denied",
-            description: "You need a brand profile to access this area.",
-            variant: "destructive",
-          });
-          navigate('/onboarding');
-          return;
-        }
-
-        console.log("Brand profile found:", brand);
-        if (mounted) {
-          setIsAuthenticated(true);
-          setIsLoading(false);
         }
       } catch (error) {
         console.error("Error in checkBrandAccess:", error);
@@ -94,6 +105,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           setIsAuthenticated(false);
           setIsLoading(false);
         }
+        toast({
+          title: "Error",
+          description: "Failed to verify access. Please try again.",
+          variant: "destructive",
+        });
         navigate('/');
       }
     };
