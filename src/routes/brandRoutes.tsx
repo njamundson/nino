@@ -1,4 +1,5 @@
 import { RouteObject } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import BrandLayout from "@/components/layouts/BrandLayout";
 import Dashboard from "@/pages/Dashboard";
 import BrandSettings from "@/pages/BrandSettings";
@@ -7,12 +8,18 @@ import MyCampaigns from "@/pages/MyCampaigns";
 import NewCampaign from "@/pages/NewCampaign";
 import ViewCreators from "@/pages/ViewCreators";
 import Proposals from "@/pages/Proposals";
-import { Outlet } from "react-router-dom";
+import ProtectedBrandRoute from "@/components/auth/ProtectedBrandRoute";
 
 const brandRoutes: RouteObject[] = [
   {
     path: "brand",
-    element: <BrandLayout><Outlet /></BrandLayout>,
+    element: (
+      <ProtectedBrandRoute>
+        <BrandLayout>
+          <Outlet />
+        </BrandLayout>
+      </ProtectedBrandRoute>
+    ),
     children: [
       {
         path: "dashboard",
