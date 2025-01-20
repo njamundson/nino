@@ -18,11 +18,17 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
         console.log("Fetching creators with selected specialties:", selectedSpecialties);
         
         // First get the profile IDs of brands
-        const { data: brandProfiles } = await supabase
+        const { data: brandProfiles, error: brandError } = await supabase
           .from('brands')
           .select('user_id');
-        
-        const brandProfileIds = brandProfiles?.map(b => b.user_id) || [];
+
+        if (brandError) {
+          console.error("Error fetching brand profiles:", brandError);
+          throw brandError;
+        }
+
+        const brandProfileIds = brandProfiles?.map(b => b.user_id).filter(Boolean) || [];
+        console.log("Brand profile IDs to exclude:", brandProfileIds);
 
         // Then fetch creators excluding those profiles
         let query = supabase
@@ -36,14 +42,14 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
           `)
           .not('user_id', 'is', null);
 
+        // Only add the brand profile filter if we have IDs to exclude
         if (brandProfileIds.length > 0) {
-          query = query.not('user_id', 'in', brandProfileIds);
+          query = query.not('user_id', 'in', `(${brandProfileIds.join(',')})`);
         }
 
         // Only apply specialty filter if specialties are selected
         if (selectedSpecialties.length > 0) {
           console.log("Filtering creators by specialties:", selectedSpecialties);
-          // Use contains to ensure all selected specialties are present
           selectedSpecialties.forEach(specialty => {
             query = query.contains('specialties', [specialty]);
           });
