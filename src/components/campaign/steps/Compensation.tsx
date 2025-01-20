@@ -11,7 +11,15 @@ const Compensation = ({ formData, setFormData }: CompensationProps) => {
   const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Remove any non-numeric characters except decimal points
     const value = e.target.value.replace(/[^0-9.]/g, '');
-    setFormData({ ...formData, paymentDetails: `$${value}` });
+    
+    // Ensure the value is a valid number greater than or equal to 0
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue) && numericValue >= 0) {
+      setFormData({ ...formData, paymentDetails: `$${value}` });
+    } else if (value === '') {
+      // Allow empty input which will be treated as $0
+      setFormData({ ...formData, paymentDetails: '$0' });
+    }
   };
 
   return (
