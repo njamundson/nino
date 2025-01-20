@@ -48,7 +48,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
         // Only add the brand profile filter if we have IDs to exclude
         if (brandProfileIds && brandProfileIds.length > 0) {
-          query = query.not('user_id', 'in', brandProfileIds);
+          query = query.not('user_id', 'in', `(${brandProfileIds.join(',')})`);
         }
 
         // Only apply specialty filter if specialties are selected
