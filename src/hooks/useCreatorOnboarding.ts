@@ -25,7 +25,7 @@ export const useCreatorOnboarding = () => {
   });
 
   const updateField = (field: keyof CreatorData, value: any) => {
-    console.log('Updating field:', field, 'with value:', value);
+    console.log('Updating creator field:', field, 'with value:', value);
     setCreatorData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -33,6 +33,10 @@ export const useCreatorOnboarding = () => {
     if (currentStep === 'basic') {
       setCurrentStep('professional');
     } else if (currentStep === 'professional') {
+      console.log('Moving from professional step with data:', {
+        creatorType: creatorData.creatorType,
+        specialties: creatorData.specialties
+      });
       setCurrentStep('social');
     } else if (currentStep === 'social') {
       setCurrentStep('payment');
@@ -64,17 +68,33 @@ export const useCreatorOnboarding = () => {
           return;
         }
 
-        const { error: creatorError } = await supabase.from('creators').insert({
+        console.log('Creating creator profile with data:', {
           user_id: user.id,
           profile_id: profile.id,
           bio: creatorData.bio,
+          specialties: creatorData.specialties,
           instagram: creatorData.instagram,
           website: creatorData.website,
           location: creatorData.location,
-          specialties: creatorData.specialties,
           profile_image_url: creatorData.profileImage,
-          creator_type: creatorData.creatorType // Make sure this column exists in your database
+          creator_type: creatorData.creatorType
         });
+
+        const { data: creatorResult, error: creatorError } = await supabase
+          .from('creators')
+          .insert({
+            user_id: user.id,
+            profile_id: profile.id,
+            bio: creatorData.bio,
+            instagram: creatorData.instagram,
+            website: creatorData.website,
+            location: creatorData.location,
+            specialties: creatorData.specialties,
+            profile_image_url: creatorData.profileImage,
+            creator_type: creatorData.creatorType
+          })
+          .select()
+          .single();
 
         if (creatorError) {
           console.error("Error creating creator profile:", creatorError);
@@ -85,6 +105,8 @@ export const useCreatorOnboarding = () => {
           });
           return;
         }
+
+        console.log('Creator profile created successfully:', creatorResult);
 
         toast({
           title: "Success!",
