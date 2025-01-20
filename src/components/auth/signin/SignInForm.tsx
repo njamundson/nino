@@ -69,8 +69,7 @@ const SignInForm = ({ onSubmit, loading }: SignInFormProps) => {
       >
         {loading ? (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={false}
             className="flex items-center justify-center space-x-2"
           >
             <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
