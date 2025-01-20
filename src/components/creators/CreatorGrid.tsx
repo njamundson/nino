@@ -24,18 +24,14 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
             profile:profiles(
               first_name,
               last_name
-            ),
-            user:auth.users!inner(
-              id
             )
           `)
           .not('user_id', 'is', null) // Only get creators with valid user accounts
           .not('profile_id', 'in', (
-            // Exclude any profiles that are associated with brands
             supabase
               .from('brands')
               .select('user_id')
-          )); 
+          ));
 
         // Only apply specialty filter if specialties are selected
         if (selectedSpecialties.length > 0) {
