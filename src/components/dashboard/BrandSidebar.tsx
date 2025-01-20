@@ -7,7 +7,6 @@ import {
   Users,
   Calendar,
   MessageSquare,
-  Settings,
   LogOut,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,7 +24,6 @@ const BrandSidebar = () => {
     { icon: Users, label: "View Creators", path: "/brand/creators" },
     { icon: Calendar, label: "Bookings", path: "/brand/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/brand/messages" },
-    { icon: Settings, label: "Settings", path: "/brand/settings" },
   ];
 
   const handleSignOut = async () => {
