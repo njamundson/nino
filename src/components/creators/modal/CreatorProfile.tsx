@@ -20,9 +20,10 @@ interface Creator {
 interface CreatorProfileProps {
   creator: Creator;
   onInviteClick: () => void;
+  onMessageClick?: () => void;
 }
 
-const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
+const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfileProps) => {
   const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
 
   return (
@@ -38,6 +39,9 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
             bio={creator.bio}
             location={creator.location}
             specialties={creator.specialties}
+            instagram={creator.instagram}
+            website={creator.website}
+            onMessageClick={onMessageClick}
           />
 
           <CreatorSocialLinks 
