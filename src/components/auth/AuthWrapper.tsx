@@ -14,7 +14,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -27,19 +27,19 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
         
         if (error) {
           console.error("Session check error:", error);
-          setIsLoading(false);
           return;
         }
 
-        // Only redirect if we're not already on the index page
+        // Only redirect if not on index page and no session
         if (!session && location.pathname !== '/') {
           navigate('/');
         }
-        
-        setIsLoading(false);
       } catch (error) {
         console.error('Auth initialization error:', error);
-        setIsLoading(false);
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -64,15 +64,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, toast, location.pathname]);
-
-  if (!isInitialized || isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
-      </div>
-    );
-  }
+  }, [navigate, location.pathname]);
 
   if (isError) {
     toast({
@@ -82,6 +74,15 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
     });
     navigate('/');
     return null;
+  }
+
+  // Only show loading state during initial auth check
+  if (!isInitialized && isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
+      </div>
+    );
   }
 
   return <>{children}</>;
