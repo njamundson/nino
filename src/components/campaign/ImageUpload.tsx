@@ -1,3 +1,4 @@
+import React from 'react';
 import { Camera, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -83,6 +84,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
           )}
         </div>
         <input
+          ref={fileInputRef}
           type="file"
           onChange={handleImageUpload}
           accept="image/*"
