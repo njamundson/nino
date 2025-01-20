@@ -7,7 +7,6 @@ import MyCampaigns from "@/pages/MyCampaigns";
 import ViewCreators from "@/pages/ViewCreators";
 import Bookings from "@/pages/Bookings";
 import Messages from "@/pages/Messages";
-import Settings from "@/pages/Settings";
 import Welcome from "@/pages/Welcome";
 
 export const brandRoutes = [
@@ -75,16 +74,6 @@ export const brandRoutes = [
       <ProtectedBrandRoute>
         <BrandLayout>
           <Messages />
-        </BrandLayout>
-      </ProtectedBrandRoute>
-    ),
-  },
-  {
-    path: "/brand/settings",
-    element: (
-      <ProtectedBrandRoute>
-        <BrandLayout>
-          <Settings />
         </BrandLayout>
       </ProtectedBrandRoute>
     ),
