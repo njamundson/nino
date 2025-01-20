@@ -37,40 +37,40 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
           </div>
         </div>
         
-        <div className="flex flex-col justify-between space-y-6 overflow-hidden">
-          {creator.location && (
-            <p className="text-nino-gray flex items-center gap-2">
-              <span className="text-lg">📍</span> {creator.location}
-            </p>
-          )}
-          
-          {creator.bio && (
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-nino-text">About</h3>
-              <p className="text-base leading-relaxed text-nino-text/90">
-                {creator.bio}
+        <div className="flex flex-col h-full">
+          <div className="flex-grow space-y-6">
+            {creator.location && (
+              <p className="text-nino-gray flex items-center gap-2">
+                <span className="text-lg">📍</span> {creator.location}
               </p>
-            </div>
-          )}
-
-          {creator.specialties && creator.specialties.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
-              <div className="flex flex-wrap gap-2 max-w-full">
-                {creator.specialties.map((specialty, index) => (
-                  <Badge 
-                    key={index}
-                    variant="outline" 
-                    className="px-3 py-1 rounded-full border-2 border-nino-primary text-nino-primary bg-white/50 hover:bg-white transition-colors whitespace-nowrap"
-                  >
-                    {specialty}
-                  </Badge>
-                ))}
+            )}
+            
+            {creator.bio && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-nino-text">About</h3>
+                <p className="text-base leading-relaxed text-nino-text/90">
+                  {creator.bio}
+                </p>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="space-y-4">
+            {creator.specialties && creator.specialties.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
+                <div className="flex flex-wrap gap-2 max-w-full">
+                  {creator.specialties.map((specialty, index) => (
+                    <Badge 
+                      key={index}
+                      variant="outline" 
+                      className="px-3 py-1 rounded-full border-2 border-nino-primary text-nino-primary bg-white/50 hover:bg-white transition-colors whitespace-nowrap"
+                    >
+                      {specialty}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="flex gap-3 flex-wrap">
               {creator.instagram && (
                 <Button
@@ -96,7 +96,9 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
                 </Button>
               )}
             </div>
+          </div>
 
+          <div className="mt-6">
             <Button
               size="lg"
               className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white rounded-xl shadow-md transition-all duration-300 hover:shadow-lg"
