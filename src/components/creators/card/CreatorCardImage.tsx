@@ -1,4 +1,6 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { CreatorData } from "@/types/creator";
 
 interface CreatorCardImageProps {
@@ -42,6 +44,13 @@ const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
           </div>
         )}
       </div>
+      <Button
+        size="icon"
+        variant="secondary"
+        className="absolute bottom-6 right-6 rounded-full pointer-events-none"
+      >
+        <Plus className="h-4 w-4" />
+      </Button>
     </div>
   );
 };
