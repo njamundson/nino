@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
-import { motion } from "framer-motion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import NameFields from "./form/NameFields";
+import EmailField from "./form/EmailField";
+import PasswordFields from "./form/PasswordFields";
+import SubmitButton from "./form/SubmitButton";
 
 interface SignUpFormProps {
   onSubmit: (formData: {
@@ -16,7 +16,6 @@ interface SignUpFormProps {
 }
 
 const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
-  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,17 +24,14 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
   const [error, setError] = useState("");
 
   const validateForm = () => {
-    // Reset error
     setError("");
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address");
       return false;
     }
 
-    // Password validation
     if (password.length < 6) {
       setError("Password must be at least 6 characters long");
       return false;
@@ -46,7 +42,6 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
       return false;
     }
 
-    // Name validation
     if (!firstName.trim() || !lastName.trim()) {
       setError("Please enter both first and last name");
       return false;
@@ -65,6 +60,14 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
     onSubmit({ email, password, firstName, lastName });
   };
 
+  const handleNameChange = (field: 'firstName' | 'lastName', value: string) => {
+    if (field === 'firstName') {
+      setFirstName(value);
+    } else {
+      setLastName(value);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
@@ -73,103 +76,28 @@ const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
         </Alert>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          type="text"
-          placeholder="First Name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
-          required
-          disabled={loading}
-        />
-        <Input
-          type="text"
-          placeholder="Last Name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
-          required
-          disabled={loading}
-        />
-      </div>
-
-      <Input
-        type="email"
-        placeholder="Email address"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
-        required
+      <NameFields
+        firstName={firstName}
+        lastName={lastName}
+        onChange={handleNameChange}
         disabled={loading}
       />
 
-      <div className="relative">
-        <Input
-          type={showPassword ? "text" : "password"}
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-12 transition-all duration-300"
-          required
-          disabled={loading}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
-          disabled={loading}
-        >
-          {showPassword ? (
-            <EyeOff className="h-4 w-4" />
-          ) : (
-            <Eye className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-
-      <div className="relative">
-        <Input
-          type={showPassword ? "text" : "password"}
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-12 transition-all duration-300"
-          required
-          disabled={loading}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
-          disabled={loading}
-        >
-          {showPassword ? (
-            <EyeOff className="h-4 w-4" />
-          ) : (
-            <Eye className="h-4 w-4" />
-          )}
-        </button>
-      </div>
-
-      <Button
-        type="submit"
-        className="w-full bg-nino-primary hover:opacity-90 text-white transition-all duration-300 rounded-xl h-12 shadow-sm focus-visible:ring-2 focus-visible:ring-[#A55549] focus-visible:ring-offset-2"
+      <EmailField
+        email={email}
+        onChange={setEmail}
         disabled={loading}
-      >
-        {loading ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center space-x-2"
-          >
-            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            <span>Creating account...</span>
-          </motion.div>
-        ) : (
-          "Sign Up"
-        )}
-      </Button>
+      />
+
+      <PasswordFields
+        password={password}
+        confirmPassword={confirmPassword}
+        onPasswordChange={setPassword}
+        onConfirmPasswordChange={setConfirmPassword}
+        disabled={loading}
+      />
+
+      <SubmitButton loading={loading} />
     </form>
   );
 };
