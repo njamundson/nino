@@ -71,7 +71,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
           ) : (
             <div className="text-center space-y-3 px-4">
               <Camera className="mx-auto h-8 w-8 text-gray-400 group-hover:text-gray-500 transition-colors duration-300" />
-              <p className="text-base text-gray-500 group-hover:text-gray-600">Upload Campaign Image</p>
+              <p className="text-sm text-gray-500 group-hover:text-gray-600">Upload Campaign Image</p>
             </div>
           )}
         </div>
@@ -86,7 +86,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
       {isUploading && (
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
-          <p className="text-xs text-gray-500">Uploading...</p>
+          <p className="text-sm text-gray-500">Uploading...</p>
         </div>
       )}
     </div>
