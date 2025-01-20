@@ -8,6 +8,7 @@ import CampaignDetails from "./card/CampaignDetails";
 import ApplicationsList from "./card/ApplicationsList";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CampaignCardProps {
   campaign: any;
@@ -27,7 +28,9 @@ const CampaignCard = ({
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [localApplications, setLocalApplications] = useState(applications);
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleMessageCreator = (userId: string) => {
     navigate(`/brand/messages?userId=${userId}`);
@@ -41,9 +44,10 @@ const CampaignCard = ({
   const handleUpdateStatus = (applicationId: string) => async (newStatus: 'accepted' | 'rejected') => {
     if (onUpdateApplicationStatus) {
       try {
+        setIsProcessing(true);
+        
         await onUpdateApplicationStatus(applicationId, newStatus);
         
-        // Update local state to remove rejected application
         if (newStatus === 'rejected') {
           // Delete the application from the database
           const { error } = await supabase
@@ -59,6 +63,38 @@ const CampaignCard = ({
           );
 
           toast.success("Application rejected and removed");
+        } else if (newStatus === 'accepted') {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) {
+            throw new Error('User not authenticated');
+          }
+
+          // Send initial message to creator
+          const { error: messageError } = await supabase.from('messages').insert({
+            sender_id: user.id,
+            receiver_id: selectedCreator.user_id,
+            content: `Hi! I've accepted your application. Let's discuss the next steps!`,
+            message_type: 'text'
+          });
+
+          if (messageError) throw messageError;
+
+          // Update opportunity status
+          const { error: opportunityError } = await supabase
+            .from('opportunities')
+            .update({ status: 'active' })
+            .eq('id', campaign.id);
+
+          if (opportunityError) throw opportunityError;
+
+          // Success flow
+          toast.success("Application accepted successfully");
+          
+          // Invalidate queries before navigation
+          await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+          
+          // Navigate after everything is done
+          navigate('/brand/bookings');
         }
         
         // Close the modal
@@ -67,6 +103,8 @@ const CampaignCard = ({
       } catch (error) {
         console.error('Error updating application status:', error);
         toast.error("Failed to update application status");
+      } finally {
+        setIsProcessing(false);
       }
     }
   };
@@ -129,6 +167,7 @@ const CampaignCard = ({
           onUpdateStatus={handleUpdateStatus(selectedApplication.id)}
           onMessageCreator={() => handleMessageCreator(selectedCreator.user_id)}
           opportunityId={campaign.id}
+          isProcessing={isProcessing}
         />
       )}
     </>

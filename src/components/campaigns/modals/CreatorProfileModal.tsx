@@ -22,6 +22,7 @@ interface CreatorProfileModalProps {
   onUpdateStatus: (status: 'accepted' | 'rejected') => void;
   onMessageCreator: () => void;
   opportunityId?: string;
+  isProcessing?: boolean;
 }
 
 const CreatorProfileModal = ({ 
@@ -31,10 +32,10 @@ const CreatorProfileModal = ({
   coverLetter,
   onUpdateStatus,
   onMessageCreator,
-  opportunityId
+  opportunityId,
+  isProcessing = false
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -42,9 +43,7 @@ const CreatorProfileModal = ({
     if (isProcessing) return;
     
     try {
-      setIsProcessing(true);
-      
-      // First update the application status
+      // Update the application status
       onUpdateStatus('accepted');
       
       const { data: { user } } = await supabase.auth.getUser();
@@ -85,8 +84,6 @@ const CreatorProfileModal = ({
     } catch (error) {
       console.error('Error accepting application:', error);
       toast.error("Failed to accept application. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
 
