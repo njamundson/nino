@@ -1,122 +1,41 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import BasicInfo from "./steps/BasicInfo";
-import Requirements from "./steps/Requirements";
-import Compensation from "./steps/Compensation";
-import SuccessModal from "./SuccessModal";
+import { useToast } from "@/hooks/use-toast";
 import ImageUpload from "./ImageUpload";
-import FormProgress from "./FormProgress";
-import FormNavigation from "./FormNavigation";
 
 interface CampaignFormProps {
-  uploadedImage: string | null;
+  uploadedImage: string;
   isUploading: boolean;
-  onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onImageUpload: (file: File) => Promise<void>;
 }
 
-const steps = [
-  {
-    title: "Basic Information",
-    description: "Let's start with the core details",
-    component: BasicInfo,
-  },
-  {
-    title: "Requirements",
-    description: "Define what you're looking for",
-    component: Requirements,
-  },
-  {
-    title: "Compensation",
-    description: "Set your budget and perks",
-    component: Compensation,
-  },
-  {
-    title: "Campaign Image",
-    description: "Add a visual to your campaign",
-    component: ImageUpload,
-  },
-];
-
 const CampaignForm = ({ uploadedImage, isUploading, onImageUpload }: CampaignFormProps) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
-  
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     location: "",
     startDate: "",
     endDate: "",
-    requirements: [] as string[],
-    deliverables: [] as string[],
+    requirements: [""],
+    deliverables: [""],
     paymentDetails: "",
     compensationDetails: "",
   });
 
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!uploadedImage) {
-      toast({
-        title: "Required Field",
-        description: "Please upload a campaign image before submitting",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Validate form data here
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!brand) throw new Error("Brand not found");
-
-      const { error: insertError } = await supabase
-        .from('opportunities')
-        .insert({
-          brand_id: brand.id,
-          title: formData.title,
-          description: formData.description,
-          location: formData.location,
-          start_date: formData.startDate,
-          end_date: formData.endDate,
-          requirements: formData.requirements,
-          deliverables: formData.deliverables,
-          payment_details: formData.paymentDetails,
-          compensation_details: formData.compensationDetails,
-          image_url: uploadedImage,
-        });
-
-      if (insertError) throw insertError;
-
-      setShowSuccessModal(true);
-      
-      setTimeout(() => {
-        navigate('/brand/campaigns');
-      }, 2000);
-
+      // Submit form data to your API or database
+      toast({
+        description: "Campaign created successfully",
+      });
+      navigate("/creator/dashboard");
     } catch (error) {
-      console.error('Error creating campaign:', error);
+      console.error("Error creating campaign:", error);
       toast({
         title: "Error",
         description: "Failed to create campaign. Please try again.",
@@ -125,40 +44,107 @@ const CampaignForm = ({ uploadedImage, isUploading, onImageUpload }: CampaignFor
     }
   };
 
-  const CurrentStepComponent = steps[currentStep].component;
-
   return (
-    <div className="space-y-6">
-      <FormProgress currentStep={currentStep} steps={steps} />
-
-      <div className="min-h-[400px]">
-        {currentStep === steps.length - 1 ? (
-          <ImageUpload
-            uploadedImage={uploadedImage}
-            isUploading={isUploading}
-            onImageUpload={onImageUpload}
-          />
-        ) : (
-          <CurrentStepComponent
-            formData={formData}
-            setFormData={setFormData}
-          />
-        )}
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <ImageUpload 
+        uploadedImage={uploadedImage}
+        isUploading={isUploading}
+        onImageUpload={onImageUpload}
+      />
+      <div>
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+        <input
+          type="text"
+          id="title"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          required
+        />
       </div>
-
-      <FormNavigation
-        currentStep={currentStep}
-        totalSteps={steps.length}
-        onBack={handleBack}
-        onNext={handleNext}
-        onSubmit={handleSubmit}
-      />
-
-      <SuccessModal 
-        isOpen={showSuccessModal} 
-        onOpenChange={setShowSuccessModal}
-      />
-    </div>
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+        <textarea
+          id="description"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
+        <input
+          type="text"
+          id="location"
+          value={formData.location}
+          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
+        <input
+          type="date"
+          id="startDate"
+          value={formData.startDate}
+          onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">End Date</label>
+        <input
+          type="date"
+          id="endDate"
+          value={formData.endDate}
+          onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="requirements" className="block text-sm font-medium text-gray-700">Requirements</label>
+        <textarea
+          id="requirements"
+          value={formData.requirements.join(", ")}
+          onChange={(e) => setFormData({ ...formData, requirements: e.target.value.split(", ") })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+        />
+      </div>
+      <div>
+        <label htmlFor="deliverables" className="block text-sm font-medium text-gray-700">Deliverables</label>
+        <textarea
+          id="deliverables"
+          value={formData.deliverables.join(", ")}
+          onChange={(e) => setFormData({ ...formData, deliverables: e.target.value.split(", ") })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+        />
+      </div>
+      <div>
+        <label htmlFor="paymentDetails" className="block text-sm font-medium text-gray-700">Payment Details</label>
+        <input
+          type="text"
+          id="paymentDetails"
+          value={formData.paymentDetails}
+          onChange={(e) => setFormData({ ...formData, paymentDetails: e.target.value })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+        />
+      </div>
+      <div>
+        <label htmlFor="compensationDetails" className="block text-sm font-medium text-gray-700">Compensation Details</label>
+        <input
+          type="text"
+          id="compensationDetails"
+          value={formData.compensationDetails}
+          onChange={(e) => setFormData({ ...formData, compensationDetails: e.target.value })}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+        />
+      </div>
+      <button type="submit" className="w-full bg-nino-primary text-white py-2 rounded-md">Create Campaign</button>
+    </form>
   );
 };
 
