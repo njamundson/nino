@@ -104,7 +104,7 @@ const CampaignFormContainer = () => {
     <div className="max-w-3xl mx-auto px-4 py-8">
       <FormProgress 
         currentStep={currentStepIndex} 
-        steps={steps}
+        steps={steps as { title: string; description: string; }[]}
       />
       
       <div className="mt-8 space-y-8">
@@ -112,7 +112,8 @@ const CampaignFormContainer = () => {
       </div>
 
       <FormNavigation
-        currentStep={currentStep}
+        currentStep={currentStepIndex}
+        totalSteps={steps.length}
         onNext={handleNext}
         onBack={handleBack}
         onSubmit={handleSubmit}
