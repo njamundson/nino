@@ -23,7 +23,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="space-y-4">
-        <Label htmlFor="title" className="text-sm font-medium text-gray-900">Project Title</Label>
+        <Label htmlFor="title" className="text-sm font-medium text-gray-700">Project Title</Label>
         <Input
           id="title"
           placeholder="Enter the title of your campaign"
@@ -31,16 +31,16 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
           onChange={(e) =>
             setFormData({ ...formData, title: e.target.value })
           }
-          className="h-12 text-sm border-gray-200 focus:border-gray-300 focus:ring-gray-300"
+          className="h-12 text-[15px] bg-gray-50/50 border-0 rounded-xl shadow-sm ring-1 ring-gray-200/70 focus:ring-2 focus:ring-gray-300 transition-shadow duration-200 placeholder:text-gray-400"
         />
       </div>
 
       <div className="space-y-4">
-        <Label htmlFor="description" className="text-sm font-medium text-gray-900">Project Description</Label>
+        <Label htmlFor="description" className="text-sm font-medium text-gray-700">Project Description</Label>
         <Textarea
           id="description"
           placeholder="Describe your campaign in detail"
-          className="min-h-[160px] text-sm leading-relaxed resize-none border-gray-200 focus:border-gray-300 focus:ring-gray-300"
+          className="min-h-[160px] text-[15px] bg-gray-50/50 border-0 rounded-xl shadow-sm ring-1 ring-gray-200/70 focus:ring-2 focus:ring-gray-300 transition-shadow duration-200 resize-none placeholder:text-gray-400 leading-relaxed"
           value={formData.description}
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
@@ -49,7 +49,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
       </div>
 
       <div className="space-y-4">
-        <Label htmlFor="location" className="text-sm font-medium text-gray-900">Location</Label>
+        <Label htmlFor="location" className="text-sm font-medium text-gray-700">Location</Label>
         <Input
           id="location"
           placeholder="Where will this project take place?"
@@ -57,19 +57,19 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
           onChange={(e) =>
             setFormData({ ...formData, location: e.target.value })
           }
-          className="h-12 text-sm border-gray-200 focus:border-gray-300 focus:ring-gray-300"
+          className="h-12 text-[15px] bg-gray-50/50 border-0 rounded-xl shadow-sm ring-1 ring-gray-200/70 focus:ring-2 focus:ring-gray-300 transition-shadow duration-200 placeholder:text-gray-400"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-4">
-          <Label className="text-sm font-medium text-gray-900">Start Date</Label>
+          <Label className="text-sm font-medium text-gray-700">Start Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full h-12 justify-start text-left font-normal text-sm border-gray-200",
+                  "w-full h-12 justify-start text-left font-normal text-[15px] bg-gray-50/50 border-0 rounded-xl shadow-sm ring-1 ring-gray-200/70 hover:bg-gray-50/80 focus:ring-2 focus:ring-gray-300 transition-all duration-200",
                   !formData.startDate && "text-gray-400"
                 )}
               >
@@ -93,13 +93,13 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
         </div>
 
         <div className="space-y-4">
-          <Label className="text-sm font-medium text-gray-900">End Date</Label>
+          <Label className="text-sm font-medium text-gray-700">End Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full h-12 justify-start text-left font-normal text-sm border-gray-200",
+                  "w-full h-12 justify-start text-left font-normal text-[15px] bg-gray-50/50 border-0 rounded-xl shadow-sm ring-1 ring-gray-200/70 hover:bg-gray-50/80 focus:ring-2 focus:ring-gray-300 transition-all duration-200",
                   !formData.endDate && "text-gray-400"
                 )}
               >
