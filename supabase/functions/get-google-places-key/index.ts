@@ -7,18 +7,13 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  console.log("Function invoked with method:", req.method);
-
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, {
       headers: corsHeaders
     });
   }
 
-  // Verify request method
   if (req.method !== "POST") {
-    console.error("Invalid request method:", req.method);
     return new Response(
       JSON.stringify({ error: "Method not allowed" }),
       { 
@@ -48,7 +43,9 @@ serve(async (req) => {
       );
     }
 
-    console.log("Successfully retrieved API key");
+    // Log successful retrieval of API key (first few characters for verification)
+    console.log("API key retrieved successfully:", GOOGLE_PLACES_API_KEY.substring(0, 5) + "...");
+
     return new Response(
       JSON.stringify({ GOOGLE_PLACES_API_KEY }),
       { 
