@@ -14,6 +14,7 @@ export const useSignInWithEmail = () => {
     setLoading(true);
     
     try {
+      console.log("Attempting to sign in...");
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -48,39 +49,57 @@ export const useSignInWithEmail = () => {
         throw new Error("No user data returned");
       }
 
-      if (signInData.session) {
-        await supabase.auth.setSession({
-          access_token: signInData.session.access_token,
-          refresh_token: signInData.session.refresh_token,
-        });
-      }
+      console.log("Successfully signed in, checking for user profile...");
 
-      const { data: brand } = await supabase
+      // Check for existing profiles
+      const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
         .eq('user_id', signInData.user.id)
         .maybeSingle();
 
-      if (brand) {
-        navigate('/brand/dashboard');
-      } else {
-        const { data: creator } = await supabase
-          .from('creators')
-          .select('id')
-          .eq('user_id', signInData.user.id)
-          .maybeSingle();
-
-        if (creator) {
-          navigate('/creator/dashboard');
-        } else {
-          navigate('/onboarding');
-        }
+      if (brandError) {
+        console.error("Error checking brand profile:", brandError);
+        throw brandError;
       }
 
-      toast({
-        title: "Welcome back!",
-        description: "Successfully signed in.",
-      });
+      if (brand) {
+        console.log("Brand profile found, redirecting to dashboard...");
+        navigate('/brand/dashboard');
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in.",
+        });
+        return;
+      }
+
+      const { data: creator, error: creatorError } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', signInData.user.id)
+        .maybeSingle();
+
+      if (creatorError) {
+        console.error("Error checking creator profile:", creatorError);
+        throw creatorError;
+      }
+
+      if (creator) {
+        console.log("Creator profile found, redirecting to dashboard...");
+        navigate('/creator/dashboard');
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in.",
+        });
+      } else {
+        console.log("No profile found, redirecting to onboarding...");
+        navigate('/onboarding');
+        toast({
+          title: "Welcome!",
+          description: "Please complete your profile setup.",
+        });
+      }
+
     } catch (error) {
       console.error("Authentication error:", error);
       toast({
