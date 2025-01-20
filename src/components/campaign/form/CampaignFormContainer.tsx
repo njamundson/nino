@@ -8,14 +8,6 @@ import Compensation from "../steps/Compensation";
 import SuccessModal from "../SuccessModal";
 import { useCampaignSubmit } from "@/hooks/useCampaignSubmit";
 
-const steps = [
-  { title: "Basic Info", description: "Add campaign details" },
-  { title: "Requirements", description: "Set campaign requirements" },
-  { title: "Compensation", description: "Define compensation" }
-] as const;
-
-type StepKey = "basic" | "requirements" | "compensation";
-
 interface FormData {
   title: string;
   description: string;
@@ -28,6 +20,14 @@ interface FormData {
   start_date: string | null;
   end_date: string | null;
 }
+
+const steps = [
+  { title: "Basic Info", description: "Add campaign details" },
+  { title: "Requirements", description: "Set campaign requirements" },
+  { title: "Compensation", description: "Define compensation" }
+] as const;
+
+type StepKey = "basic" | "requirements" | "compensation";
 
 const CampaignFormContainer = () => {
   const navigate = useNavigate();
@@ -101,10 +101,10 @@ const CampaignFormContainer = () => {
   const currentStepIndex = ["basic", "requirements", "compensation"].indexOf(currentStep);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="p-8">
       <FormProgress 
         currentStep={currentStepIndex} 
-        steps={steps as { title: string; description: string; }[]}
+        steps={steps as unknown as { title: string; description: string; }[]}
       />
       
       <div className="mt-8 space-y-8">
