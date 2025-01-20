@@ -21,8 +21,8 @@ const CreatorBio = ({
 }: CreatorBioProps) => {
   const handleInstagramClick = () => {
     if (instagram) {
-      // Remove @ if present
-      const username = instagram.startsWith('@') ? instagram.substring(1) : instagram;
+      // Remove @ if present and any whitespace
+      const username = instagram.trim().replace(/^@/, '');
       window.open(`https://instagram.com/${username}`, '_blank');
     }
   };
@@ -59,7 +59,7 @@ const CreatorBio = ({
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                {instagram ? `@${instagram.replace('@', '')}` : 'No Instagram profile'}
+                {instagram ? `@${instagram.replace('@', '').trim()}` : 'No Instagram profile'}
               </TooltipContent>
             </Tooltip>
 
