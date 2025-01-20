@@ -51,7 +51,7 @@ export const useSignInWithEmail = () => {
 
       console.log("Successfully signed in, checking profile status...");
 
-      // Use our new debug function to check profile status
+      // Use our debug function to check profile status
       const { data: profileStatus, error: profileError } = await supabase
         .rpc('check_user_profile_status', {
           user_uuid: signInData.user.id
@@ -64,6 +64,18 @@ export const useSignInWithEmail = () => {
 
       console.log("Profile status:", profileStatus);
 
+      // If user has neither profile, send to onboarding
+      if (!profileStatus.has_brand && !profileStatus.has_creator) {
+        console.log("No profile found, redirecting to onboarding...");
+        navigate('/onboarding');
+        toast({
+          title: "Welcome!",
+          description: "Please complete your profile setup.",
+        });
+        return;
+      }
+
+      // If user has a brand profile, send to brand dashboard
       if (profileStatus.has_brand) {
         console.log("Brand profile found, redirecting to dashboard...");
         navigate('/brand/dashboard');
@@ -74,6 +86,7 @@ export const useSignInWithEmail = () => {
         return;
       }
 
+      // If user has a creator profile, send to creator dashboard
       if (profileStatus.has_creator) {
         console.log("Creator profile found, redirecting to dashboard...");
         navigate('/creator/dashboard');
@@ -81,13 +94,7 @@ export const useSignInWithEmail = () => {
           title: "Welcome back!",
           description: "Successfully signed in.",
         });
-      } else {
-        console.log("No profile found, redirecting to onboarding...");
-        navigate('/onboarding');
-        toast({
-          title: "Welcome!",
-          description: "Please complete your profile setup.",
-        });
+        return;
       }
 
     } catch (error) {
