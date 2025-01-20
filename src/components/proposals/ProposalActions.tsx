@@ -19,15 +19,40 @@ const ProposalActions = ({
   return (
     <div className="flex gap-3">
       {type === 'proposal' && (
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-2"
-          onClick={onViewProposals}
-        >
-          <Users className="w-4 h-4" />
-          View Proposals
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={onViewProposals}
+          >
+            <Users className="w-4 h-4" />
+            View Proposals
+          </Button>
+          
+          {status === 'pending' && (
+            <>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => onUpdateStatus('accepted')}
+                className="gap-2"
+              >
+                <Check className="w-4 h-4" />
+                Accept
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => onUpdateStatus('rejected')}
+                className="gap-2"
+              >
+                <X className="w-4 h-4" />
+                Reject
+              </Button>
+            </>
+          )}
+        </>
       )}
       
       <Button
@@ -39,29 +64,6 @@ const ProposalActions = ({
         View Opportunity
         <ExternalLink className="w-4 h-4" />
       </Button>
-      
-      {status === 'pending' && (
-        <>
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => onUpdateStatus('accepted')}
-            className="gap-2"
-          >
-            <Check className="w-4 h-4" />
-            Accept
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => onUpdateStatus('rejected')}
-            className="gap-2"
-          >
-            <X className="w-4 h-4" />
-            Reject
-          </Button>
-        </>
-      )}
     </div>
   );
 };
