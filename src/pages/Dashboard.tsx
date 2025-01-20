@@ -1,9 +1,12 @@
 import BrandDashboard from "@/components/dashboard/BrandDashboard";
 import CreatorDashboard from "@/components/dashboard/CreatorDashboard";
+import { useLocation } from "react-router-dom";
 
-// For now, we'll just show the brand dashboard since we're on the brand route
 const Dashboard = () => {
-  return <BrandDashboard />;
+  const location = useLocation();
+  const isBrandDashboard = location.pathname.startsWith("/brand");
+
+  return isBrandDashboard ? <BrandDashboard /> : <CreatorDashboard />;
 };
 
 export default Dashboard;

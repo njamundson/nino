@@ -7,7 +7,6 @@ const CreatorDashboard = () => {
     <div className="space-y-8">
       <DashboardHeader />
       <BrandStatsCards />
-      
       <div className="grid grid-cols-1 gap-6">
         <QuickNotes />
       </div>
