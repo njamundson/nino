@@ -1,6 +1,5 @@
 import { Camera, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 
 interface ImageUploadProps {
   uploadedImage: string | null;
@@ -11,69 +10,6 @@ interface ImageUploadProps {
 const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadProps) => {
   const { toast } = useToast();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    
-    if (!file) {
-      toast({
-        title: "Error",
-        description: "No file selected",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Error",
-        description: "Please upload an image file",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "Error",
-        description: "Image size should be less than 5MB",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    await onImageUpload(file);
-  };
-
-  const handleChangeClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  return (
-    <div className="flex flex-col items-center space-y-4 w-full max-w-2xl mx-auto">
-      <div className="relative group cursor-pointer w-full">
-        <div 
-          className={`
-            w-full aspect-video rounded-xl border-2 border-dashed
-            flex items-center justify-center bg-white/50
-            transition-all duration-300 ease-in-out
-            group-hover:border-I'll modify the ImageUpload component to allow users to change their campaign image after uploading by adding a change image button that appears when hovering over the uploaded image.
-
-<lov-code>
-Let's update the ImageUpload component to add this functionality:
-
-<lov-write file_path="src/components/campaign/ImageUpload.tsx">
-import { Camera, ImagePlus } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-
-interface ImageUploadProps {
-  uploadedImage: string | null;
-  isUploading: boolean;
-  onImageUpload: (file: File) => Promise<void>;
-}
-
-const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadProps) => {
-  const { toast } = useToast();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
