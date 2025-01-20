@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 interface ImageUploadProps {
   uploadedImage: string | null;
   isUploading: boolean;
-  onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onImageUpload: (file: File) => Promise<void>;
 }
 
 const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadProps) => {
@@ -40,7 +40,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
       return;
     }
 
-    onImageUpload(e);
+    await onImageUpload(file);
   };
 
   return (

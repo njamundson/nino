@@ -11,10 +11,7 @@ const BrandDashboard = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const handleImageUpload = async (file: File) => {
     try {
       setIsUploading(true);
       console.log("Starting image upload...");
