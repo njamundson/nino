@@ -1,11 +1,26 @@
-import React, { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
+import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
+import CreatorSocialLinks from "@/components/creators/modal/profile/CreatorSocialLinks";
+import { toast } from "sonner";
+import { CheckSquare, XSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -16,187 +31,116 @@ interface CreatorProfileModalProps {
   onMessageCreator: () => void;
 }
 
-const CreatorProfileModal = ({
-  isOpen,
-  onClose,
-  creator,
+const CreatorProfileModal = ({ 
+  isOpen, 
+  onClose, 
+  creator, 
   coverLetter,
   onUpdateStatus,
-  onMessageCreator,
+  onMessageCreator
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
-  const [showCampaignDialog, setShowCampaignDialog] = useState(false);
-  const [showRejectDialog, setShowRejectDialog] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const handleAccept = async () => {
-    setShowAcceptDialog(true);
-  };
-
-  const handleConfirmAccept = async () => {
+  const handleAcceptConfirm = async () => {
     try {
-      await onUpdateStatus('accepted');
-      setShowAcceptDialog(false);
-      setShowCampaignDialog(true);
+      onUpdateStatus('accepted');
       
       // Create a new message thread
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { error: messageError } = await supabase
-        .from('messages')
-        .insert({
+      if (user) {
+        await supabase.from('messages').insert({
           sender_id: user.id,
           receiver_id: creator.user_id,
-          content: "Hi! I've accepted your proposal. Let's discuss the next steps!",
+          content: `Hi! I've accepted your application. Let's discuss the next steps!`,
+          message_type: 'text'
         });
+      }
 
-      if (messageError) throw messageError;
-
-    } catch (error) {
-      console.error('Error accepting application:', error);
-      toast({
-        title: "Error",
-        description: "Failed to accept application. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleKeepCampaign = () => {
-    setShowCampaignDialog(false);
-    toast({
-      title: "Success",
-      description: "Application accepted! The campaign will remain active for more applications.",
-    });
-    navigate('/brand/bookings');
-  };
-
-  const handleRemoveCampaign = async () => {
-    try {
-      // Update the opportunity status to closed
-      const { error: updateError } = await supabase
-        .from('opportunities')
-        .update({ status: 'closed' })
-        .eq('id', creator.opportunity_id);
-
-      if (updateError) throw updateError;
-
-      setShowCampaignDialog(false);
-      toast({
-        title: "Success",
-        description: "Application accepted and campaign closed!",
-      });
+      toast.success("Application accepted successfully");
+      setShowAcceptDialog(false);
+      onClose();
+      
+      // Navigate to bookings page
       navigate('/brand/bookings');
     } catch (error) {
-      console.error('Error closing campaign:', error);
-      toast({
-        title: "Error",
-        description: "Failed to close the campaign. Please try again.",
-        variant: "destructive",
-      });
+      console.error('Error accepting application:', error);
+      toast.error("Failed to accept application");
     }
   };
 
-  const handleReject = () => {
-    setShowRejectDialog(true);
-  };
-
-  const handleConfirmReject = async () => {
+  const handleReject = async () => {
     try {
-      await onUpdateStatus('rejected');
-      
-      // Delete the application
-      const { error: deleteError } = await supabase
+      onUpdateStatus('rejected');
+      // Delete the application after marking it as rejected
+      const { error } = await supabase
         .from('applications')
         .delete()
         .eq('creator_id', creator.id);
 
-      if (deleteError) throw deleteError;
+      if (error) throw error;
 
-      setShowRejectDialog(false);
+      toast.error("Application rejected and removed");
       onClose();
-      
-      toast({
-        title: "Success",
-        description: "Application rejected and removed.",
-      });
     } catch (error) {
-      console.error('Error rejecting application:', error);
-      toast({
-        title: "Error",
-        description: "Failed to reject application. Please try again.",
-        variant: "destructive",
-      });
+      console.error('Error deleting application:', error);
+      toast.error("Failed to remove application");
     }
   };
+
+  const fullName = `${creator?.profile?.first_name || ''} ${creator?.profile?.last_name || ''}`.trim();
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden">
-          <div className="grid md:grid-cols-[300px,1fr]">
-            <div className="p-6 bg-gray-50 border-r border-gray-100">
-              <div className="relative w-full mb-6">
-                <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
-                  {creator.profile_image_url ? (
-                    <img
-                      src={creator.profile_image_url}
-                      alt={`${creator.first_name} ${creator.last_name}`}
-                      className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <Avatar className="w-32 h-32">
-                        <AvatarImage src={creator.profile_image_url || ''} alt={`${creator.first_name} ${creator.last_name}`} />
-                        <AvatarFallback className="text-4xl">
-                          {`${creator.first_name?.[0]}${creator.last_name?.[0]}`}
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Button 
-                  onClick={handleAccept}
-                  className="w-full"
-                >
-                  Accept
-                </Button>
-                <Button 
-                  onClick={handleReject}
-                  variant="outline" 
-                  className="w-full"
-                >
-                  Reject
-                </Button>
-              </div>
-            </div>
-            
-            <div className="p-6">
-              <div className="space-y-4">
-                <h2 className="text-2xl font-semibold">
-                  {creator.first_name} {creator.last_name}
-                </h2>
-                {creator.location && (
-                  <p className="text-gray-600 flex items-center gap-2">
-                    <span className="text-lg">📍</span> {creator.location}
-                  </p>
-                )}
-                <div className="space-y-2">
-                  <h3 className="text-lg font-medium">About</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {creator.bio || "No bio available"}
-                  </p>
-                </div>
-              </div>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-3xl">
+          <div className="w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+              <CreatorImage 
+                profileImageUrl={creator?.profile_image_url} 
+                fullName={fullName}
+              />
               
-              <div className="mt-6">
-                <h3 className="text-lg font-medium mb-2">Application Message</h3>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-600">{coverLetter}</p>
+              <div className="flex flex-col h-full space-y-6">
+                <CreatorBio 
+                  bio={creator?.bio}
+                  location={creator?.location}
+                  specialties={creator?.specialties}
+                  instagram={creator?.instagram}
+                  website={creator?.website}
+                  onMessageClick={onMessageCreator}
+                />
+
+                <CreatorSocialLinks 
+                  instagram={creator?.instagram}
+                  website={creator?.website}
+                />
+
+                {/* Application Message */}
+                <div className="bg-gray-50/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100">
+                  <h3 className="font-medium text-gray-900 mb-3">Application Message</h3>
+                  <p className="text-gray-600 leading-relaxed">{coverLetter}</p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-4 mt-auto">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button
+                      onClick={() => setShowAcceptDialog(true)}
+                      className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <CheckSquare className="w-5 h-5 mr-2" />
+                      Accept
+                    </Button>
+                    <Button
+                      onClick={handleReject}
+                      variant="outline"
+                      className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <XSquare className="w-5 h-5 mr-2" />
+                      Reject
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -207,51 +151,15 @@ const CreatorProfileModal = ({
       <AlertDialog open={showAcceptDialog} onOpenChange={setShowAcceptDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Accept Proposal</AlertDialogTitle>
+            <AlertDialogTitle>Accept Creator's Proposal</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to accept this creator's proposal? This will create a new messaging thread and move the project to your bookings.
+              Are you sure you want to accept {fullName}'s proposal? This will create a new booking and open a messaging thread with the creator.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmAccept}>
-              Accept Proposal
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={showCampaignDialog} onOpenChange={setShowCampaignDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Campaign Status</AlertDialogTitle>
-            <AlertDialogDescription>
-              Would you like to keep this campaign active for more applications or remove it from active projects?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleKeepCampaign}>
-              Keep Active
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleRemoveCampaign}>
-              Remove Campaign
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reject Proposal</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to reject this proposal? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmReject}>
-              Reject Proposal
+            <AlertDialogAction onClick={handleAcceptConfirm}>
+              Confirm
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
