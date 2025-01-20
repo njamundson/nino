@@ -19,17 +19,8 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
   const [showDetails, setShowDetails] = useState(false);
   const { toast } = useToast();
 
-  const creatorName = application.creator?.profile?.first_name && application.creator?.profile?.last_name
-    ? `${application.creator.profile.first_name} ${application.creator.profile.last_name}`
-    : "Anonymous Creator";
-
-  const creatorInitials = creatorName
-    .split(' ')
-    .map((n: string) => n[0])
-    .join('')
-    .toUpperCase();
-
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
+  const brandInitial = brandName[0].toUpperCase();
 
   const handleAccept = () => {
     onUpdateStatus(application.id, 'accepted');
@@ -72,15 +63,15 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               <Avatar className="h-12 w-12">
-                <AvatarFallback>{type === 'proposal' ? brandName[0] : creatorInitials}</AvatarFallback>
+                <AvatarFallback>{brandInitial}</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
                 <h3 className="text-xl font-semibold text-gray-900">
                   {application.opportunity?.title}
                 </h3>
                 <ProposalMetadata
-                  name={type === 'proposal' ? brandName : creatorName}
-                  location={type === 'proposal' ? application.opportunity?.brand?.location : application.creator?.location}
+                  name={brandName}
+                  location={application.opportunity?.brand?.location}
                   startDate={application.opportunity?.start_date}
                 />
               </div>
