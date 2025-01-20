@@ -62,7 +62,8 @@ export const useCreatorOnboarding = () => {
           return;
         }
 
-        console.log('Creating creator profile with specialties:', creatorData.specialties);
+        // Log the specialties being saved
+        console.log('Saving creator with specialties:', creatorData.specialties);
 
         const { error: creatorError } = await supabase
           .from('creators')
@@ -73,7 +74,7 @@ export const useCreatorOnboarding = () => {
             instagram: creatorData.instagram,
             website: creatorData.website,
             location: creatorData.location,
-            specialties: creatorData.specialties,
+            specialties: creatorData.specialties || [], // Ensure we always save an array
             profile_image_url: creatorData.profileImage,
             creator_type: creatorData.creatorType
           });

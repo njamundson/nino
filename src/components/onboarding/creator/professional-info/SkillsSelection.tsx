@@ -17,9 +17,11 @@ const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
   ];
 
   const toggleSkill = (skill: string) => {
+    console.log('Toggling skill:', skill, 'Current skills:', skills);
     const updatedSkills = skills.includes(skill)
       ? skills.filter((s) => s !== skill)
       : [...skills, skill];
+    console.log('Updated skills:', updatedSkills);
     onUpdateSkills(updatedSkills);
   };
 
