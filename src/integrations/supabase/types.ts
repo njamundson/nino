@@ -310,6 +310,7 @@ export type Database = {
         Row: {
           bio: string | null
           created_at: string
+          creator_type: string | null
           id: string
           instagram: string | null
           is_verified: boolean | null
@@ -318,12 +319,13 @@ export type Database = {
           profile_image_url: string | null
           specialties: string[] | null
           updated_at: string
-          user_id: string | null
+          user_id: string
           website: string | null
         }
         Insert: {
           bio?: string | null
           created_at?: string
+          creator_type?: string | null
           id?: string
           instagram?: string | null
           is_verified?: boolean | null
@@ -332,12 +334,13 @@ export type Database = {
           profile_image_url?: string | null
           specialties?: string[] | null
           updated_at?: string
-          user_id?: string | null
+          user_id: string
           website?: string | null
         }
         Update: {
           bio?: string | null
           created_at?: string
+          creator_type?: string | null
           id?: string
           instagram?: string | null
           is_verified?: boolean | null
@@ -346,14 +349,14 @@ export type Database = {
           profile_image_url?: string | null
           specialties?: string[] | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
           website?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "creators_profile_id_fkey"
             columns: ["profile_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
