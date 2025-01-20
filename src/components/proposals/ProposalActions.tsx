@@ -29,7 +29,7 @@ const ProposalActions = ({
             onClick={onViewProposals}
           >
             <Users className="w-4 h-4" />
-            View Proposals
+            View Proposal
           </Button>
           
           {status === 'pending' && (

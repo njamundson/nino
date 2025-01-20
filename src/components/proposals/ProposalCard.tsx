@@ -8,7 +8,6 @@ import InvitationModal from "./modals/InvitationModal";
 import ApplicationDetailsModal from "./modals/ApplicationDetailsModal";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface ProposalCardProps {
   application: any;
@@ -32,28 +31,6 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
   const handleDecline = () => {
     onUpdateStatus(application.id, 'rejected');
     setShowDetails(false);
-  };
-
-  const handleDeleteProposal = async () => {
-    try {
-      const { error } = await supabase
-        .from('applications')
-        .delete()
-        .eq('id', application.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Proposal deleted",
-        description: "Your proposal has been successfully deleted.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete proposal. Please try again.",
-        variant: "destructive",
-      });
-    }
   };
 
   return (
@@ -88,7 +65,6 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
               onViewProposals={() => setShowDetails(true)}
               opportunityId={application.opportunity_id}
               type={type}
-              onDeleteProposal={type === 'application' ? handleDeleteProposal : undefined}
               onViewOpportunity={() => setShowApplicationModal(true)}
             />
           </div>
