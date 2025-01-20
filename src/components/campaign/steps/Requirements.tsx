@@ -92,7 +92,7 @@ const Requirements = ({ formData, setFormData }: RequirementsProps) => {
             onClick={addRequirement}
             size="icon"
             variant="outline"
-            className="bg-[#F9F6F2] hover:bg-[#F9F6F2] border-0 rounded-full w-12 h-12 flex items-center justify-center"
+            className="bg-[#F9F6F2] hover:bg-[#F9F6F2]/80 border-0 rounded-full w-12 h-12 flex items-center justify-center shrink-0 transition-colors"
           >
             <Plus className="h-5 w-5 text-nino-primary" />
           </Button>
@@ -128,7 +128,7 @@ const Requirements = ({ formData, setFormData }: RequirementsProps) => {
             onClick={addDeliverable}
             size="icon"
             variant="outline"
-            className="bg-[#F9F6F2] hover:bg-[#F9F6F2] border-0 rounded-full w-12 h-12 flex items-center justify-center"
+            className="bg-[#F9F6F2] hover:bg-[#F9F6F2]/80 border-0 rounded-full w-12 h-12 flex items-center justify-center shrink-0 transition-colors"
           >
             <Plus className="h-5 w-5 text-nino-primary" />
           </Button>
