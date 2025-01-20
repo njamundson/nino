@@ -21,6 +21,7 @@ import { CheckSquare, XSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ const CreatorProfileModal = ({
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleAcceptConfirm = async () => {
     try {
@@ -83,20 +85,25 @@ const CreatorProfileModal = ({
 
   const handleReject = async () => {
     try {
+      // First update the application status
       onUpdateStatus('rejected');
-      // Delete the application after marking it as rejected
+      
+      // Then update the application in the database
       const { error } = await supabase
         .from('applications')
-        .delete()
+        .update({ status: 'rejected' })
         .eq('creator_id', creator.id);
 
       if (error) throw error;
 
-      toast.error("Application rejected and removed");
+      // Invalidate the my-campaigns query to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+
+      toast.success("Application rejected");
       onClose();
     } catch (error) {
-      console.error('Error deleting application:', error);
-      toast.error("Failed to remove application");
+      console.error('Error rejecting application:', error);
+      toast.error("Failed to reject application");
     }
   };
 
