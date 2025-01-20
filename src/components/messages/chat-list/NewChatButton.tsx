@@ -24,6 +24,9 @@ interface NewChatButtonProps {
 }
 
 export const NewChatButton = ({ creators, onStartChat }: NewChatButtonProps) => {
+  // Filter out any non-creator entries (though this should be handled by the parent component)
+  const validCreators = creators.filter(creator => creator.profile_id);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,7 +35,7 @@ export const NewChatButton = ({ creators, onStartChat }: NewChatButtonProps) => 
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">
-        {creators.map((creator) => (
+        {validCreators.map((creator) => (
           <DropdownMenuItem
             key={creator.id}
             onClick={() => onStartChat(creator.profile_id)}
@@ -51,7 +54,7 @@ export const NewChatButton = ({ creators, onStartChat }: NewChatButtonProps) => 
             </div>
           </DropdownMenuItem>
         ))}
-        {creators.length === 0 && (
+        {validCreators.length === 0 && (
           <DropdownMenuItem disabled>No creators found</DropdownMenuItem>
         )}
       </DropdownMenuContent>
