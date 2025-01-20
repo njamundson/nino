@@ -6,9 +6,7 @@ import { useNavigate } from "react-router-dom";
 import CreatorProfileModal from "./modals/CreatorProfileModal";
 import CampaignDetails from "./card/CampaignDetails";
 import ApplicationsList from "./card/ApplicationsList";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useApplicationActions } from "@/hooks/useApplicationActions";
 
 interface CampaignCardProps {
   campaign: any;
@@ -28,9 +26,13 @@ const CampaignCard = ({
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [localApplications, setLocalApplications] = useState(applications);
-  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  
+  const { 
+    isProcessing,
+    handleAcceptApplication,
+    handleRejectApplication
+  } = useApplicationActions({ opportunityId: campaign.id });
 
   const handleMessageCreator = (userId: string) => {
     navigate(`/brand/messages?userId=${userId}`);
@@ -41,81 +43,16 @@ const CampaignCard = ({
     setSelectedApplication(application);
   };
 
-  const checkExistingChat = async (creatorUserId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
-
-    const { data: messages } = await supabase
-      .from('messages')
-      .select('id')
-      .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-      .or(`sender_id.eq.${creatorUserId},receiver_id.eq.${creatorUserId}`)
-      .limit(1);
-
-    return messages && messages.length > 0;
-  };
-
-  const createInitialMessage = async (creatorUserId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error('User not authenticated');
-    }
-
-    const { error: messageError } = await supabase
-      .from('messages')
-      .insert({
-        sender_id: user.id,
-        receiver_id: creatorUserId,
-        content: `Hi! I've accepted your application. Let's discuss the next steps!`,
-        message_type: 'text'
-      });
-
-    if (messageError) throw messageError;
-  };
-
   const handleUpdateStatus = (applicationId: string) => async (newStatus: 'accepted' | 'rejected') => {
     if (onUpdateApplicationStatus) {
       try {
-        setIsProcessing(true);
-        
-        await onUpdateApplicationStatus(applicationId, newStatus);
-        
-        if (newStatus === 'rejected') {
-          const { error } = await supabase
-            .from('applications')
-            .delete()
-            .eq('id', applicationId);
-
-          if (error) throw error;
-
+        if (newStatus === 'accepted') {
+          await handleAcceptApplication(applicationId, selectedCreator.user_id);
+        } else {
+          await handleRejectApplication(applicationId);
           setLocalApplications(prevApps => 
             prevApps.filter(app => app.id !== applicationId)
           );
-
-          toast.success("Application rejected and removed");
-        } else if (newStatus === 'accepted') {
-          const chatExists = await checkExistingChat(selectedCreator.user_id);
-          
-          if (!chatExists) {
-            await createInitialMessage(selectedCreator.user_id);
-          }
-
-          // Update opportunity status
-          const { error: opportunityError } = await supabase
-            .from('opportunities')
-            .update({ status: 'active' })
-            .eq('id', campaign.id);
-
-          if (opportunityError) throw opportunityError;
-
-          // Success flow
-          toast.success("Application accepted successfully");
-          
-          // Invalidate queries before navigation
-          await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
-          
-          // Navigate after everything is done
-          navigate('/brand/bookings');
         }
         
         // Close the modal
@@ -123,9 +60,6 @@ const CampaignCard = ({
         setSelectedApplication(null);
       } catch (error) {
         console.error('Error updating application status:', error);
-        toast.error("Failed to update application status");
-      } finally {
-        setIsProcessing(false);
       }
     }
   };
