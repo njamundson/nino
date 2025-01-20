@@ -171,9 +171,9 @@ const CampaignForm = () => {
   const renderCurrentStep = () => {
     const CurrentStepComponent = steps[currentStep].component;
 
-    if (currentStep === steps.length - 1) {
+    if (CurrentStepComponent === ImageUpload) {
       return (
-        <CurrentStepComponent
+        <ImageUpload
           uploadedImage={uploadedImage}
           isUploading={isUploading}
           onImageUpload={handleImageUpload}
