@@ -25,7 +25,8 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
               first_name,
               last_name
             )
-          `);
+          `)
+          .not('user_id', 'is', null); // Only get creators with valid user accounts
 
         // Only apply specialty filter if specialties are selected
         if (selectedSpecialties.length > 0) {
