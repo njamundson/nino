@@ -60,6 +60,7 @@ export const useCreatorOnboarding = () => {
           throw profileError;
         }
 
+        // Log the data being saved
         console.log('Saving creator with data:', {
           bio: creatorData.bio,
           instagram: creatorData.instagram,
@@ -70,11 +71,11 @@ export const useCreatorOnboarding = () => {
           creator_type: creatorData.creatorType
         });
 
-        // Then update the creator profile
+        // Then update the creator profile with ALL fields including bio
         const { error: creatorError } = await supabase
           .from('creators')
           .update({
-            bio: creatorData.bio,
+            bio: creatorData.bio || null, // Ensure bio is included
             instagram: creatorData.instagram,
             website: creatorData.website,
             location: creatorData.location,
