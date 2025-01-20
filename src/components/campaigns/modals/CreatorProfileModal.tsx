@@ -1,12 +1,11 @@
+import React, { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import CreatorImage from "../creators/modal/profile/CreatorImage";
-import CreatorBio from "../creators/modal/profile/CreatorBio";
-import CreatorSocialLinks from "../creators/modal/profile/CreatorSocialLinks";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -139,8 +138,26 @@ const CreatorProfileModal = ({
         <DialogContent className="max-w-4xl p-0 overflow-hidden">
           <div className="grid md:grid-cols-[300px,1fr]">
             <div className="p-6 bg-gray-50 border-r border-gray-100">
-              <CreatorImage creator={creator} className="mb-6" />
-              <CreatorSocialLinks creator={creator} className="mb-6" />
+              <div className="relative w-full mb-6">
+                <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
+                  {creator.profile_image_url ? (
+                    <img
+                      src={creator.profile_image_url}
+                      alt={`${creator.first_name} ${creator.last_name}`}
+                      className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <Avatar className="w-32 h-32">
+                        <AvatarImage src={creator.profile_image_url || ''} alt={`${creator.first_name} ${creator.last_name}`} />
+                        <AvatarFallback className="text-4xl">
+                          {`${creator.first_name?.[0]}${creator.last_name?.[0]}`}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className="space-y-2">
                 <Button 
                   onClick={handleAccept}
@@ -159,7 +176,22 @@ const CreatorProfileModal = ({
             </div>
             
             <div className="p-6">
-              <CreatorBio creator={creator} />
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold">
+                  {creator.first_name} {creator.last_name}
+                </h2>
+                {creator.location && (
+                  <p className="text-gray-600 flex items-center gap-2">
+                    <span className="text-lg">📍</span> {creator.location}
+                  </p>
+                )}
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">About</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {creator.bio || "No bio available"}
+                  </p>
+                </div>
+              </div>
               
               <div className="mt-6">
                 <h3 className="text-lg font-medium mb-2">Application Message</h3>
@@ -201,7 +233,7 @@ const CreatorProfileModal = ({
             <AlertDialogCancel onClick={handleKeepCampaign}>
               Keep Active
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleRemoveCampaign} variant="destructive">
+            <AlertDialogAction onClick={handleRemoveCampaign}>
               Remove Campaign
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -218,7 +250,7 @@ const CreatorProfileModal = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmReject} variant="destructive">
+            <AlertDialogAction onClick={handleConfirmReject}>
               Reject Proposal
             </AlertDialogAction>
           </AlertDialogFooter>
