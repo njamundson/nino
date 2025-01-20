@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef, type ChangeEvent } from 'react';
 import { Camera, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,7 +12,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     
     if (!file) {
