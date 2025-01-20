@@ -29,6 +29,7 @@ interface CreatorProfileModalProps {
   coverLetter: string;
   onUpdateStatus: (status: 'accepted' | 'rejected') => void;
   onMessageCreator: () => void;
+  opportunityId?: string;
 }
 
 const CreatorProfileModal = ({ 
@@ -37,24 +38,35 @@ const CreatorProfileModal = ({
   creator, 
   coverLetter,
   onUpdateStatus,
-  onMessageCreator
+  onMessageCreator,
+  opportunityId
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const navigate = useNavigate();
 
   const handleAcceptConfirm = async () => {
     try {
+      // Update application status
       onUpdateStatus('accepted');
       
       // Create a new message thread
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        // Send welcome message
         await supabase.from('messages').insert({
           sender_id: user.id,
           receiver_id: creator.user_id,
           content: `Hi! I've accepted your application. Let's discuss the next steps!`,
           message_type: 'text'
         });
+
+        // Update opportunity status to reflect active booking
+        if (opportunityId) {
+          await supabase
+            .from('opportunities')
+            .update({ status: 'active' })
+            .eq('id', opportunityId);
+        }
       }
 
       toast.success("Application accepted successfully");
