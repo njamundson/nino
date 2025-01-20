@@ -6,6 +6,7 @@ import BasicInfo from "../steps/BasicInfo";
 import Requirements from "../steps/Requirements";
 import Compensation from "../steps/Compensation";
 import SuccessModal from "../SuccessModal";
+import ImageUpload from "../ImageUpload";
 import { useCampaignSubmit } from "@/hooks/useCampaignSubmit";
 
 interface FormData {
@@ -33,6 +34,7 @@ const CampaignFormContainer = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<StepKey>("basic");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const { isSuccessModalOpen, setIsSuccessModalOpen, submitCampaign } = useCampaignSubmit();
 
   const [formData, setFormData] = useState<FormData>({
@@ -47,6 +49,28 @@ const CampaignFormContainer = () => {
     start_date: null,
     end_date: null,
   });
+
+  const handleImageUpload = async (file: File) => {
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload-attachment', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const { url } = await response.json();
+      setUploadedImage(url);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleNext = () => {
     const currentIndex = ["basic", "requirements", "compensation"].indexOf(currentStep);
@@ -109,6 +133,15 @@ const CampaignFormContainer = () => {
       
       <div className="mt-8 space-y-8">
         {renderStep()}
+        
+        <div className="pt-8 border-t border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Image</h3>
+          <ImageUpload
+            uploadedImage={uploadedImage}
+            isUploading={isUploading}
+            onImageUpload={handleImageUpload}
+          />
+        </div>
       </div>
 
       <FormNavigation
