@@ -34,42 +34,69 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let mounted = true;
 
-    // Check initial session
     const checkSession = async () => {
       try {
         setIsLoading(true);
-        const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (error) {
-          if (error.message.includes('refresh_token_not_found')) {
-            console.log('Refresh token not found, signing out');
-            await supabase.auth.signOut();
-            toast({
-              title: "Session expired",
-              description: "Please sign in again to continue.",
-              variant: "destructive",
-            });
-            navigate('/');
+        // Get current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          if (sessionError.message.includes('session_not_found')) {
+            await handleSessionError();
             return;
           }
-          throw error;
+          throw sessionError;
         }
 
         if (!session) {
           console.log('No active session found during initialization');
           navigate('/');
+          if (mounted) {
+            setIsInitialized(true);
+            setIsLoading(false);
+          }
+          return;
         }
-      } catch (error) {
-        console.error('Session check error:', error);
-        navigate('/');
-      } finally {
+
+        // Verify session is still valid
+        const { error: userError } = await supabase.auth.getUser();
+        if (userError) {
+          console.error('User verification error:', userError);
+          if (userError.message.includes('session_not_found')) {
+            await handleSessionError();
+            return;
+          }
+          throw userError;
+        }
+
         if (mounted) {
           setIsInitialized(true);
           setIsLoading(false);
         }
+      } catch (error) {
+        console.error('Session check error:', error);
+        await handleSessionError();
       }
     };
 
+    const handleSessionError = async () => {
+      console.log('Session error detected, signing out...');
+      await supabase.auth.signOut();
+      toast({
+        title: "Session expired",
+        description: "Please sign in again to continue.",
+        variant: "destructive",
+      });
+      navigate('/');
+      if (mounted) {
+        setIsInitialized(true);
+        setIsLoading(false);
+      }
+    };
+
+    // Initial session check
     checkSession();
 
     // Listen for auth changes
@@ -87,6 +114,12 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
         console.log('Token refreshed successfully');
       } else if (event === 'SIGNED_IN') {
         console.log('User signed in');
+        // Verify the session is valid after sign in
+        const { error } = await supabase.auth.getUser();
+        if (error) {
+          console.error('Error verifying user after sign in:', error);
+          await handleSessionError();
+        }
       }
     });
 
