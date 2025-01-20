@@ -1,9 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import CreatorCard from "./CreatorCard";
 import { supabase } from "@/integrations/supabase/client";
 import { CreatorData } from "@/types/creator";
-import CreatorCard from "./CreatorCard";
-import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
@@ -11,101 +9,98 @@ interface CreatorGridProps {
 }
 
 const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
-  const { toast } = useToast();
+  const [creators, setCreators] = useState<CreatorData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const { data: creators, isLoading, error } = useQuery({
-    queryKey: ["creators", selectedSpecialties],
-    queryFn: async () => {
-      console.log('Fetching creators with specialties:', selectedSpecialties);
-      
-      let query = supabase
-        .from("creators")
-        .select(`
-          *,
-          profiles (
-            id,
-            first_name,
-            last_name
-          )
-        `);
+  useEffect(() => {
+    const fetchCreators = async () => {
+      try {
+        console.log("Fetching creators with selected specialties:", selectedSpecialties);
+        
+        let query = supabase
+          .from('creators')
+          .select(`
+            *,
+            profile:profiles(
+              first_name,
+              last_name
+            )
+          `);
 
-      // Only apply specialty filter if specialties are selected
-      if (selectedSpecialties.length > 0) {
-        // Use && to ensure all selected specialties are present
-        selectedSpecialties.forEach(specialty => {
-          query = query.contains('specialties', [specialty]);
-        });
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Error fetching creators:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load creators. Please try again.",
-          variant: "destructive",
-        });
-        throw error;
-      }
-
-      console.log('Fetched creators:', data);
-      return data || [];
-    },
-  });
-
-  const mappedCreators: CreatorData[] = creators
-    ? creators.map(creator => ({
-        id: creator.id,
-        firstName: creator.profiles?.first_name || '',
-        lastName: creator.profiles?.last_name || '',
-        bio: creator.bio || '',
-        specialties: creator.specialties || [],
-        instagram: creator.instagram || '',
-        website: creator.website || '',
-        location: creator.location || '',
-        profileImage: creator.profile_image_url || '/placeholder.svg',
-        creatorType: creator.creator_type || '',
-        profile: {
-          first_name: creator.profiles?.first_name || '',
-          last_name: creator.profiles?.last_name || ''
+        // Only apply specialty filter if specialties are selected
+        if (selectedSpecialties.length > 0) {
+          console.log("Filtering creators by specialties:", selectedSpecialties);
+          // Use contains to ensure all selected specialties are present
+          selectedSpecialties.forEach(specialty => {
+            query = query.contains('specialties', [specialty]);
+          });
         }
-      }))
-    : [];
 
-  if (isLoading) {
+        const { data, error } = await query;
+
+        if (error) {
+          console.error("Error fetching creators:", error);
+          throw error;
+        }
+
+        console.log("Fetched creators:", data);
+
+        const formattedCreators: CreatorData[] = data.map(creator => ({
+          id: creator.id,
+          firstName: creator.profile?.first_name || "",
+          lastName: creator.profile?.last_name || "",
+          bio: creator.bio || "",
+          specialties: creator.specialties || [],
+          instagram: creator.instagram || "",
+          website: creator.website || "",
+          location: creator.location || "",
+          profileImage: creator.profile_image_url,
+          creatorType: creator.creator_type || "",
+          profile: creator.profile
+        }));
+
+        console.log("Formatted creators:", formattedCreators);
+        setCreators(formattedCreators);
+      } catch (error) {
+        console.error("Error in fetchCreators:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCreators();
+  }, [selectedSpecialties]);
+
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map((n) => (
+          <div
+            key={n}
+            className="h-96 bg-gray-100 rounded-xl animate-pulse"
+          />
+        ))}
       </div>
     );
   }
 
-  if (error) {
+  if (!creators.length) {
     return (
-      <div className="text-center text-nino-gray">
-        Failed to load creators. Please try again.
-      </div>
-    );
-  }
-
-  if (!mappedCreators.length) {
-    return (
-      <div className="text-center text-nino-gray">
-        {selectedSpecialties.length > 0 
-          ? "No creators found with the selected specialties."
-          : "No creators found."}
+      <div className="text-center py-12">
+        <p className="text-lg text-gray-500">
+          No creators found matching your criteria.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {mappedCreators.map((creator) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {creators.map((creator) => (
         <CreatorCard
           key={creator.id}
           creator={creator}
-          onInvite={onInvite}
+          onInvite={() => onInvite(creator.id)}
         />
       ))}
     </div>

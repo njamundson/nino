@@ -46,48 +46,55 @@ export const useCreatorOnboarding = () => {
           return;
         }
 
-        // First get the profile ID
-        const { data: profile } = await supabase
+        // First update the profile
+        const { error: profileError } = await supabase
           .from('profiles')
-          .select('id')
-          .eq('id', user.id)
-          .single();
+          .update({
+            first_name: creatorData.firstName,
+            last_name: creatorData.lastName,
+          })
+          .eq('id', user.id);
 
-        if (!profile) {
-          toast({
-            title: "Error",
-            description: "Profile not found.",
-            variant: "destructive",
-          });
-          return;
+        if (profileError) {
+          console.error("Error updating profile:", profileError);
+          throw profileError;
         }
 
-        // Log the specialties being saved
-        console.log('Saving creator with specialties:', creatorData.specialties);
+        console.log('Saving creator with data:', {
+          bio: creatorData.bio,
+          instagram: creatorData.instagram,
+          website: creatorData.website,
+          location: creatorData.location,
+          specialties: creatorData.specialties,
+          profile_image_url: creatorData.profileImage,
+          creator_type: creatorData.creatorType
+        });
 
+        // Then update the creator profile
         const { error: creatorError } = await supabase
           .from('creators')
-          .insert({
-            user_id: user.id,
-            profile_id: profile.id,
+          .update({
             bio: creatorData.bio,
             instagram: creatorData.instagram,
             website: creatorData.website,
             location: creatorData.location,
-            specialties: creatorData.specialties || [], // Ensure we always save an array
+            specialties: creatorData.specialties,
             profile_image_url: creatorData.profileImage,
             creator_type: creatorData.creatorType
-          });
+          })
+          .eq('user_id', user.id);
 
         if (creatorError) {
-          console.error("Error creating creator profile:", creatorError);
+          console.error("Error updating creator profile:", creatorError);
           toast({
             title: "Error",
-            description: "Failed to create creator profile. Please try again.",
+            description: "Failed to update creator profile. Please try again.",
             variant: "destructive",
           });
           return;
         }
+
+        console.log("Creator profile updated successfully");
 
         toast({
           title: "Success!",

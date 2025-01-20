@@ -20,7 +20,8 @@ export const useSignUp = (onToggleAuth: () => void) => {
     setLoading(true);
     
     try {
-      console.log("Starting sign up process...");
+      console.log("Starting sign up process with data:", { email, firstName, lastName });
+      
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -65,6 +66,8 @@ export const useSignUp = (onToggleAuth: () => void) => {
       }
 
       if (signUpData?.session) {
+        console.log("User signed up successfully, creating creator profile...");
+        
         // Create initial profile with empty specialties array
         const { error: creatorError } = await supabase
           .from('creators')
@@ -84,6 +87,8 @@ export const useSignUp = (onToggleAuth: () => void) => {
           return;
         }
 
+        console.log("Creator profile created successfully");
+        
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
