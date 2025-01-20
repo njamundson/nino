@@ -29,7 +29,7 @@ interface SignUpFormProps {
   loading?: boolean;
 }
 
-const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
+const SignUpForm = ({ onSubmit, loading = false }: SignUpFormProps) => {
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
