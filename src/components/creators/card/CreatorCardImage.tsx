@@ -22,14 +22,14 @@ const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        <h3 className="text-xl font-semibold mb-1">
-          {fullName}
-        </h3>
         {creator.location && (
-          <p className="text-sm font-medium opacity-90">
+          <p className="mb-2 text-sm font-medium opacity-90">
             {creator.location}
           </p>
         )}
+        <h3 className="text-xl font-semibold">
+          {fullName}
+        </h3>
         {creator.specialties && creator.specialties.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
             {creator.specialties.map((specialty, index) => (

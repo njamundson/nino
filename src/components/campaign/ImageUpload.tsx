@@ -1,7 +1,7 @@
 import { Camera, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export interface ImageUploadProps {
+interface ImageUploadProps {
   uploadedImage: string | null;
   isUploading: boolean;
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
