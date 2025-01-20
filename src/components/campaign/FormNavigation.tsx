@@ -29,14 +29,14 @@ const FormNavigation = ({
       {currentStep === totalSteps - 1 ? (
         <Button 
           onClick={onSubmit}
-          className="bg-black hover:bg-gray-900 text-white px-5 text-sm font-medium rounded-lg"
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white px-5 text-sm font-medium rounded-[999px]"
         >
           Create Campaign
         </Button>
       ) : (
         <Button 
           onClick={onNext}
-          className="bg-black hover:bg-gray-900 text-white px-5 text-sm font-medium rounded-lg"
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white px-5 text-sm font-medium rounded-[999px]"
         >
           Continue
         </Button>
