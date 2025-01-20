@@ -87,22 +87,26 @@ const PersonalInfoFields = ({
                   }),
                   option: (provided, state) => ({
                     ...provided,
-                    backgroundColor: state.isFocused ? 'var(--nino-primary)' : 'white',
-                    color: state.isFocused ? 'white' : 'var(--nino-text)',
+                    backgroundColor: state.isFocused ? '#A55549' : 'white',
+                    color: state.isFocused ? 'white' : '#282828',
                     cursor: 'pointer',
                     padding: '8px 12px',
+                    '&:hover': {
+                      backgroundColor: '#A55549',
+                      color: 'white',
+                    },
                   }),
                   menu: (provided) => ({
                     ...provided,
                     backgroundColor: 'white',
-                    border: '1px solid var(--nino-primary)',
+                    border: '1px solid #A55549',
                     borderRadius: '0.375rem',
                     marginTop: '4px',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }),
                   placeholder: (provided) => ({
                     ...provided,
-                    color: 'var(--nino-gray)',
+                    color: '#737373',
                   }),
                 },
                 classNames: {
