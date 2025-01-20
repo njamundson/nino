@@ -8,6 +8,7 @@ import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
 import CreatorSocialLinks from "@/components/creators/modal/profile/CreatorSocialLinks";
 import { toast } from "sonner";
 import { CheckSquare, XSquare } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -32,10 +33,23 @@ const CreatorProfileModal = ({
     onClose();
   };
 
-  const handleReject = () => {
-    onUpdateStatus('rejected');
-    toast.error("Application rejected");
-    onClose();
+  const handleReject = async () => {
+    try {
+      onUpdateStatus('rejected');
+      // Delete the application after marking it as rejected
+      const { error } = await supabase
+        .from('applications')
+        .delete()
+        .eq('creator_id', creator.id);
+
+      if (error) throw error;
+
+      toast.error("Application rejected and removed");
+      onClose();
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      toast.error("Failed to remove application");
+    }
   };
 
   const fullName = `${creator?.profile?.first_name || ''} ${creator?.profile?.last_name || ''}`.trim();
