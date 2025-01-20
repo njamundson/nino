@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { Instagram, Globe, MessageSquare } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CreatorBioProps {
   bio: string | null;
@@ -13,7 +12,7 @@ interface CreatorBioProps {
 const CreatorBio = ({ bio, specialties, location, instagram, website }: CreatorBioProps) => {
   const handleInstagramClick = () => {
     if (instagram) {
-      // Remove @ if present and ensure proper URL format
+      // Remove @ symbol if present
       const username = instagram.startsWith('@') ? instagram.substring(1) : instagram;
       window.open(`https://instagram.com/${username}`, '_blank');
     }
@@ -21,10 +20,15 @@ const CreatorBio = ({ bio, specialties, location, instagram, website }: CreatorB
 
   const handleWebsiteClick = () => {
     if (website) {
-      // Ensure URL has proper format
+      // Add https if not present
       const url = website.startsWith('http') ? website : `https://${website}`;
       window.open(url, '_blank');
     }
+  };
+
+  const handleMessageClick = () => {
+    // This will be implemented later when we add the messaging feature
+    console.log('Message clicked');
   };
 
   return (
@@ -37,61 +41,43 @@ const CreatorBio = ({ bio, specialties, location, instagram, website }: CreatorB
       
       <div className="space-y-2">
         <div className="flex items-center gap-3">
-          <TooltipProvider>
-            {instagram && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <div 
-                    onClick={handleInstagramClick}
-                    className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group"
-                  >
-                    <Instagram 
-                      className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
-                      strokeWidth={1.25} 
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>@{instagram.replace('@', '')}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-
-            {website && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <div 
-                    onClick={handleWebsiteClick}
-                    className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group"
-                  >
-                    <Globe 
-                      className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
-                      strokeWidth={1.25} 
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{website}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-
-            <Tooltip>
-              <TooltipTrigger>
-                <div className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group">
-                  <MessageSquare 
-                    className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
-                    strokeWidth={1.25} 
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Send message</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {instagram && (
+            <div 
+              onClick={handleInstagramClick}
+              className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group"
+              title={`@${instagram}`}
+            >
+              <Instagram 
+                className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
+                strokeWidth={1.25} 
+              />
+            </div>
+          )}
+          
+          {website && (
+            <div 
+              onClick={handleWebsiteClick}
+              className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group"
+              title={website}
+            >
+              <Globe 
+                className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
+                strokeWidth={1.25} 
+              />
+            </div>
+          )}
+          
+          <div 
+            onClick={handleMessageClick}
+            className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group"
+            title="Send message"
+          >
+            <MessageSquare 
+              className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
+              strokeWidth={1.25} 
+            />
+          </div>
         </div>
-
         <h3 className="text-lg font-semibold text-nino-text">About</h3>
         <p className="text-base leading-relaxed text-nino-text/90">
           {bio || "No bio available"}
