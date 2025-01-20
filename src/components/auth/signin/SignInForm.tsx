@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuthForm } from "@/hooks/useAuthForm";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SignInFormProps {
   onSubmit: (email: string, password: string) => void;
@@ -10,37 +12,47 @@ interface SignInFormProps {
 
 const SignInForm = ({ onSubmit, loading }: SignInFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { formData, errors, validateForm, handleChange } = useAuthForm();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loading) {
-      onSubmit(email, password);
+    if (!loading && validateForm()) {
+      onSubmit(formData.email, formData.password);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-4">
-        <Input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
-          required
-          disabled={loading}
-          autoComplete="email"
-        />
+        <div>
+          <Input
+            type="email"
+            placeholder="Email address"
+            value={formData.email}
+            onChange={(e) => handleChange("email", e.target.value)}
+            className={`h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300 ${
+              errors.email ? "ring-2 ring-red-500" : ""
+            }`}
+            required
+            disabled={loading}
+            autoComplete="email"
+          />
+          {errors.email && (
+            <Alert variant="destructive" className="mt-2">
+              <AlertDescription>{errors.email}</AlertDescription>
+            </Alert>
+          )}
+        </div>
 
         <div className="relative">
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-10 transition-all duration-300"
+            value={formData.password}
+            onChange={(e) => handleChange("password", e.target.value)}
+            className={`h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-10 transition-all duration-300 ${
+              errors.password ? "ring-2 ring-red-500" : ""
+            }`}
             required
             disabled={loading}
             autoComplete="current-password"
@@ -58,6 +70,11 @@ const SignInForm = ({ onSubmit, loading }: SignInFormProps) => {
               <Eye className="h-4 w-4" />
             )}
           </button>
+          {errors.password && (
+            <Alert variant="destructive" className="mt-2">
+              <AlertDescription>{errors.password}</AlertDescription>
+            </Alert>
+          )}
         </div>
       </div>
 
