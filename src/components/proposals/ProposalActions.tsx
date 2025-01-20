@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Users, ExternalLink, Trash2 } from "lucide-react";
+import { Users, ExternalLink } from "lucide-react";
 
 interface ProposalActionsProps {
   status: string;
@@ -7,7 +7,6 @@ interface ProposalActionsProps {
   onViewProposals: () => void;
   opportunityId: string;
   type: 'proposal' | 'application';
-  onDeleteProposal?: () => void;
   onViewOpportunity?: () => void;
 }
 
@@ -17,7 +16,6 @@ const ProposalActions = ({
   onViewProposals,
   opportunityId,
   type,
-  onDeleteProposal,
   onViewOpportunity
 }: ProposalActionsProps) => {
   return (
@@ -56,27 +54,15 @@ const ProposalActions = ({
           )}
         </>
       ) : (
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={onViewOpportunity}
-          >
-            View Opportunity
-            <ExternalLink className="w-4 h-4" />
-          </Button>
-          {onDeleteProposal && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDeleteProposal}
-              className="text-destructive hover:text-destructive"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={onViewOpportunity}
+        >
+          View Opportunity
+          <ExternalLink className="w-4 h-4" />
+        </Button>
       )}
     </div>
   );
