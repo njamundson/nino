@@ -17,16 +17,7 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
   const [showApplicationModal, setShowApplicationModal] = useState(false);
 
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
-
-  const handleAccept = () => {
-    onUpdateStatus(application.id, 'accepted');
-    setShowDetails(false);
-  };
-
-  const handleDecline = () => {
-    onUpdateStatus(application.id, 'rejected');
-    setShowDetails(false);
-  };
+  const brandProfileImage = application.opportunity?.brand?.profile_image_url;
 
   return (
     <>
@@ -38,6 +29,7 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
             location={application.opportunity?.brand?.location}
             startDate={application.opportunity?.start_date}
             status={application.status}
+            profileImage={brandProfileImage}
           />
 
           <div className="flex items-center justify-end">
@@ -58,8 +50,8 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
           isOpen={showDetails}
           onClose={() => setShowDetails(false)}
           opportunity={application.opportunity}
-          onAccept={handleAccept}
-          onDecline={handleDecline}
+          onAccept={() => onUpdateStatus(application.id, 'accepted')}
+          onDecline={() => onUpdateStatus(application.id, 'rejected')}
         />
       ) : (
         <ApplicationDetailsModal

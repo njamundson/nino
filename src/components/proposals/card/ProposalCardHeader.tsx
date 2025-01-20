@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProposalMetadata from "../ProposalMetadata";
 import ProposalStatusBadge from "../ProposalStatusBadge";
 
@@ -23,7 +23,10 @@ const ProposalCardHeader = ({
     <div className="flex items-start justify-between">
       <div className="flex items-start gap-4">
         <Avatar className="h-12 w-12">
-          <AvatarFallback>{brandInitial}</AvatarFallback>
+          <AvatarImage src={`/brand-profile-image.jpg`} />
+          <AvatarFallback className="bg-nino-bg text-nino-gray">
+            {brandInitial}
+          </AvatarFallback>
         </Avatar>
         <div className="space-y-1">
           <h3 className="text-xl font-semibold text-gray-900">
