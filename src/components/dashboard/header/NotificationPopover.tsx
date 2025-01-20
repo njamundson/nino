@@ -9,8 +9,19 @@ import NotificationsList from './notifications/NotificationsList';
 import { useNotifications } from './notifications/useNotifications';
 
 export const NotificationPopover = () => {
-  const { isOpen, setIsOpen, notifications, notificationsError, dismissNotification } = useNotifications();
+  const { 
+    isOpen, 
+    setIsOpen, 
+    notifications, 
+    notificationsError, 
+    dismissNotification: dismissMutation 
+  } = useNotifications();
+  
   const hasUnreadNotifications = notifications && notifications.length > 0;
+
+  const handleDismiss = (notification: { id: string, type: string }) => {
+    dismissMutation.mutate(notification);
+  };
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -32,7 +43,7 @@ export const NotificationPopover = () => {
         <NotificationsList 
           notifications={notifications}
           notificationsError={notificationsError}
-          onDismiss={dismissNotification}
+          onDismiss={handleDismiss}
           onNotificationClick={(notification) => {
             setIsOpen(false);
             return notification;
