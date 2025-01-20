@@ -7,64 +7,57 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
     return new Response(null, {
       headers: corsHeaders
     });
   }
 
-  if (req.method !== "POST") {
-    return new Response(
-      JSON.stringify({ error: "Method not allowed" }),
-      { 
-        status: 405,
-        headers: { 
-          "Content-Type": "application/json",
-          ...corsHeaders
-        }
-      }
-    );
-  }
-
   try {
-    const GOOGLE_PLACES_API_KEY = Deno.env.get("GOOGLE_PLACES_API_KEY");
+    const GOOGLE_PLACES_API_KEY = Deno.env.get('GOOGLE_PLACES_API_KEY');
     
     if (!GOOGLE_PLACES_API_KEY) {
-      console.error("Google Places API key not configured");
+      console.error('Google Places API key not found in environment variables');
       return new Response(
-        JSON.stringify({ error: "Google Places API key not configured" }),
+        JSON.stringify({ 
+          error: 'API key not configured',
+          status: 500 
+        }),
         { 
-          status: 500, 
+          status: 500,
           headers: { 
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             ...corsHeaders
-          } 
+          }
         }
       );
     }
 
-    // Log successful retrieval of API key (first few characters for verification)
-    console.log("API key retrieved successfully:", GOOGLE_PLACES_API_KEY.substring(0, 5) + "...");
-
+    console.log('API key retrieved successfully');
+    
     return new Response(
       JSON.stringify({ GOOGLE_PLACES_API_KEY }),
       { 
         headers: { 
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...corsHeaders
         } 
       }
     );
   } catch (error) {
-    console.error("Error in get-google-places-key function:", error);
+    console.error('Error in get-google-places-key function:', error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ 
+        error: 'Internal server error',
+        details: error.message 
+      }),
       { 
         status: 500,
         headers: { 
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...corsHeaders
-        } 
+        }
       }
     );
   }
