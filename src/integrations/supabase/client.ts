@@ -9,7 +9,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: false,
     flowType: 'pkce',
-    storage: window.localStorage
+    storage: window.localStorage,
+    // Adding debug logging for session events
+    debug: true,
   }
 });
 
@@ -31,10 +33,21 @@ supabase.auth.onAuthStateChange((event, session) => {
 // Handle network errors
 window.addEventListener('online', async () => {
   console.log('Network connection restored, checking session...');
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (!session || error) {
-    console.log('No valid session after network restore');
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (!session || error) {
+      console.log('No valid session after network restore');
+      localStorage.clear();
+      window.location.href = '/';
+    }
+  } catch (error) {
+    console.error('Error checking session after network restore:', error);
     localStorage.clear();
     window.location.href = '/';
   }
+});
+
+// Handle offline state
+window.addEventListener('offline', () => {
+  console.log('Network connection lost');
 });
