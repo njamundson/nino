@@ -3,6 +3,7 @@ import ResetPassword from "./ResetPassword";
 import SignInForm from "./signin/SignInForm";
 import SignInHeader from "./signin/SignInHeader";
 import { useSignInWithEmail } from "@/hooks/useSignInWithEmail";
+import { useToast } from "@/hooks/use-toast";
 
 interface SignInProps {
   onToggleAuth: () => void;
@@ -11,6 +12,20 @@ interface SignInProps {
 const SignIn = ({ onToggleAuth }: SignInProps) => {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const { loading, signIn } = useSignInWithEmail();
+  const { toast } = useToast();
+
+  const handleSignIn = async (email: string, password: string) => {
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      console.error('Sign in error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error signing in",
+        description: "Please check your credentials and try again.",
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -20,7 +35,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       />
 
       <SignInForm 
-        onSubmit={signIn}
+        onSubmit={handleSignIn}
         loading={loading}
       />
 

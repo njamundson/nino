@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SignInFormProps {
   onSubmit: (email: string, password: string) => void;
@@ -13,11 +15,46 @@ interface SignInFormProps {
 const SignInForm = ({ onSubmit, loading }: SignInFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const { formData, errors, validateForm, handleChange } = useAuthForm();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loading && validateForm()) {
-      onSubmit(formData.email, formData.password);
+      try {
+        await onSubmit(formData.email, formData.password);
+        
+        // Check if user has a brand or creator profile
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          const { data: brand } = await supabase
+            .from('brands')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+          if (brand) {
+            navigate('/brand/dashboard');
+            return;
+          }
+
+          const { data: creator } = await supabase
+            .from('creators')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+          if (creator) {
+            navigate('/creator/dashboard');
+            return;
+          }
+
+          // If no profile exists, redirect to onboarding
+          navigate('/onboarding');
+        }
+      } catch (error) {
+        console.error('Sign in error:', error);
+      }
     }
   };
 
