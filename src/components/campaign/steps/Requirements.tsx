@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { X, PlusCircle } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
@@ -91,9 +91,10 @@ const Requirements = ({ formData, setFormData }: RequirementsProps) => {
           <Button 
             onClick={addRequirement}
             size="icon"
-            className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full"
+            variant="outline"
+            className="bg-[#F9F6F2] hover:bg-[#F9F6F2] border-0 rounded-full w-12 h-12 flex items-center justify-center"
           >
-            <PlusCircle className="h-5 w-5" />
+            <Plus className="h-5 w-5 text-nino-primary" />
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -126,9 +127,10 @@ const Requirements = ({ formData, setFormData }: RequirementsProps) => {
           <Button 
             onClick={addDeliverable}
             size="icon"
-            className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full"
+            variant="outline"
+            className="bg-[#F9F6F2] hover:bg-[#F9F6F2] border-0 rounded-full w-12 h-12 flex items-center justify-center"
           >
-            <PlusCircle className="h-5 w-5" />
+            <Plus className="h-5 w-5 text-nino-primary" />
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">
