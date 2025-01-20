@@ -35,6 +35,9 @@ const CampaignFormContent = ({
     <CurrentStepComponent
       formData={formData}
       setFormData={setFormData}
+      uploadedImage={uploadedImage}
+      isUploading={isUploading}
+      onImageUpload={onImageUpload}
     />
   );
 };
