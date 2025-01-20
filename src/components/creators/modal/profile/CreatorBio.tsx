@@ -17,10 +17,16 @@ const CreatorBio = ({ bio, specialties, location }: CreatorBioProps) => {
       )}
       
       <div className="space-y-2">
-        <div className="flex items-center gap-4 mb-3">
-          <Instagram className="w-5 h-5 text-nino-primary" />
-          <Globe className="w-5 h-5 text-nino-primary" />
-          <MessageSquare className="w-5 h-5 text-nino-primary" />
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-white/50 hover:bg-white/80 transition-colors cursor-pointer shadow-sm">
+            <Instagram className="w-5 h-5 text-nino-primary" strokeWidth={1.5} />
+          </div>
+          <div className="p-2.5 rounded-xl bg-white/50 hover:bg-white/80 transition-colors cursor-pointer shadow-sm">
+            <Globe className="w-5 h-5 text-nino-primary" strokeWidth={1.5} />
+          </div>
+          <div className="p-2.5 rounded-xl bg-white/50 hover:bg-white/80 transition-colors cursor-pointer shadow-sm">
+            <MessageSquare className="w-5 h-5 text-nino-primary" strokeWidth={1.5} />
+          </div>
         </div>
         <h3 className="text-lg font-semibold text-nino-text">About</h3>
         <p className="text-base leading-relaxed text-nino-text/90">
