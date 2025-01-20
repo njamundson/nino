@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import CreatorProfile from "./modal/CreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface Creator {
   id: string;
@@ -33,6 +34,7 @@ interface CreatorModalProps {
 
 const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
   const [showCampaigns, setShowCampaigns] = useState(false);
+  const navigate = useNavigate();
 
   const { data: campaigns } = useQuery({
     queryKey: ['brand-campaigns'],
@@ -56,8 +58,6 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
   });
 
   if (!creator) return null;
-
-  const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
 
   const handleInvite = async (opportunityId: string) => {
     try {
@@ -90,22 +90,20 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     }
   };
 
+  const handleChatClick = () => {
+    navigate(`/messages?creator=${creator.id}`);
+    onClose();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-nino-bg">
         {!showCampaigns ? (
-          <div>
-            <DialogHeader className="p-8 pb-0">
-              <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {fullName || 'Anonymous Creator'}
-              </DialogTitle>
-            </DialogHeader>
-            
-            <CreatorProfile 
-              creator={creator} 
-              onInviteClick={() => setShowCampaigns(true)} 
-            />
-          </div>
+          <CreatorProfile 
+            creator={creator} 
+            onInviteClick={() => setShowCampaigns(true)}
+            onChatClick={handleChatClick}
+          />
         ) : (
           <CampaignSelection
             campaigns={campaigns}
