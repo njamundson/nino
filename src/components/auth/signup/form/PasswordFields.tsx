@@ -3,15 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
+import { SignUpFormData } from "../SignUpForm";
 
 interface PasswordFieldsProps {
-  form: UseFormReturn<{
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }>;
+  form: UseFormReturn<SignUpFormData>;
   disabled?: boolean;
 }
 

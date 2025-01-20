@@ -22,7 +22,7 @@ const signUpSchema = z.object({
   path: ["confirmPassword"],
 });
 
-type SignUpFormData = z.infer<typeof signUpSchema>;
+export type SignUpFormData = z.infer<typeof signUpSchema>;
 
 interface SignUpFormProps {
   onSubmit: (data: SignUpFormData) => void;
