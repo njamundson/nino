@@ -6,7 +6,7 @@ import ProposalActions from "./ProposalActions";
 import ProposalMetadata from "./ProposalMetadata";
 import InvitationModal from "./modals/InvitationModal";
 import ApplicationDetailsModal from "./modals/ApplicationDetailsModal";
-import ProjectModal from "@/components/projects/ProjectModal";
+import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -18,7 +18,7 @@ interface ProposalCardProps {
 
 const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) => {
   const [showDetails, setShowDetails] = useState(false);
-  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
   const { toast } = useToast();
 
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
@@ -89,7 +89,7 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
               opportunityId={application.opportunity_id}
               type={type}
               onDeleteProposal={type === 'application' ? handleDeleteProposal : undefined}
-              onViewOpportunity={() => setShowProjectModal(true)}
+              onViewOpportunity={() => setShowApplicationModal(true)}
             />
           </div>
         </div>
@@ -111,11 +111,11 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
         />
       )}
 
-      {showProjectModal && (
-        <ProjectModal
-          isOpen={showProjectModal}
-          onClose={() => setShowProjectModal(false)}
-          opportunity={application.opportunity}
+      {showApplicationModal && (
+        <ViewApplicationModal
+          isOpen={showApplicationModal}
+          onClose={() => setShowApplicationModal(false)}
+          application={application}
         />
       )}
     </>
