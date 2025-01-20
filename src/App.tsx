@@ -19,8 +19,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1, // Reduce retry attempts
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000), // Shorter retry delay
+      retry: 1,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
       refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000,
     },
@@ -52,14 +52,45 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
             setIsInitialized(true);
             setIsLoading(false);
           }
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
-        const { error: userError } = await supabase.auth.getUser();
-        if (userError) {
-          console.error('User error:', userError);
-          throw userError;
+        // Check for brand profile
+        const { data: brand, error: brandError } = await supabase
+          .from('brands')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        if (brandError) {
+          console.error('Error checking brand profile:', brandError);
+          throw brandError;
+        }
+
+        if (brand) {
+          console.log('Brand profile found, redirecting to dashboard');
+          navigate('/brand/dashboard', { replace: true });
+        } else {
+          // Check for creator profile
+          const { data: creator, error: creatorError } = await supabase
+            .from('creators')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+          if (creatorError) {
+            console.error('Error checking creator profile:', creatorError);
+            throw creatorError;
+          }
+
+          if (creator) {
+            console.log('Creator profile found, redirecting to creator dashboard');
+            navigate('/creator/dashboard', { replace: true });
+          } else {
+            console.log('No profile found, redirecting to onboarding');
+            navigate('/onboarding', { replace: true });
+          }
         }
 
         if (mounted) {
@@ -72,7 +103,7 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
           setError('Authentication error. Please try refreshing the page.');
           setIsInitialized(true);
           setIsLoading(false);
-          navigate('/');
+          navigate('/', { replace: true });
         }
       }
     };
@@ -81,9 +112,10 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       console.log('Auth state changed:', event);
       
       if (event === 'SIGNED_OUT') {
-        navigate('/');
+        navigate('/', { replace: true });
       } else if (event === 'SIGNED_IN' && session) {
         console.log('User signed in successfully');
+        initializeAuth();
       }
     });
 
