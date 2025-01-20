@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Instagram, Globe, MessageSquare } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatInstagramUrl, formatWebsiteUrl } from "@/utils/socialMediaUtils";
 
 interface CreatorBioProps {
   bio: string | null;
@@ -20,24 +21,13 @@ const CreatorBio = ({
   onMessageClick 
 }: CreatorBioProps) => {
   const handleInstagramClick = () => {
-    if (instagram) {
-      // Clean up the username: remove @ symbol, spaces, and any trailing slashes
-      const username = instagram
-        .trim()
-        .replace(/^@/, '')  // Remove @ from start if present
-        .replace(/\/$/, '') // Remove trailing slash if present
-        .replace(/^(https?:\/\/)?(www\.)?instagram\.com\//, ''); // Remove instagram.com if present
-      
-      window.open(`https://www.instagram.com/${username}/`, '_blank');
-    }
+    const url = formatInstagramUrl(instagram);
+    if (url) window.open(url, '_blank');
   };
 
   const handleWebsiteClick = () => {
-    if (website) {
-      // Add https:// if not present
-      const url = website.startsWith('http') ? website : `https://${website}`;
-      window.open(url, '_blank');
-    }
+    const url = formatWebsiteUrl(website);
+    if (url) window.open(url, '_blank');
   };
 
   return (
