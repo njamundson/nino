@@ -37,10 +37,13 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
   const { data: campaigns } = useQuery({
     queryKey: ['brand-campaigns'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
       const { data: brand } = await supabase
         .from('brands')
         .select('id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (!brand) return [];

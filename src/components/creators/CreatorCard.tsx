@@ -22,6 +22,20 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
     }
   };
 
+  const modalCreator = {
+    id: creator.id,
+    bio: creator.bio,
+    location: creator.location,
+    specialties: creator.specialties,
+    instagram: creator.instagram,
+    website: creator.website,
+    profile: {
+      first_name: creator.firstName,
+      last_name: creator.lastName
+    },
+    profile_image_url: creator.profileImage
+  };
+
   return (
     <>
       <Card 
@@ -32,14 +46,7 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
       </Card>
 
       <CreatorModal
-        creator={{
-          ...creator,
-          profile_image_url: creator.profileImage || '/placeholder.svg',
-          profile: {
-            first_name: creator.firstName,
-            last_name: creator.lastName
-          }
-        }}
+        creator={modalCreator}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
