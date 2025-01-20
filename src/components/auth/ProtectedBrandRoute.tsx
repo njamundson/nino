@@ -23,13 +23,9 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         
         if (sessionError) {
           console.error("Session error:", sessionError);
-          if (sessionError.message.includes("refresh_token_not_found")) {
-            await supabase.auth.signOut();
-            toast({
-              title: "Session expired",
-              description: "Please sign in again to continue.",
-              variant: "destructive",
-            });
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
           }
           navigate('/');
           return;
@@ -57,7 +53,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         }
 
         console.log("Checking brand profile for user:", userId);
-        const { data: brands, error: brandError } = await supabase
+        const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id, company_name')
           .eq('user_id', userId)
@@ -65,10 +61,15 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
         if (brandError) {
           console.error("Error checking brand profile:", brandError);
-          throw brandError;
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
+          navigate('/');
+          return;
         }
 
-        if (!brands) {
+        if (!brand) {
           console.log("No brand profile found");
           if (mounted) {
             setIsAuthenticated(false);
@@ -83,7 +84,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        console.log("Brand profile found:", brands);
+        console.log("Brand profile found:", brand);
         if (mounted) {
           setIsAuthenticated(true);
           setIsLoading(false);
@@ -94,11 +95,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           setIsAuthenticated(false);
           setIsLoading(false);
         }
-        toast({
-          title: "Access denied",
-          description: "Please sign in to continue.",
-          variant: "destructive",
-        });
         navigate('/');
       }
     };
@@ -111,7 +107,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       console.log("Auth state changed:", event, "Session:", session?.user?.id ? "exists" : "none");
       
       if (event === 'SIGNED_OUT' || !session?.user?.id) {
-        console.log("User signed out or no valid session");
         if (mounted) {
           setIsAuthenticated(false);
           setIsLoading(false);
@@ -126,7 +121,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       }
     });
 
-    // Cleanup
     return () => {
       mounted = false;
       subscription.unsubscribe();
