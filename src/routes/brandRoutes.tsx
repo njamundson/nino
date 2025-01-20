@@ -5,13 +5,13 @@ import MyCampaigns from "@/pages/MyCampaigns";
 import NewCampaign from "@/pages/NewCampaign";
 import ViewCreators from "@/pages/ViewCreators";
 import Messages from "@/pages/Messages";
-import Settings from "@/pages/Settings";
 import BrandSettings from "@/pages/BrandSettings";
+import { Outlet } from "react-router-dom";
 
 export const brandRoutes: RouteObject[] = [
   {
     path: "brand",
-    element: <BrandLayout />,
+    element: <BrandLayout><Outlet /></BrandLayout>,
     children: [
       {
         path: "dashboard",
