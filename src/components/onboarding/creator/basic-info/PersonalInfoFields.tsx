@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface PersonalInfoFieldsProps {
   firstName: string;
@@ -22,24 +23,46 @@ const PersonalInfoFields = ({
 }: PersonalInfoFieldsProps) => {
   const [apiKey, setApiKey] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchApiKey = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke('get-google-places-key');
-        if (error) throw error;
+        console.log('Fetching Google Places API key...');
+        const { data, error } = await supabase.functions.invoke('get-google-places-key', {
+          method: 'GET'
+        });
+
+        if (error) {
+          console.error('Error fetching Google Places API key:', error);
+          toast({
+            title: "Error loading location search",
+            description: "Please try again or enter location manually",
+            variant: "destructive",
+          });
+          throw error;
+        }
+
         if (data?.GOOGLE_PLACES_API_KEY) {
+          console.log('API key retrieved successfully');
           setApiKey(data.GOOGLE_PLACES_API_KEY);
+        } else {
+          console.error('No API key in response:', data);
+          toast({
+            title: "Configuration error",
+            description: "Location search is temporarily unavailable",
+            variant: "destructive",
+          });
         }
       } catch (error) {
-        console.error('Error fetching Google Places API key:', error);
+        console.error('Error in fetchApiKey:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchApiKey();
-  }, []);
+  }, [toast]);
 
   return (
     <>
@@ -55,7 +78,7 @@ const PersonalInfoFields = ({
             onUpdateField('lastName', parts.slice(1).join(' '));
           }}
           placeholder="Enter your full name"
-          className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
+          className="bg-nino-bg border-transparent focus:border-transparent h-12 text-base shadow-sm hover:shadow focus:shadow"
           required
         />
       </div>
@@ -79,7 +102,7 @@ const PersonalInfoFields = ({
                     border: '1px solid transparent',
                     minHeight: '48px',
                     borderRadius: '0.375rem',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                     '&:hover': {
                       border: '1px solid transparent',
                       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -131,7 +154,7 @@ const PersonalInfoFields = ({
             value={location}
             onChange={(e) => onUpdateField("location", e.target.value)}
             placeholder={isLoading ? "Loading location search..." : "Enter your location"}
-            className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
+            className="bg-nino-bg border-transparent focus:border-transparent h-12 text-base shadow-sm hover:shadow focus:shadow"
             disabled={isLoading}
           />
         )}
@@ -144,7 +167,7 @@ const PersonalInfoFields = ({
           value={bio}
           onChange={(e) => onUpdateField("bio", e.target.value)}
           placeholder="Tell us about yourself..."
-          className="bg-nino-bg border-transparent focus:border-nino-primary resize-none min-h-[120px] text-base"
+          className="bg-nino-bg border-transparent focus:border-transparent resize-none min-h-[120px] text-base shadow-sm hover:shadow focus:shadow"
           required
         />
       </div>
