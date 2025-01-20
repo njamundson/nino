@@ -12,13 +12,9 @@ const Compensation = ({ formData, setFormData }: CompensationProps) => {
     // Remove any non-numeric characters except decimal points
     const value = e.target.value.replace(/[^0-9.]/g, '');
     
-    // Ensure the value is a valid number greater than or equal to 0
-    const numericValue = parseFloat(value);
-    if (!isNaN(numericValue) && numericValue >= 0) {
-      setFormData({ ...formData, paymentDetails: `$${value}` });
-    } else if (value === '') {
-      // Allow empty input which will be treated as $0
-      setFormData({ ...formData, paymentDetails: '$0' });
+    // Allow empty input or valid numbers
+    if (value === '' || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0)) {
+      setFormData({ ...formData, paymentDetails: value ? `$${value}` : '$0' });
     }
   };
 
