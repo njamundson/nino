@@ -19,6 +19,7 @@ interface Creator {
   profiles: {
     first_name: string | null;
     last_name: string | null;
+    id: string;
   } | null;
 }
 
@@ -28,7 +29,6 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
   const { data: creators, isLoading } = useQuery({
     queryKey: ["creators-for-messages"],
     queryFn: async () => {
-      // First get all creators
       const { data, error } = await supabase
         .from("creators")
         .select(`
@@ -52,7 +52,8 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
         profile_image_url: item.profile_image_url,
         profiles: item.profiles ? {
           first_name: item.profiles.first_name,
-          last_name: item.profiles.last_name
+          last_name: item.profiles.last_name,
+          id: item.profiles.id
         } : null
       }));
 
