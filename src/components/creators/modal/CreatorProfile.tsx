@@ -88,7 +88,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
                 className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
                 onClick={() => {}} // Chat functionality to be implemented
               >
-                <MessageSquare className="w-5 h-5" />
+                <MessageSquare className="w-5 h-5" strokeWidth={2} />
                 Chat
               </Button>
               
@@ -99,7 +99,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
                   className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
                   onClick={() => window.open(`https://instagram.com/${creator.instagram}`, '_blank')}
                 >
-                  <Instagram className="w-5 h-5" />
+                  <Instagram className="w-5 h-5" strokeWidth={2} />
                   Instagram
                 </Button>
               )}
@@ -111,7 +111,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
                   className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
                   onClick={() => window.open(creator.website!, '_blank')}
                 >
-                  <Globe className="w-5 h-5" />
+                  <Globe className="w-5 h-5" strokeWidth={2} />
                   Website
                 </Button>
               )}
