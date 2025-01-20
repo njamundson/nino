@@ -16,6 +16,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
   useEffect(() => {
     let mounted = true;
+    let authSubscription: any = null;
 
     const checkBrandAccess = async () => {
       try {
@@ -31,20 +32,20 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
               variant: "destructive",
             });
           }
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
         if (!session) {
           console.log("No session found");
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
         const userId = session.user?.id;
         if (!userId) {
           console.log("No user ID found in session");
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
@@ -67,7 +68,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
             description: "You need a brand profile to access this area.",
             variant: "destructive",
           });
-          navigate('/onboarding');
+          navigate('/onboarding', { replace: true });
           return;
         }
 
@@ -78,20 +79,21 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         }
       } catch (error) {
         console.error("Error in checkBrandAccess:", error);
+        if (mounted) {
+          setIsLoading(false);
+          setHasAccess(false);
+        }
         toast({
-          title: "Access denied",
-          description: "Please sign in to continue.",
+          title: "Error checking access",
+          description: "Please try again later.",
           variant: "destructive",
         });
-        navigate('/');
+        navigate('/', { replace: true });
       }
     };
 
-    // Initial check
-    checkBrandAccess();
-
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, "Session:", session?.user?.id ? "exists" : "none");
       
       if (event === 'SIGNED_OUT' || !session?.user?.id) {
@@ -100,12 +102,8 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           setHasAccess(false);
           setIsLoading(false);
         }
-        navigate('/');
+        navigate('/', { replace: true });
         return;
-      }
-
-      if (event === 'TOKEN_REFRESHED') {
-        console.log("Token refreshed successfully");
       }
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
@@ -113,10 +111,15 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
       }
     });
 
+    // Initial check
+    checkBrandAccess();
+
     // Cleanup
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      if (authSubscription) {
+        authSubscription.subscription.unsubscribe();
+      }
     };
   }, [navigate, toast]);
 
