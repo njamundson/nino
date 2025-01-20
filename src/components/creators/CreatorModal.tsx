@@ -22,7 +22,7 @@ interface Creator {
     first_name: string | null;
     last_name: string | null;
   } | null;
-  profile_image_url: string;
+  imageUrl: string;
 }
 
 interface CreatorModalProps {
