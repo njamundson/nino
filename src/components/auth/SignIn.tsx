@@ -79,33 +79,38 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
       if (brand) {
         console.log("Brand profile found, redirecting to dashboard");
-        navigate('/brand/dashboard');
-      } else {
-        // Check if user has a creator profile
-        const { data: creator, error: creatorError } = await supabase
-          .from('creators')
-          .select('*')
-          .eq('user_id', signInData.user.id)
-          .maybeSingle();
-
-        if (creatorError) {
-          console.error("Error fetching creator profile:", creatorError);
-          throw new Error("Failed to fetch user profile");
-        }
-
-        if (creator) {
-          console.log("Creator profile found, redirecting to creator dashboard");
-          navigate('/creator/dashboard');
-        } else {
-          console.log("No profile found, redirecting to onboarding");
-          navigate('/onboarding');
-        }
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in.",
+        });
+        navigate('/brand/dashboard', { replace: true });
+        return;
       }
 
-      toast({
-        title: "Welcome back!",
-        description: "Successfully signed in.",
-      });
+      // Check if user has a creator profile
+      const { data: creator, error: creatorError } = await supabase
+        .from('creators')
+        .select('*')
+        .eq('user_id', signInData.user.id)
+        .maybeSingle();
+
+      if (creatorError) {
+        console.error("Error fetching creator profile:", creatorError);
+        throw new Error("Failed to fetch user profile");
+      }
+
+      if (creator) {
+        console.log("Creator profile found, redirecting to creator dashboard");
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in.",
+        });
+        navigate('/creator/dashboard', { replace: true });
+      } else {
+        console.log("No profile found, redirecting to onboarding");
+        navigate('/onboarding', { replace: true });
+      }
+
     } catch (error) {
       console.error("Authentication error:", error);
       toast({
