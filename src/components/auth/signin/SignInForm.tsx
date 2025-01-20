@@ -16,7 +16,9 @@ const SignInForm = ({ onSubmit, loading }: SignInFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(email, password);
+    if (!loading) {
+      onSubmit(email, password);
+    }
   };
 
   return (
@@ -30,6 +32,7 @@ const SignInForm = ({ onSubmit, loading }: SignInFormProps) => {
           className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] transition-all duration-300"
           required
           disabled={loading}
+          autoComplete="email"
         />
 
         <div className="relative">
@@ -41,12 +44,14 @@ const SignInForm = ({ onSubmit, loading }: SignInFormProps) => {
             className="h-12 bg-[#f3f3f3] border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20 hover:bg-[#F9F6F2] pr-10 transition-all duration-300"
             required
             disabled={loading}
+            autoComplete="current-password"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-nino-gray hover:text-nino-primary transition-colors duration-300"
             disabled={loading}
+            tabIndex={-1}
           >
             {showPassword ? (
               <EyeOff className="h-4 w-4" />
@@ -59,14 +64,14 @@ const SignInForm = ({ onSubmit, loading }: SignInFormProps) => {
 
       <Button
         type="submit"
-        className="w-full bg-nino-primary hover:opacity-90 text-white transition-all duration-300 rounded-xl h-12 shadow-sm focus-visible:ring-2 focus-visible:ring-[#A55549] focus-visible:ring-offset-2"
-        disabled={loading}
+        className="w-full bg-nino-primary hover:opacity-90 text-white transition-all duration-300 rounded-xl h-12 shadow-sm focus-visible:ring-2 focus-visible:ring-[#A55549] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={loading || !email || !password}
       >
         {loading ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center space-x-2"
+            className="flex items-center justify-center space-x-2"
           >
             <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             <span>Signing in...</span>

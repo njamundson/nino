@@ -18,12 +18,12 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
   const navigate = useNavigate();
 
   const handleSignIn = async (email: string, password: string) => {
-    if (loading) return; // Prevent multiple submissions
+    if (loading) return;
     
     setLoading(true);
+    console.log("Starting sign in process...");
     
     try {
-      console.log("Starting sign in process...");
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -51,36 +51,19 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           description: errorMessage,
           variant: "destructive",
         });
-        setLoading(false);
         return;
       }
 
-      if (!signInData.user) {
+      if (!signInData.user || !signInData.session) {
         toast({
           title: "Error",
           description: "No user data received. Please try again.",
           variant: "destructive",
         });
-        setLoading(false);
         return;
       }
 
-      // Ensure the session is properly stored
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token: signInData.session?.access_token!,
-        refresh_token: signInData.session?.refresh_token!,
-      });
-
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        toast({
-          title: "Error",
-          description: "Failed to establish session. Please try again.",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
+      console.log("User signed in successfully, checking profiles...");
 
       // Check if user has a brand profile
       const { data: brand, error: brandError } = await supabase
@@ -91,13 +74,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
       if (brandError) {
         console.error("Error fetching brand profile:", brandError);
-        toast({
-          title: "Error",
-          description: "Failed to fetch user profile. Please try again.",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
+        throw new Error("Failed to fetch user profile");
       }
 
       if (brand) {
@@ -113,13 +90,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
         if (creatorError) {
           console.error("Error fetching creator profile:", creatorError);
-          toast({
-            title: "Error",
-            description: "Failed to fetch user profile. Please try again.",
-            variant: "destructive",
-          });
-          setLoading(false);
-          return;
+          throw new Error("Failed to fetch user profile");
         }
 
         if (creator) {
@@ -139,7 +110,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       console.error("Authentication error:", error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        description: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -163,7 +134,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         <button
           type="button"
           onClick={() => setShowResetPassword(true)}
-          className="text-sm text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+          className="text-sm text-nino-primary hover:text-nino-primary/80 transition-colors duration-300 disabled:opacity-50"
           disabled={loading}
         >
           Forgot password?
@@ -175,7 +146,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         <button
           type="button"
           onClick={onToggleAuth}
-          className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+          className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300 disabled:opacity-50"
           disabled={loading}
         >
           Create one
