@@ -13,16 +13,15 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Loader2, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
 });
@@ -32,116 +31,115 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
+
+  const handleSessionError = async () => {
+    console.log('Session error detected, signing out...');
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Session expired",
+        description: "Please sign in again to continue.",
+        variant: "destructive",
+      });
+      navigate('/');
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    } finally {
+      setIsInitialized(true);
+      setIsLoading(false);
+    }
+  };
+
+  const verifySession = async () => {
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      if (!session) {
+        console.log('No active session');
+        return false;
+      }
+
+      const { error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        throw userError;
+      }
+
+      return true;
+    } catch (error: any) {
+      console.error('Session verification error:', error);
+      if (error.message?.includes('Failed to fetch') && retryCount < MAX_RETRIES) {
+        setRetryCount(prev => prev + 1);
+        return new Promise(resolve => setTimeout(() => resolve(verifySession()), 2000));
+      }
+      if (error.message?.includes('session_not_found')) {
+        await handleSessionError();
+      }
+      return false;
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
 
     const initializeAuth = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        setIsLoading(true);
+        const isValid = await verifySession();
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          throw sessionError;
+        if (!isValid) {
+          navigate('/');
         }
-
-        if (!session) {
-          console.log('No active session, redirecting to login');
-          if (mounted) {
-            setIsInitialized(true);
-            setIsLoading(false);
-          }
-          navigate('/', { replace: true });
-          return;
-        }
-
-        // Check for brand profile
-        const { data: brand, error: brandError } = await supabase
-          .from('brands')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-
-        if (brandError) {
-          console.error('Error checking brand profile:', brandError);
-          throw brandError;
-        }
-
-        if (brand) {
-          console.log('Brand profile found, redirecting to dashboard');
-          navigate('/brand/dashboard', { replace: true });
-        } else {
-          // Check for creator profile
-          const { data: creator, error: creatorError } = await supabase
-            .from('creators')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
-
-          if (creatorError) {
-            console.error('Error checking creator profile:', creatorError);
-            throw creatorError;
-          }
-
-          if (creator) {
-            console.log('Creator profile found, redirecting to creator dashboard');
-            navigate('/creator/dashboard', { replace: true });
-          } else {
-            console.log('No profile found, redirecting to onboarding');
-            navigate('/onboarding', { replace: true });
-          }
-        }
-
+        
         if (mounted) {
           setIsInitialized(true);
           setIsLoading(false);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('Auth initialization error:', error);
         if (mounted) {
-          setError('Authentication error. Please try refreshing the page.');
           setIsInitialized(true);
           setIsLoading(false);
-          navigate('/', { replace: true });
         }
       }
     };
 
+    // Initial auth check
+    initializeAuth();
+
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       
       if (event === 'SIGNED_OUT') {
-        navigate('/', { replace: true });
-      } else if (event === 'SIGNED_IN' && session) {
-        console.log('User signed in successfully');
-        initializeAuth();
+        console.log('User signed out');
+        navigate('/');
+      } else if (event === 'TOKEN_REFRESHED') {
+        console.log('Token refreshed successfully');
+      } else if (event === 'SIGNED_IN') {
+        console.log('User signed in');
+        const isValid = await verifySession();
+        if (!isValid) {
+          await handleSessionError();
+        }
       }
     });
-
-    initializeAuth();
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, toast]);
+  }, [navigate, toast, retryCount]);
 
   if (!isInitialized || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-nino-bg">
         <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-nino-bg p-4">
-        <Alert variant="destructive" className="max-w-md">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
       </div>
     );
   }

@@ -6,10 +6,11 @@ const Index = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
       className="min-h-screen flex items-center justify-center bg-[#F9F6F2] p-4"
     >
-      <AuthCard />
+      <div className="w-full max-w-md">
+        <AuthCard />
+      </div>
     </motion.div>
   );
 };
