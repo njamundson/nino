@@ -10,7 +10,7 @@ const CreatorDashboard = () => {
       <StatsCards />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 bg-white shadow-sm rounded-3xl overflow-hidden">
           <RecentMessages />
         </div>
         <div className="lg:col-span-1">
