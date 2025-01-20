@@ -94,20 +94,38 @@ const CampaignFormContainer = () => {
 
   const handleSubmit = async () => {
     try {
-      // Get the current user's brand ID
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No authenticated user");
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error("Auth error:", userError);
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in again.",
+          variant: "destructive",
+        });
+        navigate('/auth');
+        return;
+      }
+
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { data: brandData, error: brandError } = await supabase
         .from("brands")
         .select("id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (brandError) throw brandError;
       if (!brandData) throw new Error("No brand found for user");
 
-      const { error } = await supabase.from("opportunities").insert({
+      const { error: insertError } = await supabase.from("opportunities").insert({
         brand_id: brandData.id,
         title: formData.title,
         description: formData.description,
@@ -121,7 +139,7 @@ const CampaignFormContainer = () => {
         image_url: uploadedImage,
       });
 
-      if (error) throw error;
+      if (insertError) throw insertError;
 
       setIsSuccessModalOpen(true);
     } catch (error) {
