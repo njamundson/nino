@@ -31,8 +31,10 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
       // Only apply specialty filter if specialties are selected
       if (selectedSpecialties.length > 0) {
-        // Use overlap operator to find creators that have ANY of the selected specialties
-        query = query.overlaps('specialties', selectedSpecialties);
+        // Use && to ensure all selected specialties are present
+        selectedSpecialties.forEach(specialty => {
+          query = query.contains('specialties', [specialty]);
+        });
       }
 
       const { data, error } = await query;
