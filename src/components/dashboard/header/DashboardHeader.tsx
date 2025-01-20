@@ -10,19 +10,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLocation } from "react-router-dom";
+import { Bell, UserRound } from "lucide-react";
 
 const DashboardHeader = () => {
   const location = useLocation();
   const isBrandDashboard = location.pathname.includes('/brand/');
 
   return (
-    <header className="flex items-center justify-end pb-6">
+    <header className="flex items-center justify-end gap-4 pb-6">
+      <Button variant="ghost" size="icon" className="relative">
+        <Bell className="h-5 w-5" />
+        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+          3
+        </span>
+      </Button>
+      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-10 w-10">
               <AvatarImage src="/placeholder.svg" alt="Profile" />
-              <AvatarFallback>P</AvatarFallback>
+              <AvatarFallback>
+                <UserRound className="h-6 w-6" />
+              </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
