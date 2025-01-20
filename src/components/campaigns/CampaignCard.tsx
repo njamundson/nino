@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import CreatorProfileModal from "./modals/CreatorProfileModal";
 import CampaignDetails from "./card/CampaignDetails";
 import ApplicationsList from "./card/ApplicationsList";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CampaignCardProps {
   campaign: any;
@@ -38,18 +40,34 @@ const CampaignCard = ({
 
   const handleUpdateStatus = (applicationId: string) => async (newStatus: 'accepted' | 'rejected') => {
     if (onUpdateApplicationStatus) {
-      await onUpdateApplicationStatus(applicationId, newStatus);
-      
-      // Update local state to remove rejected application
-      if (newStatus === 'rejected') {
-        setLocalApplications(prevApps => 
-          prevApps.filter(app => app.id !== applicationId)
-        );
+      try {
+        await onUpdateApplicationStatus(applicationId, newStatus);
+        
+        // Update local state to remove rejected application
+        if (newStatus === 'rejected') {
+          // Delete the application from the database
+          const { error } = await supabase
+            .from('applications')
+            .delete()
+            .eq('id', applicationId);
+
+          if (error) throw error;
+
+          // Remove from local state
+          setLocalApplications(prevApps => 
+            prevApps.filter(app => app.id !== applicationId)
+          );
+
+          toast.success("Application rejected and removed");
+        }
+        
+        // Close the modal
+        setSelectedCreator(null);
+        setSelectedApplication(null);
+      } catch (error) {
+        console.error('Error updating application status:', error);
+        toast.error("Failed to update application status");
       }
-      
-      // Close the modal
-      setSelectedCreator(null);
-      setSelectedApplication(null);
     }
   };
 
