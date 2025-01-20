@@ -22,16 +22,16 @@ const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        <h3 className="text-xl font-semibold mb-1">
-          {fullName}
-        </h3>
         {creator.location && (
-          <p className="text-sm font-medium opacity-90">
+          <p className="text-sm font-medium opacity-75 mb-1">
             {creator.location}
           </p>
         )}
+        <h3 className="text-xl font-semibold mb-2">
+          {fullName}
+        </h3>
         {creator.specialties && creator.specialties.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             {creator.specialties.map((specialty, index) => (
               <Badge 
                 key={index} 
