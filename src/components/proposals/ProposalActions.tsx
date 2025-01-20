@@ -14,57 +14,56 @@ const ProposalActions = ({
   status, 
   onUpdateStatus, 
   onViewProposals,
-  opportunityId,
   type,
   onViewOpportunity
 }: ProposalActionsProps) => {
-  return (
-    <div className="flex gap-3">
-      {type === 'proposal' ? (
-        <>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={onViewProposals}
-          >
-            <Users className="w-4 h-4" />
-            View Proposal
-          </Button>
-          
-          {status === 'pending' && (
-            <>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => onUpdateStatus('accepted')}
-                className="gap-2"
-              >
-                Accept
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => onUpdateStatus('rejected')}
-                className="gap-2"
-              >
-                Reject
-              </Button>
-            </>
-          )}
-        </>
-      ) : (
+  if (type === 'proposal') {
+    return (
+      <div className="flex gap-3">
         <Button
           variant="outline"
           size="sm"
           className="gap-2"
-          onClick={onViewOpportunity}
+          onClick={onViewProposals}
         >
-          View Opportunity
-          <ExternalLink className="w-4 h-4" />
+          <Users className="w-4 h-4" />
+          View Proposal
         </Button>
-      )}
-    </div>
+        
+        {status === 'pending' && (
+          <>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => onUpdateStatus('accepted')}
+              className="gap-2"
+            >
+              Accept
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onUpdateStatus('rejected')}
+              className="gap-2"
+            >
+              Reject
+            </Button>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      className="gap-2"
+      onClick={onViewOpportunity}
+    >
+      View Opportunity
+      <ExternalLink className="w-4 h-4" />
+    </Button>
   );
 };
 

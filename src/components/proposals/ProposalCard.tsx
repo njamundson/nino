@@ -1,13 +1,10 @@
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
-import ProposalStatusBadge from "./ProposalStatusBadge";
 import ProposalActions from "./ProposalActions";
-import ProposalMetadata from "./ProposalMetadata";
 import InvitationModal from "./modals/InvitationModal";
 import ApplicationDetailsModal from "./modals/ApplicationDetailsModal";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
-import { useToast } from "@/hooks/use-toast";
+import ProposalCardHeader from "./card/ProposalCardHeader";
 
 interface ProposalCardProps {
   application: any;
@@ -18,10 +15,8 @@ interface ProposalCardProps {
 const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
-  const { toast } = useToast();
 
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
-  const brandInitial = brandName[0].toUpperCase();
 
   const handleAccept = () => {
     onUpdateStatus(application.id, 'accepted');
@@ -35,28 +30,15 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
 
   return (
     <>
-      <Card 
-        className="p-6 hover:shadow-md transition-shadow duration-200"
-      >
+      <Card className="p-6 hover:shadow-md transition-shadow duration-200">
         <div className="space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-4">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback>{brandInitial}</AvatarFallback>
-              </Avatar>
-              <div className="space-y-1">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {application.opportunity?.title}
-                </h3>
-                <ProposalMetadata
-                  name={brandName}
-                  location={application.opportunity?.brand?.location}
-                  startDate={application.opportunity?.start_date}
-                />
-              </div>
-            </div>
-            <ProposalStatusBadge status={application.status} />
-          </div>
+          <ProposalCardHeader
+            brandName={brandName}
+            title={application.opportunity?.title}
+            location={application.opportunity?.brand?.location}
+            startDate={application.opportunity?.start_date}
+            status={application.status}
+          />
 
           <div className="flex items-center justify-end">
             <ProposalActions
