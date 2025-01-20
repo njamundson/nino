@@ -1,6 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { CreatorData } from "@/types/creator";
 
 interface CreatorCardImageProps {
@@ -8,7 +6,7 @@ interface CreatorCardImageProps {
   onInvite: (creatorId: string) => void;
 }
 
-const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
+const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
   const fullName = creator.firstName && creator.lastName 
     ? `${creator.firstName} ${creator.lastName}`.trim()
     : 'Anonymous Creator';
@@ -44,17 +42,6 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
           </div>
         )}
       </div>
-      <Button
-        size="icon"
-        variant="secondary"
-        className="absolute bottom-6 right-6 rounded-full"
-        onClick={(e) => {
-          e.stopPropagation();
-          onInvite(creator.id);
-        }}
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
     </div>
   );
 };
