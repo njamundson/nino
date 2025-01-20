@@ -33,7 +33,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
           fullName={fullName} 
         />
         
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full space-y-6">
           <CreatorBio 
             bio={creator.bio}
             location={creator.location}
@@ -45,10 +45,10 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
             website={creator.website}
           />
 
-          <div className="mt-6">
+          <div className="mt-auto">
             <Button
               size="lg"
-              className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white rounded-xl shadow-md transition-all duration-300 hover:shadow-lg"
+              className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white rounded-[24px] shadow-md transition-all duration-300 hover:shadow-lg"
               onClick={onInviteClick}
             >
               Invite to Campaign

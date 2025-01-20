@@ -7,6 +7,8 @@ interface CreatorSocialLinksProps {
 }
 
 const CreatorSocialLinks = ({ instagram, website }: CreatorSocialLinksProps) => {
+  if (!instagram && !website) return null;
+  
   return (
     <div className="flex gap-3 flex-wrap">
       {instagram && (
