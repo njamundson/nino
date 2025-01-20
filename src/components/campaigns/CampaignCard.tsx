@@ -1,5 +1,6 @@
 import { useState } from "react";
-import ApplicationsList from "./ApplicationsList";
+import { useNavigate } from "react-router-dom";
+import ApplicationsList from "@/components/campaigns/card/ApplicationsList";
 import CreatorProfileModal from "@/components/campaigns/modals/CreatorProfileModal";
 
 interface CampaignCardProps {
@@ -50,7 +51,7 @@ const CampaignCard = ({ campaign, applications, onEdit, onDelete, onUpdateApplic
           onUpdateStatus={(status) => onUpdateApplicationStatus(selectedApplication.id, status)}
           onMessageCreator={() => handleMessageCreator(selectedApplication.creator?.user_id)}
           opportunityId={campaign.id}
-          applicationId={selectedApplication.id} // Pass the application ID
+          applicationId={selectedApplication.id}
         />
       )}
     </div>
