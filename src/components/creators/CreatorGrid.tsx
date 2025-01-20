@@ -53,7 +53,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
         // Only apply specialty filter if specialties are selected
         if (selectedSpecialties.length > 0) {
-          // Use contains for array overlap - this checks if the specialties array contains ANY of the selected specialties
+          // Use overlaps for array overlap - this checks if the specialties array contains ANY of the selected specialties
           query = query.overlaps('specialties', selectedSpecialties);
         }
 
