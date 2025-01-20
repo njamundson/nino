@@ -678,7 +678,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_admin_analytics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_users: number
+          total_brands: number
+          total_creators: number
+          total_opportunities: number
+          total_applications: number
+          pending_applications: number
+          pending_verifications: number
+        }[]
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       application_status: "pending" | "accepted" | "rejected"

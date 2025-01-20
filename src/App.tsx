@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
+import { adminRoutes } from "./routes/adminRoutes";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./hooks/use-toast";
@@ -113,6 +114,13 @@ const App = () => {
                   />
                 ))}
                 {creatorRoutes.map((route) => (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={route.element}
+                  />
+                ))}
+                {adminRoutes.map((route) => (
                   <Route
                     key={route.path}
                     path={route.path}
