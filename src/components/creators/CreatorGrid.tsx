@@ -17,6 +17,14 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
       try {
         console.log("Fetching creators with selected specialties:", selectedSpecialties);
         
+        // First get the profile IDs of brands
+        const { data: brandProfiles } = await supabase
+          .from('brands')
+          .select('user_id');
+        
+        const brandProfileIds = brandProfiles?.map(b => b.user_id) || [];
+
+        // Then fetch creators excluding those profiles
         let query = supabase
           .from('creators')
           .select(`
@@ -26,12 +34,11 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
               last_name
             )
           `)
-          .not('user_id', 'is', null) // Only get creators with valid user accounts
-          .not('profile_id', 'in', (
-            supabase
-              .from('brands')
-              .select('user_id')
-          ));
+          .not('user_id', 'is', null);
+
+        if (brandProfileIds.length > 0) {
+          query = query.not('user_id', 'in', brandProfileIds);
+        }
 
         // Only apply specialty filter if specialties are selected
         if (selectedSpecialties.length > 0) {
