@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { steps } from "./config/formSteps";
+import ImageUpload from "./ImageUpload";
 
 interface CampaignFormContentProps {
   currentStep: number;
