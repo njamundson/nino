@@ -9,13 +9,18 @@ interface BookingsListProps {
 }
 
 const BookingsList = ({ bookings, onChatClick, onViewCreator }: BookingsListProps) => {
-  if (!bookings || bookings.length === 0) {
+  // Filter to only show bookings from active campaigns
+  const activeBookings = bookings.filter(booking => 
+    booking.opportunity?.status === 'active'
+  );
+
+  if (!activeBookings || activeBookings.length === 0) {
     return (
       <Card className="p-8">
         <div className="text-center text-muted-foreground py-8">
-          <p>No confirmed bookings yet</p>
+          <p>No active bookings yet</p>
           <p className="text-sm mt-1">
-            Your accepted applications will appear here
+            Your accepted applications for active campaigns will appear here
           </p>
         </div>
       </Card>
@@ -26,11 +31,11 @@ const BookingsList = ({ bookings, onChatClick, onViewCreator }: BookingsListProp
     <Card className="p-8">
       <ScrollArea className="h-[600px] pr-4">
         <div className="space-y-6">
-          {bookings.map((booking: any) => (
+          {activeBookings.map((booking: any) => (
             <BookingCard
               key={booking.id}
               booking={booking}
-              onChatClick={() => onChatClick(booking.creator.id)}
+              onChatClick={() => onChatClick(booking.creator.user_id)}
               onViewCreator={() => onViewCreator(booking.creator)}
             />
           ))}

@@ -8,6 +8,7 @@ interface BookingCardProps {
   booking: {
     opportunity: {
       title: string;
+      status: string;
     };
     creator: {
       bio: string | null;
@@ -30,7 +31,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
           </p>
         </div>
         <Badge variant="outline" className="capitalize">
-          Confirmed
+          {booking.opportunity.status}
         </Badge>
       </div>
 
