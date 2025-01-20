@@ -32,7 +32,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
       // Only apply specialty filter if specialties are selected
       if (selectedSpecialties.length > 0) {
         console.log("Applying specialty filter with:", selectedSpecialties);
-        query = query.overlaps('specialties', selectedSpecialties);
+        query = query.contains('specialties', selectedSpecialties);
       }
 
       const { data, error } = await query;
@@ -58,21 +58,8 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
           length: creator.specialties?.length
         });
       });
-      
-      // Filter out creators with null or empty specialties
-      const filteredData = data?.filter(creator => {
-        const hasSpecialties = Array.isArray(creator.specialties) && creator.specialties.length > 0;
-        console.log(`Creator ${creator.id} specialties check:`, {
-          hasSpecialties,
-          specialties: creator.specialties,
-          matchesFilter: !selectedSpecialties.length || 
-            (hasSpecialties && selectedSpecialties.some(s => creator.specialties.includes(s)))
-        });
-        return !selectedSpecialties.length || (hasSpecialties && selectedSpecialties.some(s => creator.specialties.includes(s)));
-      });
 
-      console.log("Final filtered creators data:", filteredData);
-      return filteredData || [];
+      return data || [];
     },
   });
 
