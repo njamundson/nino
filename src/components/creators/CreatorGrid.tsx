@@ -5,10 +5,11 @@ import { CreatorData } from "@/types/creator";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
+  selectedCreatorTypes: string[];
   onInvite: (creatorId: string) => void;
 }
 
-const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
+const CreatorGrid = ({ selectedSpecialties, selectedCreatorTypes, onInvite }: CreatorGridProps) => {
   const [creators, setCreators] = useState<CreatorData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,6 +17,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
     const fetchCreators = async () => {
       try {
         console.log("Fetching creators with selected specialties:", selectedSpecialties);
+        console.log("Fetching creators with selected types:", selectedCreatorTypes);
         
         // First get the profile IDs of brands
         const { data: brandProfiles, error: brandError } = await supabase
@@ -53,8 +55,12 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
 
         // Only apply specialty filter if specialties are selected
         if (selectedSpecialties.length > 0) {
-          // Use overlaps for array overlap - this checks if the specialties array contains ANY of the selected specialties
           query = query.overlaps('specialties', selectedSpecialties);
+        }
+
+        // Apply creator type filter if types are selected
+        if (selectedCreatorTypes.length > 0) {
+          query = query.in('creator_type', selectedCreatorTypes);
         }
 
         const { data, error } = await query;
@@ -90,7 +96,7 @@ const CreatorGrid = ({ selectedSpecialties, onInvite }: CreatorGridProps) => {
     };
 
     fetchCreators();
-  }, [selectedSpecialties]);
+  }, [selectedSpecialties, selectedCreatorTypes]);
 
   if (loading) {
     return (
