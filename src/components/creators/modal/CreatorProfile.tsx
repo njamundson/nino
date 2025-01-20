@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Instagram, Globe } from "lucide-react";
+import { Instagram, Globe, MessageSquare } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface Creator {
@@ -82,6 +82,16 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
             )}
 
             <div className="flex gap-3 flex-wrap">
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex-1 min-w-[140px] rounded-xl gap-2 hover:bg-white/80 border-2"
+                onClick={() => {}} // Chat functionality to be implemented
+              >
+                <MessageSquare className="w-5 h-5" />
+                Chat
+              </Button>
+              
               {creator.instagram && (
                 <Button
                   variant="outline"
