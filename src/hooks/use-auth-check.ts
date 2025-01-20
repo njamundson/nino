@@ -14,6 +14,7 @@ export const useAuthCheck = () => {
 
     const checkBrandAccess = async () => {
       try {
+        setIsLoading(true);
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -69,9 +70,13 @@ export const useAuthCheck = () => {
       }
     };
 
+    // Initial check
     checkBrandAccess();
 
-    const authListener = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Set up auth state listener
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event);
+      
       if (event === 'SIGNED_OUT' || !session) {
         if (mounted) {
           setHasAccess(false);
@@ -94,9 +99,12 @@ export const useAuthCheck = () => {
       }
     });
 
+    // Cleanup function
     return () => {
       mounted = false;
-      authListener.data.subscription.unsubscribe();
+      if (authListener && authListener.subscription) {
+        authListener.subscription.unsubscribe();
+      }
     };
   }, [navigate, toast]);
 
