@@ -18,14 +18,23 @@ const CreatorBio = ({ bio, specialties, location }: CreatorBioProps) => {
       
       <div className="space-y-2">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-white/50 hover:bg-white/80 transition-colors cursor-pointer shadow-sm">
-            <Instagram className="w-5 h-5 text-nino-primary" strokeWidth={1.5} />
+          <div className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group">
+            <Instagram 
+              className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
+              strokeWidth={1.25} 
+            />
           </div>
-          <div className="p-2.5 rounded-xl bg-white/50 hover:bg-white/80 transition-colors cursor-pointer shadow-sm">
-            <Globe className="w-5 h-5 text-nino-primary" strokeWidth={1.5} />
+          <div className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group">
+            <Globe 
+              className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
+              strokeWidth={1.25} 
+            />
           </div>
-          <div className="p-2.5 rounded-xl bg-white/50 hover:bg-white/80 transition-colors cursor-pointer shadow-sm">
-            <MessageSquare className="w-5 h-5 text-nino-primary" strokeWidth={1.5} />
+          <div className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md backdrop-blur-sm group">
+            <MessageSquare 
+              className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary transition-colors" 
+              strokeWidth={1.25} 
+            />
           </div>
         </div>
         <h3 className="text-lg font-semibold text-nino-text">About</h3>
@@ -42,7 +51,7 @@ const CreatorBio = ({ bio, specialties, location }: CreatorBioProps) => {
               <Badge 
                 key={index}
                 variant="outline" 
-                className="px-3 py-1 rounded-full border-2 border-nino-primary text-nino-primary bg-white/50 hover:bg-white transition-colors whitespace-nowrap"
+                className="px-3 py-1 rounded-full border-[1.5px] border-nino-primary/20 text-nino-primary/90 bg-white/50 hover:bg-white/80 transition-all duration-300 hover:border-nino-primary/40 whitespace-nowrap"
               >
                 {specialty}
               </Badge>
