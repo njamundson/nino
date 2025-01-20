@@ -1,4 +1,4 @@
-import { Instagram, Globe, MessageSquare } from "lucide-react";
+import { Instagram, Globe, MessageSquare, Share2 } from "lucide-react";
 import { formatInstagramUrl, formatWebsiteUrl } from "@/utils/socialMediaUtils";
 import SocialIconButton from "./SocialIconButton";
 
@@ -6,9 +6,15 @@ interface SocialLinksProps {
   instagram: string | null;
   website: string | null;
   onMessageClick?: () => void;
+  onShareClick?: () => void;
 }
 
-const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) => {
+const SocialLinks = ({ 
+  instagram, 
+  website, 
+  onMessageClick,
+  onShareClick 
+}: SocialLinksProps) => {
   const handleInstagramClick = () => {
     const url = formatInstagramUrl(instagram);
     if (url) window.open(url, '_blank');
@@ -24,8 +30,9 @@ const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) =
       <SocialIconButton
         icon={Instagram}
         onClick={instagram ? handleInstagramClick : undefined}
-        tooltipText={instagram ? `@${instagram.replace(/^@/, '').trim()}` : 'No Instagram profile'}
+        tooltipText={instagram ? `@${instagram.replace(/^@/, '')}` : 'No Instagram profile'}
         isActive={!!instagram}
+        label="Instagram"
       />
       
       <SocialIconButton
@@ -33,6 +40,7 @@ const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) =
         onClick={website ? handleWebsiteClick : undefined}
         tooltipText={website || 'No website available'}
         isActive={!!website}
+        label="Website"
       />
       
       <SocialIconButton
@@ -40,6 +48,15 @@ const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) =
         onClick={onMessageClick}
         tooltipText={onMessageClick ? 'Send message' : 'Messaging not available'}
         isActive={!!onMessageClick}
+        label="Message"
+      />
+
+      <SocialIconButton
+        icon={Share2}
+        onClick={onShareClick}
+        tooltipText="Share profile"
+        isActive={true}
+        label="Share"
       />
     </div>
   );

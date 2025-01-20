@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorImage from "./profile/CreatorImage";
-import CreatorSocialLinks from "./profile/CreatorSocialLinks";
+import SocialLinks from "./profile/social/SocialLinks";
 
 interface Creator {
   id: string;
@@ -21,9 +21,15 @@ interface CreatorProfileProps {
   creator: Creator;
   onInviteClick: () => void;
   onMessageClick?: () => void;
+  onShareClick?: () => void;
 }
 
-const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfileProps) => {
+const CreatorProfile = ({ 
+  creator, 
+  onInviteClick, 
+  onMessageClick,
+  onShareClick 
+}: CreatorProfileProps) => {
   const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
 
   return (
@@ -39,14 +45,13 @@ const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfi
             bio={creator.bio}
             location={creator.location}
             specialties={creator.specialties}
+          />
+
+          <SocialLinks 
             instagram={creator.instagram}
             website={creator.website}
             onMessageClick={onMessageClick}
-          />
-
-          <CreatorSocialLinks 
-            instagram={creator.instagram}
-            website={creator.website}
+            onShareClick={onShareClick}
           />
 
           <div className="mt-auto">
