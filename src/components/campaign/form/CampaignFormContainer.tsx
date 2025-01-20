@@ -108,8 +108,16 @@ const CampaignFormContainer = () => {
       if (!brandData) throw new Error("No brand found for user");
 
       const { error } = await supabase.from("opportunities").insert({
-        ...formData,
         brand_id: brandData.id,
+        title: formData.title,
+        description: formData.description,
+        location: formData.location,
+        start_date: formData.startDate,
+        end_date: formData.endDate,
+        requirements: formData.requirements,
+        deliverables: formData.deliverables,
+        payment_details: formData.paymentDetails,
+        compensation_details: formData.compensationDetails,
         image_url: uploadedImage,
       });
 
