@@ -8,17 +8,21 @@ interface CompensationProps {
 }
 
 const Compensation = ({ formData, setFormData }: CompensationProps) => {
+  const handlePaymentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Remove any non-numeric characters except decimal points
+    const value = e.target.value.replace(/[^0-9.]/g, '');
+    setFormData({ ...formData, paymentDetails: `$${value}` });
+  };
+
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="space-y-4">
         <Label htmlFor="paymentDetails" className="text-sm font-medium text-gray-700">Payment Details</Label>
         <Input
           id="paymentDetails"
-          placeholder="e.g., $500 per post"
-          value={formData.paymentDetails}
-          onChange={(e) =>
-            setFormData({ ...formData, paymentDetails: e.target.value })
-          }
+          placeholder="$0"
+          value={formData.paymentDetails.startsWith('$') ? formData.paymentDetails : `$${formData.paymentDetails}`}
+          onChange={handlePaymentChange}
           className="h-12 text-[15px] bg-gray-50/50 border-0 rounded-xl shadow-sm ring-1 ring-gray-200/70 focus:ring-2 focus:ring-gray-300 transition-shadow duration-200 placeholder:text-gray-400"
         />
       </div>
