@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuthState } from "@/hooks/useAuthState";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 interface AuthWrapperProps {
@@ -13,60 +13,41 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
   const { isInitialized, isError } = useAuthState();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
-    let initialCheck = true;
 
-    const initAuth = async () => {
+    const checkSession = async () => {
+      if (!mounted) return;
+
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error("Session check error:", error);
-          if (mounted) {
-            setIsLoading(false);
-            if (initialCheck) {
-              toast({
-                title: "Authentication Error",
-                description: "There was a problem checking your session. Please try logging in again.",
-                variant: "destructive",
-              });
-              navigate('/');
-            }
-          }
-          return;
-        }
-
-        if (!session && initialCheck) {
-          console.log("No active session, redirecting to login");
-          if (mounted) {
-            setIsLoading(false);
-            navigate('/');
-          }
-          return;
-        }
-
-        if (mounted) {
           setIsLoading(false);
+          return;
+        }
+
+        // Only redirect if we're not already on the index page
+        if (!session && location.pathname !== '/') {
+          navigate('/');
         }
         
+        setIsLoading(false);
       } catch (error) {
         console.error('Auth initialization error:', error);
-        if (mounted) {
-          setIsLoading(false);
-        }
-      } finally {
-        initialCheck = false;
+        setIsLoading(false);
       }
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
-      
+
       if (event === 'SIGNED_OUT' || !session) {
-        if (window.location.pathname !== '/') {
+        if (location.pathname !== '/') {
           navigate('/');
         }
         return;
@@ -77,13 +58,13 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
       }
     });
 
-    initAuth();
+    checkSession();
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, toast]);
+  }, [navigate, toast, location.pathname]);
 
   if (!isInitialized || isLoading) {
     return (
