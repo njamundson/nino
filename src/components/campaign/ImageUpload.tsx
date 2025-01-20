@@ -44,21 +44,21 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
   };
 
   return (
-    <div className="flex flex-col items-center space-y-3">
-      <div className="relative group cursor-pointer transition-all duration-300">
+    <div className="flex flex-col items-center space-y-4 w-full max-w-3xl mx-auto px-4">
+      <div className="relative group cursor-pointer w-full">
         <div 
           className={`
-            w-[600px] h-[300px] rounded-xl border border-gray-200
+            w-full aspect-[2/1] rounded-2xl border-2 border-dashed
             flex items-center justify-center bg-white/50
             transition-all duration-300 ease-in-out
-            group-hover:border-gray-300 group-hover:bg-gray-50/50
+            group-hover:border-nino-primary/30 group-hover:bg-gray-50/50
             backdrop-blur-sm
-            ${uploadedImage ? 'border-nino-primary/20 shadow-sm' : ''}
+            ${uploadedImage ? 'border-nino-primary/20 shadow-sm border-solid' : 'border-gray-200'}
             ${isUploading ? 'animate-pulse' : ''}
           `}
         >
           {uploadedImage ? (
-            <div className="relative w-full h-full overflow-hidden rounded-xl">
+            <div className="relative w-full h-full overflow-hidden rounded-2xl">
               <img 
                 src={uploadedImage} 
                 alt="Campaign" 

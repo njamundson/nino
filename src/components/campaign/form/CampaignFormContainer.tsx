@@ -113,30 +113,38 @@ const CampaignFormContainer = () => {
   };
 
   const renderStep = () => {
-    switch (currentStep) {
-      case 0:
-        return <BasicInfo formData={formData} setFormData={setFormData} />;
-      case 1:
-        return <Requirements formData={formData} setFormData={setFormData} />;
-      case 2:
-        return <Compensation formData={formData} setFormData={setFormData} />;
-      case 3:
-        return (
-          <ImageUpload
-            uploadedImage={uploadedImage}
-            isUploading={isUploading}
-            onImageUpload={handleImageUpload}
-          />
-        );
-      default:
-        return null;
-    }
+    const stepContent = (() => {
+      switch (currentStep) {
+        case 0:
+          return <BasicInfo formData={formData} setFormData={setFormData} />;
+        case 1:
+          return <Requirements formData={formData} setFormData={setFormData} />;
+        case 2:
+          return <Compensation formData={formData} setFormData={setFormData} />;
+        case 3:
+          return (
+            <ImageUpload
+              uploadedImage={uploadedImage}
+              isUploading={isUploading}
+              onImageUpload={handleImageUpload}
+            />
+          );
+        default:
+          return null;
+      }
+    })();
+
+    return (
+      <div className="py-6">
+        {stepContent}
+      </div>
+    );
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="w-full max-w-4xl mx-auto space-y-6">
       <FormProgress currentStep={currentStep} steps={steps} />
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         {renderStep()}
         <FormNavigation
           currentStep={currentStep}
