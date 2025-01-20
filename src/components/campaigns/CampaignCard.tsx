@@ -24,6 +24,7 @@ const CampaignCard = ({
 }: CampaignCardProps) => {
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [localApplications, setLocalApplications] = useState(applications);
   const navigate = useNavigate();
 
   const handleMessageCreator = (userId: string) => {
@@ -35,9 +36,20 @@ const CampaignCard = ({
     setSelectedApplication(application);
   };
 
-  const handleUpdateStatus = (applicationId: string) => (newStatus: 'accepted' | 'rejected') => {
+  const handleUpdateStatus = (applicationId: string) => async (newStatus: 'accepted' | 'rejected') => {
     if (onUpdateApplicationStatus) {
-      onUpdateApplicationStatus(applicationId, newStatus);
+      await onUpdateApplicationStatus(applicationId, newStatus);
+      
+      // Update local state to remove rejected application
+      if (newStatus === 'rejected') {
+        setLocalApplications(prevApps => 
+          prevApps.filter(app => app.id !== applicationId)
+        );
+      }
+      
+      // Close the modal
+      setSelectedCreator(null);
+      setSelectedApplication(null);
     }
   };
 
@@ -80,7 +92,7 @@ const CampaignCard = ({
           </div>
 
           <ApplicationsList
-            applications={applications}
+            applications={localApplications}
             onViewProfile={handleViewProfile}
             onMessageCreator={handleMessageCreator}
           />
