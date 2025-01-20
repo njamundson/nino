@@ -68,20 +68,20 @@ export const useCreatorOnboarding = () => {
           location: creatorData.location,
           specialties: creatorData.specialties,
           profile_image_url: creatorData.profileImage,
-          creator_type: creatorData.creatorType
+          creator_type: creatorData.creatorType.toLowerCase() // Ensure lowercase for consistency
         });
 
         // Update the creator profile with ALL fields
         const { error: creatorError } = await supabase
           .from('creators')
           .update({
-            bio: creatorData.bio, // Remove the null fallback to ensure bio is saved
+            bio: creatorData.bio,
             instagram: creatorData.instagram,
             website: creatorData.website,
             location: creatorData.location,
             specialties: creatorData.specialties,
             profile_image_url: creatorData.profileImage,
-            creator_type: creatorData.creatorType
+            creator_type: creatorData.creatorType.toLowerCase() // Ensure lowercase for consistency
           })
           .eq('user_id', user.id);
 

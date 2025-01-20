@@ -15,12 +15,17 @@ interface CreatorTypeSelectProps {
 const CreatorTypeSelect = ({ creatorType, onUpdateField }: CreatorTypeSelectProps) => {
   const creatorTypes = ["Solo", "Couple", "Family", "Group"];
 
+  const handleTypeChange = (value: string) => {
+    console.log('Selected creator type:', value);
+    onUpdateField("creatorType", value);
+  };
+
   return (
     <div className="space-y-2">
       <Label className="text-base">Creator Type *</Label>
       <Select
         value={creatorType}
-        onValueChange={(value) => onUpdateField("creatorType", value)}
+        onValueChange={handleTypeChange}
         required
       >
         <SelectTrigger className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base">
