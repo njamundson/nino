@@ -16,18 +16,25 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Add debug logging for auth state changes
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session ? 'Session exists' : 'No session');
+  
+  if (event === 'SIGNED_OUT' || !session) {
+    console.log('No valid session, clearing local storage...');
+    localStorage.clear();
+    window.location.href = '/';
+  }
+  
+  if (event === 'TOKEN_REFRESHED') {
+    console.log('Token refreshed successfully');
+  }
 });
 
-// Add error handling for failed requests
-supabase.handleFailedRequest = (error: any) => {
-  console.error('Supabase request failed:', error);
-  if (error.message === 'Failed to fetch') {
-    console.log('Network error occurred, checking session...');
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        console.log('No valid session found, redirecting to login...');
-        window.location.href = '/';
-      }
-    });
+// Handle network errors
+window.addEventListener('online', async () => {
+  console.log('Network connection restored, checking session...');
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (!session || error) {
+    console.log('No valid session after network restore');
+    localStorage.clear();
+    window.location.href = '/';
   }
-};
+});
