@@ -34,7 +34,7 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
       <CreatorModal
         creator={{
           ...creator,
-          imageUrl: creator.profileImage || '/placeholder.svg',
+          profile_image_url: creator.profileImage || '/placeholder.svg',
           profile: {
             first_name: creator.firstName,
             last_name: creator.lastName

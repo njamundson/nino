@@ -19,7 +19,7 @@ interface Creator {
     first_name: string | null;
     last_name: string | null;
   } | null;
-  imageUrl: string;
+  profile_image_url: string | null;
 }
 
 const Bookings = () => {
@@ -74,7 +74,7 @@ const Bookings = () => {
       instagram: creator.instagram,
       website: creator.website,
       profile: creator.profile,
-      imageUrl: `https://source.unsplash.com/random/400x600?portrait&${creator.id}`,
+      profile_image_url: creator.profile_image_url,
     };
     setSelectedCreator(creatorData);
     setIsCreatorModalOpen(true);
