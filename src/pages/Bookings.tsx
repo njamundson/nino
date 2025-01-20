@@ -6,7 +6,6 @@ import { useState } from "react";
 import CreatorModal from "@/components/creators/CreatorModal";
 import { useNavigate } from "react-router-dom";
 import BookingsList from "@/components/bookings/BookingsList";
-import BookingsCalendar from "@/components/bookings/BookingsCalendar";
 
 interface Creator {
   id: string;
@@ -24,7 +23,6 @@ interface Creator {
 
 const Bookings = () => {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
@@ -91,12 +89,7 @@ const Bookings = () => {
           title="Bookings"
           description="Manage your confirmed collaborations and schedule upcoming content creation"
         />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Skeleton className="h-[600px] w-full" />
-          </div>
-          <Skeleton className="h-[400px] w-full" />
-        </div>
+        <Skeleton className="h-[600px] w-full" />
       </div>
     );
   }
@@ -108,21 +101,12 @@ const Bookings = () => {
         description="Manage your confirmed collaborations and schedule upcoming content creation"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        <div className="lg:col-span-2">
-          <BookingsList
-            bookings={bookings || []}
-            onChatClick={handleChatClick}
-            onViewCreator={handleViewCreator}
-          />
-        </div>
-
-        <div>
-          <BookingsCalendar
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-          />
-        </div>
+      <div className="mt-8">
+        <BookingsList
+          bookings={bookings || []}
+          onChatClick={handleChatClick}
+          onViewCreator={handleViewCreator}
+        />
       </div>
 
       {selectedCreator && (
