@@ -65,44 +65,27 @@ const MyCampaigns = () => {
         .eq('brand_id', brand.id)
         .order('created_at', { ascending: false });
 
-      console.log('Fetched campaigns data:', data);
+      console.log('Fetched campaigns data:', data); // Debug log
       return data || [];
     },
   });
 
   const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected') => {
     try {
-      if (newStatus === 'rejected') {
-        // Delete the application instead of updating status
-        const { error } = await supabase
-          .from('applications')
-          .delete()
-          .eq('id', applicationId);
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: newStatus })
+        .eq('id', applicationId);
 
-        if (error) throw error;
+      if (error) throw error;
 
-        toast({
-          title: "Success",
-          description: "Application rejected and removed",
-        });
-      } else {
-        // For accepted applications, update the status as before
-        const { error } = await supabase
-          .from('applications')
-          .update({ status: newStatus })
-          .eq('id', applicationId);
-
-        if (error) throw error;
-
-        toast({
-          title: "Success",
-          description: `Application ${newStatus} successfully`,
-        });
-      }
+      toast({
+        title: "Success",
+        description: `Application ${newStatus} successfully`,
+      });
       
       queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
     } catch (error) {
-      console.error('Error handling application:', error);
       toast({
         title: "Error",
         description: "Failed to update application status",

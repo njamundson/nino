@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 
 const ViewCreators = () => {
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
-  const [selectedCreatorTypes, setSelectedCreatorTypes] = useState<string[]>([]);
   const { toast } = useToast();
 
   const handleSpecialtyChange = (specialty: string) => {
@@ -14,14 +13,6 @@ const ViewCreators = () => {
       prev.includes(specialty)
         ? prev.filter((s) => s !== specialty)
         : [...prev, specialty]
-    );
-  };
-
-  const handleCreatorTypeChange = (type: string) => {
-    setSelectedCreatorTypes((prev) =>
-      prev.includes(type)
-        ? prev.filter((t) => t !== type)
-        : [...prev, type]
     );
   };
 
@@ -41,13 +32,10 @@ const ViewCreators = () => {
       />
       <CreatorFilters 
         selectedSpecialties={selectedSpecialties}
-        selectedCreatorTypes={selectedCreatorTypes}
         onSpecialtyChange={handleSpecialtyChange}
-        onCreatorTypeChange={handleCreatorTypeChange}
       />
       <CreatorGrid 
-        selectedSpecialties={selectedSpecialties}
-        selectedCreatorTypes={selectedCreatorTypes}
+        selectedSpecialties={selectedSpecialties} 
         onInvite={handleInvite}
       />
     </div>

@@ -310,7 +310,6 @@ export type Database = {
         Row: {
           bio: string | null
           created_at: string
-          creator_type: string | null
           id: string
           instagram: string | null
           is_verified: boolean | null
@@ -325,7 +324,6 @@ export type Database = {
         Insert: {
           bio?: string | null
           created_at?: string
-          creator_type?: string | null
           id?: string
           instagram?: string | null
           is_verified?: boolean | null
@@ -340,7 +338,6 @@ export type Database = {
         Update: {
           bio?: string | null
           created_at?: string
-          creator_type?: string | null
           id?: string
           instagram?: string | null
           is_verified?: boolean | null

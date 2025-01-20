@@ -12,11 +12,8 @@ interface ApplicationsListProps {
 const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: ApplicationsListProps) => {
   const [showApplications, setShowApplications] = useState(false);
 
-  // Filter out rejected and deleted applications
-  const activeApplications = applications.filter(app => 
-    app.status !== 'rejected' && 
-    app.status !== 'deleted'
-  );
+  // Filter out rejected applications
+  const activeApplications = applications.filter(app => app.status !== 'rejected');
 
   // If there are no active applications, don't render anything
   if (!activeApplications.length) return null;

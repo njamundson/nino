@@ -8,46 +8,51 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
-    flowType: 'pkce',
-    storage: window.localStorage,
-    // Adding debug logging for session events
-    debug: true,
+    storage: {
+      getItem: (key) => {
+        try {
+          const item = localStorage.getItem(key);
+          return item;
+        } catch (error) {
+          console.error('Error accessing localStorage:', error);
+          return null;
+        }
+      },
+      setItem: (key, value) => {
+        try {
+          localStorage.setItem(key, value);
+        } catch (error) {
+          console.error('Error setting localStorage:', error);
+        }
+      },
+      removeItem: (key) => {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {
+          console.error('Error removing from localStorage:', error);
+        }
+      }
+    }
   }
 });
 
-// Add debug logging for auth state changes
+// Add debug logging for initialization and auth state changes
+console.log('Supabase client initialized with URL:', supabaseUrl);
+
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth state changed:', event, session ? 'Session exists' : 'No session');
+  console.log('Auth state changed:', event, session);
   
-  if (event === 'SIGNED_OUT' || !session) {
-    console.log('No valid session, clearing local storage...');
-    localStorage.clear();
-    window.location.href = '/';
+  if (!session) {
+    console.log('No active session');
+    return;
   }
-  
-  if (event === 'TOKEN_REFRESHED') {
+
+  // Log successful authentication events
+  if (event === 'SIGNED_IN') {
+    console.log('User signed in successfully');
+  } else if (event === 'SIGNED_OUT') {
+    console.log('User signed out');
+  } else if (event === 'TOKEN_REFRESHED') {
     console.log('Token refreshed successfully');
   }
-});
-
-// Handle network errors
-window.addEventListener('online', async () => {
-  console.log('Network connection restored, checking session...');
-  try {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (!session || error) {
-      console.log('No valid session after network restore');
-      localStorage.clear();
-      window.location.href = '/';
-    }
-  } catch (error) {
-    console.error('Error checking session after network restore:', error);
-    localStorage.clear();
-    window.location.href = '/';
-  }
-});
-
-// Handle offline state
-window.addEventListener('offline', () => {
-  console.log('Network connection lost');
 });
