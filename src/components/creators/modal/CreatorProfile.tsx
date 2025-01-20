@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Instagram, Globe } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface Creator {
   id: string;
@@ -13,7 +14,7 @@ interface Creator {
     first_name: string | null;
     last_name: string | null;
   } | null;
-  imageUrl: string;
+  profile_image_url: string | null;
 }
 
 interface CreatorProfileProps {
@@ -29,11 +30,22 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
         <div className="relative w-full">
           <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
-            <img
-              src={creator.imageUrl}
-              alt={fullName}
-              className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-            />
+            {creator.profile_image_url ? (
+              <img
+                src={creator.profile_image_url}
+                alt={fullName}
+                className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                <Avatar className="w-32 h-32">
+                  <AvatarImage src={creator.profile_image_url || ''} alt={fullName} />
+                  <AvatarFallback className="text-4xl">
+                    {fullName.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            )}
           </div>
         </div>
         
