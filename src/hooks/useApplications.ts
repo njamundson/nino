@@ -40,7 +40,11 @@ export const useApplications = () => {
             instagram,
             website,
             location,
-            user_id
+            user_id,
+            profile:profiles (
+              first_name,
+              last_name
+            )
           )
         `)
         .or(
@@ -49,30 +53,16 @@ export const useApplications = () => {
           'creator_id.is.null'
         );
 
-      if (error) throw error;
-
-      if (data) {
-        const creatorUserIds = data
-          .map(app => app.creator?.user_id)
-          .filter((id): id is string => id != null);
-
-        if (creatorUserIds.length > 0) {
-          const { data: profiles } = await supabase
-            .from('profiles')
-            .select('id, first_name, last_name')
-            .in('id', creatorUserIds);
-
-          return data.map(application => ({
-            ...application,
-            creator: application.creator ? {
-              ...application.creator,
-              profile: profiles?.find(p => p.id === application.creator.user_id) || null
-            } : null
-          }));
-        }
+      if (error) {
+        console.error("Error fetching applications:", error);
+        throw error;
       }
 
-      return data || [];
+      // Add a type field to distinguish between proposals and applications
+      return data.map(app => ({
+        ...app,
+        type: app.creator_id === creator?.id ? 'application' : 'invitation'
+      })) || [];
     },
     meta: {
       errorMessage: "Failed to load applications"
