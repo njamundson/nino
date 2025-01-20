@@ -319,7 +319,7 @@ export type Database = {
           profile_image_url: string | null
           specialties: string[] | null
           updated_at: string
-          user_id: string
+          user_id: string | null
           website: string | null
         }
         Insert: {
@@ -334,7 +334,7 @@ export type Database = {
           profile_image_url?: string | null
           specialties?: string[] | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           website?: string | null
         }
         Update: {
@@ -349,14 +349,14 @@ export type Database = {
           profile_image_url?: string | null
           specialties?: string[] | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           website?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "creators_profile_id_fkey"
             columns: ["profile_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
