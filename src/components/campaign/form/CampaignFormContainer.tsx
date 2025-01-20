@@ -23,6 +23,10 @@ const steps = [
     title: "Compensation",
     description: "Define payment and compensation details",
   },
+  {
+    title: "Campaign Image",
+    description: "Upload your campaign image",
+  },
 ];
 
 const CampaignFormContainer = () => {
@@ -111,20 +115,19 @@ const CampaignFormContainer = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return (
-          <>
-            <ImageUpload
-              uploadedImage={uploadedImage}
-              isUploading={isUploading}
-              onImageUpload={handleImageUpload}
-            />
-            <BasicInfo formData={formData} setFormData={setFormData} />
-          </>
-        );
+        return <BasicInfo formData={formData} setFormData={setFormData} />;
       case 1:
         return <Requirements formData={formData} setFormData={setFormData} />;
       case 2:
         return <Compensation formData={formData} setFormData={setFormData} />;
+      case 3:
+        return (
+          <ImageUpload
+            uploadedImage={uploadedImage}
+            isUploading={isUploading}
+            onImageUpload={handleImageUpload}
+          />
+        );
       default:
         return null;
     }
