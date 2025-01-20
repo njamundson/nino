@@ -52,7 +52,6 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        console.log("Checking brand profile for user:", userId);
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id, company_name')
@@ -103,21 +102,21 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     checkBrandAccess();
 
     // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      
       console.log("Auth state changed:", event, "Session:", session?.user?.id ? "exists" : "none");
       
       if (event === 'SIGNED_OUT' || !session?.user?.id) {
-        if (mounted) {
-          setIsAuthenticated(false);
-          setIsLoading(false);
-        }
+        setIsAuthenticated(false);
+        setIsLoading(false);
         navigate('/');
         return;
       }
 
       // Only recheck access on specific events
       if (['SIGNED_IN', 'TOKEN_REFRESHED', 'USER_UPDATED'].includes(event)) {
-        await checkBrandAccess();
+        checkBrandAccess();
       }
     });
 
