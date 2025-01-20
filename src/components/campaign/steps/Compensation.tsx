@@ -20,7 +20,7 @@ const Compensation = ({ formData, setFormData }: CompensationProps) => {
         <Label htmlFor="paymentDetails" className="text-sm font-medium text-gray-700">Payment Details</Label>
         <Input
           id="paymentDetails"
-          placeholder="$0"
+          placeholder="$0 – Set your own terms: payment, trade, or compensation"
           value={formData.paymentDetails.startsWith('$') ? formData.paymentDetails : `$${formData.paymentDetails}`}
           onChange={handlePaymentChange}
           className="h-12 text-[15px] bg-gray-50/50 border-0 rounded-xl shadow-sm ring-1 ring-gray-200/70 focus:ring-2 focus:ring-gray-300 transition-shadow duration-200 placeholder:text-gray-400"
