@@ -26,9 +26,11 @@ const PersonalInfoFields = ({
   useEffect(() => {
     const fetchApiKey = async () => {
       try {
-        const { data: { GOOGLE_PLACES_API_KEY } } = await supabase
-          .functions.invoke('get-google-places-key');
-        setApiKey(GOOGLE_PLACES_API_KEY);
+        const { data, error } = await supabase.functions.invoke('get-google-places-key');
+        if (error) throw error;
+        if (data?.GOOGLE_PLACES_API_KEY) {
+          setApiKey(data.GOOGLE_PLACES_API_KEY);
+        }
       } catch (error) {
         console.error('Error fetching Google Places API key:', error);
       } finally {
@@ -60,43 +62,49 @@ const PersonalInfoFields = ({
 
       <div className="space-y-2">
         <Label htmlFor="location" className="text-base">Location *</Label>
-        {!isLoading && apiKey && (
-          <GooglePlacesAutocomplete
-            apiKey={apiKey}
-            selectProps={{
-              value: { label: location, value: location },
-              onChange: (newValue: any) => {
-                onUpdateField("location", newValue?.label || '');
-              },
-              placeholder: "Enter your location",
-              className: "bg-nino-bg",
-              styles: {
-                control: (provided) => ({
-                  ...provided,
-                  backgroundColor: 'var(--nino-bg)',
-                  border: 'none',
-                  height: '48px',
-                  borderRadius: '0.375rem',
-                }),
-                input: (provided) => ({
-                  ...provided,
-                  color: 'var(--nino-text)',
-                }),
-                option: (provided, state) => ({
-                  ...provided,
-                  backgroundColor: state.isFocused ? 'var(--nino-primary)' : 'white',
-                  color: state.isFocused ? 'white' : 'var(--nino-text)',
-                }),
-              },
-            }}
-          />
-        )}
-        {isLoading && (
+        {!isLoading && apiKey ? (
+          <div className="relative">
+            <GooglePlacesAutocomplete
+              apiKey={apiKey}
+              selectProps={{
+                value: location ? { label: location, value: location } : null,
+                onChange: (newValue: any) => {
+                  onUpdateField("location", newValue?.label || '');
+                },
+                placeholder: "Enter your location",
+                className: "bg-nino-bg",
+                styles: {
+                  control: (provided) => ({
+                    ...provided,
+                    backgroundColor: 'var(--nino-bg)',
+                    border: 'none',
+                    minHeight: '48px',
+                    borderRadius: '0.375rem',
+                  }),
+                  input: (provided) => ({
+                    ...provided,
+                    color: 'var(--nino-text)',
+                  }),
+                  option: (provided, state) => ({
+                    ...provided,
+                    backgroundColor: state.isFocused ? 'var(--nino-primary)' : 'white',
+                    color: state.isFocused ? 'white' : 'var(--nino-text)',
+                  }),
+                  container: (provided) => ({
+                    ...provided,
+                    width: '100%',
+                  }),
+                },
+              }}
+            />
+          </div>
+        ) : (
           <Input
             value={location}
-            disabled
-            placeholder="Loading location search..."
-            className="bg-nino-bg border-transparent h-12 text-base"
+            onChange={(e) => onUpdateField("location", e.target.value)}
+            placeholder={isLoading ? "Loading location search..." : "Enter your location"}
+            className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
+            disabled={isLoading}
           />
         )}
       </div>
