@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-const ProtectedCreatorRoute = () => {
+interface ProtectedCreatorRouteProps {
+  children?: ReactNode;
+}
+
+const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const [isCreator, setIsCreator] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -64,7 +68,7 @@ const ProtectedCreatorRoute = () => {
     );
   }
 
-  return isCreator ? <Outlet /> : <Navigate to="/welcome" replace />;
+  return isCreator ? (children || <Outlet />) : <Navigate to="/welcome" replace />;
 };
 
 export default ProtectedCreatorRoute;

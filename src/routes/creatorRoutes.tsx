@@ -9,10 +9,6 @@ import Messages from "@/pages/Messages";
 import Settings from "@/pages/Settings";
 import Welcome from "@/pages/Welcome";
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
 export const creatorRoutes = [
   {
     path: "/creator/welcome",
@@ -93,3 +89,5 @@ export const CreatorRoutes = () => {
     </>
   );
 };
+
+export default CreatorRoutes;
