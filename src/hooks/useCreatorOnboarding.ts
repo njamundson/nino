@@ -68,31 +68,24 @@ export const useCreatorOnboarding = () => {
           return;
         }
 
-        console.log('Creating creator profile with data:', {
+        // Log the data being sent to ensure specialties is properly formatted
+        const creatorInsertData = {
           user_id: user.id,
           profile_id: profile.id,
           bio: creatorData.bio,
-          specialties: creatorData.specialties,
           instagram: creatorData.instagram,
           website: creatorData.website,
           location: creatorData.location,
+          specialties: creatorData.specialties || [], // Ensure we always have an array
           profile_image_url: creatorData.profileImage,
           creator_type: creatorData.creatorType
-        });
+        };
+
+        console.log('Creating creator profile with data:', creatorInsertData);
 
         const { data: creatorResult, error: creatorError } = await supabase
           .from('creators')
-          .insert({
-            user_id: user.id,
-            profile_id: profile.id,
-            bio: creatorData.bio,
-            instagram: creatorData.instagram,
-            website: creatorData.website,
-            location: creatorData.location,
-            specialties: creatorData.specialties,
-            profile_image_url: creatorData.profileImage,
-            creator_type: creatorData.creatorType
-          })
+          .insert(creatorInsertData)
           .select()
           .single();
 
