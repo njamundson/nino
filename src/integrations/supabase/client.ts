@@ -39,9 +39,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
     headers: {
       'X-Client-Info': 'supabase-js-web'
-    },
-    retryCount: 3,
-    retryDelay: 5000
+    }
   }
 });
 
