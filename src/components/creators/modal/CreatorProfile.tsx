@@ -48,7 +48,7 @@ const CreatorProfile = ({ creator, onInviteClick }: CreatorProfileProps) => {
           <div className="mt-6">
             <Button
               size="lg"
-              className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white rounded-xl shadow-md transition-all duration-300 hover:shadow-lg"
+              className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white rounded-[24px] shadow-md transition-all duration-300 hover:shadow-lg"
               onClick={onInviteClick}
             >
               Invite to Campaign
