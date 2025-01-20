@@ -26,6 +26,9 @@ export const useCreatorOnboarding = () => {
 
   const updateField = (field: keyof CreatorData, value: any) => {
     console.log('Updating creator field:', field, 'with value:', value);
+    if (field === 'specialties') {
+      console.log('Updating specialties array:', value);
+    }
     setCreatorData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -68,7 +71,13 @@ export const useCreatorOnboarding = () => {
           return;
         }
 
-        // Log the data being sent to ensure specialties is properly formatted
+        // Ensure specialties is an array before saving
+        const specialties = Array.isArray(creatorData.specialties) 
+          ? creatorData.specialties 
+          : [];
+
+        console.log('Saving creator with specialties:', specialties);
+
         const creatorInsertData = {
           user_id: user.id,
           profile_id: profile.id,
@@ -76,7 +85,7 @@ export const useCreatorOnboarding = () => {
           instagram: creatorData.instagram,
           website: creatorData.website,
           location: creatorData.location,
-          specialties: creatorData.specialties || [], // Ensure we always have an array
+          specialties: specialties,
           profile_image_url: creatorData.profileImage,
           creator_type: creatorData.creatorType
         };
