@@ -23,19 +23,18 @@ const PersonalInfoFields = ({
 }: PersonalInfoFieldsProps) => {
   const [apiKey, setApiKey] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
-  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchApiKey = async () => {
       try {
         console.log('Fetching Google Places API key...');
-        const { data, error } = await supabase.functions.invoke('get-google-places-key', {
-          method: 'GET'
-        });
+        const { data, error } = await supabase.functions.invoke('get-google-places-key');
 
         if (error) {
           console.error('Error fetching Google Places API key:', error);
+          setError('Failed to load location search');
           toast({
             title: "Error loading location search",
             description: "Please try again or enter location manually",
@@ -47,26 +46,9 @@ const PersonalInfoFields = ({
         if (data?.GOOGLE_PLACES_API_KEY) {
           console.log('API key retrieved successfully');
           setApiKey(data.GOOGLE_PLACES_API_KEY);
-          
-          // Load Google Places script
-          const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${data.GOOGLE_PLACES_API_KEY}&libraries=places`;
-          script.async = true;
-          script.onload = () => {
-            console.log('Google Places script loaded successfully');
-            setScriptLoaded(true);
-          };
-          script.onerror = () => {
-            console.error('Error loading Google Places script');
-            toast({
-              title: "Error",
-              description: "Failed to load location search. Please enter location manually.",
-              variant: "destructive",
-            });
-          };
-          document.head.appendChild(script);
         } else {
           console.error('No API key in response:', data);
+          setError('Location search is temporarily unavailable');
           toast({
             title: "Configuration error",
             description: "Location search is temporarily unavailable",
@@ -75,20 +57,13 @@ const PersonalInfoFields = ({
         }
       } catch (error) {
         console.error('Error in fetchApiKey:', error);
+        setError('Failed to initialize location search');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchApiKey();
-
-    // Cleanup function to remove the script
-    return () => {
-      const script = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
-      if (script) {
-        document.head.removeChild(script);
-      }
-    };
   }, [toast]);
 
   return (
@@ -112,7 +87,7 @@ const PersonalInfoFields = ({
 
       <div className="space-y-2">
         <Label htmlFor="location" className="text-base">Location *</Label>
-        {!isLoading && apiKey && scriptLoaded ? (
+        {!isLoading && !error && apiKey ? (
           <div className="relative">
             <GooglePlacesAutocomplete
               apiKey={apiKey}
@@ -122,6 +97,7 @@ const PersonalInfoFields = ({
                   onUpdateField("location", newValue?.label || '');
                 },
                 placeholder: "Enter your location",
+                isLoading: isLoading,
                 styles: {
                   control: (provided) => ({
                     ...provided,
@@ -134,12 +110,6 @@ const PersonalInfoFields = ({
                       border: '1px solid transparent',
                       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                     },
-                    '&:focus-within': {
-                      border: '1px solid transparent',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      outline: 'none',
-                      ring: 'none',
-                    }
                   }),
                   input: (provided) => ({
                     ...provided,
@@ -152,10 +122,6 @@ const PersonalInfoFields = ({
                     color: state.isFocused ? 'white' : '#282828',
                     cursor: 'pointer',
                     padding: '8px 12px',
-                    '&:hover': {
-                      backgroundColor: '#A55549',
-                      color: 'white',
-                    },
                   }),
                   menu: (provided) => ({
                     ...provided,
@@ -165,13 +131,6 @@ const PersonalInfoFields = ({
                     marginTop: '4px',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }),
-                  placeholder: (provided) => ({
-                    ...provided,
-                    color: '#737373',
-                  }),
-                },
-                classNames: {
-                  control: () => "bg-nino-bg border-transparent focus:border-transparent focus:ring-0",
                 },
               }}
             />

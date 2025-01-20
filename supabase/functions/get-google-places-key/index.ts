@@ -1,65 +1,48 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
 }
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: corsHeaders
-    });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const GOOGLE_PLACES_API_KEY = Deno.env.get('GOOGLE_PLACES_API_KEY');
-    console.log('Attempting to retrieve Google Places API key');
+    // Get the API key from environment variables
+    const apiKey = Deno.env.get('GOOGLE_PLACES_API_KEY')
     
-    if (!GOOGLE_PLACES_API_KEY) {
-      console.error('Google Places API key not found in environment variables');
+    if (!apiKey) {
+      console.error('Google Places API key not found in environment variables')
       return new Response(
-        JSON.stringify({ 
-          error: 'API key not configured',
-          status: 500 
-        }),
+        JSON.stringify({ error: 'API key not configured' }),
         { 
           status: 500,
-          headers: { 
-            'Content-Type': 'application/json',
-            ...corsHeaders
-          }
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
-      );
+      )
     }
 
-    console.log('API key retrieved successfully');
+    console.log('Successfully retrieved Google Places API key')
     
     return new Response(
-      JSON.stringify({ GOOGLE_PLACES_API_KEY }),
+      JSON.stringify({ GOOGLE_PLACES_API_KEY: apiKey }),
       { 
-        headers: { 
-          'Content-Type': 'application/json',
-          ...corsHeaders
-        } 
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
-    );
+    )
   } catch (error) {
-    console.error('Error in get-google-places-key function:', error);
+    console.error('Error in get-google-places-key function:', error)
     return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error',
-        details: error.message 
-      }),
+      JSON.stringify({ error: error.message }),
       { 
         status: 500,
-        headers: { 
-          'Content-Type': 'application/json',
-          ...corsHeaders
-        }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
-    );
+    )
   }
 })
