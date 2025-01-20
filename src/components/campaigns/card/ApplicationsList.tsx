@@ -12,7 +12,10 @@ interface ApplicationsListProps {
 const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: ApplicationsListProps) => {
   const [showApplications, setShowApplications] = useState(false);
 
-  if (!applications.length) return null;
+  // Filter out rejected applications
+  const activeApplications = applications.filter(app => app.status !== 'rejected');
+
+  if (!activeApplications.length) return null;
 
   return (
     <div className="mt-6 pt-6 border-t border-gray-100">
@@ -22,7 +25,7 @@ const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: App
         onClick={() => setShowApplications(!showApplications)}
       >
         <span className="font-medium">
-          Applications ({applications.length})
+          Applications ({activeApplications.length})
         </span>
         {showApplications ? (
           <ChevronUp className="h-4 w-4" />
@@ -33,7 +36,7 @@ const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: App
 
       {showApplications && (
         <div className="mt-4 space-y-4">
-          {applications.map((application) => (
+          {activeApplications.map((application) => (
             <ApplicationItem
               key={application.id}
               application={application}
