@@ -8,10 +8,15 @@ interface CreatorCardImageProps {
   onInvite: (creatorId: string) => void;
 }
 
-const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
+const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   const fullName = creator.firstName && creator.lastName 
     ? `${creator.firstName} ${creator.lastName}`.trim()
     : 'Anonymous Creator';
+
+  const handleInviteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click event
+    onInvite(creator.id);
+  };
 
   return (
     <div className="relative aspect-[3/4] overflow-hidden">
@@ -20,16 +25,16 @@ const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
         alt={fullName}
         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+        <h3 className="text-xl font-semibold mb-1">
+          {fullName}
+        </h3>
         {creator.location && (
-          <p className="text-sm font-medium opacity-75 mb-1">
+          <p className="text-sm font-medium text-white/80 mb-3">
             {creator.location}
           </p>
         )}
-        <h3 className="text-xl font-semibold mb-2">
-          {fullName}
-        </h3>
         {creator.specialties && creator.specialties.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {creator.specialties.map((specialty, index) => (
@@ -47,9 +52,10 @@ const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
       <Button
         size="icon"
         variant="secondary"
-        className="absolute bottom-6 right-6 rounded-full pointer-events-none"
+        className="absolute top-4 right-4 rounded-full bg-white hover:bg-white/90"
+        onClick={handleInviteClick}
       >
-        <Plus className="h-4 w-4" />
+        <Plus className="h-4 w-4 text-black" />
       </Button>
     </div>
   );
