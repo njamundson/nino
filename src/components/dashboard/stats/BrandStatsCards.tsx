@@ -3,9 +3,12 @@ import { Briefcase, FilePlus, MessageSquare } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 const BrandStatsCards = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: activeProjects } = useQuery({
     queryKey: ['active-projects'],
@@ -116,9 +119,14 @@ const BrandStatsCards = () => {
     };
   }, [queryClient]);
 
+  const cardClasses = "bg-white shadow-sm rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]";
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
+      <Card 
+        className={cardClasses}
+        onClick={() => navigate('/brand/campaigns')}
+      >
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
@@ -136,7 +144,10 @@ const BrandStatsCards = () => {
         </CardContent>
       </Card>
 
-      <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
+      <Card 
+        className={cardClasses}
+        onClick={() => navigate('/brand/campaigns')}
+      >
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
@@ -154,7 +165,10 @@ const BrandStatsCards = () => {
         </CardContent>
       </Card>
 
-      <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
+      <Card 
+        className={cardClasses}
+        onClick={() => navigate('/brand/messages')}
+      >
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
