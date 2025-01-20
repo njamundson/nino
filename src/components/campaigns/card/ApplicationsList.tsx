@@ -15,6 +15,7 @@ const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: App
   // Filter out rejected applications
   const activeApplications = applications.filter(app => app.status !== 'rejected');
 
+  // If there are no active applications, don't render anything
   if (!activeApplications.length) return null;
 
   return (
