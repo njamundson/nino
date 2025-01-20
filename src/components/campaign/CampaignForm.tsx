@@ -26,6 +26,11 @@ const steps = [
     description: "Set your budget and perks",
     component: Compensation,
   },
+  {
+    title: "Campaign Image",
+    description: "Add a visual to your campaign",
+    component: ImageUpload,
+  },
 ];
 
 const CampaignForm = () => {
@@ -96,14 +101,6 @@ const CampaignForm = () => {
   };
 
   const handleNext = () => {
-    if (currentStep === 0 && !uploadedImage) {
-      toast({
-        title: "Required Field",
-        description: "Please upload a campaign image before proceeding",
-        variant: "destructive",
-      });
-      return;
-    }
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -116,6 +113,15 @@ const CampaignForm = () => {
   };
 
   const handleSubmit = async () => {
+    if (!uploadedImage) {
+      toast({
+        title: "Required Field",
+        description: "Please upload a campaign image before submitting",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -168,23 +174,19 @@ const CampaignForm = () => {
     <div className="space-y-6">
       <FormProgress currentStep={currentStep} steps={steps} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {currentStep === 0 && (
-          <div className="md:col-span-1">
-            <ImageUpload
-              uploadedImage={uploadedImage}
-              isUploading={isUploading}
-              onImageUpload={handleImageUpload}
-            />
-          </div>
-        )}
-        
-        <div className={`md:col-span-${currentStep === 0 ? '1' : '2'} min-h-[300px]`}>
+      <div className="min-h-[300px]">
+        {currentStep === steps.length - 1 ? (
+          <ImageUpload
+            uploadedImage={uploadedImage}
+            isUploading={isUploading}
+            onImageUpload={handleImageUpload}
+          />
+        ) : (
           <CurrentStepComponent
             formData={formData}
             setFormData={setFormData}
           />
-        </div>
+        )}
       </div>
 
       <FormNavigation
