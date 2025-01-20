@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthError } from "@supabase/supabase-js";
 
-interface SignUpFormData {
+interface SignUpData {
   email: string;
   password: string;
   firstName: string;
@@ -15,7 +16,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSignUp = async ({ email, password, firstName, lastName }: SignUpFormData) => {
+  const handleSignUp = async ({ email, password, firstName, lastName }: SignUpData) => {
     setLoading(true);
     
     try {
@@ -105,8 +106,18 @@ export const useSignUp = (onToggleAuth: () => void) => {
       console.error("Authentication error:", error);
       let errorMessage = "Error creating account";
       
-      if (error.message?.includes("Failed to fetch")) {
-        errorMessage = "Network error. Please check your connection and try again.";
+      if (error instanceof AuthError) {
+        switch (error.message) {
+          case "Failed to fetch":
+            errorMessage = "Network error. Please check your connection and try again.";
+            break;
+          case "User already registered":
+            errorMessage = "An account with this email already exists.";
+            onToggleAuth();
+            break;
+          default:
+            errorMessage = error.message;
+        }
       }
       
       toast({
