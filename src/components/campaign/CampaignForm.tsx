@@ -49,7 +49,7 @@ const CampaignForm = () => {
     handleSubmit,
     handleNext,
     handleBack
-  } = useCampaignForm();
+  } = useCampaignForm(steps);
 
   return (
     <div className="space-y-6">

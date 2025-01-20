@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { Step } from "../types";
 
 export interface FormData {
   title: string;
@@ -15,7 +16,7 @@ export interface FormData {
   compensationDetails: string;
 }
 
-export const useCampaignForm = () => {
+export const useCampaignForm = (steps: Step[]) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
