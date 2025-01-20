@@ -15,14 +15,11 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
-  const [sessionChecked, setSessionChecked] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
     const checkSession = async () => {
-      if (!mounted || sessionChecked) return;
-
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
@@ -34,12 +31,14 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
         if (!session && location.pathname !== '/') {
           navigate('/', { replace: true });
         }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-      } finally {
+
         if (mounted) {
           setIsLoading(false);
-          setSessionChecked(true);
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        if (mounted) {
+          setIsLoading(false);
         }
       }
     };
@@ -47,14 +46,20 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
 
-      if (event === 'SIGNED_OUT' || !session) {
+      console.log('Auth state changed:', event);
+
+      if (event === 'SIGNED_OUT') {
         if (location.pathname !== '/') {
           navigate('/', { replace: true });
+          toast({
+            title: "Session ended",
+            description: "Please sign in again to continue.",
+          });
         }
         return;
       }
 
-      if (event === 'SIGNED_IN') {
+      if (event === 'SIGNED_IN' && mounted) {
         setIsLoading(false);
       }
     });
@@ -65,7 +70,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, location.pathname, sessionChecked]);
+  }, [navigate, location.pathname, toast]);
 
   if (isError) {
     toast({
