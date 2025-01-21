@@ -54,7 +54,9 @@ const CreatorOnboardingForm = () => {
           />
         );
       case 'payment':
-        return <PaymentStep />;
+        return (
+          <PaymentStep />
+        );
       default:
         return null;
     }
@@ -63,13 +65,12 @@ const CreatorOnboardingForm = () => {
   return (
     <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
       <div className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm">
-        {currentStep !== 'payment' && (
-          <CreatorOnboardingProgress currentStep={currentStep} />
-        )}
+        <CreatorOnboardingProgress currentStep={currentStep} />
         <div className="mt-6">
           {renderStep()}
         </div>
         
+        {/* Only show navigation buttons when not on payment step */}
         {currentStep !== 'payment' && (
           <div className="flex justify-between pt-6 border-t border-gray-100">
             <Button
