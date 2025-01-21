@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { CreatorData, validateInstagramHandle, validateWebsiteUrl } from "@/types/creator";
 
 export const useCreatorOnboarding = () => {
@@ -82,73 +81,12 @@ export const useCreatorOnboarding = () => {
       if (!validateSocialInfo()) return;
       setCurrentStep('payment');
     } else {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          toast({
-            title: "Error",
-            description: "No authenticated user found.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // First update the profile
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: user.id,
-            first_name: creatorData.firstName,
-            last_name: creatorData.lastName,
-            updated_at: new Date().toISOString(),
-          });
-
-        if (profileError) {
-          console.error("Error updating profile:", profileError);
-          throw profileError;
-        }
-
-        // Create the creator profile
-        const { error: creatorError } = await supabase
-          .from('creators')
-          .insert({
-            user_id: user.id,
-            profile_id: user.id,
-            bio: creatorData.bio,
-            instagram: creatorData.instagram?.replace('@', ''),
-            website: creatorData.website,
-            location: creatorData.location,
-            specialties: creatorData.specialties,
-            profile_image_url: creatorData.profileImage,
-            creator_type: creatorData.creatorType.toLowerCase(),
-          });
-
-        if (creatorError) {
-          console.error("Error creating creator profile:", creatorError);
-          toast({
-            title: "Error",
-            description: "Failed to create creator profile. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        console.log("Creator profile created successfully");
-
-        toast({
-          title: "Success!",
-          description: "Your creator profile has been created.",
-        });
-
-        navigate("/creator/dashboard");
-      } catch (error) {
-        console.error("Error in creator creation:", error);
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive",
-        });
-      }
+      // Mock successful completion
+      toast({
+        title: "Success!",
+        description: "Your creator profile has been created.",
+      });
+      navigate("/creator/dashboard");
     }
   };
 

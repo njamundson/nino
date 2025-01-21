@@ -1,19 +1,12 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { SignUpFormData } from "@/types/auth";
 
-interface SignUpFormData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-}
-
-export const useSignUp = (onToggleAuth: () => void) => {
+export const useSignUp = () => {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSignUp = async ({ email, password, firstName, lastName }: SignUpFormData) => {
     setLoading(true);
@@ -21,25 +14,6 @@ export const useSignUp = (onToggleAuth: () => void) => {
     try {
       console.log("Starting sign up process...");
       
-      // Create the auth user with onboarding flag set to false
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            onboarding_completed: false
-          }
-        }
-      });
-
-      if (signUpError) throw signUpError;
-
-      if (!signUpData.user) {
-        throw new Error('No user data returned');
-      }
-
       // Store signup data in session storage for onboarding
       const signupData = {
         email,
@@ -54,17 +28,16 @@ export const useSignUp = (onToggleAuth: () => void) => {
       console.log("Redirecting to onboarding...");
       toast({
         title: "Let's set up your account",
-        description: "Please complete the onboarding process to create your account.",
+        description: "Please complete the onboarding process.",
       });
       
-      // Navigate to onboarding selection page
       navigate("/onboarding");
       
     } catch (error: any) {
       console.error("Unexpected error during sign up process:", error);
       toast({
         title: "Error",
-        description: error.message || "An unexpected error occurred. Please try again.",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {

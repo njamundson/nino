@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { BrandData } from "@/types/brand";
 
 export const useBrandOnboarding = () => {
@@ -26,76 +25,16 @@ export const useBrandOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          toast({
-            title: "Error",
-            description: "No authenticated user found.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // Check for existing brand
-        const { data: existingBrand } = await supabase
-          .from('brands')
-          .select('id')
-          .eq('user_id', user.id)
-          .single();
-
-        if (existingBrand) {
-          // Update existing brand
-          const { error: updateError } = await supabase
-            .from('brands')
-            .update({
-              company_name: brandData.brandName,
-              description: brandData.brandBio,
-              website: brandData.website,
-              instagram: brandData.instagram,
-              location: brandData.homeLocation,
-              brand_type: brandData.brandType,
-              profile_image_url: profileImage || '',
-            })
-            .eq('id', existingBrand.id);
-
-          if (updateError) throw updateError;
-        } else {
-          // Create new brand
-          const { error: brandError } = await supabase
-            .from('brands')
-            .insert({
-              user_id: user.id,
-              company_name: brandData.brandName,
-              description: brandData.brandBio,
-              website: brandData.website,
-              instagram: brandData.instagram,
-              location: brandData.homeLocation,
-              brand_type: brandData.brandType,
-              profile_image_url: profileImage || '',
-            });
-
-          if (brandError) {
-            console.error('Brand creation error:', brandError);
-            toast({
-              title: "Error",
-              description: "Failed to create brand profile.",
-              variant: "destructive",
-            });
-            return;
-          }
-        }
-
-        console.log("Brand data saved successfully");
-        setCurrentStep('details');
-      } catch (error) {
-        console.error("Error in brand creation:", error);
+      // Basic validation
+      if (!brandData.brandName || !brandData.brandEmail) {
         toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
+          title: "Required Fields Missing",
+          description: "Please fill in all required fields.",
           variant: "destructive",
         });
+        return;
       }
+      setCurrentStep('details');
     } else if (currentStep === 'details') {
       setCurrentStep('social');
     } else if (currentStep === 'social') {
