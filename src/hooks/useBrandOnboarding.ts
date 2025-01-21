@@ -25,7 +25,6 @@ export const useBrandOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
-      // Basic validation
       if (!brandData.brandName || !brandData.brandEmail) {
         toast({
           title: "Required Fields Missing",
@@ -54,6 +53,23 @@ export const useBrandOnboarding = () => {
     }
   };
 
+  const handleComplete = () => {
+    // Store brand data in localStorage
+    localStorage.setItem('brandData', JSON.stringify({
+      ...brandData,
+      profileImage,
+      onboardingCompleted: true
+    }));
+
+    toast({
+      title: "Success!",
+      description: "Your brand profile has been created.",
+    });
+
+    // Navigate to brand dashboard
+    navigate("/brand/dashboard");
+  };
+
   return {
     currentStep,
     setCurrentStep,
@@ -63,5 +79,6 @@ export const useBrandOnboarding = () => {
     setProfileImage,
     handleNext,
     handleBack,
+    handleComplete,
   };
 };

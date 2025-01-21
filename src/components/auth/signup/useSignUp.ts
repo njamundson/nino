@@ -20,32 +20,27 @@ export const useSignUp = () => {
     setLoading(true);
     
     try {
-      console.log("Starting sign up process...");
-      
-      // Store signup data in session storage for onboarding
-      const signupData = {
+      // Store user data in localStorage
+      const userData = {
         email: data.email,
-        password: data.password,
         firstName: data.firstName,
-        lastName: data.lastName
+        lastName: data.lastName,
+        onboardingCompleted: false
       };
       
-      // Save signup data to session storage (will be used during onboarding)
-      sessionStorage.setItem('pendingSignup', JSON.stringify(signupData));
+      localStorage.setItem('userData', JSON.stringify(userData));
       
-      console.log("Redirecting to onboarding...");
       toast({
-        title: "Let's set up your account",
-        description: "Please complete the onboarding process.",
+        title: "Account created",
+        description: "Let's complete your profile",
       });
-      
+
+      // Navigate to onboarding
       navigate("/onboarding");
-      
-    } catch (error: any) {
-      console.error("Unexpected error during sign up process:", error);
+    } catch (error) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
