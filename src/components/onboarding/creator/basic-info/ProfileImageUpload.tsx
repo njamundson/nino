@@ -1,4 +1,4 @@
-import { Camera } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -34,27 +34,23 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
         return;
       }
 
-      // Generate a unique file name
       const fileExt = file.name.split('.').pop();
       const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
 
-      // Upload to Supabase Storage
       const { error: uploadError, data } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
-          upsert: true // This will replace if exists
+          upsert: true
         });
 
       if (uploadError) {
         throw uploadError;
       }
 
-      // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // Update both creators and profiles tables
       const { error: creatorError } = await supabase
         .from('creators')
         .update({ profile_image_url: publicUrl })
@@ -71,7 +67,6 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
         description: "Profile photo uploaded successfully",
       });
 
-      // Force refresh the avatar in the UI
       const timestamp = new Date().getTime();
       const refreshedUrl = `${publicUrl}?t=${timestamp}`;
       onUpdateImage(refreshedUrl);
@@ -90,22 +85,35 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <div className="relative group">
-        <Avatar className="w-32 h-32 ring-4 ring-white/50 transition-all duration-200 group-hover:ring-nino-primary/20">
-          <AvatarImage 
-            src={profileImage || ""} 
-            className="object-cover"
-          />
-          <AvatarFallback className="bg-nino-bg">
-            <Camera className="w-12 h-12 text-nino-gray" />
-          </AvatarFallback>
-        </Avatar>
-        <label
-          htmlFor="photo-upload"
-          className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors shadow-lg"
-        >
-          <Camera className="w-5 h-5 text-white" />
-        </label>
+      <label
+        htmlFor="photo-upload"
+        className="relative group cursor-pointer w-[200px] h-[200px] rounded-full overflow-hidden bg-gray-50 hover:bg-gray-100 transition-all duration-200 flex items-center justify-center border-2 border-dashed border-gray-200 hover:border-gray-300"
+      >
+        {profileImage ? (
+          <Avatar className="w-full h-full">
+            <AvatarImage 
+              src={profileImage} 
+              className="object-cover w-full h-full"
+            />
+            <AvatarFallback className="bg-nino-bg w-full h-full" />
+          </Avatar>
+        ) : (
+          <div className="flex flex-col items-center space-y-2">
+            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+              <Plus className="w-6 h-6 text-gray-500" />
+            </div>
+            <span className="text-sm text-gray-500 font-medium">Add photo</span>
+          </div>
+        )}
+        
+        {profileImage && (
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center transform translate-y-20 group-hover:translate-y-0 transition-transform duration-200">
+              <Plus className="w-6 h-6 text-gray-700" />
+            </div>
+          </div>
+        )}
+        
         <input
           type="file"
           id="photo-upload"
@@ -114,9 +122,9 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
           onChange={handleImageUpload}
           disabled={loading}
         />
-      </div>
+      </label>
       <p className="text-sm text-nino-gray">
-        {loading ? "Uploading..." : "Upload your profile photo"}
+        {loading ? "Uploading..." : "Click anywhere to upload your profile photo"}
       </p>
     </div>
   );
