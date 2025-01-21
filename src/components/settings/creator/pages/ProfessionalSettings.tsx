@@ -7,12 +7,7 @@ import CreatorTypeSelect from "@/components/onboarding/creator/professional-info
 import SkillsSelection from "@/components/onboarding/creator/professional-info/SkillsSelection";
 
 const ProfessionalSettings = () => {
-  const {
-    loading,
-    creatorData,
-    setCreatorData,
-    handleSave,
-  } = useCreatorSettings();
+  const { loading, creatorData, setCreatorData, handleSave } = useCreatorSettings();
 
   const handleUpdateField = (field: string, value: any) => {
     setCreatorData(prev => ({ ...prev, [field]: value }));

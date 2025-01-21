@@ -11,7 +11,7 @@ type SettingsPage = "basic" | "professional" | "account" | "menu";
 const Settings = () => {
   const [currentPage, setCurrentPage] = useState<SettingsPage>("menu");
 
-  const pages = {
+  const pages: Record<SettingsPage, React.ReactNode> = {
     basic: <BasicInfoSettings />,
     professional: <ProfessionalSettings />,
     account: <AccountSettings />,
