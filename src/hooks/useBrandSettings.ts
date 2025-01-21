@@ -1,20 +1,44 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { BrandType } from "@/types/brand";
+
+interface BrandData {
+  company_name: string;
+  brand_type: BrandType;
+  description: string;
+  website: string | null;
+  instagram: string | null;
+  location: string;
+  phone_number: string | null;
+  support_email: string | null;
+  sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
+}
+
+interface LoginHistory {
+  id: string;
+  login_timestamp: string;
+  ip_address: string;
+  device_info: string;
+}
 
 export const useBrandSettings = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [brandData, setBrandData] = useState({
-    brandName: "",
-    brandEmail: "",
-    brandBio: "",
-    homeLocation: "",
-    instagram: "",
-    website: "",
+  const [loginHistory, setLoginHistory] = useState<LoginHistory[]>([]);
+  const [brandData, setBrandData] = useState<BrandData>({
+    company_name: "",
+    brand_type: "hotel",
+    description: "",
+    website: null,
+    instagram: null,
     location: "",
-    brandType: "hotel",
+    phone_number: null,
+    support_email: null,
+    sms_notifications_enabled: false,
+    two_factor_enabled: false,
   });
 
   const fetchBrandData = async () => {
@@ -29,6 +53,7 @@ export const useBrandSettings = () => {
         return;
       }
 
+      // Fetch brand data
       const { data: brand, error } = await supabase
         .from('brands')
         .select('*')
@@ -39,17 +64,31 @@ export const useBrandSettings = () => {
       
       if (brand) {
         setBrandData({
-          brandName: brand.brand_name || "",
-          brandEmail: brand.brand_email || "",
-          brandBio: brand.brand_bio || "",
-          homeLocation: brand.home_location || "",
-          instagram: brand.instagram || "",
-          website: brand.website || "",
-          location: brand.location || "",
-          brandType: brand.brand_type || "hotel",
+          company_name: brand.company_name,
+          brand_type: brand.brand_type,
+          description: brand.description,
+          website: brand.website,
+          instagram: brand.instagram,
+          location: brand.location,
+          phone_number: brand.phone_number,
+          support_email: brand.support_email,
+          sms_notifications_enabled: brand.sms_notifications_enabled || false,
+          two_factor_enabled: brand.two_factor_enabled || false,
         });
         setProfileImage(brand.profile_image_url);
       }
+
+      // Fetch login history
+      const { data: history, error: historyError } = await supabase
+        .from('brand_login_history')
+        .select('*')
+        .eq('brand_id', brand.id)
+        .order('login_timestamp', { ascending: false })
+        .limit(5);
+
+      if (historyError) throw historyError;
+      
+      setLoginHistory(history || []);
     } catch (error) {
       console.error('Error fetching brand data:', error);
       toast({
@@ -76,14 +115,16 @@ export const useBrandSettings = () => {
       const { error } = await supabase
         .from('brands')
         .update({
-          brand_name: brandData.brandName,
-          brand_email: brandData.brandEmail,
-          brand_bio: brandData.brandBio,
-          home_location: brandData.homeLocation,
-          instagram: brandData.instagram,
+          company_name: brandData.company_name,
+          brand_type: brandData.brand_type,
+          description: brandData.description,
           website: brandData.website,
+          instagram: brandData.instagram,
           location: brandData.location,
-          brand_type: brandData.brandType,
+          phone_number: brandData.phone_number,
+          support_email: brandData.support_email,
+          sms_notifications_enabled: brandData.sms_notifications_enabled,
+          two_factor_enabled: brandData.two_factor_enabled,
           profile_image_url: profileImage,
           updated_at: new Date().toISOString(),
         })
@@ -115,6 +156,7 @@ export const useBrandSettings = () => {
     loading,
     profileImage,
     brandData,
+    loginHistory,
     setProfileImage,
     setBrandData,
     handleSave,

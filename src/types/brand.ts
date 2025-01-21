@@ -1,12 +1,14 @@
 export type BrandType = "hotel" | "resort" | "travel_agency";
 
 export interface BrandData {
-  brandName: string;
-  brandEmail: string;
-  brandBio: string;
-  homeLocation: string;
-  instagram: string;
-  website: string;
+  company_name: string;
+  brand_type: BrandType;
+  description: string;
+  website: string | null;
+  instagram: string | null;
   location: string;
-  brandType: BrandType;
+  phone_number: string | null;
+  support_email: string | null;
+  sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
 }
