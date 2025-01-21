@@ -21,14 +21,14 @@ const CreatorFilters = ({
       <div>
         <h3 className="text-sm font-medium mb-3">Creator Type</h3>
         <Select
-          value={selectedCreatorType || ""}
-          onValueChange={(value) => onCreatorTypeChange(value || null)}
+          value={selectedCreatorType || "all"}
+          onValueChange={(value) => onCreatorTypeChange(value === "all" ? null : value)}
         >
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="all">All Types</SelectItem>
             {CREATOR_TYPES.map((type) => (
               <SelectItem key={type} value={type}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
