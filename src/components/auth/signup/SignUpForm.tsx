@@ -8,8 +8,9 @@ import PasswordFields from "./form/PasswordFields";
 import SubmitButton from "./form/SubmitButton";
 
 const signUpSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  userType: z.enum(["brand", "creator"], {
+    required_error: "Please select a user type",
+  }),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string()
@@ -29,8 +30,7 @@ const SignUpForm = ({ onSubmit, loading = false }: SignUpFormProps) => {
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      userType: undefined,
       email: "",
       password: "",
       confirmPassword: "",
