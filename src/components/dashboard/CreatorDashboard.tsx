@@ -1,4 +1,4 @@
-import BrandStatsCards from "./stats/BrandStatsCards";
+import BrandStatsCards from "@/components/dashboard/brand/stats/BrandStatsCards";
 import QuickNotes from "./notes/QuickNotes";
 import DashboardHeader from "./header/DashboardHeader";
 import RecentMessages from "./messages/RecentMessages";
