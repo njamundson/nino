@@ -25,6 +25,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           data: {
             first_name: data.firstName,
             last_name: data.lastName,
+            user_type: data.userType, // Store user type in metadata
           },
         },
       });
@@ -32,16 +33,17 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
-        // Store user type preference for onboarding
-        localStorage.setItem('preferredUserType', data.userType);
-        
-        // Since email confirmation is disabled, we can directly show success and redirect
         toast({
           title: "Account created successfully",
           description: "Welcome to NINO!",
         });
         
-        navigate('/onboarding');
+        // Redirect based on user type
+        if (data.userType === 'brand') {
+          navigate('/onboarding/brand');
+        } else if (data.userType === 'creator') {
+          navigate('/onboarding/creator');
+        }
       }
     } catch (error: any) {
       console.error('Sign up error:', error);
