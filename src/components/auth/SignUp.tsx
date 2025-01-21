@@ -9,7 +9,7 @@ interface SignUpProps {
 
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const navigate = useNavigate();
-  const { loading, handleSignUp } = useSignUp(onToggleAuth);
+  const { loading, handleSignUp } = useSignUp();
 
   return (
     <div className="space-y-6">

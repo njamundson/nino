@@ -1,14 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { SignUpFormData } from "@/types/auth";
+
+// Define the type locally since we removed the external types
+export interface SignUpFormData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  confirmPassword: string;
+}
 
 export const useSignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSignUp = async ({ email, password, firstName, lastName }: SignUpFormData) => {
+  const handleSignUp = async (data: SignUpFormData) => {
     setLoading(true);
     
     try {
@@ -16,10 +24,10 @@ export const useSignUp = () => {
       
       // Store signup data in session storage for onboarding
       const signupData = {
-        email,
-        password,
-        firstName,
-        lastName
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName
       };
       
       // Save signup data to session storage (will be used during onboarding)
