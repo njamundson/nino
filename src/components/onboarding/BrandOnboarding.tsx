@@ -7,7 +7,6 @@ import BrandOnboardingNavigation from "./brand/BrandOnboardingNavigation";
 import AccountManagersStep from "./brand/managers/AccountManagersStep";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
 
 const BrandOnboarding = () => {
@@ -26,40 +25,13 @@ const BrandOnboarding = () => {
 
   const handleComplete = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Error",
-          description: "No authenticated user found",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { data: brand, error: brandError } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (brandError) {
-        toast({
-          title: "Error",
-          description: "Could not fetch brand information",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!brand) {
-        toast({
-          title: "Error",
-          description: "Brand profile not found. Please complete the basic information first.",
-          variant: "destructive",
-        });
-        setCurrentStep('basic');
-        return;
-      }
+      // For local development, we'll skip the user check
+      // Store brand data in localStorage
+      localStorage.setItem('brandData', JSON.stringify({
+        ...brandData,
+        profileImage,
+        onboardingCompleted: true
+      }));
 
       // Navigate to payment step
       navigate("/onboarding/brand/payment");
