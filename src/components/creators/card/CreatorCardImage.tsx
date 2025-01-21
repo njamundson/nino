@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreatorData } from "@/types/creator";
@@ -21,28 +20,23 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        {creator.location && (
-          <p className="mb-2 text-sm font-medium opacity-90">
-            {creator.location}
-          </p>
-        )}
-        <h3 className="text-xl font-semibold">
-          {fullName}
-        </h3>
-        {creator.specialties && creator.specialties.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {creator.specialties.map((specialty, index) => (
-              <Badge 
-                key={index} 
-                variant="secondary" 
-                className="bg-white/20 text-white hover:bg-white/30"
-              >
-                {specialty}
-              </Badge>
-            ))}
-          </div>
-        )}
+      <div className="absolute bottom-0 left-0 right-0 p-6">
+        <h3 className="text-lg font-semibold text-white mb-2">{fullName}</h3>
+        <div className="flex flex-wrap gap-2">
+          {creator.specialties.slice(0, 3).map((specialty, index) => (
+            <span
+              key={index}
+              className="text-xs text-white/90 bg-white/20 px-2 py-1 rounded-full"
+            >
+              {specialty}
+            </span>
+          ))}
+          {creator.specialties.length > 3 && (
+            <span className="text-xs text-white/90 bg-white/20 px-2 py-1 rounded-full">
+              +{creator.specialties.length - 3} more
+            </span>
+          )}
+        </div>
       </div>
       <Button
         size="icon"

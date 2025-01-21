@@ -12,7 +12,7 @@ export const CREATOR_SPECIALTIES = [
   'Writing',
   'Music',
   'Animation'
-];
+] as const;
 
 export interface CreatorData {
   id: string;
