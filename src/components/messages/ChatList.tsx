@@ -6,7 +6,7 @@ import { ChatSearch } from "./chat-list/ChatSearch";
 import { NewChatButton } from "./chat-list/NewChatButton";
 import { ChatItem } from "./chat-list/ChatItem";
 import { EmptyState } from "./chat-list/EmptyState";
-import { Message } from "@/types/creator";
+import { Message, CreatorProfile } from "@/types/creator";
 
 interface ChatListProps {
   onSelectChat: (userId: string) => void;
@@ -97,12 +97,20 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         if (error) throw error;
 
         const groupedChats: { [key: string]: Message[] } = {};
-        messages?.forEach((message: Message) => {
+        messages?.forEach((message: any) => {
           const partnerId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
           if (!groupedChats[partnerId]) {
             groupedChats[partnerId] = [];
           }
-          groupedChats[partnerId].push(message);
+          // Transform the profiles data to match CreatorProfile type
+          const transformedMessage: Message = {
+            ...message,
+            profiles: {
+              first_name: message.profiles?.first_name || '',
+              last_name: message.profiles?.last_name || ''
+            }
+          };
+          groupedChats[partnerId].push(transformedMessage);
         });
 
         setChats(groupedChats);

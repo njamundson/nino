@@ -19,6 +19,21 @@ export interface CreatorProfile {
   last_name: string;
 }
 
+export interface CreatorData {
+  id: string;
+  user_id: string;
+  bio: string;
+  location: string;
+  specialties: string[];
+  instagram: string;
+  website: string;
+  profile_image_url: string;
+  creator_type: CreatorType;
+  profile: CreatorProfile;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Message {
   id: string;
   content: string;
