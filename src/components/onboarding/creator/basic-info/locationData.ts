@@ -39,7 +39,21 @@ export const COUNTRIES = [
   "Haiti",
   "Jamaica",
   "Trinidad and Tobago",
-  "Puerto Rico"
+  "Puerto Rico",
+  "Antigua and Barbuda",
+  "Aruba",
+  "Cayman Islands",
+  "Curaçao",
+  "Dominica",
+  "Grenada",
+  "Guadeloupe",
+  "Martinique",
+  "Saint Kitts and Nevis",
+  "Saint Lucia",
+  "Saint Vincent and the Grenadines",
+  "Sint Maarten",
+  "Turks and Caicos Islands",
+  "U.S. Virgin Islands"
 ];
 
 // Define which countries use cities instead of states
