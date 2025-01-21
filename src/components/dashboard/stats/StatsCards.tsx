@@ -1,11 +1,10 @@
-import { useEffect } from 'react';
 import { Briefcase, FileText, MessageSquare } from 'lucide-react';
-import { Card, CardContent } from "@/components/ui/card";
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const StatsCards = () => {
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: activeProjects } = useQuery({
     queryKey: ['active-projects'],
@@ -71,43 +70,10 @@ const StatsCards = () => {
     }
   });
 
-  useEffect(() => {
-    const channel = supabase
-      .channel('table-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'applications'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['active-projects'] });
-          queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'messages'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['new-messages'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
-        <CardContent className="p-6">
+      <div className="bg-white shadow-sm rounded-3xl overflow-hidden">
+        <div className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
               <Briefcase className="w-6 h-6 text-nino-primary" />
@@ -121,11 +87,11 @@ const StatsCards = () => {
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
-        <CardContent className="p-6">
+      <div className="bg-white shadow-sm rounded-3xl overflow-hidden">
+        <div className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
               <FileText className="w-6 h-6 text-nino-primary" />
@@ -139,11 +105,11 @@ const StatsCards = () => {
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
-        <CardContent className="p-6">
+      <div className="bg-white shadow-sm rounded-3xl overflow-hidden cursor-pointer" onClick={() => navigate('/creator/messages')}>
+        <div className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
               <MessageSquare className="w-6 h-6 text-nino-primary" />
@@ -157,8 +123,8 @@ const StatsCards = () => {
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
