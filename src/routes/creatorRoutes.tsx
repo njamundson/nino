@@ -8,6 +8,7 @@ import Bookings from "@/pages/Bookings";
 import Messages from "@/pages/Messages";
 import Settings from "@/pages/Settings";
 import Welcome from "@/pages/Welcome";
+import CompletedProjects from "@/pages/CompletedProjects";
 
 export const creatorRoutes = [
   {
@@ -34,6 +35,16 @@ export const creatorRoutes = [
       <ProtectedCreatorRoute>
         <CreatorLayout>
           <Projects />
+        </CreatorLayout>
+      </ProtectedCreatorRoute>
+    ),
+  },
+  {
+    path: "/creator/completed-projects",
+    element: (
+      <ProtectedCreatorRoute>
+        <CreatorLayout>
+          <CompletedProjects />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
