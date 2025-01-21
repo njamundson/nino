@@ -16,7 +16,12 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
       <Sidebar />
       <div className="flex-1 p-8">
         {!isDashboard && <DashboardHeader />}
-        {children}
+        <div 
+          key={location.pathname}
+          className="animate-fadeIn"
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
