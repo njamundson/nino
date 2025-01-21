@@ -40,7 +40,7 @@ const Projects = () => {
 
   if (isLoading) {
     return (
-      <div className="container py-8 space-y-8">
+      <div className="animate-fadeIn py-8 space-y-8">
         <PageHeader 
           title="Available Projects" 
           description="Browse and apply to brand collaboration opportunities that match your expertise"
@@ -54,7 +54,7 @@ const Projects = () => {
 
   if (error) {
     return (
-      <div className="container py-8 space-y-8">
+      <div className="animate-fadeIn py-8 space-y-8">
         <PageHeader 
           title="Available Projects" 
           description="Browse and apply to brand collaboration opportunities that match your expertise"
@@ -71,7 +71,7 @@ const Projects = () => {
 
   if (!opportunities || opportunities.length === 0) {
     return (
-      <div className="container py-8 space-y-8">
+      <div className="animate-fadeIn py-8 space-y-8">
         <PageHeader 
           title="Available Projects" 
           description="Browse and apply to brand collaboration opportunities that match your expertise"
@@ -82,7 +82,7 @@ const Projects = () => {
   }
 
   return (
-    <div className="container py-8 space-y-8">
+    <div className="animate-fadeIn py-8 space-y-8">
       <PageHeader 
         title="Available Projects" 
         description="Browse and apply to brand collaboration opportunities that match your expertise"
