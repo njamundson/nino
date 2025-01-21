@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { BrandData, LoginHistory } from '@/types/brand';
+import { BrandData, BrandType, LoginHistory } from '@/types/brand';
 import { useToast } from './use-toast';
 
 export const useBrandSettings = () => {
@@ -25,7 +25,13 @@ export const useBrandSettings = () => {
         if (brandError) throw brandError;
 
         if (brandData) {
-          setBrandData(brandData);
+          // Ensure brand_type is of type BrandType
+          const typedBrandData: BrandData = {
+            ...brandData,
+            brand_type: brandData.brand_type as BrandType,
+          };
+          
+          setBrandData(typedBrandData);
           setProfileImage(brandData.profile_image_url);
 
           const { data: historyData, error: historyError } = await supabase
