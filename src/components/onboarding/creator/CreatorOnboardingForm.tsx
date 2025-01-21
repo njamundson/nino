@@ -39,8 +39,8 @@ const CreatorOnboardingForm = () => {
       case 'professional':
         return (
           <ProfessionalInfoStep
-            creatorType={creatorData.creatorType || ''}
-            skills={creatorData.specialties || []}
+            creatorType={creatorData.creatorType}
+            skills={creatorData.specialties}
             onUpdateField={updateField}
             onUpdateSkills={(skills: string[]) => updateField('specialties', skills)}
           />

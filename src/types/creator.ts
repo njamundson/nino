@@ -8,12 +8,14 @@ export interface CreatorData {
   website: string;
   location: string;
   profileImage: string | null;
-  creatorType: 'solo' | 'couple' | 'family' | 'group';
+  creatorType: CreatorType;
   profile?: {
     first_name: string | null;
     last_name: string | null;
   } | null;
 }
+
+export type CreatorType = 'solo' | 'couple' | 'family' | 'group';
 
 export const CREATOR_TYPES = ['solo', 'couple', 'family', 'group'] as const;
 
@@ -24,3 +26,18 @@ export const CREATOR_SPECIALTIES = [
   'Model/Talent',
   'Public Relations/Writer'
 ] as const;
+
+export const validateInstagramHandle = (handle: string): boolean => {
+  // Remove @ if present and check for valid Instagram username format
+  const username = handle.startsWith('@') ? handle.slice(1) : handle;
+  return /^[a-zA-Z0-9._]{1,30}$/.test(username);
+};
+
+export const validateWebsiteUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { CreatorData, CREATOR_TYPES, CREATOR_SPECIALTIES } from "@/types/creator";
+import { CreatorData, validateInstagramHandle, validateWebsiteUrl } from "@/types/creator";
 
 export const useCreatorOnboarding = () => {
   const navigate = useNavigate();
@@ -22,20 +22,48 @@ export const useCreatorOnboarding = () => {
     profile: null
   });
 
-  const validateCreatorType = (type: string): boolean => {
-    return CREATOR_TYPES.includes(type.toLowerCase() as any);
+  const validateBasicInfo = (): boolean => {
+    if (!creatorData.bio || !creatorData.location) {
+      toast({
+        title: "Required Fields Missing",
+        description: "Please fill in all required fields before continuing.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
   };
 
-  const validateSpecialties = (specialties: string[]): boolean => {
-    return specialties.every(specialty => CREATOR_SPECIALTIES.includes(specialty as any));
+  const validateProfessionalInfo = (): boolean => {
+    if (!creatorData.creatorType || creatorData.specialties.length === 0) {
+      toast({
+        title: "Required Fields Missing",
+        description: "Please select your creator type and at least one specialty.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
   };
 
-  const validateInstagram = (username: string): boolean => {
-    return /^@?[A-Za-z0-9._]+$/.test(username);
-  };
-
-  const validateWebsite = (url: string): boolean => {
-    return /^https?:\/\/.+/.test(url);
+  const validateSocialInfo = (): boolean => {
+    if (creatorData.instagram && !validateInstagramHandle(creatorData.instagram)) {
+      toast({
+        title: "Invalid Instagram Username",
+        description: "Please enter a valid Instagram username.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    if (creatorData.website && !validateWebsiteUrl(creatorData.website)) {
+      toast({
+        title: "Invalid Website URL",
+        description: "Please enter a valid website URL starting with http:// or https://",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
   };
 
   const updateField = (field: keyof CreatorData, value: any) => {
@@ -45,50 +73,13 @@ export const useCreatorOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
-      if (!creatorData.bio || !creatorData.location) {
-        toast({
-          title: "Required Fields Missing",
-          description: "Please fill in all required fields before continuing.",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (!validateBasicInfo()) return;
       setCurrentStep('professional');
     } else if (currentStep === 'professional') {
-      if (!validateCreatorType(creatorData.creatorType)) {
-        toast({
-          title: "Invalid Creator Type",
-          description: "Please select a valid creator type.",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (!validateSpecialties(creatorData.specialties)) {
-        toast({
-          title: "Invalid Specialties",
-          description: "Please select valid specialties.",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (!validateProfessionalInfo()) return;
       setCurrentStep('social');
     } else if (currentStep === 'social') {
-      if (creatorData.instagram && !validateInstagram(creatorData.instagram)) {
-        toast({
-          title: "Invalid Instagram Username",
-          description: "Please enter a valid Instagram username.",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (creatorData.website && !validateWebsite(creatorData.website)) {
-        toast({
-          title: "Invalid Website URL",
-          description: "Please enter a valid website URL starting with http:// or https://",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (!validateSocialInfo()) return;
       setCurrentStep('payment');
     } else {
       try {
