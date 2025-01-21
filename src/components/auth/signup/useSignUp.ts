@@ -21,6 +21,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
     try {
       console.log("Starting sign up process...");
       
+      // Only create the auth user initially, without triggering the database user creation
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -28,6 +29,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
           data: {
             first_name: firstName,
             last_name: lastName,
+            onboarding_completed: false // Flag to track onboarding status
           },
           emailRedirectTo: `${window.location.origin}/onboarding`,
         },
@@ -66,14 +68,14 @@ export const useSignUp = (onToggleAuth: () => void) => {
       console.log("Sign up response:", signUpData);
 
       if (signUpData?.user) {
-        console.log("User created successfully:", signUpData.user);
+        console.log("Auth user created successfully:", signUpData.user);
         
         // Check if email confirmation is required
         if (signUpData.session) {
           console.log("Session available, redirecting to onboarding...");
           toast({
             title: "Welcome to NINO",
-            description: "Your account has been created successfully.",
+            description: "Please complete the onboarding process to set up your account.",
           });
           navigate("/onboarding");
         } else {
