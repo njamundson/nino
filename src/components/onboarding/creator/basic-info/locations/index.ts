@@ -19,3 +19,6 @@ export const STATES_BY_COUNTRY = {
 export const CITIES_BY_COUNTRY = citiesByCountry;
 
 export const COUNTRIES_WITH_CITIES = Object.keys(CITIES_BY_COUNTRY);
+
+// Export all locations as a single array for the filter
+export const LOCATIONS = COUNTRIES;
