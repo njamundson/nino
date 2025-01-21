@@ -56,7 +56,7 @@ const CreatorGrid = () => {
     );
   }
 
-  const handleInvite = (creatorId: string) => {
+  const handleInvite = async (creatorId: string) => {
     // Handle invite logic
     console.log('Inviting creator:', creatorId);
   };

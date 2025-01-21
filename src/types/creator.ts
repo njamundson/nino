@@ -14,6 +14,11 @@ export const CREATOR_SPECIALTIES = [
   'Animation'
 ] as const;
 
+export interface CreatorProfile {
+  first_name: string;
+  last_name: string;
+}
+
 export interface CreatorData {
   id: string;
   user_id: string;
@@ -24,17 +29,9 @@ export interface CreatorData {
   website: string;
   profile_image_url: string;
   creator_type: CreatorType;
-  profile: {
-    first_name: string;
-    last_name: string;
-  };
+  profile: CreatorProfile;
   created_at?: string;
   updated_at?: string;
-}
-
-export interface CreatorProfile {
-  first_name: string;
-  last_name: string;
 }
 
 export interface Notification {
@@ -50,7 +47,7 @@ export interface Notification {
   data?: any;
 }
 
-export type BrandType = 'retail' | 'service' | 'technology' | 'food' | 'entertainment' | 'hotel';
+export type BrandType = 'retail' | 'service' | 'technology' | 'food' | 'entertainment' | 'other';
 
 export interface BrandData {
   id: string;
