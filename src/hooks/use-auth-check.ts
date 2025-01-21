@@ -15,6 +15,19 @@ export const useAuthCheck = () => {
     const checkBrandAccess = async () => {
       try {
         setIsLoading(true);
+
+        // For development, check localStorage
+        const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+        const brandData = localStorage.getItem('brandData');
+
+        if (isAuthenticated && brandData) {
+          if (mounted) {
+            setHasAccess(true);
+            setIsLoading(false);
+          }
+          return true;
+        }
+
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {

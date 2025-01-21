@@ -5,6 +5,9 @@ const PaymentStep = () => {
   const navigate = useNavigate();
 
   const handleComplete = () => {
+    // Store authentication status in localStorage for development
+    localStorage.setItem('isAuthenticated', 'true');
+    
     setTimeout(() => {
       navigate('/brand/dashboard');
     }, 2000);
