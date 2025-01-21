@@ -18,7 +18,6 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     try {
       setLoading(true);
       
-      // First, create the user account with Supabase
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -34,7 +33,6 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
-        // Create initial profile record with onboarding_completed set to false
         const { error: profileError } = await supabase
           .from('profiles')
           .insert([
@@ -48,15 +46,14 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
         if (profileError) throw profileError;
 
-        // Create initial brand or creator record and redirect to appropriate onboarding
         if (data.userType === 'brand') {
           const { error: brandError } = await supabase
             .from('brands')
             .insert([
               {
                 user_id: authData.user.id,
-                company_name: '', // Will be filled during onboarding
-                brand_type: 'retail', // Default value, will be updated during onboarding
+                company_name: '',
+                brand_type: 'retail',
               }
             ]);
 
@@ -64,12 +61,12 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           
           toast({
             title: "Account created successfully",
-            description: "Please complete your profile setup",
+            description: "Please complete your brand profile setup",
           });
           
           navigate('/onboarding/brand');
           return;
-        } 
+        }
         
         if (data.userType === 'creator') {
           const { error: creatorError } = await supabase
@@ -77,7 +74,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             .insert([
               {
                 user_id: authData.user.id,
-                creator_type: 'solo', // Default value, will be updated during onboarding
+                creator_type: 'solo',
               }
             ]);
 
@@ -85,7 +82,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           
           toast({
             title: "Account created successfully",
-            description: "Please complete your profile setup",
+            description: "Please complete your creator profile setup",
           });
           
           navigate('/onboarding/creator');
