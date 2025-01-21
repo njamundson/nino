@@ -16,9 +16,10 @@ export const useSignUp = (onToggleAuth: () => void) => {
   const navigate = useNavigate();
 
   const handleSignUp = async ({ email, password, firstName, lastName }: SignUpFormData) => {
+    if (loading) return;
+    
     try {
       setLoading(true);
-      console.log("Starting sign up process with data:", { email, firstName, lastName });
       
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -32,58 +33,34 @@ export const useSignUp = (onToggleAuth: () => void) => {
       });
 
       if (signUpError) {
-        console.error("Sign up error:", signUpError);
-        let errorMessage = "Error creating account";
-        
         if (signUpError.message.includes("User already registered")) {
-          errorMessage = "An account with this email already exists. Please sign in instead.";
+          toast({
+            title: "Account exists",
+            description: "An account with this email already exists. Please sign in instead.",
+          });
           onToggleAuth();
-        } else {
-          switch (signUpError.message) {
-            case "Failed to fetch":
-              errorMessage = "Network error. Please check your connection and try again.";
-              break;
-            case "Invalid email":
-              errorMessage = "Please enter a valid email address.";
-              break;
-            case "Weak password":
-              errorMessage = "Password is too weak. Please use a stronger password.";
-              break;
-            default:
-              errorMessage = signUpError.message;
-          }
+          return;
         }
-        
+
         toast({
           title: "Error",
-          description: errorMessage,
+          description: signUpError.message,
           variant: "destructive",
         });
         return;
       }
 
       if (signUpData?.user) {
-        console.log("User signed up successfully, redirecting to onboarding...");
-        
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
         });
-        
-        // For new signups, always redirect to onboarding
         navigate("/onboarding");
       }
     } catch (error: any) {
-      console.error("Authentication error:", error);
-      let errorMessage = "Error creating account";
-      
-      if (error.message?.includes("Failed to fetch")) {
-        errorMessage = "Network error. Please check your connection and try again.";
-      }
-      
       toast({
         title: "Error",
-        description: errorMessage,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
