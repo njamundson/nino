@@ -6,6 +6,7 @@ interface SignUpFormData {
   password: string;
   firstName: string;
   lastName: string;
+  userType: "brand" | "creator";
 }
 
 export const useSignUp = () => {
@@ -38,6 +39,7 @@ export const useSignUp = () => {
         password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
+        userType: data.userType,
         onboardingCompleted: false,
         createdAt: new Date().toISOString(),
       };
@@ -48,6 +50,7 @@ export const useSignUp = () => {
 
       // Set current user (will be handled by Supabase session)
       localStorage.setItem('userData', JSON.stringify(newUser));
+      localStorage.setItem('userType', data.userType);
 
       // Show success message
       toast({
