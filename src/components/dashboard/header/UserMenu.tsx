@@ -42,32 +42,40 @@ export const UserMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20 cursor-pointer hover:ring-nino-primary/40 transition-all">
+        <Avatar className="w-9 h-9 ring-1 ring-black/5 cursor-pointer hover:ring-black/10 transition-all duration-300">
           <AvatarImage src="" alt="Profile" />
-          <AvatarFallback className="bg-nino-primary text-nino-white">
+          <AvatarFallback className="bg-gradient-to-br from-nino-primary to-nino-primary/90 text-nino-white font-medium">
             {profile?.first_name?.[0]}{profile?.last_name?.[0]}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="font-normal">
+      <DropdownMenuContent 
+        align="end" 
+        className="w-52 rounded-xl p-2 shadow-lg border border-black/5 bg-white/95 backdrop-blur-sm"
+      >
+        <DropdownMenuLabel className="font-normal px-2 py-1.5">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
+            <p className="text-sm font-medium leading-none text-gray-900">
               {profile?.first_name} {profile?.last_name}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className="text-xs leading-none text-gray-500">
               {profile?.email}
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate('/creator/settings')} className="cursor-pointer">
-          <Settings className="mr-2 h-4 w-4" />
+        <DropdownMenuSeparator className="my-1.5 bg-gray-100" />
+        <DropdownMenuItem 
+          onClick={() => navigate('/creator/settings')} 
+          className="cursor-pointer rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm px-2 py-1.5"
+        >
+          <Settings className="mr-2 h-4 w-4 text-gray-500" />
           <span>Settings</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
+        <DropdownMenuItem 
+          onClick={handleSignOut} 
+          className="cursor-pointer rounded-lg hover:bg-red-50 transition-colors duration-200 text-sm px-2 py-1.5 text-red-600"
+        >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
