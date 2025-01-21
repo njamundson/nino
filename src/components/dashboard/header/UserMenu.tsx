@@ -18,13 +18,6 @@ export const UserMenu = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
       
-      // Check if user is a brand by looking up in brands table
-      const { data: brandData } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -36,15 +29,9 @@ export const UserMenu = () => {
         return null;
       }
       
-      return { ...data, isBrand: !!brandData };
+      return data;
     }
   });
-
-  const handleSettingsClick = () => {
-    // Route to brand settings if user is a brand, otherwise to creator settings
-    const settingsPath = profile?.isBrand ? '/brand/settings' : '/creator/settings';
-    navigate(settingsPath);
-  };
 
   return (
     <DropdownMenu>
@@ -62,7 +49,7 @@ export const UserMenu = () => {
       >
         <DropdownMenuItem 
           className="flex items-center px-4 py-3 text-sm text-nino-text hover:bg-nino-bg/50 rounded-lg mx-1 cursor-pointer transition-colors duration-200"
-          onClick={handleSettingsClick}
+          onClick={() => navigate('/brand/settings')}
         >
           <Settings className="w-4 h-4 mr-3 text-nino-gray" />
           Settings
