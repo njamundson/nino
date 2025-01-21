@@ -63,16 +63,16 @@ const CreatorOnboardingForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm">
+    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-8 md:p-12">
+      <div className="w-full max-w-md space-y-10 bg-white p-8 md:p-10 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm">
         <CreatorOnboardingProgress currentStep={currentStep} />
-        <div className="mt-6">
+        <div className="mt-8">
           {renderStep()}
         </div>
         
         {/* Only show navigation buttons when not on payment step */}
         {currentStep !== 'payment' && (
-          <div className="flex justify-between pt-6 border-t border-gray-100">
+          <div className="flex justify-between pt-8 border-t border-gray-100">
             <Button
               onClick={handleBack}
               variant="outline"
