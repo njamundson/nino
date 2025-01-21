@@ -32,14 +32,14 @@ const Messages = () => {
   const selectedLastName = selectedChatProfile?.sender_profile?.last_name || selectedChatProfile?.receiver_profile?.last_name;
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="p-8">
+    <div className="h-[calc(100vh-6rem)] flex flex-col">
+      <div className="px-8 py-6">
         <PageHeader
           title="Messages"
           description="Connect and communicate with brands and creators about your collaborations"
         />
       </div>
-      <div className="flex flex-1 gap-6 px-8 pb-8 min-h-0">
+      <div className="flex flex-1 gap-6 px-8 min-h-0 pb-8">
         <Card className="w-96 bg-white/80 backdrop-blur-xl border-0 shadow-sm overflow-hidden flex flex-col">
           <ChatList
             onSelectChat={setSelectedChat}
