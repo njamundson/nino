@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChatMessages, Message } from '@/components/messages/ChatMessages';
+import { ChatMessages } from '@/components/messages/ChatMessages';
 
 const Messages = () => {
   const { data: messages, isLoading } = useQuery({
@@ -37,7 +37,7 @@ const Messages = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold">Messages</h1>
-      <ChatMessages messages={messages as Message[]} selectedChat={null} />
+      <ChatMessages messages={messages} selectedChat={null} />
     </div>
   );
 };

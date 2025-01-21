@@ -1,19 +1,27 @@
-export type BrandType = 'business' | 'agency' | 'individual' | 'nonprofit';
+export type BrandType = 'retail' | 'service' | 'technology' | 'other';
 
 export interface BrandData {
   id: string;
-  userId: string;
-  companyName: string;
-  brandType: BrandType;
-  description?: string;
-  website?: string;
-  instagram?: string;
-  location?: string;
-  phoneNumber?: string;
-  supportEmail?: string;
-  profileImageUrl?: string;
-  smsNotificationsEnabled: boolean;
-  twoFactorEnabled: boolean;
+  user_id: string;
+  company_name: string;
+  brand_type: BrandType;
+  description: string;
+  website: string;
+  instagram: string;
+  location: string;
+  phone_number: string;
+  support_email: string;
+  profile_image_url: string;
+  sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export const BRAND_TYPES: BrandType[] = ['business', 'agency', 'individual', 'nonprofit'];
+export interface LoginHistory {
+  id: string;
+  brand_id: string;
+  login_timestamp: string;
+  ip_address: string;
+  device_info: string;
+}
