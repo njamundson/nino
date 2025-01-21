@@ -24,10 +24,30 @@ export const formatInstagramUrl = (username: string | null): string | null => {
 
 /**
  * Formats a website URL ensuring it has the correct protocol
+ * Handles various input formats:
+ * - Raw domain (example.com)
+ * - Protocol without www (http://example.com)
+ * - Full URL (https://www.example.com)
  */
 export const formatWebsiteUrl = (url: string | null): string | null => {
   if (!url) return null;
   
-  const trimmedUrl = url.trim();
-  return trimmedUrl.startsWith('http') ? trimmedUrl : `https://${trimmedUrl}`;
+  let formattedUrl = url.trim().toLowerCase();
+  
+  // Remove trailing slashes
+  formattedUrl = formattedUrl.replace(/\/+$/, '');
+  
+  // If the URL doesn't start with a protocol, add https://
+  if (!formattedUrl.match(/^https?:\/\//i)) {
+    formattedUrl = `https://${formattedUrl}`;
+  }
+  
+  try {
+    // Validate the URL format
+    new URL(formattedUrl);
+    return formattedUrl;
+  } catch (e) {
+    console.error('Invalid URL format:', url);
+    return null;
+  }
 };

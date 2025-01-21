@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Instagram, Globe } from "lucide-react";
+import { formatWebsiteUrl } from "@/utils/socialMediaUtils";
 
 interface SocialLinksStepProps {
   instagram: string;
@@ -13,6 +14,21 @@ const SocialLinksStep = ({
   website,
   onUpdateField,
 }: SocialLinksStepProps) => {
+  const handleWebsiteChange = (value: string) => {
+    // Store the raw input value
+    onUpdateField("website", value);
+  };
+
+  const handleWebsiteBlur = () => {
+    if (website) {
+      // Format the URL when the user leaves the field
+      const formattedUrl = formatWebsiteUrl(website);
+      if (formattedUrl) {
+        onUpdateField("website", formattedUrl);
+      }
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="text-center space-y-2">
@@ -42,7 +58,8 @@ const SocialLinksStep = ({
               <Globe className="absolute left-4 top-3.5 w-5 h-5 text-nino-gray" />
               <Input
                 value={website}
-                onChange={(e) => onUpdateField("website", e.target.value)}
+                onChange={(e) => handleWebsiteChange(e.target.value)}
+                onBlur={handleWebsiteBlur}
                 placeholder="Website URL"
                 className="pl-12 bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
               />
