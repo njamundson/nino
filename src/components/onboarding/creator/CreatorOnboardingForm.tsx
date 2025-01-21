@@ -62,6 +62,11 @@ const CreatorOnboardingForm = () => {
     }
   };
 
+  // If we're on the payment step, only show the PaymentStep component
+  if (currentStep === 'payment') {
+    return <PaymentStep />;
+  }
+
   return (
     <div className="min-h-screen bg-nino-bg flex items-center justify-center p-8 md:p-12">
       <div className="w-full max-w-md space-y-10 bg-white p-8 md:p-10 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm">
@@ -70,23 +75,20 @@ const CreatorOnboardingForm = () => {
           {renderStep()}
         </div>
         
-        {/* Only show navigation buttons when not on payment step */}
-        {currentStep !== 'payment' && (
-          <div className="flex justify-between pt-8 border-t border-gray-100">
-            <Button
-              onClick={handleBack}
-              variant="outline"
-            >
-              Back
-            </Button>
-            <Button
-              onClick={handleNext}
-              variant="default"
-            >
-              Continue
-            </Button>
-          </div>
-        )}
+        <div className="flex justify-between pt-8 border-t border-gray-100">
+          <Button
+            onClick={handleBack}
+            variant="outline"
+          >
+            Back
+          </Button>
+          <Button
+            onClick={handleNext}
+            variant="default"
+          >
+            Continue
+          </Button>
+        </div>
       </div>
     </div>
   );
