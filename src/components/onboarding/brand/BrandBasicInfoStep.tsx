@@ -43,24 +43,27 @@ const BrandBasicInfoStep = ({
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
       onUpdateImage(publicUrl);
+      
+      toast({
+        title: "Success",
+        description: "Brand logo uploaded successfully",
+      });
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
         title: "Error",
-        description: "Failed to upload image. Please try again.",
+        description: "Failed to upload logo. Please try again.",
         variant: "destructive",
       });
     }

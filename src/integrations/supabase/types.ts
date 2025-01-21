@@ -188,12 +188,12 @@ export type Database = {
           brand_type: Database["public"]["Enums"]["brand_type"]
           company_name: string
           created_at: string
-          description: string | null
+          description: string
           id: string
           instagram: string | null
-          location: string | null
+          location: string
           phone_number: string | null
-          profile_image_url: string | null
+          profile_image_url: string
           sms_notifications_enabled: boolean | null
           support_email: string | null
           two_factor_enabled: boolean | null
@@ -205,12 +205,12 @@ export type Database = {
           brand_type: Database["public"]["Enums"]["brand_type"]
           company_name: string
           created_at?: string
-          description?: string | null
+          description: string
           id?: string
           instagram?: string | null
-          location?: string | null
+          location: string
           phone_number?: string | null
-          profile_image_url?: string | null
+          profile_image_url: string
           sms_notifications_enabled?: boolean | null
           support_email?: string | null
           two_factor_enabled?: boolean | null
@@ -222,12 +222,12 @@ export type Database = {
           brand_type?: Database["public"]["Enums"]["brand_type"]
           company_name?: string
           created_at?: string
-          description?: string | null
+          description?: string
           id?: string
           instagram?: string | null
-          location?: string | null
+          location?: string
           phone_number?: string | null
-          profile_image_url?: string | null
+          profile_image_url?: string
           sms_notifications_enabled?: boolean | null
           support_email?: string | null
           two_factor_enabled?: boolean | null

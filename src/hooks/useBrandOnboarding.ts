@@ -55,7 +55,7 @@ export const useBrandOnboarding = () => {
               instagram: brandData.instagram,
               location: brandData.homeLocation,
               brand_type: brandData.brandType,
-              profile_image_url: profileImage,
+              profile_image_url: profileImage || '',
             })
             .eq('id', existingBrand.id);
 
@@ -72,19 +72,16 @@ export const useBrandOnboarding = () => {
               instagram: brandData.instagram,
               location: brandData.homeLocation,
               brand_type: brandData.brandType,
-              profile_image_url: profileImage,
+              profile_image_url: profileImage || '',
             });
 
           if (brandError) {
-            if (brandError.code === '23505') { // Unique constraint violation
-              toast({
-                title: "Error",
-                description: "You already have a brand profile.",
-                variant: "destructive",
-              });
-            } else {
-              throw brandError;
-            }
+            console.error('Brand creation error:', brandError);
+            toast({
+              title: "Error",
+              description: "Failed to create brand profile.",
+              variant: "destructive",
+            });
             return;
           }
         }
