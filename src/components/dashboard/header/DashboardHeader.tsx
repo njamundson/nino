@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
-import NotificationPopover from "./NotificationPopover";
-import UserMenu from "./UserMenu";
+import { NotificationPopover } from "./NotificationPopover";
+import { UserMenu } from "./UserMenu";
 
 const DashboardHeader = () => {
   return (
