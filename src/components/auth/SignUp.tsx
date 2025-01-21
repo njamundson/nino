@@ -32,63 +32,68 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
       if (signUpError) throw signUpError;
 
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
+      if (!authData.user) {
+        throw new Error("Failed to create user account");
+      }
+
+      // Create initial profile record
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: authData.user.id,
+            first_name: data.firstName,
+            last_name: data.lastName,
+            onboarding_completed: false
+          }
+        ]);
+
+      if (profileError) throw profileError;
+
+      // Create user type specific record and redirect to appropriate onboarding
+      if (data.userType === 'brand') {
+        const { error: brandError } = await supabase
+          .from('brands')
           .insert([
             {
-              id: authData.user.id,
-              first_name: data.firstName,
-              last_name: data.lastName,
-              onboarding_completed: false
+              user_id: authData.user.id,
+              company_name: '',
+              brand_type: 'retail',
             }
           ]);
 
-        if (profileError) throw profileError;
-
-        if (data.userType === 'brand') {
-          const { error: brandError } = await supabase
-            .from('brands')
-            .insert([
-              {
-                user_id: authData.user.id,
-                company_name: '',
-                brand_type: 'retail',
-              }
-            ]);
-
-          if (brandError) throw brandError;
-          
-          toast({
-            title: "Account created successfully",
-            description: "Please complete your brand profile setup",
-          });
-          
-          navigate('/onboarding/brand');
-          return;
-        }
+        if (brandError) throw brandError;
         
-        if (data.userType === 'creator') {
-          const { error: creatorError } = await supabase
-            .from('creators')
-            .insert([
-              {
-                user_id: authData.user.id,
-                creator_type: 'solo',
-              }
-            ]);
-
-          if (creatorError) throw creatorError;
-          
-          toast({
-            title: "Account created successfully",
-            description: "Please complete your creator profile setup",
-          });
-          
-          navigate('/onboarding/creator');
-          return;
-        }
+        toast({
+          title: "Account created successfully",
+          description: "Let's set up your brand profile",
+        });
+        
+        navigate('/onboarding/brand');
+        return;
       }
+      
+      if (data.userType === 'creator') {
+        const { error: creatorError } = await supabase
+          .from('creators')
+          .insert([
+            {
+              user_id: authData.user.id,
+              creator_type: 'solo',
+            }
+          ]);
+
+        if (creatorError) throw creatorError;
+        
+        toast({
+          title: "Account created successfully",
+          description: "Let's set up your creator profile",
+        });
+        
+        navigate('/onboarding/creator');
+        return;
+      }
+
     } catch (error: any) {
       console.error('Sign up error:', error);
       toast({
