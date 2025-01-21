@@ -35,14 +35,16 @@ const Welcome = () => {
         >
           Welcome to Nino
         </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="text-xl text-nino-gray"
-        >
-          {isCreator ? "Your creative journey begins here" : "Let's find amazing creators"}
-        </motion.p>
+        {!isCreator && (
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className="text-xl text-nino-gray"
+          >
+            Let's find amazing creators
+          </motion.p>
+        )}
       </motion.div>
     </div>
   );
