@@ -1,39 +1,53 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useSignInWithEmail = () => {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
-  const navigate = useNavigate();
 
   const signIn = async (email: string, password: string) => {
-    if (loading) return;
-    setLoading(true);
-    
     try {
-      // This will be replaced with Supabase auth.signInWithPassword
-      console.log('Preparing for Supabase auth:', { email });
-      
-      // Simulate authentication delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Get stored users from localStorage (temporary until Supabase)
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find((u: any) => u.email === email && u.password === password);
-      
-      if (!user) {
-        throw new Error("Invalid credentials");
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Check if user has completed onboarding
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+
+      if (!profile) {
+        throw new Error('Profile not found');
       }
 
-      // Store auth state (will be handled by Supabase)
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userData', JSON.stringify(user));
-      localStorage.setItem('userType', user.type || 'brand');
+      // Check if user is a brand or creator
+      const { data: brand } = await supabase
+        .from('brands')
+        .select('*')
+        .eq('user_id', data.user.id)
+        .single();
 
-      return user;
+      const { data: creator } = await supabase
+        .from('creators')
+        .select('*')
+        .eq('user_id', data.user.id)
+        .single();
+
+      // Store user type in localStorage for routing
+      if (brand) {
+        localStorage.setItem('userType', 'brand');
+      } else if (creator) {
+        localStorage.setItem('userType', 'creator');
+      }
+
+      return data;
     } catch (error) {
-      console.error("Authentication error:", error);
+      console.error('Error:', error);
       throw error;
     } finally {
       setLoading(false);
