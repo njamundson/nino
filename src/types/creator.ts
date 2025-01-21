@@ -41,9 +41,9 @@ export interface Notification {
   description: string;
   content: string;
   timestamp: string;
-  read: boolean;
   created_at: string;
-  action_url?: string;
+  read: boolean;
+  action_url: string;
   data?: any;
 }
 

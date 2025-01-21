@@ -14,13 +14,14 @@ export const NotificationPopover = () => {
     setIsOpen, 
     notifications, 
     notificationsError, 
-    dismissNotification: dismissMutation 
+    dismissNotification,
+    isLoading 
   } = useNotifications();
   
   const hasUnreadNotifications = notifications && notifications.length > 0;
 
   const handleDismiss = (notification: { id: string, type: string }) => {
-    dismissMutation.mutate(notification);
+    dismissNotification.mutate(notification);
   };
 
   return (
@@ -31,7 +32,7 @@ export const NotificationPopover = () => {
             "w-6 h-6 transition-colors",
             isOpen ? "text-nino-primary" : "text-nino-gray hover:text-nino-primary"
           )} />
-          {!notificationsError && hasUnreadNotifications && (
+          {!isLoading && !notificationsError && hasUnreadNotifications && (
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
           )}
         </button>
