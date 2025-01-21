@@ -42,7 +42,6 @@ const PaymentStep = () => {
               ease: [0.22, 1, 0.36, 1]
             }}
             className="fixed inset-0 bg-nino-bg flex items-center justify-center"
-            style={{ backgroundColor: '#F9F6F2' }}
           >
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
@@ -53,7 +52,6 @@ const PaymentStep = () => {
                 delay: 0.2
               }}
               className="text-6xl font-medium text-[#B27164]"
-              style={{ fontFamily: "'SF Pro Display', sans-serif" }}
             >
               Welcome to Nino
             </motion.h1>
