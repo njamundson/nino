@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
@@ -21,13 +21,18 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   return children;
 };
 
+const router = createBrowserRouter([
+  ...brandRoutes,
+  ...creatorRoutes,
+  ...onboardingRoutes,
+  ...adminRoutes,
+]);
+
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthWrapper>
-        <RouterProvider
-          router={[...brandRoutes, ...creatorRoutes, ...onboardingRoutes, ...adminRoutes]}
-        />
+        <RouterProvider router={router} />
         <Toaster />
       </AuthWrapper>
     </QueryClientProvider>
