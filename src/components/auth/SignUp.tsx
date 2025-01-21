@@ -11,9 +11,11 @@ interface SignUpProps {
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (data: any) => {
     try {
+      setLoading(true);
       const { email, password, userType } = data;
 
       const { data: authData, error } = await supabase.auth.signUp({
@@ -35,9 +37,9 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         
         // Navigate based on user type
         if (userType === 'creator') {
-          navigate('/onboarding/creator');
+          navigate('/creator/dashboard');
         } else {
-          navigate('/onboarding/brand');
+          navigate('/brand/dashboard');
         }
 
         toast({
@@ -52,6 +54,8 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         title: "Error signing up",
         description: error instanceof Error ? error.message : "Please try again.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,7 +66,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         subtitle="Sign up to get started" 
       />
 
-      <SignUpForm onSubmit={handleSignUp} />
+      <SignUpForm onSubmit={handleSignUp} loading={loading} />
 
       <div className="text-center text-sm text-nino-gray">
         Already have an account?{" "}
