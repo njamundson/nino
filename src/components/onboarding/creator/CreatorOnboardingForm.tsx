@@ -64,7 +64,7 @@ const CreatorOnboardingForm = () => {
 
   return (
     <div className="min-h-screen bg-nino-bg flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-8 bg-white p-6 rounded-xl shadow-sm">
+      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm">
         <CreatorOnboardingProgress currentStep={currentStep} />
         <div className="mt-6">
           {renderStep()}
