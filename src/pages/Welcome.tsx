@@ -9,7 +9,7 @@ const Welcome = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate(isCreator ? "/creator/dashboard" : "/brand/dashboard");
+      navigate(isCreator ? "/creator/dashboard" : "/brand/dashboard", { replace: true });
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -20,21 +20,29 @@ const Welcome = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
         transition={{
           duration: 0.5,
           ease: [0.4, 0, 0.2, 1],
         }}
-        className="text-center"
+        className="text-center space-y-4"
       >
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-6xl font-medium text-nino-primary"
-          style={{ fontFamily: "'SF Pro Display', sans-serif" }}
         >
           Welcome to Nino
         </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="text-xl text-nino-gray"
+        >
+          {isCreator ? "Your creative journey begins here" : "Let's find amazing creators"}
+        </motion.p>
       </motion.div>
     </div>
   );
