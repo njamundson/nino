@@ -32,15 +32,14 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
-        // Profile will be created automatically via database trigger
-        
-        toast({
-          title: "Account created",
-          description: "Please check your email to verify your account.",
-        });
-
         // Store user type preference for onboarding
         localStorage.setItem('preferredUserType', data.userType);
+        
+        // Since email confirmation is disabled, we can directly show success and redirect
+        toast({
+          title: "Account created successfully",
+          description: "Welcome to NINO!",
+        });
         
         navigate('/onboarding');
       }
