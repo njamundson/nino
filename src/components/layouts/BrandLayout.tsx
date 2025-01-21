@@ -14,14 +14,11 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
   const isDashboard = location.pathname === "/brand/dashboard";
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-nino-bg">
-      <div className="md:hidden">
-        <DashboardHeader />
-      </div>
+    <div className="flex min-h-screen bg-nino-bg">
       <Sidebar />
-      <main className="flex-1 overflow-x-hidden w-full">
-        <div className="p-4 md:p-8">
-          {!isDashboard && <div className="hidden md:block"><DashboardHeader /></div>}
+      <main className="flex-1 overflow-x-hidden">
+        <div className="p-8">
+          {!isDashboard && <DashboardHeader />}
           <Suspense fallback={
             <div className="flex items-center justify-center min-h-[60vh]">
               <LoadingSpinner size="lg" />
