@@ -29,10 +29,9 @@ const BrandSidebar = () => {
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Error signing out:", error);
-        throw error;
-      }
+      if (error) throw error;
+      
+      navigate('/');
       
       toast({
         title: "Signed out successfully",
@@ -67,7 +66,7 @@ const BrandSidebar = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200",
                 location.pathname === item.path
                   ? "bg-nino-bg text-nino-primary"
                   : "text-gray-600 hover:text-nino-primary hover:bg-nino-bg"
@@ -82,7 +81,7 @@ const BrandSidebar = () => {
         <div className="p-3 mt-auto border-t">
           <button
             onClick={handleSignOut}
-            className="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full text-gray-600 hover:text-nino-primary hover:bg-nino-bg"
+            className="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full text-gray-600 hover:text-nino-primary hover:bg-nino-bg transition-colors duration-200"
           >
             <LogOut className="w-5 h-5" />
             <span>Sign Out</span>
