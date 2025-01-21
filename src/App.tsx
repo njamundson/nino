@@ -5,6 +5,7 @@ import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
 import { adminRoutes } from "./routes/adminRoutes";
+import Index from "./pages/Index";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +23,10 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Index />,
+  },
   ...brandRoutes,
   ...creatorRoutes,
   ...onboardingRoutes,
