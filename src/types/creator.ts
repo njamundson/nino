@@ -19,21 +19,6 @@ export interface CreatorProfile {
   last_name: string;
 }
 
-export interface CreatorData {
-  id: string;
-  user_id?: string;
-  bio: string | null;
-  location: string | null;
-  specialties: string[];
-  instagram: string | null;
-  website: string | null;
-  profile_image_url: string | null;
-  creator_type: CreatorType;
-  profile: CreatorProfile;
-  created_at?: string;
-  updated_at?: string;
-}
-
 export interface Message {
   id: string;
   content: string;
@@ -48,6 +33,10 @@ export interface Message {
   media_url?: string | null;
   media_type?: string | null;
   profiles: CreatorProfile;
+  sender?: {
+    first_name: string;
+    last_name: string;
+  };
 }
 
 export interface NotificationBase {
@@ -59,7 +48,6 @@ export interface NotificationBase {
   created_at: string;
   read: boolean;
   action_url: string;
-  data: any;
 }
 
 export interface MessageNotification extends NotificationBase {
@@ -84,6 +72,21 @@ export interface ApplicationNotification extends NotificationBase {
 
 export type Notification = MessageNotification | ApplicationNotification;
 
+export interface CreatorData {
+  id: string;
+  user_id?: string;
+  bio: string | null;
+  location: string | null;
+  specialties: string[];
+  instagram: string | null;
+  website: string | null;
+  profile_image_url: string | null;
+  creator_type: CreatorType;
+  profile: CreatorProfile;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface CreatorFiltersProps {
   selectedSpecialties: string[];
   selectedCreatorType: string | null;
@@ -107,7 +110,6 @@ export interface BasicInfoStepProps {
 export interface ProfessionalInfoStepProps {
   creatorType: CreatorType;
   skills: string[];
-  bio: string;
   onUpdateField: (field: string, value: string) => void;
   onUpdateSkills: (skills: string[]) => void;
 }
