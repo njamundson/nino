@@ -3,6 +3,7 @@ import Sidebar from "../dashboard/BrandSidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface BrandLayoutProps {
   children: ReactNode;
@@ -19,21 +20,17 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
         <div className="p-8">
           {!isDashboard && <DashboardHeader />}
           <Suspense fallback={
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="min-h-[80vh]"
-            />
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <LoadingSpinner size="lg" />
+            </div>
           }>
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 {children}
               </motion.div>

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 
 const BrandSidebar = () => {
   const location = useLocation();
@@ -30,6 +31,10 @@ const BrandSidebar = () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      // Clear local storage
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('brandData');
       
       navigate('/');
       
@@ -52,10 +57,12 @@ const BrandSidebar = () => {
       <div className="bg-white rounded-xl shadow-sm h-full flex flex-col">
         <div className="p-6 border-b">
           <Link to="/brand/dashboard" className="flex items-center">
-            <img 
+            <motion.img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
               className="h-16"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
             />
           </Link>
         </div>
@@ -66,13 +73,18 @@ const BrandSidebar = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200",
+                "flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                 location.pathname === item.path
-                  ? "bg-nino-bg text-nino-primary"
+                  ? "bg-nino-bg text-nino-primary shadow-sm"
                   : "text-gray-600 hover:text-nino-primary hover:bg-nino-bg"
               )}
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className={cn(
+                "w-5 h-5 transition-colors",
+                location.pathname === item.path
+                  ? "text-nino-primary"
+                  : "text-gray-400 group-hover:text-nino-primary"
+              )} />
               <span>{item.label}</span>
             </Link>
           ))}
@@ -81,7 +93,7 @@ const BrandSidebar = () => {
         <div className="p-3 mt-auto border-t">
           <button
             onClick={handleSignOut}
-            className="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full text-gray-600 hover:text-nino-primary hover:bg-nino-bg transition-colors duration-200"
+            className="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full text-gray-600 hover:text-nino-primary hover:bg-nino-bg transition-all duration-200"
           >
             <LogOut className="w-5 h-5" />
             <span>Sign Out</span>
