@@ -1,10 +1,8 @@
 import { Briefcase, FilePlus, MessageSquare } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useStatsData } from '@/components/dashboard/brand/stats/useStatsData';
 import StatsCard from '@/components/dashboard/brand/stats/StatsCard';
 
 const BrandStatsCards = () => {
-  const navigate = useNavigate();
   const { activeProjects, newProposals, completedProjects } = useStatsData();
 
   return (
@@ -25,7 +23,6 @@ const BrandStatsCards = () => {
         icon={MessageSquare}
         title="Completed Projects"
         value={completedProjects}
-        onClick={() => navigate('/brand/messages')}
       />
     </div>
   );
