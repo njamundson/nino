@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
@@ -42,25 +42,28 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <label
-        htmlFor="photo-upload"
-        className="relative cursor-pointer"
-      >
-        <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100">
-          <Avatar className="w-full h-full">
-            <AvatarImage 
-              src={profileImage || ''} 
-              className="object-cover w-full h-full"
-            />
-            <AvatarFallback className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <Plus className="w-8 h-8 text-gray-400" />
-            </AvatarFallback>
-          </Avatar>
-          
-          <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition-colors duration-200">
-            <Plus className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+      <div className="relative">
+        <label
+          htmlFor="photo-upload"
+          className="cursor-pointer block"
+        >
+          <div className="relative w-32 h-32 rounded-full overflow-hidden bg-[#F9F6F2]">
+            <Avatar className="w-full h-full">
+              <AvatarImage 
+                src={profileImage || ''} 
+                className="object-cover w-full h-full"
+              />
+              <AvatarFallback className="w-full h-full bg-[#F9F6F2] flex items-center justify-center">
+                <Camera className="w-12 h-12 text-gray-400" />
+              </AvatarFallback>
+            </Avatar>
           </div>
-        </div>
+
+          {/* Plus icon circle */}
+          <div className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-[#A55549] flex items-center justify-center shadow-md">
+            <Plus className="w-6 h-6 text-white" />
+          </div>
+        </label>
         
         <input
           type="file"
@@ -70,7 +73,7 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
           onChange={handleImageUpload}
           disabled={loading}
         />
-      </label>
+      </div>
       <p className="text-sm text-nino-gray">
         {loading ? "Uploading..." : "Click to upload your profile photo"}
       </p>
