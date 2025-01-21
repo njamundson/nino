@@ -136,6 +136,12 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
     };
   }, [navigate, toast, retryCount]);
 
+  // Only protect non-index routes
+  const isIndexRoute = window.location.pathname === '/';
+  if (isIndexRoute) {
+    return <>{children}</>;
+  }
+
   if (!isInitialized || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-nino-bg">
