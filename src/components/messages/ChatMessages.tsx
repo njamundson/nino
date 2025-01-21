@@ -128,8 +128,8 @@ export const ChatMessages = ({ messages, selectedChat, onMessageUpdate }: ChatMe
   }, {});
 
   return (
-    <ScrollArea className="flex-1 px-4">
-      <div className="space-y-6 py-4">
+    <ScrollArea className="h-[calc(100vh-20rem)]">
+      <div className="space-y-6 p-4">
         {groupedMessages && Object.entries(groupedMessages).map(([date, dateMessages]) => (
           <div key={date} className="space-y-6">
             <DateDivider date={date} />
