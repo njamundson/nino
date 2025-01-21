@@ -54,17 +54,25 @@ const StatsCards = () => {
     }
   });
 
-  const { data: newMessages } = useQuery({
-    queryKey: ['new-messages'],
+  const { data: completedProjects } = useQuery({
+    queryKey: ['completed-projects'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return 0;
 
+      const { data: creator } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!creator) return 0;
+
       const { count } = await supabase
-        .from('messages')
+        .from('applications')
         .select('*', { count: 'exact', head: true })
-        .eq('recipient_id', user.id)
-        .eq('read', false);
+        .eq('creator_id', creator.id)
+        .eq('status', 'completed');
 
       return count || 0;
     }
@@ -116,10 +124,10 @@ const StatsCards = () => {
             </div>
             <div>
               <h3 className="text-lg text-nino-text font-medium mb-1">
-                New Messages
+                Completed Projects
               </h3>
               <p className="text-4xl font-semibold text-nino-text">
-                {newMessages ?? 0}
+                {completedProjects ?? 0}
               </p>
             </div>
           </div>
