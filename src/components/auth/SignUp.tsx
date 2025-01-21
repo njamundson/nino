@@ -62,6 +62,11 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
           if (brandError) throw brandError;
           
+          toast({
+            title: "Account created successfully",
+            description: "Please complete your profile setup",
+          });
+          
           // Immediately redirect to brand onboarding
           navigate('/onboarding/brand');
           return; // Important: return here to prevent further execution
@@ -77,15 +82,15 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
           if (creatorError) throw creatorError;
           
+          toast({
+            title: "Account created successfully",
+            description: "Please complete your profile setup",
+          });
+          
           // Immediately redirect to creator onboarding
           navigate('/onboarding/creator');
           return; // Important: return here to prevent further execution
         }
-
-        toast({
-          title: "Account created successfully",
-          description: "Please complete your profile setup",
-        });
       }
     } catch (error: any) {
       console.error('Sign up error:', error);
