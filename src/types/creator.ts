@@ -28,7 +28,6 @@ export const CREATOR_SPECIALTIES = [
 ] as const;
 
 export const validateInstagramHandle = (handle: string): boolean => {
-  // Remove @ if present and check for valid Instagram username format
   const username = handle.startsWith('@') ? handle.slice(1) : handle;
   return /^[a-zA-Z0-9._]{1,30}$/.test(username);
 };

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CREATOR_TYPES } from "@/types/creator";
+import { CREATOR_TYPES, CREATOR_SPECIALTIES } from "@/types/creator";
 
 interface CreatorFiltersProps {
   selectedSpecialties: string[];
@@ -16,14 +16,6 @@ const CreatorFilters = ({
   onSpecialtyChange,
   onCreatorTypeChange 
 }: CreatorFiltersProps) => {
-  const specialties = [
-    "UGC Creator",
-    "Videographer",
-    "Photographer",
-    "Model/Talent",
-    "Public Relations/Writer"
-  ];
-
   return (
     <div className="space-y-6">
       <div>
@@ -49,7 +41,7 @@ const CreatorFilters = ({
       <div>
         <h3 className="text-sm font-medium mb-3">Specialties</h3>
         <div className="flex flex-wrap gap-2">
-          {specialties.map((specialty) => (
+          {CREATOR_SPECIALTIES.map((specialty) => (
             <Badge
               key={specialty}
               variant="outline"
