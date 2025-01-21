@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Message } from '@/components/messages/ChatMessages';
-import ChatMessages from '@/components/messages/ChatMessages';
+import { ChatMessages, Message } from '@/components/messages/ChatMessages';
 
 const Messages = () => {
   const { data: messages, isLoading } = useQuery({

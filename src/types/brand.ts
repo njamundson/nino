@@ -1,21 +1,19 @@
-export type BrandType = "hotel" | "resort" | "travel_agency";
+export type BrandType = 'business' | 'agency' | 'individual' | 'nonprofit';
 
 export interface BrandData {
-  company_name: string;
-  brand_type: BrandType;
-  description: string;
-  website: string | null;
-  instagram: string | null;
-  location: string;
-  phone_number: string | null;
-  support_email: string | null;
-  sms_notifications_enabled: boolean;
-  two_factor_enabled: boolean;
+  id: string;
+  userId: string;
+  companyName: string;
+  brandType: BrandType;
+  description?: string;
+  website?: string;
+  instagram?: string;
+  location?: string;
+  phoneNumber?: string;
+  supportEmail?: string;
+  profileImageUrl?: string;
+  smsNotificationsEnabled: boolean;
+  twoFactorEnabled: boolean;
 }
 
-export interface LoginHistory {
-  id: string;
-  login_timestamp: string;
-  ip_address: string;
-  device_info: string;
-}
+export const BRAND_TYPES: BrandType[] = ['business', 'agency', 'individual', 'nonprofit'];

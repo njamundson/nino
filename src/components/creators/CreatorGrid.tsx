@@ -47,7 +47,7 @@ const CreatorGrid = ({
           .from('creators')
           .select(`
             *,
-            profiles!creators_user_id_fkey (
+            profile:profiles!creators_user_id_fkey (
               first_name,
               last_name
             )
@@ -81,16 +81,16 @@ const CreatorGrid = ({
 
         const formattedCreators: CreatorData[] = data.map(creator => ({
           id: creator.id,
-          firstName: creator.profiles?.first_name || "",
-          lastName: creator.profiles?.last_name || "",
+          firstName: creator.profile?.first_name || "",
+          lastName: creator.profile?.last_name || "",
           bio: creator.bio || "",
           specialties: creator.specialties || [],
           instagram: creator.instagram || "",
           website: creator.website || "",
           location: creator.location || "",
           profileImage: creator.profile_image_url,
-          creatorType: creator.creator_type || "solo",
-          profile: creator.profiles
+          creatorType: creator.creator_type as CreatorData['creatorType'],
+          profile: creator.profile
         }));
 
         console.log("Formatted creators:", formattedCreators);
