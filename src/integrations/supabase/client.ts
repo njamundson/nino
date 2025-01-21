@@ -7,34 +7,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
-    storage: {
-      getItem: (key) => {
-        try {
-          const item = localStorage.getItem(key);
-          return item;
-        } catch (error) {
-          console.error('Error accessing localStorage:', error);
-          return null;
-        }
-      },
-      setItem: (key, value) => {
-        try {
-          localStorage.setItem(key, value);
-        } catch (error) {
-          console.error('Error setting localStorage:', error);
-        }
-      },
-      removeItem: (key) => {
-        try {
-          localStorage.removeItem(key);
-        } catch (error) {
-          console.error('Error removing from localStorage:', error);
-        }
-      }
-    },
-    flowType: 'pkce',
-    debug: true
+    storage: localStorage,
+    storageKey: 'supabase.auth.token',
+    detectSessionInUrl: false
   },
   global: {
     headers: {
@@ -59,6 +34,7 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('User signed in successfully');
   } else if (event === 'SIGNED_OUT') {
     console.log('User signed out');
+    localStorage.removeItem('supabase.auth.token');
   } else if (event === 'TOKEN_REFRESHED') {
     console.log('Token refreshed successfully');
   }
