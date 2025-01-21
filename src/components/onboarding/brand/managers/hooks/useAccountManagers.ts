@@ -1,19 +1,16 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 export interface AccountManager {
   id: string;
   name: string;
   email: string;
   role: string;
-  permissions: string[];
 }
 
 export const useAccountManagers = () => {
   const { toast } = useToast();
   const [showAddManager, setShowAddManager] = useState(false);
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
 
   const addAccountManager = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,37 +23,31 @@ export const useAccountManagers = () => {
       name: formData.get("managerName") as string,
       email: formData.get("managerEmail") as string,
       role: formData.get("managerRole") as string,
-      permissions: selectedPermissions,
     };
 
     setAccountManagers([...accountManagers, newManager]);
     setShowAddManager(false);
-    setSelectedPermissions([]);
     form.reset();
+
+    toast({
+      title: "Success",
+      description: "Account manager added successfully",
+    });
   };
 
   const removeManager = (id: string) => {
     setAccountManagers(accountManagers.filter(manager => manager.id !== id));
-  };
-
-  const updateManagerPermissions = async (managerId: string, permissions: string[]) => {
-    setAccountManagers(
-      accountManagers.map(manager =>
-        manager.id === managerId
-          ? { ...manager, permissions }
-          : manager
-      )
-    );
+    toast({
+      title: "Success",
+      description: "Account manager removed successfully",
+    });
   };
 
   return {
     showAddManager,
     setShowAddManager,
-    selectedPermissions,
-    setSelectedPermissions,
     accountManagers,
     addAccountManager,
     removeManager,
-    updateManagerPermissions,
   };
 };
