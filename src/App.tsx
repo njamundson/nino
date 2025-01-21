@@ -31,7 +31,7 @@ const App = () => {
               <Toaster />
               <Sonner />
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route index element={<Index />} />
                 {onboardingRoutes.map((route) => (
                   <Route
                     key={route.path}
