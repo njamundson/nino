@@ -7,7 +7,7 @@ import MyCampaigns from "@/pages/MyCampaigns";
 import ViewCreators from "@/pages/ViewCreators";
 import Bookings from "@/pages/Bookings";
 import Messages from "@/pages/Messages";
-import Settings from "@/pages/Settings";
+import BrandSettings from "@/pages/BrandSettings";
 import CompletedProjects from "@/pages/CompletedProjects";
 
 export const brandRoutes = [
@@ -86,7 +86,7 @@ export const brandRoutes = [
     element: (
       <ProtectedBrandRoute>
         <BrandLayout>
-          <Settings />
+          <BrandSettings />
         </BrandLayout>
       </ProtectedBrandRoute>
     ),
