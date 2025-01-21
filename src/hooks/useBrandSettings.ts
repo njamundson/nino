@@ -52,12 +52,11 @@ export const useBrandSettings = () => {
         .from('brands')
         .select('*')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
       if (error) throw error;
       
       if (brand) {
-        console.log("Fetched brand data:", brand);
         setBrandData({
           company_name: brand.company_name || "",
           brand_type: brand.brand_type || "hotel",
@@ -71,8 +70,6 @@ export const useBrandSettings = () => {
           two_factor_enabled: brand.two_factor_enabled || false,
         });
         setProfileImage(brand.profile_image_url);
-        
-        // Fetch login history after getting brand data
         await fetchLoginHistory(brand.id);
       }
     } catch (error) {

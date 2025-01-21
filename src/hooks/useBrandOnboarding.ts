@@ -37,7 +37,7 @@ export const useBrandOnboarding = () => {
           return;
         }
 
-        // First check if the user already has a brand
+        // Check for existing brand
         const { data: existingBrand } = await supabase
           .from('brands')
           .select('id')
@@ -45,7 +45,7 @@ export const useBrandOnboarding = () => {
           .single();
 
         if (existingBrand) {
-          // If brand exists, update it
+          // Update existing brand
           const { error: updateError } = await supabase
             .from('brands')
             .update({
@@ -61,7 +61,7 @@ export const useBrandOnboarding = () => {
 
           if (updateError) throw updateError;
         } else {
-          // Create new brand profile if it doesn't exist
+          // Create new brand
           const { error: brandError } = await supabase
             .from('brands')
             .insert({
@@ -75,13 +75,22 @@ export const useBrandOnboarding = () => {
               profile_image_url: profileImage,
             });
 
-          if (brandError) throw brandError;
+          if (brandError) {
+            if (brandError.code === '23505') { // Unique constraint violation
+              toast({
+                title: "Error",
+                description: "You already have a brand profile.",
+                variant: "destructive",
+              });
+            } else {
+              throw brandError;
+            }
+            return;
+          }
         }
 
-        console.log("Brand data saved successfully:", {
-          ...brandData,
-          profileImage,
-        });
+        console.log("Brand data saved successfully");
+        setCurrentStep('details');
       } catch (error) {
         console.error("Error in brand creation:", error);
         toast({
@@ -89,9 +98,7 @@ export const useBrandOnboarding = () => {
           description: "An unexpected error occurred. Please try again.",
           variant: "destructive",
         });
-        return;
       }
-      setCurrentStep('details');
     } else if (currentStep === 'details') {
       setCurrentStep('social');
     } else if (currentStep === 'social') {
