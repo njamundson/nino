@@ -21,6 +21,24 @@ export const useSignUp = (onToggleAuth: () => void) => {
     try {
       console.log("Starting sign up process with data:", { email, firstName, lastName });
       
+      // First check if user already exists
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (existingUser) {
+        toast({
+          title: "Account exists",
+          description: "An account with this email already exists. Please sign in instead.",
+          variant: "destructive",
+        });
+        onToggleAuth();
+        return;
+      }
+
+      // Create new user
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -36,23 +54,18 @@ export const useSignUp = (onToggleAuth: () => void) => {
         console.error("Sign up error:", signUpError);
         let errorMessage = "Error creating account";
         
-        if (signUpError.message.includes("User already registered")) {
-          errorMessage = "An account with this email already exists. Please sign in instead.";
-          onToggleAuth();
-        } else {
-          switch (signUpError.message) {
-            case "Failed to fetch":
-              errorMessage = "Network error. Please check your connection and try again.";
-              break;
-            case "Invalid email":
-              errorMessage = "Please enter a valid email address.";
-              break;
-            case "Weak password":
-              errorMessage = "Password is too weak. Please use a stronger password.";
-              break;
-            default:
-              errorMessage = signUpError.message;
-          }
+        switch (signUpError.message) {
+          case "Failed to fetch":
+            errorMessage = "Network error. Please check your connection and try again.";
+            break;
+          case "Invalid email":
+            errorMessage = "Please enter a valid email address.";
+            break;
+          case "Weak password":
+            errorMessage = "Password is too weak. Please use a stronger password.";
+            break;
+          default:
+            errorMessage = signUpError.message;
         }
         
         toast({
@@ -66,15 +79,21 @@ export const useSignUp = (onToggleAuth: () => void) => {
       if (signUpData?.user) {
         console.log("User signed up successfully, redirecting to onboarding...");
         
+        // Check if profile exists
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', signUpData.user.id)
+          .single();
+
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
         });
-        
-        // Redirect to onboarding - profile will be created after onboarding completion
+
+        // Always redirect to onboarding for new users
         navigate("/onboarding");
       } else {
-        // If no session but signup was successful, show a message about email confirmation
         toast({
           title: "Check your email",
           description: "Please check your email to confirm your account.",
