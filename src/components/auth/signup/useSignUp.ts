@@ -19,7 +19,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
     setLoading(true);
     
     try {
-      console.log("Starting sign up process with data:", { email, firstName, lastName });
+      console.log("Starting sign up process...");
       
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -29,6 +29,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
             first_name: firstName,
             last_name: lastName,
           },
+          emailRedirectTo: `${window.location.origin}/onboarding`,
         },
       });
 
@@ -62,33 +63,32 @@ export const useSignUp = (onToggleAuth: () => void) => {
         return;
       }
 
-      if (signUpData?.user) {
-        console.log("User signed up successfully, redirecting to onboarding...");
-        
-        toast({
-          title: "Welcome to NINO",
-          description: "Your account has been created successfully.",
-        });
+      console.log("Sign up response:", signUpData);
 
-        // Always redirect to onboarding for new users
-        navigate("/onboarding");
-      } else {
-        toast({
-          title: "Check your email",
-          description: "Please check your email to confirm your account.",
-        });
+      if (signUpData?.user) {
+        console.log("User created successfully:", signUpData.user);
+        
+        // Check if email confirmation is required
+        if (signUpData.session) {
+          console.log("Session available, redirecting to onboarding...");
+          toast({
+            title: "Welcome to NINO",
+            description: "Your account has been created successfully.",
+          });
+          navigate("/onboarding");
+        } else {
+          console.log("Email confirmation required");
+          toast({
+            title: "Check your email",
+            description: "Please check your email to confirm your account.",
+          });
+        }
       }
     } catch (error: any) {
-      console.error("Authentication error:", error);
-      let errorMessage = "Error creating account";
-      
-      if (error.message?.includes("Failed to fetch")) {
-        errorMessage = "Network error. Please check your connection and try again.";
-      }
-      
+      console.error("Unexpected error during sign up:", error);
       toast({
         title: "Error",
-        description: errorMessage,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {

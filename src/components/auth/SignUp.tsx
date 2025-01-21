@@ -9,9 +9,7 @@ interface SignUpProps {
 
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const navigate = useNavigate();
-  const { loading, handleSignUp } = useSignUp(() => {
-    navigate('/onboarding');
-  });
+  const { loading, handleSignUp } = useSignUp(onToggleAuth);
 
   return (
     <div className="space-y-6">
@@ -20,7 +18,10 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         subtitle="Sign up to get started" 
       />
 
-      <SignUpForm onSubmit={handleSignUp} loading={loading} />
+      <SignUpForm 
+        onSubmit={handleSignUp} 
+        loading={loading} 
+      />
 
       <div className="text-center text-sm text-nino-gray">
         Already have an account?{" "}
