@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import BasicInfoStep from "./BasicInfoStep";
 import ProfessionalInfoStep from "./ProfessionalInfoStep";
 import SocialLinksStep from "./SocialLinksStep";
-import PaymentStep from "./PaymentStep";
+import NinoWelcomeMessage from "./NinoWelcomeMessage";
 import { useCreatorOnboarding } from "@/hooks/useCreatorOnboarding";
 import CreatorOnboardingProgress from "./CreatorOnboardingProgress";
 
@@ -55,16 +55,16 @@ const CreatorOnboardingForm = () => {
         );
       case 'payment':
         return (
-          <PaymentStep />
+          <NinoWelcomeMessage />
         );
       default:
         return null;
     }
   };
 
-  // If we're on the payment step, only show the PaymentStep component
+  // If we're on the payment step, only show the NinoWelcomeMessage component
   if (currentStep === 'payment') {
-    return <PaymentStep />;
+    return <NinoWelcomeMessage />;
   }
 
   return (

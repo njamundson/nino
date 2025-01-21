@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const PaymentStep = () => {
+const NinoWelcomeMessage = () => {
   const navigate = useNavigate();
 
   const handleComplete = () => {
@@ -42,4 +42,4 @@ const PaymentStep = () => {
   );
 };
 
-export default PaymentStep;
+export default NinoWelcomeMessage;

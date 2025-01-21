@@ -33,7 +33,7 @@ const BrandOnboarding = () => {
         onboardingCompleted: true
       }));
 
-      // Navigate to transition page
+      // Navigate to welcome message
       navigate("/onboarding/brand/payment");
     } catch (error) {
       console.error('Error in handleComplete:', error);

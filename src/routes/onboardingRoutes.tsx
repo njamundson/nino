@@ -3,7 +3,7 @@ import CreatorOnboarding from "@/components/onboarding/CreatorOnboarding";
 import BrandOnboarding from "@/components/onboarding/BrandOnboarding";
 import AccountManagersStep from "@/components/onboarding/brand/managers/AccountManagersStep";
 import InvitationAcceptance from "@/components/onboarding/brand/managers/InvitationAcceptance";
-import PaymentStep from "@/components/onboarding/brand/PaymentStep";
+import NinoWelcomeMessage from "@/components/onboarding/brand/NinoWelcomeMessage";
 
 export const onboardingRoutes = [
   {
@@ -20,7 +20,7 @@ export const onboardingRoutes = [
   },
   {
     path: "/onboarding/brand/payment",
-    element: <PaymentStep />,
+    element: <NinoWelcomeMessage />,
   },
   {
     path: "/onboarding/brand/invitation/:token",
