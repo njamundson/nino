@@ -1,24 +1,11 @@
-import { northAmericanCountries, statesByCountry as northAmericanStates } from './northAmerica';
-import { southAmericanCountries, statesByCountry as southAmericanStates } from './southAmerica';
-import { europeanCountries, statesByCountry as europeanStates, citiesByCountry } from './europe';
-import { caribbeanCountries } from './caribbean';
+import { northAmericaLocations } from './northAmerica';
+import { southAmericaLocations } from './southAmerica';
+import { europeLocations } from './europe';
+import { caribbeanLocations } from './caribbean';
 
-export const COUNTRIES = [
-  ...northAmericanCountries,
-  ...southAmericanCountries,
-  ...europeanCountries,
-  ...caribbeanCountries
+export const LOCATIONS = [
+  ...northAmericaLocations,
+  ...southAmericaLocations,
+  ...europeLocations,
+  ...caribbeanLocations
 ];
-
-export const STATES_BY_COUNTRY = {
-  ...northAmericanStates,
-  ...southAmericanStates,
-  ...europeanStates
-};
-
-export const CITIES_BY_COUNTRY = citiesByCountry;
-
-export const COUNTRIES_WITH_CITIES = Object.keys(CITIES_BY_COUNTRY);
-
-// Export all locations as a single array for the filter
-export const LOCATIONS = COUNTRIES;

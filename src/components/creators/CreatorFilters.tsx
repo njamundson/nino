@@ -60,14 +60,14 @@ const CreatorFilters = ({
       <div>
         <h3 className="text-sm font-medium mb-3">Location</h3>
         <Select
-          value={selectedLocation || ""}
-          onValueChange={(value) => onLocationChange(value || null)}
+          value={selectedLocation || "all"}
+          onValueChange={(value) => onLocationChange(value === "all" ? null : value)}
         >
           <SelectTrigger className="w-full md:w-[300px]">
             <SelectValue placeholder="Select a location" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Locations</SelectItem>
+            <SelectItem value="all">All Locations</SelectItem>
             {LOCATIONS.map((location) => (
               <SelectItem key={location} value={location}>
                 {location}
