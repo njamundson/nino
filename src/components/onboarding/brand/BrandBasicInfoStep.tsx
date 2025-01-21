@@ -78,19 +78,19 @@ const BrandBasicInfoStep = ({
 
       <div className="space-y-6">
         <div className="flex flex-col items-center space-y-4">
-          <div className="relative group">
+          <label
+            htmlFor="photo-upload"
+            className="relative group cursor-pointer"
+          >
             <Avatar className="w-32 h-32 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20">
               <AvatarImage src={profileImage || ""} />
               <AvatarFallback className="bg-nino-bg">
                 <Camera className="w-12 h-12 text-nino-gray" />
               </AvatarFallback>
             </Avatar>
-            <label
-              htmlFor="photo-upload"
-              className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors shadow-lg"
-            >
+            <div className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full group-hover:bg-nino-primary/90 transition-colors shadow-lg">
               <Camera className="w-5 h-5 text-white" />
-            </label>
+            </div>
             <input
               type="file"
               id="photo-upload"
@@ -98,7 +98,7 @@ const BrandBasicInfoStep = ({
               accept="image/*"
               onChange={handleImageUpload}
             />
-          </div>
+          </label>
           <p className="text-sm text-nino-gray">Upload your brand logo</p>
         </div>
 
