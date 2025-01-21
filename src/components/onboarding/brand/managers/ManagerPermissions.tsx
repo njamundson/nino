@@ -2,7 +2,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ManagerPermissionsProps {
   permissions: string[];
-  onUpdate?: (permissions: string[]) => void;
+  onUpdate?: (permissions: string[]) => Promise<void>;
 }
 
 const ManagerPermissions = ({ permissions, onUpdate }: ManagerPermissionsProps) => {
@@ -14,32 +14,25 @@ const ManagerPermissions = ({ permissions, onUpdate }: ManagerPermissionsProps) 
       className="flex flex-wrap gap-1"
     >
       <ToggleGroupItem
-        value="edit_content"
+        value="post_projects"
         size="sm"
         className="text-xs data-[state=on]:bg-nino-primary data-[state=on]:text-white"
       >
-        Edit Content
+        Post Projects
       </ToggleGroupItem>
       <ToggleGroupItem
-        value="manage_team"
+        value="message_creators"
         size="sm"
         className="text-xs data-[state=on]:bg-nino-primary data-[state=on]:text-white"
       >
-        Manage Team
+        Message Creators
       </ToggleGroupItem>
       <ToggleGroupItem
-        value="view_analytics"
+        value="add_admins"
         size="sm"
         className="text-xs data-[state=on]:bg-nino-primary data-[state=on]:text-white"
       >
-        View Analytics
-      </ToggleGroupItem>
-      <ToggleGroupItem
-        value="publish_content"
-        size="sm"
-        className="text-xs data-[state=on]:bg-nino-primary data-[state=on]:text-white"
-      >
-        Publish Content
+        Add Admins
       </ToggleGroupItem>
     </ToggleGroup>
   );
