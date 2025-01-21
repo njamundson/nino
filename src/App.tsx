@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
       retry: 3,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
     },
   },
 });
@@ -31,58 +31,6 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 3;
-
-  const handleSessionError = async () => {
-    console.log('Session error detected, signing out...');
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Session expired",
-        description: "Please sign in again to continue.",
-        variant: "destructive",
-      });
-      navigate('/');
-    } catch (error) {
-      console.error('Error during sign out:', error);
-    } finally {
-      setIsInitialized(true);
-      setIsLoading(false);
-    }
-  };
-
-  const verifySession = async () => {
-    try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        throw sessionError;
-      }
-
-      if (!session) {
-        console.log('No active session');
-        return false;
-      }
-
-      const { error: userError } = await supabase.auth.getUser();
-      if (userError) {
-        throw userError;
-      }
-
-      return true;
-    } catch (error: any) {
-      console.error('Session verification error:', error);
-      if (error.message?.includes('Failed to fetch') && retryCount < MAX_RETRIES) {
-        setRetryCount(prev => prev + 1);
-        return new Promise(resolve => setTimeout(() => resolve(verifySession()), 2000));
-      }
-      if (error.message?.includes('session_not_found')) {
-        await handleSessionError();
-      }
-      return false;
-    }
-  };
 
   useEffect(() => {
     let mounted = true;
@@ -90,12 +38,37 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
     const initializeAuth = async () => {
       try {
         setIsLoading(true);
-        const isValid = await verifySession();
         
-        if (!isValid) {
-          navigate('/');
+        // Get the current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          throw sessionError;
         }
-        
+
+        // If no session and not on index page, redirect to index
+        if (!session && window.location.pathname !== '/') {
+          navigate('/');
+          return;
+        }
+
+        // If session exists, verify it's still valid
+        if (session) {
+          const { error: userError } = await supabase.auth.getUser();
+          if (userError) {
+            console.error('User verification error:', userError);
+            await supabase.auth.signOut();
+            toast({
+              title: "Session expired",
+              description: "Please sign in again to continue.",
+              variant: "destructive",
+            });
+            navigate('/');
+            return;
+          }
+        }
+
         if (mounted) {
           setIsInitialized(true);
           setIsLoading(false);
@@ -103,38 +76,36 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       } catch (error) {
         console.error('Auth initialization error:', error);
         if (mounted) {
+          // Clear the session on error
+          await supabase.auth.signOut();
           setIsInitialized(true);
           setIsLoading(false);
+          if (window.location.pathname !== '/') {
+            navigate('/');
+          }
         }
       }
     };
 
-    // Initial auth check
-    initializeAuth();
-
-    // Listen for auth changes
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       
       if (event === 'SIGNED_OUT') {
-        console.log('User signed out');
         navigate('/');
-      } else if (event === 'TOKEN_REFRESHED') {
-        console.log('Token refreshed successfully');
       } else if (event === 'SIGNED_IN') {
-        console.log('User signed in');
-        const isValid = await verifySession();
-        if (!isValid) {
-          await handleSessionError();
-        }
+        await initializeAuth();
       }
     });
+
+    // Initial auth check
+    initializeAuth();
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [navigate, toast, retryCount]);
+  }, [navigate, toast]);
 
   // Only protect non-index routes
   const isIndexRoute = window.location.pathname === '/';
