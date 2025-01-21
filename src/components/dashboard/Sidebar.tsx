@@ -21,10 +21,10 @@ const Sidebar = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/creator/dashboard" },
     { icon: Briefcase, label: "Projects", path: "/creator/projects" },
-    { icon: CheckCircle, label: "Completed Projects", path: "/creator/completed-projects" },
     { icon: FileText, label: "Proposals", path: "/creator/proposals" },
     { icon: Calendar, label: "Bookings", path: "/creator/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/creator/messages" },
+    { icon: CheckCircle, label: "Completed Projects", path: "/creator/completed-projects" },
   ];
 
   const handleSignOut = async () => {
