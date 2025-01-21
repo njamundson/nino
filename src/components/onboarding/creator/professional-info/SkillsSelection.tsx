@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
+import { CREATOR_SPECIALTIES } from "@/types/creator";
 
 interface SkillsSelectionProps {
   skills: string[];
@@ -8,14 +9,6 @@ interface SkillsSelectionProps {
 }
 
 const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
-  const availableSkills = [
-    "UGC Creator",
-    "Videographer",
-    "Photographer",
-    "Model/Talent",
-    "Public Relations/Writer",
-  ];
-
   const toggleSkill = (skill: string) => {
     console.log('Toggling skill:', skill, 'Current skills:', skills);
     const updatedSkills = skills.includes(skill)
@@ -27,9 +20,9 @@ const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
 
   return (
     <div className="space-y-4">
-      <Label className="text-base">Skills</Label>
+      <Label className="text-base">Skills *</Label>
       <div className="flex flex-wrap gap-3">
-        {availableSkills.map((skill) => (
+        {CREATOR_SPECIALTIES.map((skill) => (
           <Button
             key={skill}
             variant="outline"

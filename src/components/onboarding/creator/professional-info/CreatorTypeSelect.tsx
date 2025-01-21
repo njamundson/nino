@@ -6,6 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { CREATOR_TYPES } from "@/types/creator";
 
 interface CreatorTypeSelectProps {
   creatorType: string;
@@ -13,8 +14,6 @@ interface CreatorTypeSelectProps {
 }
 
 const CreatorTypeSelect = ({ creatorType, onUpdateField }: CreatorTypeSelectProps) => {
-  const creatorTypes = ["Solo", "Couple", "Family", "Group"];
-
   return (
     <div className="space-y-2">
       <Label className="text-base">Creator Type *</Label>
@@ -27,9 +26,9 @@ const CreatorTypeSelect = ({ creatorType, onUpdateField }: CreatorTypeSelectProp
           <SelectValue placeholder="Select your creator type" />
         </SelectTrigger>
         <SelectContent>
-          {creatorTypes.map((type) => (
-            <SelectItem key={type} value={type.toLowerCase()}>
-              {type}
+          {CREATOR_TYPES.map((type) => (
+            <SelectItem key={type} value={type}>
+              {type.charAt(0).toUpperCase() + type.slice(1)}
             </SelectItem>
           ))}
         </SelectContent>

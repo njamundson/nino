@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { CreatorData } from "@/types/creator";
+import { CreatorData, CREATOR_TYPES, CREATOR_SPECIALTIES } from "@/types/creator";
 
 export const useCreatorOnboarding = () => {
   const navigate = useNavigate();
@@ -18,9 +18,25 @@ export const useCreatorOnboarding = () => {
     website: "",
     location: "",
     profileImage: null,
-    creatorType: "",
+    creatorType: "solo",
     profile: null
   });
+
+  const validateCreatorType = (type: string): boolean => {
+    return CREATOR_TYPES.includes(type.toLowerCase() as any);
+  };
+
+  const validateSpecialties = (specialties: string[]): boolean => {
+    return specialties.every(specialty => CREATOR_SPECIALTIES.includes(specialty as any));
+  };
+
+  const validateInstagram = (username: string): boolean => {
+    return /^@?[A-Za-z0-9._]+$/.test(username);
+  };
+
+  const validateWebsite = (url: string): boolean => {
+    return /^https?:\/\/.+/.test(url);
+  };
 
   const updateField = (field: keyof CreatorData, value: any) => {
     console.log('Updating creator field:', field, 'with value:', value);
@@ -29,10 +45,50 @@ export const useCreatorOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
+      if (!creatorData.bio || !creatorData.location) {
+        toast({
+          title: "Required Fields Missing",
+          description: "Please fill in all required fields before continuing.",
+          variant: "destructive",
+        });
+        return;
+      }
       setCurrentStep('professional');
     } else if (currentStep === 'professional') {
+      if (!validateCreatorType(creatorData.creatorType)) {
+        toast({
+          title: "Invalid Creator Type",
+          description: "Please select a valid creator type.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!validateSpecialties(creatorData.specialties)) {
+        toast({
+          title: "Invalid Specialties",
+          description: "Please select valid specialties.",
+          variant: "destructive",
+        });
+        return;
+      }
       setCurrentStep('social');
     } else if (currentStep === 'social') {
+      if (creatorData.instagram && !validateInstagram(creatorData.instagram)) {
+        toast({
+          title: "Invalid Instagram Username",
+          description: "Please enter a valid Instagram username.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (creatorData.website && !validateWebsite(creatorData.website)) {
+        toast({
+          title: "Invalid Website URL",
+          description: "Please enter a valid website URL starting with http:// or https://",
+          variant: "destructive",
+        });
+        return;
+      }
       setCurrentStep('payment');
     } else {
       try {
@@ -49,53 +105,44 @@ export const useCreatorOnboarding = () => {
         // First update the profile
         const { error: profileError } = await supabase
           .from('profiles')
-          .update({
+          .upsert({
+            id: user.id,
             first_name: creatorData.firstName,
             last_name: creatorData.lastName,
-          })
-          .eq('id', user.id);
+            updated_at: new Date().toISOString(),
+          });
 
         if (profileError) {
           console.error("Error updating profile:", profileError);
           throw profileError;
         }
 
-        // Log the data being saved for debugging
-        console.log('Saving creator with data:', {
-          bio: creatorData.bio,
-          instagram: creatorData.instagram,
-          website: creatorData.website,
-          location: creatorData.location,
-          specialties: creatorData.specialties,
-          profile_image_url: creatorData.profileImage,
-          creator_type: creatorData.creatorType
-        });
-
-        // Update the creator profile with ALL fields
+        // Create the creator profile
         const { error: creatorError } = await supabase
           .from('creators')
-          .update({
-            bio: creatorData.bio, // Remove the null fallback to ensure bio is saved
-            instagram: creatorData.instagram,
+          .insert({
+            user_id: user.id,
+            profile_id: user.id,
+            bio: creatorData.bio,
+            instagram: creatorData.instagram?.replace('@', ''),
             website: creatorData.website,
             location: creatorData.location,
             specialties: creatorData.specialties,
             profile_image_url: creatorData.profileImage,
-            creator_type: creatorData.creatorType
-          })
-          .eq('user_id', user.id);
+            creator_type: creatorData.creatorType.toLowerCase(),
+          });
 
         if (creatorError) {
-          console.error("Error updating creator profile:", creatorError);
+          console.error("Error creating creator profile:", creatorError);
           toast({
             title: "Error",
-            description: "Failed to update creator profile. Please try again.",
+            description: "Failed to create creator profile. Please try again.",
             variant: "destructive",
           });
           return;
         }
 
-        console.log("Creator profile updated successfully");
+        console.log("Creator profile created successfully");
 
         toast({
           title: "Success!",
