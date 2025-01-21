@@ -5,6 +5,7 @@ import BrandDetailsForm from "@/components/settings/profile/BrandDetailsForm";
 import AccountManagersSection from "@/components/settings/profile/AccountManagersSection";
 import { Button } from "@/components/ui/button";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
+import { BrandData } from "@/types/brand";
 
 type SettingsPage = "profile" | "managers" | "menu";
 
@@ -44,7 +45,16 @@ const BrandSettings = () => {
           <BrandDetailsForm
             loading={loading}
             profileImage={profileImage}
-            brandData={brandData}
+            brandData={{
+              brandName: brandData.company_name,
+              brandEmail: brandData.support_email || "",
+              brandBio: brandData.description,
+              homeLocation: brandData.location,
+              instagram: brandData.instagram || "",
+              website: brandData.website || "",
+              location: brandData.location,
+              brandType: brandData.brand_type
+            }}
             onUpdateField={onUpdateField}
             onUpdateImage={setProfileImage}
           />
