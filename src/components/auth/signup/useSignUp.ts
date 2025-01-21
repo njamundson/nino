@@ -21,73 +21,29 @@ export const useSignUp = (onToggleAuth: () => void) => {
     try {
       console.log("Starting sign up process...");
       
-      // Only create the auth user initially, without triggering the database user creation
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      // Store signup data in session storage for onboarding
+      const signupData = {
         email,
         password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            onboarding_completed: false // Flag to track onboarding status
-          },
-          emailRedirectTo: `${window.location.origin}/onboarding`,
-        },
+        firstName,
+        lastName
+      };
+      
+      // Save signup data to session storage (will be used during onboarding)
+      sessionStorage.setItem('pendingSignup', JSON.stringify(signupData));
+      
+      // Instead of creating the auth user now, we'll redirect to onboarding
+      console.log("Redirecting to onboarding...");
+      toast({
+        title: "Let's set up your account",
+        description: "Please complete the onboarding process to create your account.",
       });
-
-      if (signUpError) {
-        console.error("Sign up error:", signUpError);
-        let errorMessage = "Error creating account";
-        
-        switch (signUpError.message) {
-          case "User already registered":
-            errorMessage = "An account with this email already exists. Please sign in instead.";
-            onToggleAuth();
-            break;
-          case "Failed to fetch":
-            errorMessage = "Network error. Please check your connection and try again.";
-            break;
-          case "Invalid email":
-            errorMessage = "Please enter a valid email address.";
-            break;
-          case "Weak password":
-            errorMessage = "Password is too weak. Please use a stronger password.";
-            break;
-          default:
-            errorMessage = signUpError.message;
-        }
-        
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      console.log("Sign up response:", signUpData);
-
-      if (signUpData?.user) {
-        console.log("Auth user created successfully:", signUpData.user);
-        
-        // Check if email confirmation is required
-        if (signUpData.session) {
-          console.log("Session available, redirecting to onboarding...");
-          toast({
-            title: "Welcome to NINO",
-            description: "Please complete the onboarding process to set up your account.",
-          });
-          navigate("/onboarding");
-        } else {
-          console.log("Email confirmation required");
-          toast({
-            title: "Check your email",
-            description: "Please check your email to confirm your account.",
-          });
-        }
-      }
+      
+      // Navigate to onboarding selection page
+      navigate("/onboarding");
+      
     } catch (error: any) {
-      console.error("Unexpected error during sign up:", error);
+      console.error("Unexpected error during sign up process:", error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
