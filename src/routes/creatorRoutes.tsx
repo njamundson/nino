@@ -7,18 +7,9 @@ import Proposals from "@/pages/Proposals";
 import Bookings from "@/pages/Bookings";
 import Messages from "@/pages/Messages";
 import Settings from "@/pages/Settings";
-import Welcome from "@/pages/Welcome";
 import CompletedProjects from "@/pages/CompletedProjects";
 
 export const creatorRoutes = [
-  {
-    path: "/creator/welcome",
-    element: (
-      <ProtectedCreatorRoute>
-        <Welcome />
-      </ProtectedCreatorRoute>
-    ),
-  },
   {
     path: "/creator/dashboard",
     element: (

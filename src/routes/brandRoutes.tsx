@@ -8,17 +8,8 @@ import ViewCreators from "@/pages/ViewCreators";
 import Bookings from "@/pages/Bookings";
 import Messages from "@/pages/Messages";
 import Settings from "@/pages/Settings";
-import Welcome from "@/pages/Welcome";
 
 export const brandRoutes = [
-  {
-    path: "/brand/welcome",
-    element: (
-      <ProtectedBrandRoute>
-        <Welcome />
-      </ProtectedBrandRoute>
-    ),
-  },
   {
     path: "/brand/dashboard",
     element: (
