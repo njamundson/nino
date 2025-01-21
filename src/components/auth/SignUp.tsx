@@ -18,6 +18,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
     try {
       setLoading(true);
       
+      // First, create the user account with Supabase
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -25,7 +26,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           data: {
             first_name: data.firstName,
             last_name: data.lastName,
-            user_type: data.userType, // Store user type in metadata
+            user_type: data.userType,
           },
         },
       });
@@ -33,6 +34,45 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
+        // Create profile record
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: authData.user.id,
+              first_name: data.firstName,
+              last_name: data.lastName,
+            }
+          ]);
+
+        if (profileError) throw profileError;
+
+        // Create brand or creator record based on user type
+        if (data.userType === 'brand') {
+          const { error: brandError } = await supabase
+            .from('brands')
+            .insert([
+              {
+                user_id: authData.user.id,
+                company_name: '', // Will be filled during onboarding
+                brand_type: 'retail', // Default value, will be updated during onboarding
+              }
+            ]);
+
+          if (brandError) throw brandError;
+        } else if (data.userType === 'creator') {
+          const { error: creatorError } = await supabase
+            .from('creators')
+            .insert([
+              {
+                user_id: authData.user.id,
+                creator_type: 'solo', // Default value, will be updated during onboarding
+              }
+            ]);
+
+          if (creatorError) throw creatorError;
+        }
+
         toast({
           title: "Account created successfully",
           description: "Welcome to NINO!",
