@@ -14,7 +14,7 @@ import {
   STATES_BY_COUNTRY, 
   CITIES_BY_COUNTRY, 
   COUNTRIES_WITH_CITIES 
-} from "./locationData";
+} from "./locations";
 
 interface PersonalInfoFieldsProps {
   firstName: string;
