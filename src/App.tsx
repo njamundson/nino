@@ -39,11 +39,26 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
       try {
         setIsLoading(true);
         
+        // Clear session if there's an invalid refresh token
+        const currentSession = await supabase.auth.getSession();
+        if (currentSession.error?.message?.includes('refresh_token_not_found')) {
+          console.log('Invalid refresh token detected, clearing session');
+          await supabase.auth.signOut();
+          if (window.location.pathname !== '/') {
+            navigate('/');
+          }
+          return;
+        }
+
         // Get the current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error('Session error:', sessionError);
+          // If the error is related to refresh token, clear the session
+          if (sessionError.message?.includes('refresh_token_not_found')) {
+            await supabase.auth.signOut();
+          }
           throw sessionError;
         }
 
@@ -91,8 +106,17 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       
-      if (event === 'SIGNED_OUT') {
-        navigate('/');
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+        // Handle token refresh failure
+        if (!session && event === 'TOKEN_REFRESHED') {
+          console.error('Token refresh failed');
+          navigate('/');
+          return;
+        }
+        
+        if (event === 'SIGNED_OUT') {
+          navigate('/');
+        }
       } else if (event === 'SIGNED_IN') {
         await initializeAuth();
       }
