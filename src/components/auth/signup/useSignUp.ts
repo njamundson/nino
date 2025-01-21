@@ -21,6 +21,25 @@ export const useSignUp = (onToggleAuth: () => void) => {
     try {
       console.log("Starting sign up process...");
       
+      // Create the auth user with onboarding flag set to false
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            onboarding_completed: false
+          }
+        }
+      });
+
+      if (signUpError) throw signUpError;
+
+      if (!signUpData.user) {
+        throw new Error('No user data returned');
+      }
+
       // Store signup data in session storage for onboarding
       const signupData = {
         email,
@@ -32,7 +51,6 @@ export const useSignUp = (onToggleAuth: () => void) => {
       // Save signup data to session storage (will be used during onboarding)
       sessionStorage.setItem('pendingSignup', JSON.stringify(signupData));
       
-      // Instead of creating the auth user now, we'll redirect to onboarding
       console.log("Redirecting to onboarding...");
       toast({
         title: "Let's set up your account",
@@ -46,7 +64,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
       console.error("Unexpected error during sign up process:", error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again.",
+        description: error.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
