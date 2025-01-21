@@ -40,7 +40,7 @@ const PaymentStep = () => {
               duration: 0.8,
               ease: [0.22, 1, 0.36, 1]
             }}
-            className="fixed inset-0 bg-nino-bg flex items-center justify-center"
+            className="fixed inset-0 bg-nino-bg flex items-center justify-center rounded-xl"
           >
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
