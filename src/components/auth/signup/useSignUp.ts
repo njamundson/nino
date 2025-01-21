@@ -16,8 +16,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
   const navigate = useNavigate();
 
   const handleSignUp = async ({ email, password, firstName, lastName }: SignUpFormData) => {
-    if (loading) return;
-
+    console.log("Starting signup process...");
     setLoading(true);
 
     try {
@@ -33,33 +32,33 @@ export const useSignUp = (onToggleAuth: () => void) => {
       });
 
       if (error) {
+        console.error("Signup error:", error);
         if (error.message.includes("User already registered")) {
           toast({
             title: "Account exists",
             description: "An account with this email already exists. Please sign in instead.",
           });
           onToggleAuth();
-          return;
+        } else {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
         }
-
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
         return;
       }
 
       if (data.user) {
+        console.log("Signup successful, navigating to onboarding...");
         toast({
-          title: "Welcome to NINO",
-          description: "Your account has been created successfully.",
+          title: "Success!",
+          description: "Account created successfully. Let's set up your profile.",
         });
-        
-        // Immediately navigate to onboarding after successful signup
         navigate("/onboarding", { replace: true });
       }
     } catch (error: any) {
+      console.error("Unexpected error:", error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",

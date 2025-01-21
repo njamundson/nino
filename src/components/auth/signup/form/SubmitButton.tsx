@@ -16,7 +16,7 @@ const SubmitButton = ({ loading }: SubmitButtonProps) => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex items-center space-x-2"
+          className="flex items-center justify-center space-x-2"
         >
           <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           <span>Creating account...</span>
