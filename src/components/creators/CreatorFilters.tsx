@@ -1,9 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CREATOR_TYPES, CREATOR_SPECIALTIES } from "@/types/creator";
-import { northAmericanCountries } from "@/components/onboarding/creator/basic-info/locations/northAmerica";
-import { southAmericanCountries } from "@/components/onboarding/creator/basic-info/locations/southAmerica";
-import { europeanCountries } from "@/components/onboarding/creator/basic-info/locations/europe";
+import { northAmericanCountries, statesByCountry as northAmericanStates } from "@/components/onboarding/creator/basic-info/locations/northAmerica";
+import { southAmericanCountries, statesByCountry as southAmericanStates } from "@/components/onboarding/creator/basic-info/locations/southAmerica";
+import { europeanCountries, statesByCountry as europeanStates, citiesByCountry } from "@/components/onboarding/creator/basic-info/locations/europe";
 import { caribbeanCountries } from "@/components/onboarding/creator/basic-info/locations/caribbean";
 import {
   Select,
@@ -12,13 +12,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useState } from "react";
 
-const LOCATIONS = [
+const COUNTRIES = [
   ...northAmericanCountries,
   ...southAmericanCountries,
   ...europeanCountries,
   ...caribbeanCountries
 ].sort();
+
+const STATES_BY_COUNTRY = {
+  ...northAmericanStates,
+  ...southAmericanStates,
+  ...europeanStates
+};
+
+const CITIES_BY_COUNTRY = citiesByCountry;
+const COUNTRIES_WITH_CITIES = Object.keys(CITIES_BY_COUNTRY);
 
 interface CreatorFiltersProps {
   selectedSpecialties: string[];
@@ -37,6 +47,31 @@ const CreatorFilters = ({
   onCreatorTypeChange,
   onLocationChange
 }: CreatorFiltersProps) => {
+  const [selectedCountries, setSelectedCountries] = useState<{ [key: number]: string }>({});
+  const [selectedRegions, setSelectedRegions] = useState<{ [key: number]: string }>({});
+
+  const handleCountryChange = (value: string, index: number) => {
+    setSelectedCountries(prev => ({ ...prev, [index]: value }));
+    setSelectedRegions(prev => ({ ...prev, [index]: "" }));
+  };
+
+  const handleRegionChange = (value: string, index: number) => {
+    setSelectedRegions(prev => ({ ...prev, [index]: value }));
+    const country = selectedCountries[index];
+    onLocationChange(`${value}, ${country}`);
+  };
+
+  const getRegionLabel = (country: string) => {
+    return COUNTRIES_WITH_CITIES.includes(country) ? "City" : "State/Province";
+  };
+
+  const getRegionOptions = (country: string) => {
+    if (COUNTRIES_WITH_CITIES.includes(country)) {
+      return CITIES_BY_COUNTRY[country] || [];
+    }
+    return STATES_BY_COUNTRY[country] || [];
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -96,47 +131,44 @@ const CreatorFilters = ({
 
       <div>
         <h3 className="text-sm font-medium mb-3">Locations</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {selectedLocations.map((location, index) => (
-            <Select
-              key={`location-${index}`}
-              value={location}
-              onValueChange={(value) => onLocationChange(value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                {LOCATIONS.map((loc) => (
-                  <SelectItem key={loc} value={loc}>
-                    {loc}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[0, 1, 2, 3].map((index) => (
+            <div key={index} className="space-y-2">
+              <Select
+                value={selectedCountries[index] || ""}
+                onValueChange={(value) => handleCountryChange(value, index)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRIES.map((country) => (
+                    <SelectItem key={country} value={country}>
+                      {country}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {selectedCountries[index] && (
+                <Select
+                  value={selectedRegions[index] || ""}
+                  onValueChange={(value) => handleRegionChange(value, index)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={`Select ${getRegionLabel(selectedCountries[index])}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getRegionOptions(selectedCountries[index]).map((region) => (
+                      <SelectItem key={region} value={region}>
+                        {region}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
           ))}
-          {selectedLocations.length < 4 && (
-            <Select
-              value=""
-              onValueChange={(value) => {
-                if (value && !selectedLocations.includes(value)) {
-                  onLocationChange(value);
-                }
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Add location" />
-              </SelectTrigger>
-              <SelectContent>
-                {LOCATIONS.filter(loc => !selectedLocations.includes(loc)).map((loc) => (
-                  <SelectItem key={loc} value={loc}>
-                    {loc}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
         </div>
       </div>
     </div>
