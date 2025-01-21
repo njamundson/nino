@@ -19,7 +19,7 @@ const PaymentStep = () => {
 
   return (
     <div className="space-y-8 animate-fadeIn relative">
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {!showWelcome ? (
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-medium text-nino-text">Whoo whoo!</h1>
@@ -37,11 +37,20 @@ const PaymentStep = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ 
+              duration: 0.8,
+              ease: [0.22, 1, 0.36, 1]
+            }}
             className="fixed inset-0 bg-white flex items-center justify-center"
           >
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.2
+              }}
               className="text-6xl font-medium text-[#B27164]"
               style={{ fontFamily: "'SF Pro Display', sans-serif" }}
             >
