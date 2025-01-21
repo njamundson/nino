@@ -44,20 +44,20 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
     <div className="flex flex-col items-center space-y-4">
       <label
         htmlFor="photo-upload"
-        className="relative cursor-pointer group"
+        className="relative cursor-pointer"
       >
-        <div className="w-32 h-32 rounded-full overflow-hidden bg-white shadow-md transition-all duration-200 group-hover:shadow-lg">
+        <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100">
           <Avatar className="w-full h-full">
             <AvatarImage 
               src={profileImage || ''} 
               className="object-cover w-full h-full"
             />
-            <AvatarFallback className="w-full h-full bg-nino-bg flex items-center justify-center">
-              <Plus className="w-8 h-8 text-nino-gray" />
+            <AvatarFallback className="w-full h-full bg-gray-100 flex items-center justify-center">
+              <Plus className="w-8 h-8 text-gray-400" />
             </AvatarFallback>
           </Avatar>
           
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/20 transition-colors duration-200">
             <Plus className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
           </div>
         </div>
