@@ -11,7 +11,6 @@ const PaymentStep = () => {
 
   const handleComplete = () => {
     setShowWelcome(true);
-    // Navigate after 2 seconds
     setTimeout(() => {
       navigate('/creator/dashboard');
     }, 2000);
