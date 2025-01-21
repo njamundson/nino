@@ -15,13 +15,11 @@ const SocialLinksStep = ({
   onUpdateField,
 }: SocialLinksStepProps) => {
   const handleWebsiteChange = (value: string) => {
-    // Store the raw input value
     onUpdateField("website", value);
   };
 
   const handleWebsiteBlur = () => {
     if (website) {
-      // Format the URL when the input loses focus
       const formattedUrl = formatWebsiteUrl(website);
       if (formattedUrl) {
         onUpdateField("website", formattedUrl);
@@ -39,7 +37,10 @@ const SocialLinksStep = ({
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-base">Instagram *</Label>
+            <Label className="text-base flex items-center gap-1">
+              Instagram
+              <span className="text-red-500">*</span>
+            </Label>
             <div className="relative">
               <Instagram className="absolute left-4 top-3.5 w-5 h-5 text-nino-gray" />
               <Input

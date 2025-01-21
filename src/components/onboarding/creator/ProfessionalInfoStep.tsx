@@ -22,14 +22,29 @@ const ProfessionalInfoStep = ({
       </div>
 
       <div className="space-y-6">
-        <CreatorTypeSelect 
-          creatorType={creatorType} 
-          onUpdateField={onUpdateField} 
-        />
-        <SkillsSelection 
-          skills={skills} 
-          onUpdateSkills={onUpdateSkills} 
-        />
+        <div className="space-y-2">
+          <Label className="text-base flex items-center gap-1">
+            Creator Type
+            <span className="text-red-500">*</span>
+          </Label>
+          <CreatorTypeSelect 
+            creatorType={creatorType} 
+            onUpdateField={onUpdateField} 
+            required={true}
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label className="text-base flex items-center gap-1">
+            Skills
+            <span className="text-red-500">*</span>
+          </Label>
+          <SkillsSelection 
+            skills={skills} 
+            onUpdateSkills={onUpdateSkills} 
+            required={true}
+          />
+        </div>
       </div>
     </div>
   );

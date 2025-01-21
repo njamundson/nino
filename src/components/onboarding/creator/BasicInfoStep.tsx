@@ -40,6 +40,7 @@ const BasicInfoStep = ({
         bio={bio}
         location={location}
         onUpdateField={onUpdateField}
+        required={true}
       />
     </div>
   );
