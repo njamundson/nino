@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SignUpFormData {
   email: string;
@@ -13,49 +14,29 @@ export const useSignUp = () => {
   const { toast } = useToast();
 
   const handleSignUp = async (data: SignUpFormData) => {
-    if (loading) return;
+    if (loading) return null;
     setLoading(true);
 
     try {
-      // This will be replaced with Supabase auth.signUp
-      console.log('Preparing for Supabase auth signup');
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Get existing users or initialize empty array
-      const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
-      
-      // Check if email already exists
-      if (existingUsers.some((user: any) => user.email === data.email)) {
-        throw new Error('Email already in use');
-      }
-
-      // Create new user (this will be handled by Supabase)
-      const newUser = {
-        id: crypto.randomUUID(),
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        onboardingCompleted: false,
-        createdAt: new Date().toISOString(),
-      };
+        options: {
+          data: {
+            first_name: data.firstName,
+            last_name: data.lastName,
+          }
+        }
+      });
 
-      // Add to users array (temporary until Supabase)
-      existingUsers.push(newUser);
-      localStorage.setItem('users', JSON.stringify(existingUsers));
+      if (signUpError) throw signUpError;
 
-      // Set current user (will be handled by Supabase session)
-      localStorage.setItem('userData', JSON.stringify(newUser));
-
-      // Show success message
       toast({
         title: "Account created",
         description: "Please complete your profile setup.",
       });
 
-      return newUser;
+      return authData;
     } catch (error) {
       console.error('Sign up error:', error);
       throw error;
