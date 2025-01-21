@@ -55,10 +55,12 @@ export const useNotifications = () => {
           content: message.content,
           description: `${message.sender.first_name} ${message.sender.last_name} sent you a message`,
           created_at: message.created_at,
-          timestamp: message.created_at,
           read: message.read,
           action_url: `/messages/${message.sender_id}`,
-          data: message
+          data: {
+            ...message,
+            profiles: message.sender,
+          }
         }));
 
         const applicationNotifications: Notification[] = applications.map((application) => ({
@@ -68,14 +70,13 @@ export const useNotifications = () => {
           content: application.cover_letter || '',
           description: `${application.creator.profile.first_name} ${application.creator.profile.last_name} applied to "${application.opportunity.title}"`,
           created_at: application.created_at,
-          timestamp: application.created_at,
           read: false,
           action_url: `/applications/${application.id}`,
           data: application
         }));
 
         return [...messageNotifications, ...applicationNotifications]
-          .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       } catch (error) {
         setNotificationsError(error as Error);
         return [];

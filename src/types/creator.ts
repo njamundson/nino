@@ -33,10 +33,7 @@ export interface Message {
   media_url?: string | null;
   media_type?: string | null;
   profiles: CreatorProfile;
-  sender?: {
-    first_name: string;
-    last_name: string;
-  };
+  sender?: CreatorProfile;
 }
 
 export interface NotificationBase {
@@ -72,21 +69,6 @@ export interface ApplicationNotification extends NotificationBase {
 
 export type Notification = MessageNotification | ApplicationNotification;
 
-export interface CreatorData {
-  id: string;
-  user_id?: string;
-  bio: string | null;
-  location: string | null;
-  specialties: string[];
-  instagram: string | null;
-  website: string | null;
-  profile_image_url: string | null;
-  creator_type: CreatorType;
-  profile: CreatorProfile;
-  created_at?: string;
-  updated_at?: string;
-}
-
 export interface CreatorFiltersProps {
   selectedSpecialties: string[];
   selectedCreatorType: string | null;
@@ -95,22 +77,4 @@ export interface CreatorFiltersProps {
   onCreatorTypeChange: (type: string | null) => void;
   onLocationChange: (location: string) => void;
   onInvite?: (creatorId: string) => void;
-}
-
-export interface BasicInfoStepProps {
-  firstName: string;
-  lastName: string;
-  bio: string;
-  location: string;
-  profileImage: string | null;
-  onUpdateField: (field: string, value: string) => void;
-  onUpdateImage: (image: string | null) => void;
-}
-
-export interface ProfessionalInfoStepProps {
-  creatorType: CreatorType;
-  skills: string[];
-  bio: string;
-  onUpdateField: (field: string, value: string) => void;
-  onUpdateSkills: (skills: string[]) => void;
 }

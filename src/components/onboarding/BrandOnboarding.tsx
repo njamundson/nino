@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
 import { BrandOnboardingProps } from "@/types/brand";
 
+type OnboardingStep = "basic" | "details" | "social" | "managers";
+
 const BrandOnboarding = ({
   currentStep,
   setCurrentStep,
@@ -25,7 +27,7 @@ const BrandOnboarding = ({
   const { toast } = useToast();
 
   const getCurrentStep = () => {
-    switch (currentStep) {
+    switch (currentStep as OnboardingStep) {
       case 'basic':
         return (
           <BrandBasicInfoStep
@@ -58,10 +60,10 @@ const BrandOnboarding = ({
 
   return (
     <BrandOnboardingContainer>
-      <BrandOnboardingProgress currentStep={currentStep} />
+      <BrandOnboardingProgress currentStep={currentStep as OnboardingStep} />
       {getCurrentStep()}
       <BrandOnboardingNavigation
-        currentStep={currentStep}
+        currentStep={currentStep as OnboardingStep}
         onBack={handleBack}
         onNext={currentStep === 'managers' ? handleSubmit : handleNext}
       />
