@@ -19,20 +19,16 @@ const PersonalInfoFields = ({
 }: PersonalInfoFieldsProps) => {
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fullName = e.target.value;
+    const names = fullName.split(' ');
     
-    // Allow direct input of the full string, including spaces
-    const spaceIndex = fullName.indexOf(' ');
-    
-    if (spaceIndex === -1) {
-      // No space found, treat entire input as first name
+    if (names.length >= 2) {
+      const firstName = names[0];
+      const lastName = names.slice(1).join(' ');
+      onUpdateField('firstName', firstName);
+      onUpdateField('lastName', lastName);
+    } else {
       onUpdateField('firstName', fullName);
       onUpdateField('lastName', '');
-    } else {
-      // Split at first space
-      const first = fullName.slice(0, spaceIndex);
-      const last = fullName.slice(spaceIndex + 1);
-      onUpdateField('firstName', first);
-      onUpdateField('lastName', last);
     }
   };
 
