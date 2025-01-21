@@ -9,8 +9,8 @@ const CreatorDashboard = () => {
       <DashboardHeader />
       <BrandStatsCards />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <QuickNotes />
         <RecentMessages />
+        <QuickNotes />
       </div>
     </div>
   );
