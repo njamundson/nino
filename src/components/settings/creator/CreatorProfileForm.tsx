@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import SkillsSelection from "../../onboarding/creator/professional-info/SkillsSelection";
 import CreatorTypeSelect from "../../onboarding/creator/professional-info/CreatorTypeSelect";
 
 interface CreatorProfileFormProps {
@@ -49,12 +48,10 @@ const CreatorProfileForm = ({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <CreatorTypeSelect
-          creatorType={creatorData.creatorType}
-          onUpdateField={onUpdateField}
-        />
-      </div>
+      <CreatorTypeSelect
+        creatorType={creatorData.creatorType}
+        onUpdateField={onUpdateField}
+      />
 
       <div className="space-y-2">
         <Label htmlFor="bio">Bio</Label>
@@ -98,13 +95,6 @@ const CreatorProfileForm = ({
           onChange={(e) => onUpdateField("website", e.target.value)}
           disabled={loading}
           className="bg-white/50"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <SkillsSelection
-          skills={creatorData.specialties}
-          onUpdateSkills={(skills) => onUpdateField("specialties", skills)}
         />
       </div>
     </div>
