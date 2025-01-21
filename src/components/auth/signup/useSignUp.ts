@@ -64,35 +64,14 @@ export const useSignUp = (onToggleAuth: () => void) => {
       }
 
       if (signUpData?.user) {
-        console.log("User signed up successfully, creating profile...");
-        
-        // Create initial profile
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: signUpData.user.id,
-            first_name: firstName,
-            last_name: lastName,
-          });
-
-        if (profileError) {
-          console.error("Error creating profile:", profileError);
-          toast({
-            title: "Error",
-            description: "Failed to create profile. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        console.log("Profile created successfully");
+        console.log("User signed up successfully, redirecting to onboarding...");
         
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
         });
         
-        // Redirect to onboarding
+        // Redirect to onboarding - profile will be created after onboarding completion
         navigate("/onboarding");
       } else {
         // If no session but signup was successful, show a message about email confirmation
