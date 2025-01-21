@@ -8,14 +8,28 @@ interface ManagerListProps {
 }
 
 const ManagerList = ({ managers, onRemoveManager }: ManagerListProps) => {
+  if (managers.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <p>No team members added yet</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {managers.map((manager) => (
-        <ManagerCard
+        <motion.div
           key={manager.id}
-          manager={manager}
-          onRemove={() => onRemoveManager(manager.id)}
-        />
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+        >
+          <ManagerCard
+            manager={manager}
+            onRemove={() => onRemoveManager(manager.id)}
+          />
+        </motion.div>
       ))}
     </div>
   );
