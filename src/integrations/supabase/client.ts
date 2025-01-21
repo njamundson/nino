@@ -5,20 +5,61 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: true,
     autoRefreshToken: true,
+    persistSession: true,
     detectSessionInUrl: true,
-    storage: localStorage
+    storage: {
+      getItem: (key) => {
+        try {
+          const item = localStorage.getItem(key);
+          return item;
+        } catch (error) {
+          console.error('Error accessing localStorage:', error);
+          return null;
+        }
+      },
+      setItem: (key, value) => {
+        try {
+          localStorage.setItem(key, value);
+        } catch (error) {
+          console.error('Error setting localStorage:', error);
+        }
+      },
+      removeItem: (key) => {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {
+          console.error('Error removing from localStorage:', error);
+        }
+      }
+    },
+    flowType: 'pkce',
+    debug: true
   },
   global: {
-    headers: { 'x-application-name': 'nino' }
+    headers: {
+      'X-Client-Info': 'supabase-js-web'
+    }
   }
 });
 
-// Add debug logging for development
-if (import.meta.env.DEV) {
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log('Supabase auth event:', event);
-    console.log('Session:', session);
-  });
-}
+// Add debug logging for initialization and auth state changes
+console.log('Supabase client initialized with URL:', supabaseUrl);
+
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, session ? 'Session exists' : 'No session');
+  
+  if (!session) {
+    console.log('No active session');
+    return;
+  }
+
+  // Log successful authentication events
+  if (event === 'SIGNED_IN') {
+    console.log('User signed in successfully');
+  } else if (event === 'SIGNED_OUT') {
+    console.log('User signed out');
+  } else if (event === 'TOKEN_REFRESHED') {
+    console.log('Token refreshed successfully');
+  }
+});

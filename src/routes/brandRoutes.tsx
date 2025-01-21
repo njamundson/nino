@@ -90,3 +90,15 @@ export const brandRoutes = [
     ),
   },
 ];
+
+export const BrandRoutes = () => {
+  return (
+    <>
+      {brandRoutes.map((route) => (
+        <Route key={route.path} path={route.path} element={route.element} />
+      ))}
+    </>
+  );
+};
+
+export default BrandRoutes;

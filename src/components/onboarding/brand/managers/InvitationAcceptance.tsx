@@ -16,21 +16,14 @@ const InvitationAcceptance = () => {
 
   useEffect(() => {
     const verifyInvitation = async () => {
-      if (!token) {
-        setError("Invalid invitation link");
-        setLoading(false);
-        return;
-      }
-
       try {
         const { data: inviteData, error: inviteError } = await supabase
           .from("brand_managers")
           .select("*, brands(company_name)")
           .eq("invitation_token", token)
-          .maybeSingle();
+          .single();
 
         if (inviteError || !inviteData) {
-          console.error("Error fetching invitation:", inviteError);
           setError("Invalid or expired invitation");
           return;
         }
@@ -49,7 +42,9 @@ const InvitationAcceptance = () => {
       }
     };
 
-    verifyInvitation();
+    if (token) {
+      verifyInvitation();
+    }
   }, [token]);
 
   const handleAcceptInvitation = async () => {

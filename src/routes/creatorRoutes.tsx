@@ -79,3 +79,15 @@ export const creatorRoutes = [
     ),
   },
 ];
+
+export const CreatorRoutes = () => {
+  return (
+    <>
+      {creatorRoutes.map((route) => (
+        <Route key={route.path} path={route.path} element={route.element} />
+      ))}
+    </>
+  );
+};
+
+export default CreatorRoutes;
