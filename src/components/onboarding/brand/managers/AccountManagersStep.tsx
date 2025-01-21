@@ -9,12 +9,9 @@ const AccountManagersStep = () => {
   const {
     showAddManager,
     setShowAddManager,
-    selectedPermissions,
-    setSelectedPermissions,
     accountManagers,
     addAccountManager,
     removeManager,
-    updateManagerPermissions,
   } = useAccountManagers();
 
   return (
@@ -33,11 +30,8 @@ const AccountManagersStep = () => {
         {showAddManager && (
           <ManagerForm
             onSubmit={addAccountManager}
-            selectedPermissions={selectedPermissions}
-            setSelectedPermissions={setSelectedPermissions}
             onCancel={() => {
               setShowAddManager(false);
-              setSelectedPermissions([]);
             }}
           />
         )}
@@ -45,7 +39,6 @@ const AccountManagersStep = () => {
         <ManagerList
           managers={accountManagers}
           onRemoveManager={removeManager}
-          onUpdatePermissions={updateManagerPermissions}
         />
       </div>
     </motion.div>

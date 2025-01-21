@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import ManagerForm from "@/components/onboarding/brand/managers/ManagerForm";
@@ -12,12 +11,10 @@ interface AccountManager {
   name: string;
   email: string;
   role: string;
-  permissions: string[];
 }
 
 const AccountManagersSection = () => {
   const [showAddManager, setShowAddManager] = useState(false);
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [accountManagers, setAccountManagers] = useState<AccountManager[]>([]);
   const { toast } = useToast();
 
@@ -45,7 +42,6 @@ const AccountManagersSection = () => {
           name: formData.get("managerName") as string,
           email: formData.get("managerEmail") as string,
           role: formData.get("managerRole") as string,
-          permissions: selectedPermissions,
         })
         .select()
         .single();
@@ -54,7 +50,6 @@ const AccountManagersSection = () => {
 
       setAccountManagers([...accountManagers, manager as AccountManager]);
       setShowAddManager(false);
-      setSelectedPermissions([]);
       form.reset();
 
       toast({
@@ -95,37 +90,6 @@ const AccountManagersSection = () => {
     }
   };
 
-  const updateManagerPermissions = async (managerId: string, permissions: string[]) => {
-    try {
-      const { error } = await supabase
-        .from('brand_managers')
-        .update({ permissions })
-        .eq('id', managerId);
-
-      if (error) throw error;
-
-      setAccountManagers(
-        accountManagers.map(manager =>
-          manager.id === managerId
-            ? { ...manager, permissions }
-            : manager
-        )
-      );
-
-      toast({
-        title: "Success",
-        description: "Permissions updated successfully",
-      });
-    } catch (error) {
-      console.error('Error updating permissions:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update permissions. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <Card className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -141,18 +105,14 @@ const AccountManagersSection = () => {
       {showAddManager && (
         <ManagerForm
           onSubmit={addAccountManager}
-          selectedPermissions={selectedPermissions}
-          setSelectedPermissions={setSelectedPermissions}
           onCancel={() => {
             setShowAddManager(false);
-            setSelectedPermissions([]);
           }}
         />
       )}
 
       <ManagerList
         managers={accountManagers}
-        onUpdatePermissions={updateManagerPermissions}
         onRemoveManager={removeManager}
       />
     </Card>

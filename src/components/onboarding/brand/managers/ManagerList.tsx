@@ -5,10 +5,9 @@ import type { AccountManager } from "./hooks/useAccountManagers";
 interface ManagerListProps {
   managers: AccountManager[];
   onRemoveManager: (id: string) => void;
-  onUpdatePermissions?: (managerId: string, permissions: string[]) => Promise<void>;
 }
 
-const ManagerList = ({ managers, onRemoveManager, onUpdatePermissions }: ManagerListProps) => {
+const ManagerList = ({ managers, onRemoveManager }: ManagerListProps) => {
   return (
     <div className="space-y-2">
       {managers.map((manager) => (
@@ -16,7 +15,6 @@ const ManagerList = ({ managers, onRemoveManager, onUpdatePermissions }: Manager
           key={manager.id}
           manager={manager}
           onRemove={() => onRemoveManager(manager.id)}
-          onUpdatePermissions={onUpdatePermissions}
         />
       ))}
     </div>
