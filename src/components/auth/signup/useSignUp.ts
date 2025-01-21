@@ -21,24 +21,6 @@ export const useSignUp = (onToggleAuth: () => void) => {
     try {
       console.log("Starting sign up process with data:", { email, firstName, lastName });
       
-      // First check if user already exists
-      const { data: existingUser } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .single();
-
-      if (existingUser) {
-        toast({
-          title: "Account exists",
-          description: "An account with this email already exists. Please sign in instead.",
-          variant: "destructive",
-        });
-        onToggleAuth();
-        return;
-      }
-
-      // Create new user
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -55,6 +37,10 @@ export const useSignUp = (onToggleAuth: () => void) => {
         let errorMessage = "Error creating account";
         
         switch (signUpError.message) {
+          case "User already registered":
+            errorMessage = "An account with this email already exists. Please sign in instead.";
+            onToggleAuth();
+            break;
           case "Failed to fetch":
             errorMessage = "Network error. Please check your connection and try again.";
             break;
@@ -79,13 +65,6 @@ export const useSignUp = (onToggleAuth: () => void) => {
       if (signUpData?.user) {
         console.log("User signed up successfully, redirecting to onboarding...");
         
-        // Check if profile exists
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', signUpData.user.id)
-          .single();
-
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
