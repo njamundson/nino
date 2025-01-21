@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Briefcase, FilePlus, CheckCircle } from 'lucide-react';
+import { Activity, FilePlus, CheckSquare } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -90,7 +90,6 @@ const StatsCards = () => {
           table: 'applications'
         },
         () => {
-          // Refetch all queries when applications table changes
           queryClient.invalidateQueries({ queryKey: ['active-projects'] });
           queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
           queryClient.invalidateQueries({ queryKey: ['completed-projects'] });
@@ -101,7 +100,7 @@ const StatsCards = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [queryClient]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -109,7 +108,7 @@ const StatsCards = () => {
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-              <Briefcase className="w-6 h-6 text-nino-primary" />
+              <Activity className="w-6 h-6 text-nino-primary" />
             </div>
             <div>
               <h3 className="text-lg text-nino-text font-medium mb-1">
@@ -145,7 +144,7 @@ const StatsCards = () => {
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-nino-primary" />
+              <CheckSquare className="w-6 h-6 text-nino-primary" />
             </div>
             <div>
               <h3 className="text-lg text-nino-text font-medium mb-1">
