@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useSignUp } from "./signup/useSignUp";
+import { supabase } from "@/integrations/supabase/client";
 import SignUpForm from "./signup/SignUpForm";
 import SignUpHeader from "./signup/SignUpHeader";
 import { useToast } from "@/hooks/use-toast";
@@ -10,18 +10,40 @@ interface SignUpProps {
 
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const navigate = useNavigate();
-  const { loading, handleSignUp } = useSignUp();
   const { toast } = useToast();
 
-  const onSignUp = async (data: any) => {
+  const handleSignUp = async (data: any) => {
     try {
-      const user = await handleSignUp(data);
-      
-      // Navigate based on user type
-      if (user.userType === 'creator') {
-        navigate('/onboarding/creator');
-      } else {
-        navigate('/onboarding/brand');
+      const { email, password, userType } = data;
+
+      const { data: authData, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: data.firstName,
+            last_name: data.lastName,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (authData.user) {
+        // Store user type preference for onboarding
+        localStorage.setItem('userType', userType);
+        
+        // Navigate based on user type
+        if (userType === 'creator') {
+          navigate('/onboarding/creator');
+        } else {
+          navigate('/onboarding/brand');
+        }
+
+        toast({
+          title: "Account created",
+          description: "Please complete your profile setup.",
+        });
       }
     } catch (error) {
       console.error('Sign up error:', error);
@@ -40,7 +62,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         subtitle="Sign up to get started" 
       />
 
-      <SignUpForm onSubmit={onSignUp} loading={loading} />
+      <SignUpForm onSubmit={handleSignUp} />
 
       <div className="text-center text-sm text-nino-gray">
         Already have an account?{" "}
@@ -48,7 +70,6 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           type="button"
           onClick={onToggleAuth}
           className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
-          disabled={loading}
         >
           Sign in
         </button>

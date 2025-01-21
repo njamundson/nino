@@ -9,7 +9,126 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      brands: {
+        Row: {
+          brand_type: string | null
+          company_name: string | null
+          created_at: string
+          description: string | null
+          id: string
+          instagram: string | null
+          location: string | null
+          phone_number: string | null
+          profile_image_url: string | null
+          sms_notifications_enabled: boolean | null
+          support_email: string | null
+          two_factor_enabled: boolean | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          brand_type?: string | null
+          company_name?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          instagram?: string | null
+          location?: string | null
+          phone_number?: string | null
+          profile_image_url?: string | null
+          sms_notifications_enabled?: boolean | null
+          support_email?: string | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          brand_type?: string | null
+          company_name?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          instagram?: string | null
+          location?: string | null
+          phone_number?: string | null
+          profile_image_url?: string | null
+          sms_notifications_enabled?: boolean | null
+          support_email?: string | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      creators: {
+        Row: {
+          bio: string | null
+          created_at: string
+          creator_type: string | null
+          id: string
+          instagram: string | null
+          location: string | null
+          profile_image_url: string | null
+          specialties: string[] | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          creator_type?: string | null
+          id?: string
+          instagram?: string | null
+          location?: string | null
+          profile_image_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          creator_type?: string | null
+          id?: string
+          instagram?: string | null
+          location?: string | null
+          profile_image_url?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

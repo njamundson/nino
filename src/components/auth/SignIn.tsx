@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import ResetPassword from "./ResetPassword";
 import SignInForm from "./signin/SignInForm";
 import SignInHeader from "./signin/SignInHeader";
-import { useSignInWithEmail } from "@/hooks/useSignInWithEmail";
 import { useToast } from "@/hooks/use-toast";
 
 interface SignInProps {
@@ -12,37 +12,60 @@ interface SignInProps {
 
 const SignIn = ({ onToggleAuth }: SignInProps) => {
   const [showResetPassword, setShowResetPassword] = useState(false);
-  const { loading, signIn } = useSignInWithEmail();
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSignIn = async (email: string, password: string) => {
     try {
-      // This will be replaced with Supabase auth
-      console.log('Preparing for Supabase auth integration');
-      await signIn(email, password);
-      
-      // After successful auth, we'll fetch the user profile from Supabase
-      // and determine the correct route based on user type
-      const mockUserType = localStorage.getItem('userType') || 'brand';
-      const route = mockUserType === 'brand' ? '/brand/dashboard' : '/creator/dashboard';
-      
-      // Check if onboarding is completed (will be handled by Supabase query)
-      const isOnboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
-      
-      if (!isOnboardingCompleted) {
-        navigate('/onboarding');
-        return;
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Fetch user profile to determine type
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .single();
+
+        if (profile) {
+          // Check if user is a brand or creator
+          const { data: brand } = await supabase
+            .from('brands')
+            .select('id')
+            .eq('user_id', profile.id)
+            .single();
+
+          const { data: creator } = await supabase
+            .from('creators')
+            .select('id')
+            .eq('user_id', profile.id)
+            .single();
+
+          if (brand) {
+            navigate('/brand/dashboard');
+          } else if (creator) {
+            navigate('/creator/dashboard');
+          } else {
+            // If neither, they need to complete onboarding
+            navigate('/onboarding');
+          }
+        }
       }
-      
-      navigate(route);
     } catch (error) {
       console.error('Sign in error:', error);
       toast({
         variant: "destructive",
         title: "Error signing in",
-        description: "Please check your credentials and try again.",
+        description: error instanceof Error ? error.message : "Please check your credentials and try again.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
