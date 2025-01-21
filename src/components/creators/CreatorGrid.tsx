@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CreatorData } from '@/types/creator';
+import { CreatorData, CreatorType } from '@/types/creator';
 import CreatorCard from './CreatorCard';
 import { LoadingSpinner } from '../ui/loading-spinner';
 

@@ -14,7 +14,6 @@ export const useNotifications = () => {
       if (!user) return [];
 
       try {
-        // Fetch unread messages with sender profiles
         const { data: messages, error: messagesError } = await supabase
           .from('messages')
           .select(`
@@ -30,7 +29,6 @@ export const useNotifications = () => {
 
         if (messagesError) throw messagesError;
 
-        // Fetch pending applications with creator profiles
         const { data: applications, error: applicationsError } = await supabase
           .from('applications')
           .select(`
@@ -50,7 +48,6 @@ export const useNotifications = () => {
 
         if (applicationsError) throw applicationsError;
 
-        // Transform messages into notifications
         const messageNotifications: Notification[] = messages.map((message) => ({
           id: message.id,
           type: 'message',
@@ -64,7 +61,6 @@ export const useNotifications = () => {
           data: message
         }));
 
-        // Transform applications into notifications
         const applicationNotifications: Notification[] = applications.map((application) => ({
           id: application.id,
           type: 'application',
@@ -96,7 +92,6 @@ export const useNotifications = () => {
           .eq('id', notification.id);
         if (error) throw error;
       }
-      // Add other notification type dismissals here if needed
     }
   });
 
