@@ -44,8 +44,8 @@ const PaymentStep = () => {
           if (insertError) throw insertError;
         }
         
-        // Navigate to welcome page
-        navigate('/creator/welcome');
+        // Navigate directly to welcome page
+        navigate('/creator/welcome', { replace: true });
         
         toast({
           title: "Welcome to Nino!",
@@ -65,7 +65,8 @@ const PaymentStep = () => {
     setupCreator();
   }, [navigate, toast]);
 
-  return null; // This component now only handles the setup and navigation
+  // Return null to prevent any flickering during transition
+  return null;
 };
 
 export default PaymentStep;
