@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendHorizontal, Paperclip, Mic, Edit } from "lucide-react";
+import { Paperclip, Mic } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
   newMessage: string;
@@ -166,23 +166,12 @@ export const ChatInput = ({
           placeholder={editingMessage ? "Edit message..." : "Message"}
           className="bg-white border shadow-md rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey && newMessage.trim()) {
               e.preventDefault();
               handleSendMessage();
             }
           }}
         />
-        <Button
-          onClick={handleSendMessage}
-          className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full w-14 h-14 p-0 flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 shadow-lg hover:shadow-xl"
-          disabled={!newMessage.trim() && !selectedChat}
-        >
-          {editingMessage ? (
-            <Edit className="w-6 h-6" />
-          ) : (
-            <SendHorizontal className="w-6 h-6" />
-          )}
-        </Button>
       </div>
     </div>
   );
