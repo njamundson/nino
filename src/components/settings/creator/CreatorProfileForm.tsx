@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import SkillsSelection from "../../onboarding/creator/professional-info/SkillsSelection";
+import CreatorTypeSelect from "../../onboarding/creator/professional-info/CreatorTypeSelect";
 
 interface CreatorProfileFormProps {
   loading: boolean;
@@ -13,6 +14,7 @@ interface CreatorProfileFormProps {
     instagram: string;
     website: string;
     specialties: string[];
+    creatorType: string;
   };
   onUpdateField: (field: string, value: any) => void;
 }
@@ -45,6 +47,13 @@ const CreatorProfileForm = ({
             className="bg-white/50"
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <CreatorTypeSelect
+          creatorType={creatorData.creatorType}
+          onUpdateField={onUpdateField}
+        />
       </div>
 
       <div className="space-y-2">

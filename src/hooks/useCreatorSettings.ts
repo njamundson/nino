@@ -14,6 +14,7 @@ export const useCreatorSettings = () => {
     instagram: "",
     website: "",
     specialties: [] as string[],
+    creatorType: "solo",
   });
 
   useEffect(() => {
@@ -60,6 +61,7 @@ export const useCreatorSettings = () => {
             instagram: creator.instagram || "",
             website: creator.website || "",
             specialties: creator.specialties || [],
+            creatorType: creator.creator_type || "solo",
           });
           setProfileImage(creator.profile_image_url);
         }
@@ -118,6 +120,7 @@ export const useCreatorSettings = () => {
           instagram: creatorData.instagram,
           website: creatorData.website,
           specialties: creatorData.specialties,
+          creator_type: creatorData.creatorType,
           profile_image_url: profileImage,
           updated_at: new Date().toISOString(),
         })
