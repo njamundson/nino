@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 interface SignUpFormData {
@@ -11,7 +10,6 @@ interface SignUpFormData {
 
 export const useSignUp = () => {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSignUp = async (data: SignUpFormData) => {
@@ -19,6 +17,9 @@ export const useSignUp = () => {
     setLoading(true);
 
     try {
+      // This will be replaced with Supabase auth.signUp
+      console.log('Preparing for Supabase auth signup');
+      
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -30,7 +31,7 @@ export const useSignUp = () => {
         throw new Error('Email already in use');
       }
 
-      // Create new user
+      // Create new user (this will be handled by Supabase)
       const newUser = {
         id: crypto.randomUUID(),
         email: data.email,
@@ -41,11 +42,11 @@ export const useSignUp = () => {
         createdAt: new Date().toISOString(),
       };
 
-      // Add to users array
+      // Add to users array (temporary until Supabase)
       existingUsers.push(newUser);
       localStorage.setItem('users', JSON.stringify(existingUsers));
 
-      // Set current user
+      // Set current user (will be handled by Supabase session)
       localStorage.setItem('userData', JSON.stringify(newUser));
 
       // Show success message
@@ -54,15 +55,9 @@ export const useSignUp = () => {
         description: "Please complete your profile setup.",
       });
 
-      // Navigate to onboarding
-      navigate('/onboarding');
+      return newUser;
     } catch (error) {
       console.error('Sign up error:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create account",
-        variant: "destructive",
-      });
       throw error;
     } finally {
       setLoading(false);

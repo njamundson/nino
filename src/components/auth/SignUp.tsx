@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useSignUp } from "./signup/useSignUp";
 import SignUpForm from "./signup/SignUpForm";
 import SignUpHeader from "./signup/SignUpHeader";
+import { useToast } from "@/hooks/use-toast";
 
 interface SignUpProps {
   onToggleAuth: () => void;
@@ -9,7 +10,31 @@ interface SignUpProps {
 
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const navigate = useNavigate();
-  const { loading } = useSignUp();
+  const { loading, handleSignUp } = useSignUp();
+  const { toast } = useToast();
+
+  const onSignUp = async (data: any) => {
+    try {
+      // This will be replaced with Supabase auth.signUp
+      console.log('Preparing for Supabase auth signup:', { email: data.email });
+      await handleSignUp(data);
+      
+      // After successful signup, we'll create the user profile in Supabase
+      // and store the session
+      console.log('User signed up, preparing for profile creation');
+      
+      // For now, navigate to onboarding
+      // Later, this will be handled after Supabase profile creation
+      navigate('/onboarding');
+    } catch (error) {
+      console.error('Sign up error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error signing up",
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -18,7 +43,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         subtitle="Sign up to get started" 
       />
 
-      <SignUpForm />
+      <SignUpForm onSubmit={onSignUp} loading={loading} />
 
       <div className="text-center text-sm text-nino-gray">
         Already have an account?{" "}
