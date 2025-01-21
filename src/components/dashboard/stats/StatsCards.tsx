@@ -1,11 +1,9 @@
 import { Briefcase, FileText, MessageSquare } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import StatsCard from '@/components/dashboard/brand/stats/StatsCard';
 
 const StatsCards = () => {
-  const navigate = useNavigate();
-
   const { data: activeProjects } = useQuery({
     queryKey: ['active-projects'],
     queryFn: async () => {
@@ -80,59 +78,23 @@ const StatsCards = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      <div className="bg-white shadow-sm rounded-3xl overflow-hidden">
-        <div className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-              <Briefcase className="w-6 h-6 text-nino-primary" />
-            </div>
-            <div>
-              <h3 className="text-lg text-nino-text font-medium mb-1">
-                Active Projects
-              </h3>
-              <p className="text-4xl font-semibold text-nino-text">
-                {activeProjects ?? 0}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatsCard
+        icon={Briefcase}
+        title="Active Projects"
+        value={activeProjects ?? 0}
+      />
 
-      <div className="bg-white shadow-sm rounded-3xl overflow-hidden">
-        <div className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-              <FileText className="w-6 h-6 text-nino-primary" />
-            </div>
-            <div>
-              <h3 className="text-lg text-nino-text font-medium mb-1">
-                New Proposals
-              </h3>
-              <p className="text-4xl font-semibold text-nino-text">
-                {newProposals ?? 0}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatsCard
+        icon={FileText}
+        title="New Proposals"
+        value={newProposals ?? 0}
+      />
 
-      <div className="bg-white shadow-sm rounded-3xl overflow-hidden cursor-pointer" onClick={() => navigate('/creator/messages')}>
-        <div className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-              <MessageSquare className="w-6 h-6 text-nino-primary" />
-            </div>
-            <div>
-              <h3 className="text-lg text-nino-text font-medium mb-1">
-                Completed Projects
-              </h3>
-              <p className="text-4xl font-semibold text-nino-text">
-                {completedProjects ?? 0}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatsCard
+        icon={MessageSquare}
+        title="Completed Projects"
+        value={completedProjects ?? 0}
+      />
     </div>
   );
 };

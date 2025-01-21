@@ -5,14 +5,13 @@ interface StatsCardProps {
   icon: LucideIcon;
   title: string;
   value: number;
-  onClick?: () => void;
 }
 
-const StatsCard = ({ icon: Icon, title, value, onClick }: StatsCardProps) => {
-  const cardClasses = "bg-white shadow-sm rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]";
+const StatsCard = ({ icon: Icon, title, value }: StatsCardProps) => {
+  const cardClasses = "bg-white shadow-sm rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-[1.02]";
 
   return (
-    <Card className={cardClasses} onClick={onClick}>
+    <Card className={cardClasses}>
       <CardContent className="p-6">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
