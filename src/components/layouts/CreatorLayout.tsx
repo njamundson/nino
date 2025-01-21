@@ -16,9 +16,9 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
       <Sidebar />
       <div className="flex-1 p-8">
         {!isDashboard && <DashboardHeader />}
-        <div className="transition-opacity duration-200 ease-in-out opacity-100">
+        <main className="animate-fadeIn">
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );
