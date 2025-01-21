@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Paperclip, Mic, Edit } from "lucide-react";
+import { SendHorizontal, Paperclip, Mic, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -180,7 +180,7 @@ export const ChatInput = ({
           {editingMessage ? (
             <Edit className="w-6 h-6" />
           ) : (
-            <Send className="w-6 h-6" />
+            <SendHorizontal className="w-6 h-6" />
           )}
         </Button>
       </div>
