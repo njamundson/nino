@@ -48,7 +48,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
         if (profileError) throw profileError;
 
-        // Create initial brand or creator record
+        // Create initial brand or creator record and redirect to appropriate onboarding
         if (data.userType === 'brand') {
           const { error: brandError } = await supabase
             .from('brands')
@@ -67,10 +67,11 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             description: "Please complete your profile setup",
           });
           
-          // Immediately redirect to brand onboarding
           navigate('/onboarding/brand');
-          return; // Important: return here to prevent further execution
-        } else if (data.userType === 'creator') {
+          return;
+        } 
+        
+        if (data.userType === 'creator') {
           const { error: creatorError } = await supabase
             .from('creators')
             .insert([
@@ -87,9 +88,8 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             description: "Please complete your profile setup",
           });
           
-          // Immediately redirect to creator onboarding
           navigate('/onboarding/creator');
-          return; // Important: return here to prevent further execution
+          return;
         }
       }
     } catch (error: any) {
