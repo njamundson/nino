@@ -51,11 +51,18 @@ export const useSignUp = (onToggleAuth: () => void) => {
       }
 
       if (signUpData?.user) {
-        toast({
-          title: "Welcome to NINO",
-          description: "Your account has been created successfully.",
-        });
-        navigate("/onboarding");
+        // Wait for the session to be established
+        const { data: sessionData } = await supabase.auth.getSession();
+        
+        if (sessionData?.session) {
+          toast({
+            title: "Welcome to NINO",
+            description: "Your account has been created successfully.",
+          });
+          
+          // Use replace to prevent going back to the signup page
+          navigate("/onboarding", { replace: true });
+        }
       }
     } catch (error: any) {
       toast({
