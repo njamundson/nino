@@ -57,7 +57,10 @@ export const useNotifications = () => {
           created_at: message.created_at,
           read: message.read,
           action_url: `/messages/${message.sender_id}`,
-          data: message
+          data: {
+            ...message,
+            profiles: message.sender
+          }
         }));
 
         const applicationNotifications: ApplicationNotification[] = applications.map((application) => ({

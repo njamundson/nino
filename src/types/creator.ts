@@ -110,6 +110,7 @@ export interface BasicInfoStepProps {
 export interface ProfessionalInfoStepProps {
   creatorType: CreatorType;
   skills: string[];
+  bio: string;
   onUpdateField: (field: string, value: string) => void;
   onUpdateSkills: (skills: string[]) => void;
 }

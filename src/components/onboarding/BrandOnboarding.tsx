@@ -8,42 +8,21 @@ import AccountManagersStep from "./brand/managers/AccountManagersStep";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
+import { BrandOnboardingProps } from "@/types/brand";
 
-const BrandOnboarding = () => {
+const BrandOnboarding = ({
+  currentStep,
+  setCurrentStep,
+  profileImage,
+  brandData,
+  updateField,
+  setProfileImage,
+  handleNext,
+  handleBack,
+  handleSubmit
+}: BrandOnboardingProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const {
-    currentStep,
-    setCurrentStep,
-    profileImage,
-    brandData,
-    updateField,
-    setProfileImage,
-    handleNext,
-    handleBack,
-  } = useBrandOnboarding();
-
-  const handleComplete = async () => {
-    try {
-      // For local development, we'll skip the user check
-      // Store brand data in localStorage
-      localStorage.setItem('brandData', JSON.stringify({
-        ...brandData,
-        profileImage,
-        onboardingCompleted: true
-      }));
-
-      // Navigate to transition page
-      navigate("/onboarding/brand/payment");
-    } catch (error) {
-      console.error('Error in handleComplete:', error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
-    }
-  };
 
   const getCurrentStep = () => {
     switch (currentStep) {
@@ -84,7 +63,7 @@ const BrandOnboarding = () => {
       <BrandOnboardingNavigation
         currentStep={currentStep}
         onBack={handleBack}
-        onNext={currentStep === 'managers' ? handleComplete : handleNext}
+        onNext={currentStep === 'managers' ? handleSubmit : handleNext}
       />
     </BrandOnboardingContainer>
   );

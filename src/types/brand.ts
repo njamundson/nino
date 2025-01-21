@@ -2,7 +2,6 @@ export type BrandType = 'retail' | 'service' | 'technology' | 'hotel' | 'restaur
 
 export interface BrandData {
   id: string;
-  user_id?: string;
   company_name: string;
   brand_type: BrandType;
   description: string | null;
@@ -14,26 +13,24 @@ export interface BrandData {
   profile_image_url: string | null;
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;
-  created_at?: string;
-  updated_at?: string;
 }
 
 export interface LoginHistory {
   id: string;
   brand_id: string;
   login_timestamp: string;
-  ip_address: string | null;
-  device_info: string | null;
-  created_at: string;
+  ip_address: string;
+  device_info: string;
 }
 
 export interface BrandOnboardingProps {
-  currentStep: 'basic' | 'details' | 'social' | 'managers';
-  setCurrentStep: (step: 'basic' | 'details' | 'social' | 'managers') => void;
+  currentStep: string;
+  setCurrentStep: (step: string) => void;
   profileImage: string | null;
   brandData: BrandData;
   updateField: (field: keyof BrandData, value: any) => void;
   setProfileImage: (image: string | null) => void;
   handleNext: () => void;
   handleBack: () => void;
+  handleSubmit: () => Promise<void>;
 }
