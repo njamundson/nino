@@ -1,4 +1,4 @@
-import { Briefcase, FileText, MessageSquare } from 'lucide-react';
+import { Briefcase, FileText, CheckCircle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import StatsCard from '@/components/dashboard/brand/stats/StatsCard';
@@ -91,7 +91,7 @@ const StatsCards = () => {
       />
 
       <StatsCard
-        icon={MessageSquare}
+        icon={CheckCircle}
         title="Completed Projects"
         value={completedProjects ?? 0}
       />
