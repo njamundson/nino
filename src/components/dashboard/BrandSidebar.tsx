@@ -8,6 +8,7 @@ import {
   Calendar,
   MessageSquare,
   LogOut,
+  FileCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +26,7 @@ const BrandSidebar = () => {
     { icon: Users, label: "View Creators", path: "/brand/creators" },
     { icon: Calendar, label: "Bookings", path: "/brand/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/brand/messages" },
+    { icon: FileCheck, label: "Completed Projects", path: "/brand/completed-projects" },
   ];
 
   const handleSignOut = async () => {
