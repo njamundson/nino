@@ -53,8 +53,8 @@ export const useStatsData = () => {
     }
   });
 
-  const { data: newMessages } = useQuery({
-    queryKey: ['new-messages'],
+  const { data: completedProjects } = useQuery({
+    queryKey: ['completed-projects'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return 0;
@@ -103,7 +103,7 @@ export const useStatsData = () => {
           table: 'messages'
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['new-messages'] });
+          queryClient.invalidateQueries({ queryKey: ['completed-projects'] });
         }
       )
       .subscribe();
@@ -116,6 +116,6 @@ export const useStatsData = () => {
   return {
     activeProjects: activeProjects ?? 0,
     newProposals: newProposals ?? 0,
-    newMessages: newMessages ?? 0
+    completedProjects: completedProjects ?? 0
   };
 };
