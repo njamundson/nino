@@ -1,62 +1,69 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ProfileImageSection from "./ProfileImageSection";
 
 interface BrandDetailsFormProps {
-  brandData: {
-    company_name: string;
-    brand_type: string;
-    description: string;
-    website: string;
-    instagram: string;
-    location: string;
-  };
   loading: boolean;
-  onUpdateField: (field: string, value: string) => void;
+  profileImage: string | null;
+  brandData: {
+    brandName: string;
+    brandEmail: string;
+    brandBio: string;
+    homeLocation: string;
+    instagram: string;
+    website: string;
+    location: string;
+    brandType: string;
+  };
+  onUpdateField: (field: string, value: any) => void;
+  onUpdateImage: (url: string | null) => void;
 }
 
-const BrandDetailsForm = ({ brandData, loading, onUpdateField }: BrandDetailsFormProps) => {
+const BrandDetailsForm = ({
+  loading,
+  profileImage,
+  brandData,
+  onUpdateField,
+  onUpdateImage,
+}: BrandDetailsFormProps) => {
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">Brand Details</h3>
-      
+    <div className="space-y-6">
+      <ProfileImageSection 
+        profileImage={profileImage}
+        setProfileImage={onUpdateImage}
+      />
+
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="company_name">Brand Name</Label>
+          <Label htmlFor="brandName">Brand Name</Label>
           <Input
-            id="company_name"
-            value={brandData.company_name}
-            onChange={(e) => onUpdateField("company_name", e.target.value)}
+            id="brandName"
+            value={brandData.brandName}
+            onChange={(e) => onUpdateField("brandName", e.target.value)}
             disabled={loading}
             className="bg-white/50"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="brand_type">Brand Type</Label>
-          <Select
-            value={brandData.brand_type}
-            onValueChange={(value) => onUpdateField("brand_type", value)}
+          <Label htmlFor="brandEmail">Brand Email</Label>
+          <Input
+            id="brandEmail"
+            type="email"
+            value={brandData.brandEmail}
+            onChange={(e) => onUpdateField("brandEmail", e.target.value)}
             disabled={loading}
-          >
-            <SelectTrigger className="bg-white/50">
-              <SelectValue placeholder="Select brand type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="hotel">Hotel</SelectItem>
-              <SelectItem value="resort">Resort</SelectItem>
-              <SelectItem value="travel_agency">Travel Agency</SelectItem>
-            </SelectContent>
-          </Select>
+            className="bg-white/50"
+          />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Brand Description</Label>
+          <Label htmlFor="brandBio">Brand Bio</Label>
           <Textarea
-            id="description"
-            value={brandData.description}
-            onChange={(e) => onUpdateField("description", e.target.value)}
+            id="brandBio"
+            value={brandData.brandBio}
+            onChange={(e) => onUpdateField("brandBio", e.target.value)}
             disabled={loading}
             className="bg-white/50 min-h-[100px]"
             placeholder="Tell us about your brand..."
@@ -64,11 +71,11 @@ const BrandDetailsForm = ({ brandData, loading, onUpdateField }: BrandDetailsFor
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="location">Location</Label>
+          <Label htmlFor="homeLocation">Home Location</Label>
           <Input
-            id="location"
-            value={brandData.location}
-            onChange={(e) => onUpdateField("location", e.target.value)}
+            id="homeLocation"
+            value={brandData.homeLocation}
+            onChange={(e) => onUpdateField("homeLocation", e.target.value)}
             disabled={loading}
             className="bg-white/50"
             placeholder="Where is your brand based?"

@@ -2,21 +2,20 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import BrandDetailsForm from "@/components/settings/profile/BrandDetailsForm";
-import ContactInformationForm from "@/components/settings/profile/ContactInformationForm";
-import NotificationPreferences from "@/components/settings/profile/NotificationPreferences";
-import SecuritySettings from "@/components/settings/profile/SecuritySettings";
+import AccountManagersSection from "@/components/settings/profile/AccountManagersSection";
 import { Button } from "@/components/ui/button";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
 
-type SettingsPage = "profile" | "contact" | "notifications" | "security" | "menu";
+type SettingsPage = "profile" | "managers" | "menu";
 
 const BrandSettings = () => {
   const [currentPage, setCurrentPage] = useState<SettingsPage>("menu");
   const {
     loading,
+    profileImage,
     brandData,
-    loginHistory,
     setBrandData,
+    setProfileImage,
     handleSave,
   } = useBrandSettings();
 
@@ -32,53 +31,21 @@ const BrandSettings = () => {
       <div className="max-w-2xl mx-auto space-y-8">
         <h2 className="text-2xl font-semibold">Brand Profile</h2>
         <BrandDetailsForm
-          brandData={brandData}
           loading={loading}
+          profileImage={profileImage}
+          brandData={brandData}
           onUpdateField={onUpdateField}
+          onUpdateImage={setProfileImage}
         />
         <Button onClick={handleSave} disabled={loading}>
           Save Changes
         </Button>
       </div>
     ),
-    contact: (
+    managers: (
       <div className="max-w-2xl mx-auto space-y-8">
-        <h2 className="text-2xl font-semibold">Contact Information</h2>
-        <ContactInformationForm
-          brandData={brandData}
-          loading={loading}
-          onUpdateField={onUpdateField}
-        />
-        <Button onClick={handleSave} disabled={loading}>
-          Save Changes
-        </Button>
-      </div>
-    ),
-    notifications: (
-      <div className="max-w-2xl mx-auto space-y-8">
-        <h2 className="text-2xl font-semibold">Notification Settings</h2>
-        <NotificationPreferences
-          brandData={brandData}
-          loading={loading}
-          onUpdateField={onUpdateField}
-        />
-        <Button onClick={handleSave} disabled={loading}>
-          Save Changes
-        </Button>
-      </div>
-    ),
-    security: (
-      <div className="max-w-2xl mx-auto space-y-8">
-        <h2 className="text-2xl font-semibold">Security Settings</h2>
-        <SecuritySettings
-          brandData={brandData}
-          loading={loading}
-          loginHistory={loginHistory}
-          onUpdateField={onUpdateField}
-        />
-        <Button onClick={handleSave} disabled={loading}>
-          Save Changes
-        </Button>
+        <h2 className="text-2xl font-semibold">Account Managers</h2>
+        <AccountManagersSection />
       </div>
     ),
     menu: null,
@@ -102,16 +69,8 @@ const BrandSettings = () => {
                 onClick={() => setCurrentPage("profile")}
               />
               <SettingsButton
-                label="Contact Information"
-                onClick={() => setCurrentPage("contact")}
-              />
-              <SettingsButton
-                label="Notification Preferences"
-                onClick={() => setCurrentPage("notifications")}
-              />
-              <SettingsButton
-                label="Security Settings"
-                onClick={() => setCurrentPage("security")}
+                label="Account Managers"
+                onClick={() => setCurrentPage("managers")}
               />
             </div>
           </motion.div>
