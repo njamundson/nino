@@ -50,14 +50,48 @@ export interface Message {
   profiles: CreatorProfile;
 }
 
-export interface Notification {
+export interface NotificationBase {
   id: string;
-  user_id: string;
-  title: string;
-  message: string;
   type: string;
-  read: boolean;
+  title: string;
+  content: string;
+  description: string;
   created_at: string;
+  read: boolean;
+  action_url: string;
+  data: any;
+}
+
+export interface MessageNotification extends NotificationBase {
+  type: 'message';
+  data: Message;
+}
+
+export interface ApplicationNotification extends NotificationBase {
+  type: 'application';
+  data: {
+    id: string;
+    cover_letter: string;
+    created_at: string;
+    creator: {
+      profile: CreatorProfile;
+    };
+    opportunity: {
+      title: string;
+    };
+  };
+}
+
+export type Notification = MessageNotification | ApplicationNotification;
+
+export interface CreatorFiltersProps {
+  selectedSpecialties: string[];
+  selectedCreatorType: string | null;
+  selectedLocations: string[];
+  onSpecialtyChange: (specialty: string) => void;
+  onCreatorTypeChange: (type: string | null) => void;
+  onLocationChange: (location: string) => void;
+  onInvite?: (creatorId: string) => void;
 }
 
 export interface BasicInfoStepProps {
@@ -73,13 +107,7 @@ export interface BasicInfoStepProps {
 export interface ProfessionalInfoStepProps {
   creatorType: CreatorType;
   skills: string[];
+  bio: string;
   onUpdateField: (field: string, value: string) => void;
   onUpdateSkills: (skills: string[]) => void;
-}
-
-export interface CreatorFiltersProps {
-  selectedSpecialties: string[];
-  selectedCreatorType: string;
-  selectedLocations: string[];
-  onInvite: (creatorId: string) => void;
 }

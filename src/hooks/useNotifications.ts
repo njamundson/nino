@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Notification } from '@/types/creator';
+import { Notification, MessageNotification, ApplicationNotification } from '@/types/creator';
 
 export const useNotifications = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,34 +48,32 @@ export const useNotifications = () => {
 
         if (applicationsError) throw applicationsError;
 
-        const messageNotifications: Notification[] = messages.map((message) => ({
+        const messageNotifications: MessageNotification[] = messages.map((message) => ({
           id: message.id,
           type: 'message',
           title: 'New Message',
           content: message.content,
           description: `${message.sender.first_name} ${message.sender.last_name} sent you a message`,
           created_at: message.created_at,
-          timestamp: message.created_at,
           read: message.read,
           action_url: `/messages/${message.sender_id}`,
           data: message
         }));
 
-        const applicationNotifications: Notification[] = applications.map((application) => ({
+        const applicationNotifications: ApplicationNotification[] = applications.map((application) => ({
           id: application.id,
           type: 'application',
           title: 'New Application',
           content: application.cover_letter || '',
           description: `${application.creator.profile.first_name} ${application.creator.profile.last_name} applied to "${application.opportunity.title}"`,
           created_at: application.created_at,
-          timestamp: application.created_at,
           read: false,
           action_url: `/applications/${application.id}`,
           data: application
         }));
 
         return [...messageNotifications, ...applicationNotifications]
-          .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       } catch (error) {
         setNotificationsError(error as Error);
         return [];

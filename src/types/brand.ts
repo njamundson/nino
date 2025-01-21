@@ -1,4 +1,4 @@
-export type BrandType = 'retail' | 'service' | 'technology' | 'hotel' | 'other';
+export type BrandType = 'retail' | 'hotel' | 'restaurant' | 'service' | 'other';
 
 export interface BrandData {
   id: string;
@@ -18,21 +18,14 @@ export interface BrandData {
   updated_at?: string;
 }
 
-export interface LoginHistory {
-  id: string;
-  brand_id: string;
-  login_timestamp: string;
-  ip_address: string;
-  device_info: string;
-}
-
-export interface BrandSettingsData {
-  brandData: BrandData;
-  loginHistory: LoginHistory[];
-  loading: boolean;
+export interface BrandOnboardingProps {
+  currentStep: string;
+  setCurrentStep: (step: string) => void;
   profileImage: string | null;
+  brandData: BrandData;
+  updateField: (field: keyof BrandData, value: any) => void;
   setProfileImage: (image: string | null) => void;
-  setBrandData: (data: Partial<BrandData>) => void;
-  handleSave: () => Promise<void>;
-  updateBrandData: (updates: Partial<BrandData>) => Promise<void>;
+  handleNext: () => void;
+  handleBack: () => void;
+  handleSubmit: () => Promise<void>;
 }
