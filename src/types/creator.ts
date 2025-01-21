@@ -50,15 +50,26 @@ export interface Message {
   profiles: CreatorProfile;
 }
 
-export interface Notification {
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  content: string;
-  timestamp: string;
-  created_at: string;
-  read: boolean;
-  action_url: string;
-  data?: any;
+export interface CreatorOnboardingFormProps {
+  currentStep: number;
+  creatorData: CreatorData;
+  onUpdateField: (field: keyof CreatorData, value: any) => void;
+  onSubmit: () => void;
+}
+
+export interface BasicInfoStepProps {
+  firstName: string;
+  lastName: string;
+  bio: string;
+  location: string;
+  profileImage: string | null;
+  onUpdateField: (field: string, value: string) => void;
+  onUpdateImage: (image: string | null) => void;
+}
+
+export interface ProfessionalInfoStepProps {
+  creatorType: CreatorType;
+  skills: string[];
+  onUpdateField: (field: string, value: string) => void;
+  onUpdateSkills: (skills: string[]) => void;
 }
