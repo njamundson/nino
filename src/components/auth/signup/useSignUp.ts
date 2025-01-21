@@ -56,7 +56,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
           description: "Your account has been created successfully.",
         });
         
-        // Navigate to onboarding and replace the current route
+        // Immediately navigate to onboarding after successful signup
         navigate("/onboarding", { replace: true });
       }
     } catch (error: any) {
