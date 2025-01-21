@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { BrandData } from "@/types/brand";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,14 +23,8 @@ const BrandBasicInfoStep = ({
   const { toast } = useToast();
 
   useEffect(() => {
-    const setUserEmail = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        onUpdateField("brandEmail", user.email);
-      }
-    };
-    
-    setUserEmail();
+    // Set a mock email for development
+    onUpdateField("brandEmail", "test@example.com");
   }, [onUpdateField]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,31 +32,9 @@ const BrandBasicInfoStep = ({
     if (!file) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to upload images",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      onUpdateImage(publicUrl);
+      // Create a local URL for the uploaded file
+      const imageUrl = URL.createObjectURL(file);
+      onUpdateImage(imageUrl);
       
       toast({
         title: "Success",
