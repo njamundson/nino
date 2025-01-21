@@ -45,6 +45,7 @@ export const useAuthCheck = () => {
             setHasAccess(false);
             setIsLoading(false);
           }
+          navigate('/', { replace: true });
           return false;
         }
 
@@ -52,7 +53,7 @@ export const useAuthCheck = () => {
           .from('brands')
           .select('id')
           .eq('user_id', session.user.id)
-          .maybeSingle(); // Changed from .single() to .maybeSingle()
+          .maybeSingle();
 
         if (brandError) {
           console.error("Error checking brand profile:", brandError);
@@ -60,11 +61,12 @@ export const useAuthCheck = () => {
         }
 
         if (!brands) {
-          console.log("No brand profile found");
+          console.log("No brand profile found, redirecting to onboarding");
           if (mounted) {
             setHasAccess(false);
             setIsLoading(false);
           }
+          navigate('/onboarding/brand', { replace: true });
           return false;
         }
 
@@ -107,7 +109,7 @@ export const useAuthCheck = () => {
             description: "You need a brand profile to access this area.",
             variant: "destructive",
           });
-          navigate('/onboarding', { replace: true });
+          navigate('/onboarding/brand', { replace: true });
         }
       }
     });
