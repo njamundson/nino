@@ -8,15 +8,15 @@ interface CreatorCardImageProps {
   onInvite: (creatorId: string) => void;
 }
 
-const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
-  const fullName = creator.firstName && creator.lastName 
-    ? `${creator.firstName} ${creator.lastName}`.trim()
+const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
+  const fullName = creator.profile.first_name && creator.profile.last_name 
+    ? `${creator.profile.first_name} ${creator.profile.last_name}`.trim()
     : 'Anonymous Creator';
 
   return (
     <div className="relative aspect-[3/4] overflow-hidden">
       <img
-        src={creator.profileImage || '/placeholder.svg'}
+        src={creator.profile_image_url || '/placeholder.svg'}
         alt={fullName}
         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
@@ -48,6 +48,10 @@ const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
         size="icon"
         variant="secondary"
         className="absolute bottom-6 right-6 rounded-full pointer-events-none"
+        onClick={(e) => {
+          e.stopPropagation();
+          onInvite(creator.id);
+        }}
       >
         <Plus className="h-4 w-4" />
       </Button>

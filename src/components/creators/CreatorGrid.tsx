@@ -31,8 +31,8 @@ const CreatorGrid = () => {
         profile_image_url: creator.profile_image_url || '',
         creator_type: creator.creator_type || 'solo',
         profile: {
-          first_name: creator.profile.first_name,
-          last_name: creator.profile.last_name
+          first_name: creator.profile?.first_name || '',
+          last_name: creator.profile?.last_name || ''
         },
         created_at: creator.created_at,
         updated_at: creator.updated_at
@@ -59,7 +59,11 @@ const CreatorGrid = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {creators.map((creator) => (
-        <CreatorCard key={creator.id} creator={creator} />
+        <CreatorCard 
+          key={creator.id} 
+          creator={creator}
+          onInvite={() => {}} // Add proper invite handler
+        />
       ))}
     </div>
   );
