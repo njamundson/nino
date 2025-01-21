@@ -135,7 +135,7 @@ export const ChatInput = ({
   };
 
   return (
-    <div className="p-4 border-t bg-white/50 backdrop-blur-lg shadow-lg">
+    <div className="p-4 bg-white border-t shadow-lg">
       <div className="flex gap-3 items-center max-w-4xl mx-auto">
         <input
           type="file"
