@@ -31,7 +31,7 @@ const Welcome = () => {
             data: {
               first_name: firstName,
               last_name: lastName,
-              onboarding_completed: true // This will trigger profile creation
+              onboarding_completed: true
             }
           }
         });
@@ -67,9 +67,9 @@ const Welcome = () => {
   return (
     <div className="min-h-screen bg-nino-bg flex items-center justify-center">
       <motion.h1
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2 }}
         className="text-6xl font-medium text-nino-primary"
         style={{ fontFamily: "'SF Pro Display', sans-serif" }}
       >
