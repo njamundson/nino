@@ -25,3 +25,14 @@ export interface LoginHistory {
   ip_address: string;
   device_info: string;
 }
+
+export interface BrandSettingsData {
+  brandData: BrandData;
+  loginHistory: LoginHistory[];
+  loading: boolean;
+  profileImage: string | null;
+  setProfileImage: (image: string | null) => void;
+  setBrandData: (data: Partial<BrandData>) => void;
+  handleSave: () => Promise<void>;
+  updateBrandData: (updates: Partial<BrandData>) => Promise<void>;
+}

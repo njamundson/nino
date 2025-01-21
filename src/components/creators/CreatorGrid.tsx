@@ -11,15 +11,7 @@ const CreatorGrid = () => {
       const { data, error } = await supabase
         .from('creators')
         .select(`
-          id,
-          user_id,
-          bio,
-          location,
-          specialties,
-          instagram,
-          website,
-          profile_image_url,
-          creator_type,
+          *,
           profile:profiles!creators_user_id_fkey (
             first_name,
             last_name
@@ -37,11 +29,13 @@ const CreatorGrid = () => {
         instagram: creator.instagram || '',
         website: creator.website || '',
         profile_image_url: creator.profile_image_url || '',
-        creator_type: creator.creator_type || 'solo',
+        creator_type: creator.creator_type as CreatorType || 'solo',
         profile: {
           first_name: creator.profile?.first_name || '',
           last_name: creator.profile?.last_name || ''
-        }
+        },
+        created_at: creator.created_at,
+        updated_at: creator.updated_at
       }));
     }
   });
@@ -63,7 +57,6 @@ const CreatorGrid = () => {
   }
 
   const handleInvite = async (creatorId: string) => {
-    // Handle invite logic
     console.log('Inviting creator:', creatorId);
   };
 

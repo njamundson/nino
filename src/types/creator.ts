@@ -34,6 +34,22 @@ export interface CreatorData {
   updated_at?: string;
 }
 
+export interface Message {
+  id: string;
+  content: string;
+  sender_id: string;
+  receiver_id: string;
+  created_at: string;
+  updated_at?: string;
+  deleted_at?: string;
+  is_edited: boolean;
+  read: boolean;
+  message_type: string;
+  media_url?: string;
+  media_type?: string;
+  profiles: CreatorProfile;
+}
+
 export interface Notification {
   id: string;
   type: string;
@@ -45,24 +61,4 @@ export interface Notification {
   read: boolean;
   action_url: string;
   data?: any;
-}
-
-export type BrandType = 'retail' | 'service' | 'technology' | 'food' | 'entertainment' | 'other';
-
-export interface BrandData {
-  id: string;
-  user_id: string;
-  company_name: string;
-  brand_type: BrandType;
-  description: string;
-  website: string;
-  instagram: string;
-  location: string;
-  phone_number: string;
-  support_email: string;
-  profile_image_url: string;
-  sms_notifications_enabled: boolean;
-  two_factor_enabled: boolean;
-  created_at?: string;
-  updated_at?: string;
 }
