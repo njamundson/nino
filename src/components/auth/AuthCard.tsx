@@ -23,7 +23,8 @@ const AuthCard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    // Check initial session
+    const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         // Check if user has any existing profiles
@@ -39,18 +40,19 @@ const AuthCard = () => {
 
         if (profileStatus) {
           if (profileStatus.has_brand) {
-            navigate("/brand/dashboard");
+            navigate("/brand/dashboard", { replace: true });
           } else if (profileStatus.has_creator) {
-            navigate("/creator/dashboard");
+            navigate("/creator/dashboard", { replace: true });
           } else {
-            navigate("/onboarding");
+            navigate("/onboarding", { replace: true });
           }
         }
       }
     };
 
-    checkAuth();
+    checkSession();
 
+    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
         const { data: profileStatus, error } = await supabase
@@ -65,11 +67,11 @@ const AuthCard = () => {
 
         if (profileStatus) {
           if (profileStatus.has_brand) {
-            navigate("/brand/dashboard");
+            navigate("/brand/dashboard", { replace: true });
           } else if (profileStatus.has_creator) {
-            navigate("/creator/dashboard");
+            navigate("/creator/dashboard", { replace: true });
           } else {
-            navigate("/onboarding");
+            navigate("/onboarding", { replace: true });
           }
         }
       }

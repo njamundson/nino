@@ -17,11 +17,11 @@ export const useSignUp = (onToggleAuth: () => void) => {
 
   const handleSignUp = async ({ email, password, firstName, lastName }: SignUpFormData) => {
     if (loading) return;
-    
+
+    setLoading(true);
+
     try {
-      setLoading(true);
-      
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -32,8 +32,8 @@ export const useSignUp = (onToggleAuth: () => void) => {
         },
       });
 
-      if (signUpError) {
-        if (signUpError.message.includes("User already registered")) {
+      if (error) {
+        if (error.message.includes("User already registered")) {
           toast({
             title: "Account exists",
             description: "An account with this email already exists. Please sign in instead.",
@@ -44,25 +44,20 @@ export const useSignUp = (onToggleAuth: () => void) => {
 
         toast({
           title: "Error",
-          description: signUpError.message,
+          description: error.message,
           variant: "destructive",
         });
         return;
       }
 
-      if (signUpData?.user) {
-        // Wait for the session to be established
-        const { data: sessionData } = await supabase.auth.getSession();
+      if (data.user) {
+        toast({
+          title: "Welcome to NINO",
+          description: "Your account has been created successfully.",
+        });
         
-        if (sessionData?.session) {
-          toast({
-            title: "Welcome to NINO",
-            description: "Your account has been created successfully.",
-          });
-          
-          // Use replace to prevent going back to the signup page
-          navigate("/onboarding", { replace: true });
-        }
+        // Navigate to onboarding and replace the current route
+        navigate("/onboarding", { replace: true });
       }
     } catch (error: any) {
       toast({
