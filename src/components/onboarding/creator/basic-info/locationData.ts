@@ -42,6 +42,21 @@ export const COUNTRIES = [
   "Puerto Rico"
 ];
 
+// Define which countries use cities instead of states
+export const COUNTRIES_WITH_CITIES = [
+  "Sweden",
+  "Norway",
+  "Denmark",
+  "Finland",
+  "Netherlands",
+  "Belgium",
+  "Switzerland",
+  "Austria",
+  "Portugal",
+  "Italy",
+  "Ireland"
+];
+
 export const STATES_BY_COUNTRY: { [key: string]: string[] } = {
   "United States": [
     "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
@@ -98,5 +113,52 @@ export const STATES_BY_COUNTRY: { [key: string]: string[] } = {
     "Catalonia", "Extremadura", "Galicia", "La Rioja", "Madrid",
     "Murcia", "Navarre", "Valencia"
   ]
-  // For other countries, states/regions can be added as needed
+};
+
+// Major cities for countries without states
+export const CITIES_BY_COUNTRY: { [key: string]: string[] } = {
+  "Sweden": [
+    "Stockholm", "Gothenburg", "Malmö", "Uppsala", "Västerås", "Örebro", 
+    "Linköping", "Helsingborg", "Jönköping", "Norrköping"
+  ],
+  "Norway": [
+    "Oslo", "Bergen", "Trondheim", "Stavanger", "Drammen", "Fredrikstad", 
+    "Kristiansand", "Sandnes", "Tromsø", "Sarpsborg"
+  ],
+  "Denmark": [
+    "Copenhagen", "Aarhus", "Odense", "Aalborg", "Frederiksberg", "Esbjerg", 
+    "Randers", "Kolding", "Horsens", "Vejle"
+  ],
+  "Finland": [
+    "Helsinki", "Espoo", "Tampere", "Vantaa", "Oulu", "Turku", 
+    "Jyväskylä", "Lahti", "Kuopio", "Pori"
+  ],
+  "Netherlands": [
+    "Amsterdam", "Rotterdam", "The Hague", "Utrecht", "Eindhoven", "Tilburg", 
+    "Groningen", "Almere", "Breda", "Nijmegen"
+  ],
+  "Belgium": [
+    "Brussels", "Antwerp", "Ghent", "Charleroi", "Liège", "Bruges", 
+    "Namur", "Leuven", "Mons", "Aalst"
+  ],
+  "Switzerland": [
+    "Zürich", "Geneva", "Basel", "Lausanne", "Bern", "Winterthur", 
+    "Lucerne", "St. Gallen", "Lugano", "Biel"
+  ],
+  "Austria": [
+    "Vienna", "Graz", "Linz", "Salzburg", "Innsbruck", "Klagenfurt", 
+    "Villach", "Wels", "Sankt Pölten", "Dornbirn"
+  ],
+  "Portugal": [
+    "Lisbon", "Porto", "Vila Nova de Gaia", "Amadora", "Braga", "Setúbal",
+    "Coimbra", "Funchal", "Almada", "Faro"
+  ],
+  "Italy": [
+    "Rome", "Milan", "Naples", "Turin", "Palermo", "Genoa", 
+    "Bologna", "Florence", "Bari", "Venice"
+  ],
+  "Ireland": [
+    "Dublin", "Cork", "Limerick", "Galway", "Waterford", "Drogheda",
+    "Dundalk", "Swords", "Bray", "Navan"
+  ]
 };

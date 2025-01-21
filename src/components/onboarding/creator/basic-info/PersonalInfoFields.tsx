@@ -9,7 +9,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
-import { COUNTRIES, STATES_BY_COUNTRY } from "./locationData";
+import { 
+  COUNTRIES, 
+  STATES_BY_COUNTRY, 
+  CITIES_BY_COUNTRY, 
+  COUNTRIES_WITH_CITIES 
+} from "./locationData";
 
 interface PersonalInfoFieldsProps {
   firstName: string;
@@ -27,7 +32,7 @@ const PersonalInfoFields = ({
   onUpdateField,
 }: PersonalInfoFieldsProps) => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedState, setSelectedState] = useState<string>("");
+  const [selectedRegion, setSelectedRegion] = useState<string>("");
 
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fullName = e.target.value;
@@ -46,13 +51,24 @@ const PersonalInfoFields = ({
 
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
-    setSelectedState("");
+    setSelectedRegion("");
     onUpdateField("location", value);
   };
 
-  const handleStateChange = (value: string) => {
-    setSelectedState(value);
+  const handleRegionChange = (value: string) => {
+    setSelectedRegion(value);
     onUpdateField("location", `${value}, ${selectedCountry}`);
+  };
+
+  const getRegionLabel = () => {
+    return COUNTRIES_WITH_CITIES.includes(selectedCountry) ? "City" : "State/Province";
+  };
+
+  const getRegionOptions = () => {
+    if (COUNTRIES_WITH_CITIES.includes(selectedCountry)) {
+      return CITIES_BY_COUNTRY[selectedCountry] || [];
+    }
+    return STATES_BY_COUNTRY[selectedCountry] || [];
   };
 
   return (
@@ -89,14 +105,14 @@ const PersonalInfoFields = ({
 
           {selectedCountry && (
             <div className="space-y-2">
-              <Select onValueChange={handleStateChange} value={selectedState}>
+              <Select onValueChange={handleRegionChange} value={selectedRegion}>
                 <SelectTrigger className="bg-nino-bg border-transparent focus:border-nino-primary h-12">
-                  <SelectValue placeholder="Select State/Province" />
+                  <SelectValue placeholder={`Select ${getRegionLabel()}`} />
                 </SelectTrigger>
                 <SelectContent>
-                  {STATES_BY_COUNTRY[selectedCountry]?.map((state) => (
-                    <SelectItem key={state} value={state}>
-                      {state}
+                  {getRegionOptions().map((region) => (
+                    <SelectItem key={region} value={region}>
+                      {region}
                     </SelectItem>
                   ))}
                 </SelectContent>
