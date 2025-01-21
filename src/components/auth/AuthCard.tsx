@@ -23,20 +23,55 @@ const AuthCard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already authenticated
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/onboarding");
+        // Check if user has any existing profiles
+        const { data: profileStatus, error } = await supabase
+          .rpc('check_user_profile_status', {
+            user_uuid: session.user.id
+          });
+
+        if (error) {
+          console.error("Error checking profile status:", error);
+          return;
+        }
+
+        if (profileStatus) {
+          if (profileStatus.has_brand) {
+            navigate("/brand/dashboard");
+          } else if (profileStatus.has_creator) {
+            navigate("/creator/dashboard");
+          } else {
+            navigate("/onboarding");
+          }
+        }
       }
     };
 
     checkAuth();
 
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        navigate("/onboarding");
+        const { data: profileStatus, error } = await supabase
+          .rpc('check_user_profile_status', {
+            user_uuid: session.user.id
+          });
+
+        if (error) {
+          console.error("Error checking profile status:", error);
+          return;
+        }
+
+        if (profileStatus) {
+          if (profileStatus.has_brand) {
+            navigate("/brand/dashboard");
+          } else if (profileStatus.has_creator) {
+            navigate("/creator/dashboard");
+          } else {
+            navigate("/onboarding");
+          }
+        }
       }
     });
 

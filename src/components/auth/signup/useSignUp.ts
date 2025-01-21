@@ -33,7 +33,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
       });
 
       if (signUpError) {
-        console.error("Sign up error:", signUpError);
+        console.error("Sign in error:", signUpError);
         let errorMessage = "Error creating account";
         
         if (signUpError.message.includes("User already registered")) {
@@ -64,14 +64,14 @@ export const useSignUp = (onToggleAuth: () => void) => {
       }
 
       if (signUpData?.user) {
-        console.log("User signed up successfully, redirecting to onboarding...");
+        console.log("User signed up successfully");
         
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
         });
         
-        // Immediately navigate to onboarding after successful signup
+        // For new signups, always redirect to onboarding
         navigate("/onboarding");
       }
     } catch (error: any) {
