@@ -5,14 +5,14 @@ import StatsCard from './StatsCard';
 
 const BrandStatsCards = () => {
   const navigate = useNavigate();
-  const { completedProjects, newProposals, newMessages } = useStatsData();
+  const { activeProjects, newProposals, newMessages } = useStatsData();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       <StatsCard
         icon={Briefcase}
-        title="Completed Projects"
-        value={completedProjects}
+        title="Active Projects"
+        value={activeProjects}
       />
       
       <StatsCard
