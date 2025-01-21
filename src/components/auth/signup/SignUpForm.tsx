@@ -23,10 +23,12 @@ const signUpSchema = z.object({
 
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 
-const SignUpForm = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
+interface SignUpFormProps {
+  onSubmit: (data: SignUpFormData) => Promise<void>;
+  loading: boolean;
+}
 
+const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -37,36 +39,13 @@ const SignUpForm = () => {
     },
   });
 
-  const onSubmit = async (data: SignUpFormData) => {
-    try {
-      // Store user data in localStorage
-      localStorage.setItem('userData', JSON.stringify(data));
-      
-      // Show success toast
-      toast({
-        title: "Account created successfully!",
-        description: "Redirecting to onboarding...",
-      });
-
-      // Route based on user type
-      const route = data.userType === 'brand' ? '/onboarding/brand' : '/onboarding/creator';
-      navigate(route);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <NameFields form={form} disabled={form.formState.isSubmitting} />
-        <EmailField form={form} disabled={form.formState.isSubmitting} />
-        <PasswordFields form={form} disabled={form.formState.isSubmitting} />
-        <SubmitButton loading={form.formState.isSubmitting} />
+        <NameFields form={form} disabled={loading} />
+        <EmailField form={form} disabled={loading} />
+        <PasswordFields form={form} disabled={loading} />
+        <SubmitButton loading={loading} />
       </form>
     </Form>
   );

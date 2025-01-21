@@ -1,3 +1,4 @@
+import { Label } from "@/components/ui/label";
 import CreatorTypeSelect from "./professional-info/CreatorTypeSelect";
 import SkillsSelection from "./professional-info/SkillsSelection";
 
@@ -30,7 +31,6 @@ const ProfessionalInfoStep = ({
           <CreatorTypeSelect 
             creatorType={creatorType} 
             onUpdateField={onUpdateField} 
-            required={true}
           />
         </div>
         
@@ -42,7 +42,6 @@ const ProfessionalInfoStep = ({
           <SkillsSelection 
             skills={skills} 
             onUpdateSkills={onUpdateSkills} 
-            required={true}
           />
         </div>
       </div>
