@@ -13,6 +13,11 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce'
+    },
+    global: {
+      headers: {
+        'apikey': supabaseAnonKey
+      }
     }
   }
 )
