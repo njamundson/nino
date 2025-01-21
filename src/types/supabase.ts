@@ -9,25 +9,31 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      profiles: {
+      applications: {
         Row: {
           id: string
-          first_name: string | null
-          last_name: string | null
+          opportunity_id: string
+          creator_id: string
+          status: string | null
+          cover_letter: string | null
           created_at: string
           updated_at: string
         }
         Insert: {
-          id: string
-          first_name?: string | null
-          last_name?: string | null
+          id?: string
+          opportunity_id: string
+          creator_id: string
+          status?: string | null
+          cover_letter?: string | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
-          first_name?: string | null
-          last_name?: string | null
+          opportunity_id?: string
+          creator_id?: string
+          status?: string | null
+          cover_letter?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -126,6 +132,73 @@ export interface Database {
           updated_at?: string
         }
       }
+      message_reactions: {
+        Row: {
+          id: string
+          message_id: string
+          user_id: string
+          emoji: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          message_id: string
+          user_id: string
+          emoji: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          message_id?: string
+          user_id?: string
+          emoji?: string
+          created_at?: string
+        }
+      }
+      messages: {
+        Row: {
+          id: string
+          sender_id: string
+          receiver_id: string
+          content: string
+          message_type: string | null
+          media_url: string | null
+          media_type: string | null
+          read: boolean | null
+          is_edited: boolean | null
+          deleted_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          sender_id: string
+          receiver_id: string
+          content: string
+          message_type?: string | null
+          media_url?: string | null
+          media_type?: string | null
+          read?: boolean | null
+          is_edited?: boolean | null
+          deleted_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          sender_id?: string
+          receiver_id?: string
+          content?: string
+          message_type?: string | null
+          media_url?: string | null
+          media_type?: string | null
+          read?: boolean | null
+          is_edited?: boolean | null
+          deleted_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       opportunities: {
         Row: {
           id: string
@@ -182,75 +255,25 @@ export interface Database {
           updated_at?: string
         }
       }
-      applications: {
+      profiles: {
         Row: {
           id: string
-          opportunity_id: string
-          creator_id: string
-          status: string | null
-          cover_letter: string | null
+          first_name: string | null
+          last_name: string | null
           created_at: string
           updated_at: string
         }
         Insert: {
-          id?: string
-          opportunity_id: string
-          creator_id: string
-          status?: string | null
-          cover_letter?: string | null
+          id: string
+          first_name?: string | null
+          last_name?: string | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
-          opportunity_id?: string
-          creator_id?: string
-          status?: string | null
-          cover_letter?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      messages: {
-        Row: {
-          id: string
-          sender_id: string
-          receiver_id: string
-          content: string
-          message_type: string | null
-          media_url: string | null
-          media_type: string | null
-          read: boolean | null
-          is_edited: boolean | null
-          deleted_at: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          sender_id: string
-          receiver_id: string
-          content: string
-          message_type?: string | null
-          media_url?: string | null
-          media_type?: string | null
-          read?: boolean | null
-          is_edited?: boolean | null
-          deleted_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          sender_id?: string
-          receiver_id?: string
-          content?: string
-          message_type?: string | null
-          media_url?: string | null
-          media_type?: string | null
-          read?: boolean | null
-          is_edited?: boolean | null
-          deleted_at?: string | null
+          first_name?: string | null
+          last_name?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -278,29 +301,6 @@ export interface Database {
           updated_at?: string
         }
       }
-      message_reactions: {
-        Row: {
-          id: string
-          message_id: string
-          user_id: string
-          emoji: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          message_id: string
-          user_id: string
-          emoji: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          message_id?: string
-          user_id?: string
-          emoji?: string
-          created_at?: string
-        }
-      }
     }
     Views: {
       [_ in never]: never
@@ -316,6 +316,3 @@ export interface Database {
     }
   }
 }
-
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
-export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]
