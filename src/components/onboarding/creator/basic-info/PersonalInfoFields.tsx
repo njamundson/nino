@@ -35,6 +35,18 @@ const PersonalInfoFields = ({
   return (
     <>
       <div className="space-y-2">
+        <Label htmlFor="fullName" className="text-base">Full Name or Creator Name *</Label>
+        <Input
+          id="fullName"
+          value={`${firstName}${lastName ? ' ' + lastName : ''}`}
+          onChange={handleFullNameChange}
+          placeholder="Enter your full name"
+          className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="location" className="text-base">Location *</Label>
         <Input
           id="location"
