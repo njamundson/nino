@@ -1,19 +1,25 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CREATOR_TYPES, CREATOR_SPECIALTIES } from "@/types/creator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LOCATIONS } from "@/components/onboarding/creator/basic-info/locations";
 
 interface CreatorFiltersProps {
   selectedSpecialties: string[];
   selectedCreatorType: string | null;
+  selectedLocation: string | null;
   onSpecialtyChange: (specialty: string) => void;
   onCreatorTypeChange: (type: string | null) => void;
+  onLocationChange: (location: string | null) => void;
 }
 
 const CreatorFilters = ({ 
   selectedSpecialties, 
   selectedCreatorType,
+  selectedLocation,
   onSpecialtyChange,
-  onCreatorTypeChange 
+  onCreatorTypeChange,
+  onLocationChange
 }: CreatorFiltersProps) => {
   return (
     <div className="space-y-6">
@@ -49,6 +55,26 @@ const CreatorFilters = ({
             </Badge>
           ))}
         </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium mb-3">Location</h3>
+        <Select
+          value={selectedLocation || ""}
+          onValueChange={(value) => onLocationChange(value || null)}
+        >
+          <SelectTrigger className="w-full md:w-[300px]">
+            <SelectValue placeholder="Select a location" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Locations</SelectItem>
+            {LOCATIONS.map((location) => (
+              <SelectItem key={location} value={location}>
+                {location}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
