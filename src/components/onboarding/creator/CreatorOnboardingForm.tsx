@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { CreatorData } from "@/types/creator";
+import { CreatorData, CreatorType } from "@/types/creator";
 import BasicInfoStep from "./BasicInfoStep";
 import ProfessionalInfoStep from "./ProfessionalInfoStep";
 import SocialLinksStep from "./SocialLinksStep";
@@ -27,19 +27,22 @@ const CreatorOnboardingForm = ({
       case 0:
         return (
           <BasicInfoStep
-            profile={creatorData.profile}
-            profile_image_url={creatorData.profile_image_url}
-            location={creatorData.location}
-            onUpdateField={onUpdateField}
+            firstName={creatorData.profile.first_name}
+            lastName={creatorData.profile.last_name}
+            bio={creatorData.bio || ""}
+            location={creatorData.location || ""}
+            profileImage={creatorData.profile_image_url}
+            onUpdateField={(field, value) => onUpdateField(field as keyof CreatorData, value)}
+            onUpdateImage={(image) => onUpdateField('profile_image_url', image)}
           />
         );
       case 1:
         return (
           <ProfessionalInfoStep
-            bio={creatorData.bio}
-            creator_type={creatorData.creator_type}
-            specialties={creatorData.specialties}
-            onUpdateField={onUpdateField}
+            creatorType={creatorData.creator_type}
+            skills={creatorData.specialties}
+            onUpdateField={(field, value) => onUpdateField(field as keyof CreatorData, value)}
+            onUpdateSkills={(skills) => onUpdateField('specialties', skills)}
           />
         );
       case 2:

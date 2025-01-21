@@ -1,17 +1,17 @@
-export type BrandType = 'retail' | 'service' | 'technology' | 'other';
+export type BrandType = 'retail' | 'service' | 'technology' | 'hotel' | 'other';
 
 export interface BrandData {
   id: string;
-  user_id: string;
+  user_id?: string;
   company_name: string;
   brand_type: BrandType;
-  description: string;
-  website: string;
-  instagram: string;
-  location: string;
-  phone_number: string;
-  support_email: string;
-  profile_image_url: string;
+  description: string | null;
+  website: string | null;
+  instagram: string | null;
+  location: string | null;
+  phone_number: string | null;
+  support_email: string | null;
+  profile_image_url: string | null;
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;
   created_at?: string;
