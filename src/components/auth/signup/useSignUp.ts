@@ -71,14 +71,8 @@ export const useSignUp = (onToggleAuth: () => void) => {
           description: "Your account has been created successfully.",
         });
         
-        // Redirect to onboarding - profile will be created after onboarding completion
+        // Immediately navigate to onboarding after successful signup
         navigate("/onboarding");
-      } else {
-        // If no session but signup was successful, show a message about email confirmation
-        toast({
-          title: "Check your email",
-          description: "Please check your email to confirm your account.",
-        });
       }
     } catch (error: any) {
       console.error("Authentication error:", error);
