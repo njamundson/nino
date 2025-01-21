@@ -1,7 +1,7 @@
 import { Briefcase, FilePlus, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useStatsData } from './useStatsData';
-import StatsCard from './StatsCard';
+import { useStatsData } from '@/components/dashboard/brand/stats/useStatsData';
+import StatsCard from '@/components/dashboard/brand/stats/StatsCard';
 
 const BrandStatsCards = () => {
   const navigate = useNavigate();
