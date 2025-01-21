@@ -33,8 +33,8 @@ const BrandStatsCards = () => {
     }
   });
 
-  const { data: newProposals } = useQuery({
-    queryKey: ['new-proposals'],
+  const { data: completedProjects } = useQuery({
+    queryKey: ['completed-projects'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return 0;
@@ -48,10 +48,10 @@ const BrandStatsCards = () => {
       if (!brand) return 0;
 
       const { count } = await supabase
-        .from('applications')
+        .from('opportunities')
         .select('*', { count: 'exact', head: true })
-        .eq('opportunity_id', brand.id)
-        .eq('status', 'pending');
+        .eq('brand_id', brand.id)
+        .eq('status', 'completed');
 
       return count || 0;
     }
@@ -87,17 +87,7 @@ const BrandStatsCards = () => {
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['active-projects'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'applications'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
+          queryClient.invalidateQueries({ queryKey: ['completed-projects'] });
         }
       )
       .on(
@@ -148,10 +138,10 @@ const BrandStatsCards = () => {
             </div>
             <div>
               <h3 className="text-lg text-nino-text font-medium mb-1">
-                New Proposals
+                Completed Projects
               </h3>
               <p className="text-4xl font-semibold text-nino-text">
-                {newProposals ?? 0}
+                {completedProjects ?? 0}
               </p>
             </div>
           </div>
