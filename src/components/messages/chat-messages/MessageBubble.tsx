@@ -26,10 +26,10 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
     )}>
       <div
         className={cn(
-          "px-6 py-4 rounded-2xl shadow-sm transition-all duration-200",
+          "px-6 py-4 rounded-[20px] shadow-lg transition-all duration-200 hover:shadow-xl",
           isCurrentUser
             ? "bg-nino-primary text-white rounded-br-sm"
-            : "bg-gray-100 text-gray-900 rounded-bl-sm"
+            : "bg-white text-gray-900 rounded-bl-sm"
         )}
       >
         {message.message_type === 'image' ? (
@@ -61,7 +61,7 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
         {message.reactions?.length > 0 && (
           <div className="flex gap-1 mt-2">
             {message.reactions.map((reaction, index) => (
-              <span key={index} className="text-sm bg-white/10 px-2 py-1 rounded-full">
+              <span key={index} className="text-sm bg-white/10 px-2 py-1 rounded-full shadow-sm">
                 {reaction.emoji}
               </span>
             ))}
@@ -75,7 +75,7 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
       )}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full shadow-md">
               <Smile className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -95,7 +95,7 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 hover:bg-gray-100"
+            className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full shadow-md"
             onClick={() => onDelete(message.id)}
           >
             <Trash2 className="h-4 w-4" />

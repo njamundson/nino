@@ -30,26 +30,24 @@ export const ChatContainer = ({
   setEditingMessage,
   messages,
 }: ChatContainerProps) => {
-  if (!selectedChat) {
-    return (
-      <Card className="flex-1 bg-white/80 backdrop-blur-xl border-0 shadow-sm flex flex-col overflow-hidden">
+  return (
+    <Card className="flex-1 bg-white/80 backdrop-blur-xl border-0 shadow-lg flex flex-col overflow-hidden rounded-2xl">
+      {selectedChat ? (
+        <>
+          <ChatHeader
+            senderFirstName={selectedFirstName}
+            senderLastName={selectedLastName}
+          />
+          <ChatMessages
+            messages={messages}
+            selectedChat={selectedChat}
+          />
+        </>
+      ) : (
         <div className="flex-1 flex items-center justify-center text-gray-500">
           <p>Select a conversation to start messaging</p>
         </div>
-      </Card>
-    );
-  }
-
-  return (
-    <Card className="flex-1 bg-white/80 backdrop-blur-xl border-0 shadow-sm flex flex-col overflow-hidden">
-      <ChatHeader
-        senderFirstName={selectedFirstName}
-        senderLastName={selectedLastName}
-      />
-      <ChatMessages
-        messages={messages}
-        selectedChat={selectedChat}
-      />
+      )}
       <ChatInput
         newMessage={newMessage}
         setNewMessage={setNewMessage}

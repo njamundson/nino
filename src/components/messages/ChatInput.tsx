@@ -135,7 +135,7 @@ export const ChatInput = ({
   };
 
   return (
-    <div className="p-4 border-t bg-white/50 backdrop-blur-lg">
+    <div className="p-4 border-t bg-white/50 backdrop-blur-lg shadow-lg">
       <div className="flex gap-3 items-center max-w-4xl mx-auto">
         <input
           type="file"
@@ -147,7 +147,7 @@ export const ChatInput = ({
         <Button
           variant="ghost"
           size="icon"
-          className="text-gray-500 hover:bg-gray-100"
+          className="text-gray-500 hover:bg-gray-100 rounded-full shadow-md"
           onClick={() => document.getElementById('file-upload')?.click()}
         >
           <Paperclip className="w-5 h-5" />
@@ -155,7 +155,7 @@ export const ChatInput = ({
         <Button
           variant="ghost"
           size="icon"
-          className={`text-gray-500 hover:bg-gray-100 ${isRecording ? 'bg-red-50' : ''}`}
+          className={`text-gray-500 hover:bg-gray-100 rounded-full shadow-md ${isRecording ? 'bg-red-50' : ''}`}
           onClick={handleVoiceRecord}
         >
           <Mic className="w-5 h-5" />
@@ -164,7 +164,7 @@ export const ChatInput = ({
           value={newMessage}
           onChange={handleInputChange}
           placeholder={editingMessage ? "Edit message..." : "Message"}
-          className="bg-gray-100 border-0 rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="bg-white border shadow-md rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -174,8 +174,8 @@ export const ChatInput = ({
         />
         <Button
           onClick={handleSendMessage}
-          className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full w-14 h-14 p-0 flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
-          disabled={!newMessage.trim()}
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full w-14 h-14 p-0 flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 shadow-lg hover:shadow-xl"
+          disabled={!newMessage.trim() && !selectedChat}
         >
           {editingMessage ? (
             <Edit className="w-6 h-6" />
