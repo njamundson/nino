@@ -25,9 +25,9 @@ const BrandBasicInfoStep = ({
 
   useEffect(() => {
     const setUserEmail = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.email) {
-        onUpdateField("brandEmail", session.user.email);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        onUpdateField("brandEmail", user.email);
       }
     };
     
@@ -39,8 +39,8 @@ const BrandBasicInfoStep = ({
     if (!file) return;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         toast({
           title: "Error",
           description: "You must be logged in to upload images",
