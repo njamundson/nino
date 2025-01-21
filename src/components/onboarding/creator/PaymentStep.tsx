@@ -15,12 +15,11 @@ const PaymentStep = () => {
       src="/lovable-uploads/7f312cab-6543-4c35-bf2f-5e8e832f9fa9.png"
       alt="Nino"
       className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-auto"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{ 
         duration: 0.8,
-        ease: "easeInOut"
+        ease: "easeOut"
       }}
       onAnimationComplete={handleComplete}
     />
