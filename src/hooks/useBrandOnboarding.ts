@@ -65,15 +65,19 @@ export const useBrandOnboarding = () => {
       }
 
       // Create brand profile in Supabase
-      const { error: brandError } = await supabase
+      const { data: brand, error: brandError } = await supabase
         .from('brands')
         .insert({
           user_id: user.id,
           ...brandData,
           profile_image_url: profileImage,
-        });
+        })
+        .select()
+        .single();
 
       if (brandError) throw brandError;
+
+      console.log('Brand profile created:', brand.id);
 
       toast({
         title: "Success!",

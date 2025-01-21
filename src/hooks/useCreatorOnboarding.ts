@@ -73,7 +73,7 @@ export const useCreatorOnboarding = () => {
       }
 
       // Create creator profile in Supabase
-      const { error: creatorError } = await supabase
+      const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .insert({
           user_id: user.id,
@@ -84,9 +84,13 @@ export const useCreatorOnboarding = () => {
           profile_image_url: creatorData.profileImage,
           specialties: creatorData.specialties,
           creator_type: creatorData.creatorType,
-        });
+        })
+        .select()
+        .single();
 
       if (creatorError) throw creatorError;
+
+      console.log('Creator profile created:', creator.id);
 
       toast({
         title: "Success!",
