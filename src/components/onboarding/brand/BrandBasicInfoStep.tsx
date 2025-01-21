@@ -113,18 +113,6 @@ const BrandBasicInfoStep = ({
               onChange={(e) => onUpdateField("brandName", e.target.value)}
             />
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="brandEmail" className="text-base">Brand Email</Label>
-            <Input
-              id="brandEmail"
-              type="email"
-              placeholder="Enter brand email"
-              value={brandData.brandEmail}
-              className="h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
-              onChange={(e) => onUpdateField("brandEmail", e.target.value)}
-            />
-          </div>
         </div>
       </div>
     </div>
