@@ -20,7 +20,7 @@ const BrandSettings = () => {
   } = useBrandSettings();
 
   const onUpdateField = (field: string, value: any) => {
-    setBrandData((prev: any) => ({
+    setBrandData((prev: BrandData) => ({
       ...prev,
       [field]: value,
     }));

@@ -9,14 +9,16 @@ export const useBrandOnboarding = () => {
   const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({
-    brandName: "",
-    brandEmail: "",
-    brandBio: "",
-    homeLocation: "",
-    instagram: "",
-    website: "",
+    company_name: "",
+    brand_type: "hotel",
+    description: "",
+    website: null,
+    instagram: null,
     location: "",
-    brandType: "hotel",
+    phone_number: null,
+    support_email: null,
+    sms_notifications_enabled: false,
+    two_factor_enabled: false,
   });
 
   const updateField = (field: keyof BrandData, value: string) => {
@@ -25,7 +27,7 @@ export const useBrandOnboarding = () => {
 
   const handleNext = async () => {
     if (currentStep === 'basic') {
-      if (!brandData.brandName || !brandData.brandEmail) {
+      if (!brandData.company_name || !brandData.support_email) {
         toast({
           title: "Required Fields Missing",
           description: "Please fill in all required fields.",

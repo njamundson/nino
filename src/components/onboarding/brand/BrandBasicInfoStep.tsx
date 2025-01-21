@@ -24,7 +24,7 @@ const BrandBasicInfoStep = ({
 
   useEffect(() => {
     // Set a mock email for development
-    onUpdateField("brandEmail", "test@example.com");
+    onUpdateField("support_email", "test@example.com");
   }, [onUpdateField]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,13 +87,13 @@ const BrandBasicInfoStep = ({
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="brandName" className="text-base">Brand Name</Label>
+            <Label htmlFor="company_name" className="text-base">Brand Name</Label>
             <Input
-              id="brandName"
+              id="company_name"
               placeholder="Enter your brand name"
-              value={brandData.brandName}
+              value={brandData.company_name}
               className="h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
-              onChange={(e) => onUpdateField("brandName", e.target.value)}
+              onChange={(e) => onUpdateField("company_name", e.target.value)}
             />
           </div>
         </div>
