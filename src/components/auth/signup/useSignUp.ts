@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface SignUpFormData {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
-  userType: "brand" | "creator";
 }
 
 export const useSignUp = () => {
@@ -15,38 +13,49 @@ export const useSignUp = () => {
   const { toast } = useToast();
 
   const handleSignUp = async (data: SignUpFormData) => {
-    if (loading) return null;
+    if (loading) return;
     setLoading(true);
 
     try {
-      console.log('Preparing for Supabase auth signup:', { 
-        email: data.email,
-        userType: data.userType 
-      });
+      // This will be replaced with Supabase auth.signUp
+      console.log('Preparing for Supabase auth signup');
       
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Get existing users or initialize empty array
+      const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+      
+      // Check if email already exists
+      if (existingUsers.some((user: any) => user.email === data.email)) {
+        throw new Error('Email already in use');
+      }
+
+      // Create new user (this will be handled by Supabase)
+      const newUser = {
+        id: crypto.randomUUID(),
         email: data.email,
         password: data.password,
-        options: {
-          data: {
-            first_name: data.firstName,
-            last_name: data.lastName,
-            user_type: data.userType
-          }
-        }
-      });
+        firstName: data.firstName,
+        lastName: data.lastName,
+        onboardingCompleted: false,
+        createdAt: new Date().toISOString(),
+      };
 
-      if (signUpError) throw signUpError;
-      if (!authData.user) throw new Error('No user data returned');
+      // Add to users array (temporary until Supabase)
+      existingUsers.push(newUser);
+      localStorage.setItem('users', JSON.stringify(existingUsers));
 
-      console.log('User created successfully:', authData.user.id);
+      // Set current user (will be handled by Supabase session)
+      localStorage.setItem('userData', JSON.stringify(newUser));
 
+      // Show success message
       toast({
         title: "Account created",
         description: "Please complete your profile setup.",
       });
 
-      return authData;
+      return newUser;
     } catch (error) {
       console.error('Sign up error:', error);
       throw error;

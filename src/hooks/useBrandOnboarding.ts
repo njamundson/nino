@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { BrandData } from "@/types/brand";
-import { supabase } from "@/integrations/supabase/client";
 
 export const useBrandOnboarding = () => {
   const navigate = useNavigate();
@@ -56,44 +55,21 @@ export const useBrandOnboarding = () => {
     }
   };
 
-  const handleComplete = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('No authenticated user found');
-      }
+  const handleComplete = () => {
+    // Store brand data in localStorage
+    localStorage.setItem('brandData', JSON.stringify({
+      ...brandData,
+      profileImage,
+      onboardingCompleted: true
+    }));
 
-      // Create brand profile in Supabase
-      const { data: brand, error: brandError } = await supabase
-        .from('brands')
-        .insert({
-          user_id: user.id,
-          ...brandData,
-          profile_image_url: profileImage,
-        })
-        .select()
-        .single();
+    toast({
+      title: "Success!",
+      description: "Your brand profile has been created.",
+    });
 
-      if (brandError) throw brandError;
-
-      console.log('Brand profile created:', brand.id);
-
-      toast({
-        title: "Success!",
-        description: "Your brand profile has been created.",
-      });
-
-      // Navigate to brand dashboard
-      navigate("/brand/dashboard");
-    } catch (error) {
-      console.error('Error completing onboarding:', error);
-      toast({
-        title: "Error",
-        description: "Failed to complete onboarding. Please try again.",
-        variant: "destructive",
-      });
-    }
+    // Navigate to brand dashboard
+    navigate("/brand/dashboard");
   };
 
   return {

@@ -15,13 +15,17 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
   const onSignUp = async (data: any) => {
     try {
+      // This will be replaced with Supabase auth.signUp
       console.log('Preparing for Supabase auth signup:', { email: data.email });
-      const result = await handleSignUp(data);
+      await handleSignUp(data);
       
-      if (result) {
-        console.log('User signed up, preparing for profile creation');
-        navigate('/onboarding');
-      }
+      // After successful signup, we'll create the user profile in Supabase
+      // and store the session
+      console.log('User signed up, preparing for profile creation');
+      
+      // For now, navigate to onboarding
+      // Later, this will be handled after Supabase profile creation
+      navigate('/onboarding');
     } catch (error) {
       console.error('Sign up error:', error);
       toast({
