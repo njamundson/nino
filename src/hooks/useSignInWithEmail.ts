@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { AuthError } from "@supabase/supabase-js";
 
 export const useSignInWithEmail = () => {
   const [loading, setLoading] = useState(false);
@@ -14,38 +12,22 @@ export const useSignInWithEmail = () => {
     setLoading(true);
     
     try {
-      console.log("Attempting to sign in...");
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        console.error("Sign in error:", signInError);
-        throw signInError;
+      // Simulate authentication delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Get stored users from localStorage
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: any) => u.email === email && u.password === password);
+      
+      if (!user) {
+        throw new Error("Invalid credentials");
       }
 
-      if (!signInData.user) {
-        throw new Error("No user data returned");
-      }
+      // Store user data in localStorage
+      localStorage.setItem('userData', JSON.stringify(user));
 
-      console.log("Successfully signed in, checking profile status...");
-
-      const { data: profileStatus, error: profileError } = await supabase
-        .rpc('check_user_profile_status', {
-          user_uuid: signInData.user.id
-        });
-
-      if (profileError) {
-        console.error("Error checking profile status:", profileError);
-        throw profileError;
-      }
-
-      console.log("Profile status:", profileStatus);
-
-      // If user has no profile at all, send to onboarding
-      if (!profileStatus.has_brand && !profileStatus.has_creator) {
-        console.log("No profile found, redirecting to onboarding...");
+      // Check if user has completed onboarding
+      if (!user.onboardingCompleted) {
         navigate('/onboarding');
         toast({
           title: "Welcome!",
@@ -54,53 +36,29 @@ export const useSignInWithEmail = () => {
         return;
       }
 
-      // If user has a brand profile, send to brand dashboard
-      if (profileStatus.has_brand) {
-        console.log("Brand profile found, redirecting to dashboard...");
+      // Navigate based on user type
+      if (user.type === 'brand') {
         navigate('/brand/dashboard');
-        toast({
-          title: "Welcome back!",
-          description: "Successfully signed in.",
-        });
-        return;
+      } else if (user.type === 'creator') {
+        navigate('/creator/dashboard');
+      } else {
+        navigate('/onboarding');
       }
 
-      // If user has a creator profile, send to creator dashboard
-      if (profileStatus.has_creator) {
-        console.log("Creator profile found, redirecting to dashboard...");
-        navigate('/creator/dashboard');
-        toast({
-          title: "Welcome back!",
-          description: "Successfully signed in.",
-        });
-        return;
-      }
+      toast({
+        title: "Welcome back!",
+        description: "Successfully signed in.",
+      });
 
     } catch (error) {
       console.error("Authentication error:", error);
-      let errorMessage = "An unexpected error occurred";
-      
-      if (error instanceof AuthError) {
-        switch (error.message) {
-          case "Invalid login credentials":
-            errorMessage = "Invalid email or password";
-            break;
-          case "Email not confirmed":
-            errorMessage = "Please verify your email before signing in";
-            break;
-          default:
-            errorMessage = error.message;
-        }
-      }
-      
       toast({
         title: "Error",
-        description: errorMessage,
+        description: error instanceof Error ? error.message : "Invalid email or password",
         variant: "destructive",
       });
       throw error;
     } finally {
-      console.log("Sign in process completed");
       setLoading(false);
     }
   };
