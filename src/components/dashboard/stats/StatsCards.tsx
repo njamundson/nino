@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Activity, FilePlus, CheckSquare } from 'lucide-react';
+import { Briefcase, FileText, MessageSquare } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,25 +55,17 @@ const StatsCards = () => {
     }
   });
 
-  const { data: completedProjects } = useQuery({
-    queryKey: ['completed-projects'],
+  const { data: newMessages } = useQuery({
+    queryKey: ['new-messages'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return 0;
 
-      const { data: creator } = await supabase
-        .from('creators')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!creator) return 0;
-
       const { count } = await supabase
-        .from('applications')
+        .from('messages')
         .select('*', { count: 'exact', head: true })
-        .eq('creator_id', creator.id)
-        .eq('status', 'completed');
+        .eq('recipient_id', user.id)
+        .eq('read', false);
 
       return count || 0;
     }
@@ -81,7 +73,7 @@ const StatsCards = () => {
 
   useEffect(() => {
     const channel = supabase
-      .channel('applications-changes')
+      .channel('table-changes')
       .on(
         'postgres_changes',
         {
@@ -92,7 +84,17 @@ const StatsCards = () => {
         () => {
           queryClient.invalidateQueries({ queryKey: ['active-projects'] });
           queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
-          queryClient.invalidateQueries({ queryKey: ['completed-projects'] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['new-messages'] });
         }
       )
       .subscribe();
@@ -108,7 +110,7 @@ const StatsCards = () => {
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-              <Activity className="w-6 h-6 text-nino-primary" />
+              <Briefcase className="w-6 h-6 text-nino-primary" />
             </div>
             <div>
               <h3 className="text-lg text-nino-text font-medium mb-1">
@@ -126,7 +128,7 @@ const StatsCards = () => {
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-              <FilePlus className="w-6 h-6 text-nino-primary" />
+              <FileText className="w-6 h-6 text-nino-primary" />
             </div>
             <div>
               <h3 className="text-lg text-nino-text font-medium mb-1">
@@ -144,14 +146,14 @@ const StatsCards = () => {
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-nino-bg rounded-2xl flex items-center justify-center">
-              <CheckSquare className="w-6 h-6 text-nino-primary" />
+              <MessageSquare className="w-6 h-6 text-nino-primary" />
             </div>
             <div>
               <h3 className="text-lg text-nino-text font-medium mb-1">
-                Completed Projects
+                New Messages
               </h3>
               <p className="text-4xl font-semibold text-nino-text">
-                {completedProjects ?? 0}
+                {newMessages ?? 0}
               </p>
             </div>
           </div>
