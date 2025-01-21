@@ -1,8 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import { Form } from "@/components/ui/form";
 import NameFields from "./form/NameFields";
 import EmailField from "./form/EmailField";
@@ -10,9 +8,8 @@ import PasswordFields from "./form/PasswordFields";
 import SubmitButton from "./form/SubmitButton";
 
 const signUpSchema = z.object({
-  userType: z.enum(["brand", "creator"], {
-    required_error: "Please select a user type",
-  }),
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string()
@@ -23,50 +20,30 @@ const signUpSchema = z.object({
 
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 
-const SignUpForm = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
+interface SignUpFormProps {
+  onSubmit: (data: SignUpFormData) => Promise<void>;
+  loading: boolean;
+}
 
+const SignUpForm = ({ onSubmit, loading }: SignUpFormProps) => {
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      userType: undefined,
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
   });
 
-  const onSubmit = async (data: SignUpFormData) => {
-    try {
-      // Store user data in localStorage
-      localStorage.setItem('userData', JSON.stringify(data));
-      
-      // Show success toast
-      toast({
-        title: "Account created successfully!",
-        description: "Redirecting to onboarding...",
-      });
-
-      // Route based on user type
-      const route = data.userType === 'brand' ? '/onboarding/brand' : '/onboarding/creator';
-      navigate(route);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <NameFields form={form} disabled={form.formState.isSubmitting} />
-        <EmailField form={form} disabled={form.formState.isSubmitting} />
-        <PasswordFields form={form} disabled={form.formState.isSubmitting} />
-        <SubmitButton loading={form.formState.isSubmitting} />
+        <NameFields form={form} disabled={loading} />
+        <EmailField form={form} disabled={loading} />
+        <PasswordFields form={form} disabled={loading} />
+        <SubmitButton loading={loading} />
       </form>
     </Form>
   );
