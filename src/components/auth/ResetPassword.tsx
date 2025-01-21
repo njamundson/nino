@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -31,9 +31,7 @@ const ResetPassword = ({ isOpen, onClose }: ResetPasswordProps) => {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       toast({
         title: "Reset link sent!",
@@ -44,9 +42,9 @@ const ResetPassword = ({ isOpen, onClose }: ResetPasswordProps) => {
       setEmail("");
     } catch (error: any) {
       toast({
+        variant: "destructive",
         title: "Error",
         description: error.message || "Failed to send reset link. Please try again.",
-        variant: "destructive",
       });
     } finally {
       setLoading(false);

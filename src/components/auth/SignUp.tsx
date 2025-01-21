@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { useSignUp } from "./signup/useSignUp";
 import SignUpForm from "./signup/SignUpForm";
 import SignUpHeader from "./signup/SignUpHeader";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 interface SignUpProps {
   onToggleAuth: () => void;
@@ -10,29 +11,48 @@ interface SignUpProps {
 
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const navigate = useNavigate();
-  const { loading, handleSignUp } = useSignUp();
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const onSignUp = async (data: any) => {
+  const handleSignUp = async (data: any) => {
     try {
-      // This will be replaced with Supabase auth.signUp
-      console.log('Preparing for Supabase auth signup:', { email: data.email });
-      await handleSignUp(data);
+      setLoading(true);
       
-      // After successful signup, we'll create the user profile in Supabase
-      // and store the session
-      console.log('User signed up, preparing for profile creation');
-      
-      // For now, navigate to onboarding
-      // Later, this will be handled after Supabase profile creation
-      navigate('/onboarding');
-    } catch (error) {
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            first_name: data.firstName,
+            last_name: data.lastName,
+          },
+        },
+      });
+
+      if (signUpError) throw signUpError;
+
+      if (authData.user) {
+        // Profile will be created automatically via database trigger
+        
+        toast({
+          title: "Account created",
+          description: "Please check your email to verify your account.",
+        });
+
+        // Store user type preference for onboarding
+        localStorage.setItem('preferredUserType', data.userType);
+        
+        navigate('/onboarding');
+      }
+    } catch (error: any) {
       console.error('Sign up error:', error);
       toast({
         variant: "destructive",
         title: "Error signing up",
-        description: error instanceof Error ? error.message : "Please try again.",
+        description: error.message || "Please try again.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,7 +63,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         subtitle="Sign up to get started" 
       />
 
-      <SignUpForm onSubmit={onSignUp} loading={loading} />
+      <SignUpForm onSubmit={handleSignUp} loading={loading} />
 
       <div className="text-center text-sm text-nino-gray">
         Already have an account?{" "}
