@@ -19,7 +19,7 @@ const PersonalInfoFields = ({
 }: PersonalInfoFieldsProps) => {
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fullName = e.target.value;
-    const names = fullName.split(' ');
+    const names = fullName.trim().split(/\s+/);
     
     if (names.length >= 2) {
       const firstName = names[0];
