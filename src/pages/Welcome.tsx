@@ -45,10 +45,10 @@ const Welcome = () => {
         // Clear the pending signup data
         sessionStorage.removeItem('pendingSignup');
 
-        // After 3 seconds, navigate to the appropriate dashboard
+        // After 2 seconds, navigate to the appropriate dashboard
         setTimeout(() => {
           navigate(isCreator ? "/creator/dashboard" : "/brand/dashboard");
-        }, 3000);
+        }, 2000);
 
       } catch (error: any) {
         console.error('Error creating user account:', error);
@@ -65,25 +65,20 @@ const Welcome = () => {
   }, [navigate, isCreator, toast]);
 
   return (
-    <div className="fixed inset-0 bg-white flex items-center justify-center">
+    <div className="fixed inset-0 bg-[#F9F6F2] flex items-center justify-center">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{
-          duration: 0.5,
-          ease: [0.4, 0, 0.2, 1],
+          duration: 2,
+          ease: "easeInOut",
         }}
-        className="bg-white"
       >
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-6xl font-medium text-[#B27164]"
-          style={{ fontFamily: "'SF Pro Display', sans-serif" }}
-        >
-          Welcome to Nino
-        </motion.h1>
+        <img 
+          src="/lovable-uploads/a41591bd-96c0-4f9d-a959-fb8268eabd91.png" 
+          alt="Nino Logo" 
+          className="w-64 h-auto"
+        />
       </motion.div>
     </div>
   );
