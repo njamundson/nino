@@ -1,193 +1,82 @@
-import React from 'react';
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight } from "lucide-react";
+import BasicInfoSettings from "@/components/settings/creator/pages/BasicInfoSettings";
+import ProfessionalSettings from "@/components/settings/creator/pages/ProfessionalSettings";
+import AccountSettings from "@/components/settings/creator/pages/AccountSettings";
 import { Button } from "@/components/ui/button";
-import { Loader2, Camera } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import SkillsSelection from "@/components/onboarding/creator/professional-info/SkillsSelection";
-import { useCreatorSettings } from "@/hooks/useCreatorSettings";
+
+type SettingsPage = "basic" | "professional" | "account";
 
 const Settings = () => {
-  const {
-    loading,
-    profileImage,
-    creatorData,
-    setProfileImage,
-    setCreatorData,
-    handleSave,
-  } = useCreatorSettings();
+  const [currentPage, setCurrentPage] = useState<SettingsPage>("basic");
 
-  const handleUpdateField = (field: string, value: any) => {
-    setCreatorData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleFullNameChange = (value: string) => {
-    const names = value.trim().split(' ');
-    const firstNameValue = names[0] || '';
-    const lastNameValue = names.slice(1).join(' ') || '';
-    
-    handleUpdateField("firstName", firstNameValue);
-    handleUpdateField("lastName", lastNameValue);
+  const pages = {
+    basic: <BasicInfoSettings />,
+    professional: <ProfessionalSettings />,
+    account: <AccountSettings />,
   };
 
   return (
-    <div className="bg-white min-h-screen p-8 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
-      <h1 className="text-2xl font-semibold text-nino-text mb-6">Settings</h1>
-      <div className="max-w-3xl">
-        <div className="space-y-6">
-          <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm">
-            <div className="space-y-8">
-              {/* Profile Image Section */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative group">
-                  <Avatar className="w-32 h-32 ring-4 ring-white/50 transition-all duration-200 group-hover:ring-nino-primary/20">
-                    <AvatarImage 
-                      src={profileImage || ""} 
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="bg-nino-bg">
-                      <Camera className="w-12 h-12 text-nino-gray" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <label
-                    htmlFor="photo-upload"
-                    className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors shadow-lg"
-                  >
-                    <Camera className="w-5 h-5 text-white" />
-                  </label>
-                  <input
-                    type="file"
-                    id="photo-upload"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={loading}
-                  />
-                </div>
-                <p className="text-sm text-nino-gray">
-                  {loading ? "Uploading..." : "Upload your profile photo"}
-                </p>
-              </div>
-
-              {/* Basic Information */}
-              <div className="space-y-6">
-                <h2 className="text-lg font-medium text-nino-text">Basic Information</h2>
-                
-                {/* Full Name Field */}
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name or Family Name</Label>
-                  <Input
-                    id="fullName"
-                    value={`${creatorData.firstName} ${creatorData.lastName}`.trim()}
-                    onChange={(e) => handleFullNameChange(e.target.value)}
-                    disabled={loading}
-                    className="bg-white/50"
-                    placeholder="Enter your full name"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={creatorData.location}
-                    onChange={(e) => handleUpdateField("location", e.target.value)}
-                    disabled={loading}
-                    placeholder="Where are you based?"
-                    className="bg-white/50"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea
-                    id="bio"
-                    value={creatorData.bio}
-                    onChange={(e) => handleUpdateField("bio", e.target.value)}
-                    disabled={loading}
-                    placeholder="Tell us about yourself..."
-                    className="bg-white/50 resize-none min-h-[120px]"
-                  />
-                </div>
-              </div>
-
-              {/* Professional Information */}
-              <div className="space-y-6">
-                <h2 className="text-lg font-medium text-nino-text">Professional Information</h2>
-                <div className="space-y-2">
-                  <Label>Skills & Specialties</Label>
-                  <SkillsSelection
-                    skills={creatorData.specialties}
-                    onUpdateSkills={(skills) => handleUpdateField("specialties", skills)}
-                  />
-                </div>
-              </div>
-
-              {/* Social Links */}
-              <div className="space-y-6">
-                <h2 className="text-lg font-medium text-nino-text">Social & Contact</h2>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="instagram">Instagram Handle</Label>
-                    <Input
-                      id="instagram"
-                      value={creatorData.instagram}
-                      onChange={(e) => handleUpdateField("instagram", e.target.value)}
-                      disabled={loading}
-                      placeholder="@yourusername"
-                      className="bg-white/50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      value={creatorData.website}
-                      onChange={(e) => handleUpdateField("website", e.target.value)}
-                      disabled={loading}
-                      placeholder="https://yourwebsite.com"
-                      className="bg-white/50"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Save Button */}
-              <div className="flex justify-end">
-                <Button
-                  onClick={handleSave}
-                  disabled={loading}
-                  className="bg-nino-primary hover:bg-nino-primary/90"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
-                </Button>
-              </div>
+    <div className="min-h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] bg-[#f5f5f7] overflow-hidden">
+      <AnimatePresence mode="wait">
+        {currentPage === "menu" ? (
+          <motion.div
+            key="menu"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="max-w-2xl mx-auto pt-12 px-6"
+          >
+            <h1 className="text-3xl font-semibold text-gray-900 mb-8">Settings</h1>
+            <div className="space-y-3">
+              <SettingsButton
+                label="Basic Information"
+                onClick={() => setCurrentPage("basic")}
+              />
+              <SettingsButton
+                label="Professional & Social"
+                onClick={() => setCurrentPage("professional")}
+              />
+              <SettingsButton
+                label="Account & Subscription"
+                onClick={() => setCurrentPage("account")}
+              />
             </div>
-          </Card>
-        </div>
-      </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="h-full"
+          >
+            {pages[currentPage]}
+            <div className="fixed bottom-8 left-0 right-0 flex justify-center">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage("menu")}
+                className="bg-white/80 backdrop-blur-xl border-0 shadow-lg hover:bg-white/90"
+              >
+                Back to Settings
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+
+const SettingsButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className="w-full p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between group"
+  >
+    <span className="text-gray-900 font-medium">{label}</span>
+    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+  </button>
+);
 
 export default Settings;
