@@ -41,6 +41,7 @@ const ResetPassword = ({ isOpen, onClose }: ResetPasswordProps) => {
       });
       
       onClose();
+      setEmail("");
     } catch (error: any) {
       toast({
         title: "Error",

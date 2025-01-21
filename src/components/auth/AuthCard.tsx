@@ -18,6 +18,10 @@ const fadeVariants = {
 const AuthCard = () => {
   const [isSignIn, setIsSignIn] = useState(true);
 
+  const handleToggleAuth = () => {
+    setIsSignIn(prev => !prev);
+  };
+
   return (
     <div className="w-full max-w-md p-6">
       <div className="space-y-8">
@@ -42,9 +46,9 @@ const AuthCard = () => {
             className="bg-white rounded-2xl p-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
           >
             {isSignIn ? (
-              <SignIn onToggleAuth={() => setIsSignIn(false)} />
+              <SignIn onToggleAuth={handleToggleAuth} />
             ) : (
-              <SignUp onToggleAuth={() => setIsSignIn(true)} />
+              <SignUp onToggleAuth={handleToggleAuth} />
             )}
           </motion.div>
         </AnimatePresence>

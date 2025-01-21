@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ResetPassword from "./ResetPassword";
 import SignInForm from "./signin/SignInForm";
 import SignInHeader from "./signin/SignInHeader";
@@ -13,10 +14,12 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const { loading, signIn } = useSignInWithEmail();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignIn = async (email: string, password: string) => {
     try {
       await signIn(email, password);
+      navigate('/onboarding');
     } catch (error) {
       console.error('Sign in error:', error);
       toast({

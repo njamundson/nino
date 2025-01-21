@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useSignUp } from "./signup/useSignUp";
 import SignUpForm from "./signup/SignUpForm";
 import SignUpHeader from "./signup/SignUpHeader";
@@ -7,7 +8,10 @@ interface SignUpProps {
 }
 
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
-  const { loading, handleSignUp } = useSignUp(onToggleAuth);
+  const navigate = useNavigate();
+  const { loading, handleSignUp } = useSignUp(() => {
+    navigate('/onboarding');
+  });
 
   return (
     <div className="space-y-6">
@@ -24,6 +28,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           type="button"
           onClick={onToggleAuth}
           className="text-nino-primary hover:text-nino-primary/80 transition-colors duration-300"
+          disabled={loading}
         >
           Sign in
         </button>
