@@ -6,15 +6,16 @@ import ProfessionalSettings from "@/components/settings/creator/pages/Profession
 import AccountSettings from "@/components/settings/creator/pages/AccountSettings";
 import { Button } from "@/components/ui/button";
 
-type SettingsPage = "basic" | "professional" | "account";
+type SettingsPage = "basic" | "professional" | "account" | "menu";
 
 const Settings = () => {
-  const [currentPage, setCurrentPage] = useState<SettingsPage>("basic");
+  const [currentPage, setCurrentPage] = useState<SettingsPage>("menu");
 
   const pages = {
     basic: <BasicInfoSettings />,
     professional: <ProfessionalSettings />,
     account: <AccountSettings />,
+    menu: null
   };
 
   return (
