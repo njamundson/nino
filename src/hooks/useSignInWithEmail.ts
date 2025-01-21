@@ -12,10 +12,13 @@ export const useSignInWithEmail = () => {
     setLoading(true);
     
     try {
+      // This will be replaced with Supabase auth.signInWithPassword
+      console.log('Preparing for Supabase auth:', { email });
+      
       // Simulate authentication delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Get stored users from localStorage
+      // Get stored users from localStorage (temporary until Supabase)
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       const user = users.find((u: any) => u.email === email && u.password === password);
       
@@ -23,40 +26,14 @@ export const useSignInWithEmail = () => {
         throw new Error("Invalid credentials");
       }
 
-      // Store user data in localStorage
+      // Store auth state (will be handled by Supabase)
+      localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userData', JSON.stringify(user));
+      localStorage.setItem('userType', user.type || 'brand');
 
-      // Check if user has completed onboarding
-      if (!user.onboardingCompleted) {
-        navigate('/onboarding');
-        toast({
-          title: "Welcome!",
-          description: "Please complete your profile setup.",
-        });
-        return;
-      }
-
-      // Navigate based on user type
-      if (user.type === 'brand') {
-        navigate('/brand/dashboard');
-      } else if (user.type === 'creator') {
-        navigate('/creator/dashboard');
-      } else {
-        navigate('/onboarding');
-      }
-
-      toast({
-        title: "Welcome back!",
-        description: "Successfully signed in.",
-      });
-
+      return user;
     } catch (error) {
       console.error("Authentication error:", error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Invalid email or password",
-        variant: "destructive",
-      });
       throw error;
     } finally {
       setLoading(false);

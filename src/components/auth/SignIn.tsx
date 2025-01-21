@@ -18,8 +18,24 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
   const handleSignIn = async (email: string, password: string) => {
     try {
+      // This will be replaced with Supabase auth
+      console.log('Preparing for Supabase auth integration');
       await signIn(email, password);
-      navigate('/onboarding');
+      
+      // After successful auth, we'll fetch the user profile from Supabase
+      // and determine the correct route based on user type
+      const mockUserType = localStorage.getItem('userType') || 'brand';
+      const route = mockUserType === 'brand' ? '/brand/dashboard' : '/creator/dashboard';
+      
+      // Check if onboarding is completed (will be handled by Supabase query)
+      const isOnboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
+      
+      if (!isOnboardingCompleted) {
+        navigate('/onboarding');
+        return;
+      }
+      
+      navigate(route);
     } catch (error) {
       console.error('Sign in error:', error);
       toast({
