@@ -23,9 +23,14 @@ export const useCreatorOnboarding = () => {
 
   const updateField = (field: keyof CreatorData, value: any) => {
     setCreatorData(prev => ({ ...prev, [field]: value }));
+    // Store in localStorage for persistence
+    localStorage.setItem('creatorData', JSON.stringify({
+      ...creatorData,
+      [field]: value
+    }));
   };
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (currentStep === 'basic') {
       if (!creatorData.bio || !creatorData.location) {
         toast({
@@ -48,6 +53,8 @@ export const useCreatorOnboarding = () => {
       setCurrentStep('social');
     } else if (currentStep === 'social') {
       setCurrentStep('payment');
+    } else if (currentStep === 'payment') {
+      handleComplete();
     }
   };
 
