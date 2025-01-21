@@ -29,7 +29,6 @@ export const useSignUp = (onToggleAuth: () => void) => {
             first_name: firstName,
             last_name: lastName,
           },
-          emailRedirectTo: window.location.origin + '/onboarding',
         },
       });
 
@@ -64,35 +63,36 @@ export const useSignUp = (onToggleAuth: () => void) => {
         return;
       }
 
-      if (signUpData?.session) {
-        console.log("User signed up successfully, creating creator profile...");
+      if (signUpData?.user) {
+        console.log("User signed up successfully, creating profile...");
         
-        // Create initial profile with empty specialties array
-        const { error: creatorError } = await supabase
-          .from('creators')
+        // Create initial profile
+        const { error: profileError } = await supabase
+          .from('profiles')
           .insert({
-            user_id: signUpData.user.id,
-            profile_id: signUpData.user.id,
-            specialties: [], // Initialize with empty array
+            id: signUpData.user.id,
+            first_name: firstName,
+            last_name: lastName,
           });
 
-        if (creatorError) {
-          console.error("Error creating creator profile:", creatorError);
+        if (profileError) {
+          console.error("Error creating profile:", profileError);
           toast({
             title: "Error",
-            description: "Failed to create creator profile. Please try again.",
+            description: "Failed to create profile. Please try again.",
             variant: "destructive",
           });
           return;
         }
 
-        console.log("Creator profile created successfully");
+        console.log("Profile created successfully");
         
         toast({
           title: "Welcome to NINO",
           description: "Your account has been created successfully.",
         });
         
+        // Redirect to onboarding
         navigate("/onboarding");
       } else {
         // If no session but signup was successful, show a message about email confirmation
