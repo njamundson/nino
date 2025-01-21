@@ -7,6 +7,7 @@ interface SignUpFormData {
   password: string;
   firstName: string;
   lastName: string;
+  userType: "brand" | "creator";
 }
 
 export const useSignUp = () => {
@@ -18,7 +19,11 @@ export const useSignUp = () => {
     setLoading(true);
 
     try {
-      // First, create the auth user
+      console.log('Preparing for Supabase auth signup:', { 
+        email: data.email,
+        userType: data.userType 
+      });
+      
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -26,6 +31,7 @@ export const useSignUp = () => {
           data: {
             first_name: data.firstName,
             last_name: data.lastName,
+            user_type: data.userType
           }
         }
       });
@@ -33,7 +39,6 @@ export const useSignUp = () => {
       if (signUpError) throw signUpError;
       if (!authData.user) throw new Error('No user data returned');
 
-      // Profile will be created automatically by the database trigger
       console.log('User created successfully:', authData.user.id);
 
       toast({
@@ -44,11 +49,6 @@ export const useSignUp = () => {
       return authData;
     } catch (error) {
       console.error('Sign up error:', error);
-      toast({
-        variant: "destructive",
-        title: "Error creating account",
-        description: error instanceof Error ? error.message : "Please try again.",
-      });
       throw error;
     } finally {
       setLoading(false);
