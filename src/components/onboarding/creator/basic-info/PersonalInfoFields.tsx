@@ -17,6 +17,16 @@ const PersonalInfoFields = ({
   location,
   onUpdateField,
 }: PersonalInfoFieldsProps) => {
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fullName = e.target.value;
+    const nameParts = fullName.trim().split(/\s+/);
+    
+    if (nameParts.length > 0) {
+      onUpdateField('firstName', nameParts[0]);
+      onUpdateField('lastName', nameParts.slice(1).join(' '));
+    }
+  };
+
   return (
     <>
       <div className="space-y-2">
@@ -24,12 +34,7 @@ const PersonalInfoFields = ({
         <Input
           id="fullName"
           value={`${firstName}${lastName ? ' ' + lastName : ''}`}
-          onChange={(e) => {
-            const fullName = e.target.value;
-            const parts = fullName.split(' ');
-            onUpdateField('firstName', parts[0] || '');
-            onUpdateField('lastName', parts.slice(1).join(' '));
-          }}
+          onChange={handleFullNameChange}
           placeholder="Enter your full name"
           className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
           required
