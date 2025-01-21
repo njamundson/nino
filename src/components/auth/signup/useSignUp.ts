@@ -16,9 +16,8 @@ export const useSignUp = (onToggleAuth: () => void) => {
   const navigate = useNavigate();
 
   const handleSignUp = async ({ email, password, firstName, lastName }: SignUpFormData) => {
-    setLoading(true);
-    
     try {
+      setLoading(true);
       console.log("Starting sign up process with data:", { email, firstName, lastName });
       
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -33,7 +32,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
       });
 
       if (signUpError) {
-        console.error("Sign in error:", signUpError);
+        console.error("Sign up error:", signUpError);
         let errorMessage = "Error creating account";
         
         if (signUpError.message.includes("User already registered")) {
@@ -64,7 +63,7 @@ export const useSignUp = (onToggleAuth: () => void) => {
       }
 
       if (signUpData?.user) {
-        console.log("User signed up successfully");
+        console.log("User signed up successfully, redirecting to onboarding...");
         
         toast({
           title: "Welcome to NINO",
