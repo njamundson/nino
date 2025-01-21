@@ -1,5 +1,4 @@
 import { Route } from "react-router-dom";
-import UserTypeSelection from "@/components/onboarding/UserTypeSelection";
 import CreatorOnboarding from "@/components/onboarding/CreatorOnboarding";
 import BrandOnboarding from "@/components/onboarding/BrandOnboarding";
 import AccountManagersStep from "@/components/onboarding/brand/managers/AccountManagersStep";
@@ -7,10 +6,6 @@ import InvitationAcceptance from "@/components/onboarding/brand/managers/Invitat
 import PaymentStep from "@/components/onboarding/brand/PaymentStep";
 
 export const onboardingRoutes = [
-  {
-    path: "/onboarding",
-    element: <UserTypeSelection />,
-  },
   {
     path: "/onboarding/creator",
     element: <CreatorOnboarding />,
