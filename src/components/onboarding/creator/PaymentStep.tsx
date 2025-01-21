@@ -44,9 +44,18 @@ const PaymentStep = () => {
         if (insertError) throw insertError;
       }
       
-      // Navigate to welcome page
+      // Navigate to welcome page first
       navigate('/creator/welcome');
+      
+      // After 3 seconds, navigate to dashboard
+      setTimeout(() => {
+        navigate('/creator/dashboard');
+      }, 3000);
 
+      toast({
+        title: "Welcome to Nino!",
+        description: "Your creator account has been set up successfully.",
+      });
     } catch (error) {
       console.error('Error setting up creator account:', error);
       toast({
