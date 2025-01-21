@@ -79,7 +79,6 @@ const StatsCards = () => {
     }
   });
 
-  // Set up real-time subscription for updates
   useEffect(() => {
     const channel = supabase
       .channel('applications-changes')
