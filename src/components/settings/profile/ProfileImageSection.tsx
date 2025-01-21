@@ -78,15 +78,15 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
   return (
     <div className="flex flex-col items-center space-y-4">
       <div className="relative group">
-        <Avatar className="w-32 h-32 ring-4 ring-white/50 transition-all duration-200 group-hover:ring-nino-primary/20">
-          <AvatarImage src={profileImage || ""} />
-          <AvatarFallback className="bg-nino-bg">
-            <Camera className="w-12 h-12 text-nino-gray" />
+        <Avatar className="w-40 h-40 ring-4 ring-white/50 transition-all duration-300 group-hover:ring-black/10">
+          <AvatarImage src={profileImage || ""} className="object-cover" />
+          <AvatarFallback className="bg-gray-50">
+            <Camera className="w-12 h-12 text-gray-400" />
           </AvatarFallback>
         </Avatar>
         <label
           htmlFor="photo-upload"
-          className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors shadow-lg"
+          className="absolute bottom-2 right-2 p-3 bg-black rounded-full cursor-pointer hover:bg-black/90 transition-all duration-200 hover:scale-95 shadow-lg"
         >
           <Camera className="w-5 h-5 text-white" />
         </label>
@@ -99,7 +99,7 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
           disabled={loading}
         />
       </div>
-      <p className="text-sm text-nino-gray">
+      <p className="text-sm text-nino-gray font-medium">
         {loading ? "Uploading..." : "Upload your profile photo"}
       </p>
     </div>
