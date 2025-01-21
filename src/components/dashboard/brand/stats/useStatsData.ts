@@ -29,30 +29,6 @@ export const useStatsData = () => {
     }
   });
 
-  const { data: completedProjects } = useQuery({
-    queryKey: ['completed-projects'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return 0;
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!brand) return 0;
-
-      const { count } = await supabase
-        .from('opportunities')
-        .select('*', { count: 'exact', head: true })
-        .eq('brand_id', brand.id)
-        .eq('status', 'completed');
-
-      return count || 0;
-    }
-  });
-
   const { data: newProposals } = useQuery({
     queryKey: ['new-proposals'],
     queryFn: async () => {
@@ -77,6 +53,23 @@ export const useStatsData = () => {
     }
   });
 
+  const { data: newMessages } = useQuery({
+    queryKey: ['new-messages'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return 0;
+
+      const { count } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiver_id', user.id)
+        .eq('read', false)
+        .is('deleted_at', null);
+
+      return count || 0;
+    }
+  });
+
   useEffect(() => {
     const channel = supabase
       .channel('dashboard-changes')
@@ -89,7 +82,6 @@ export const useStatsData = () => {
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['active-projects'] });
-          queryClient.invalidateQueries({ queryKey: ['completed-projects'] });
         }
       )
       .on(
@@ -103,6 +95,17 @@ export const useStatsData = () => {
           queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['new-messages'] });
+        }
+      )
       .subscribe();
 
     return () => {
@@ -112,7 +115,7 @@ export const useStatsData = () => {
 
   return {
     activeProjects: activeProjects ?? 0,
-    completedProjects: completedProjects ?? 0,
-    newProposals: newProposals ?? 0
+    newProposals: newProposals ?? 0,
+    newMessages: newMessages ?? 0
   };
 };
