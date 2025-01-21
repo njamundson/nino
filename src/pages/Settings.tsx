@@ -19,7 +19,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] bg-[#f5f5f7] overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] bg-nino-bg overflow-hidden">
       <AnimatePresence mode="wait">
         {currentPage === "menu" ? (
           <motion.div
@@ -29,7 +29,7 @@ const Settings = () => {
             exit={{ opacity: 0, y: -20 }}
             className="max-w-2xl mx-auto pt-12 px-6"
           >
-            <h1 className="text-3xl font-semibold text-gray-900 mb-8">Settings</h1>
+            <h1 className="text-3xl font-semibold text-nino-text mb-8">Settings</h1>
             <div className="space-y-3">
               <SettingsButton
                 label="Basic Information"
@@ -58,7 +58,7 @@ const Settings = () => {
               <Button
                 variant="outline"
                 onClick={() => setCurrentPage("menu")}
-                className="bg-white/80 backdrop-blur-xl border-0 shadow-lg hover:bg-white/90"
+                className="bg-nino-white/80 backdrop-blur-xl border-0 shadow-lg hover:bg-nino-white/90 text-nino-text"
               >
                 Back to Settings
               </Button>
@@ -73,10 +73,10 @@ const Settings = () => {
 const SettingsButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="w-full p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between group"
+    className="w-full p-4 bg-nino-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between group"
   >
-    <span className="text-gray-900 font-medium">{label}</span>
-    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+    <span className="text-nino-text font-medium">{label}</span>
+    <ChevronRight className="w-5 h-5 text-nino-gray group-hover:text-nino-text transition-colors" />
   </button>
 );
 
