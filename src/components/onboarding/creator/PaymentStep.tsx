@@ -1,61 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 const PaymentStep = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleComplete = async () => {
-    try {
-      // Get the current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No authenticated user found");
-
-      // Get the user's profile
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profileError) throw profileError;
-      if (!profile) throw new Error("Profile not found");
-
-      // Check if creator profile exists
-      const { data: existingCreator, error: creatorError } = await supabase
-        .from('creators')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (creatorError) throw creatorError;
-
-      // Create creator profile if it doesn't exist
-      if (!existingCreator) {
-        const { error: insertError } = await supabase
-          .from('creators')
-          .insert({
-            user_id: user.id,
-            profile_id: profile.id,
-          });
-
-        if (insertError) throw insertError;
-      }
-      
-      // Navigate to welcome page
-      navigate('/creator/welcome');
-
-    } catch (error) {
-      console.error('Error setting up creator account:', error);
-      toast({
-        variant: "destructive",
-        title: "Setup Error",
-        description: "There was a problem setting up your creator account. Please try again.",
-      });
-      navigate('/onboarding');
-    }
+  const handleComplete = () => {
+    // Navigate to welcome page first
+    navigate('/creator/welcome');
   };
 
   return (
@@ -69,7 +22,7 @@ const PaymentStep = () => {
         className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
         onClick={handleComplete}
       >
-        Dashboard
+        Complete Setup
       </Button>
     </div>
   );
