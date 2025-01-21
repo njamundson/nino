@@ -34,7 +34,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
-        // Create profile record
+        // Create initial profile record with onboarding_completed set to false
         const { error: profileError } = await supabase
           .from('profiles')
           .insert([
@@ -42,12 +42,13 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
               id: authData.user.id,
               first_name: data.firstName,
               last_name: data.lastName,
+              onboarding_completed: false
             }
           ]);
 
         if (profileError) throw profileError;
 
-        // Create brand or creator record based on user type
+        // Create initial brand or creator record
         if (data.userType === 'brand') {
           const { error: brandError } = await supabase
             .from('brands')
@@ -60,6 +61,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             ]);
 
           if (brandError) throw brandError;
+          navigate('/onboarding/brand');
         } else if (data.userType === 'creator') {
           const { error: creatorError } = await supabase
             .from('creators')
@@ -71,19 +73,13 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             ]);
 
           if (creatorError) throw creatorError;
+          navigate('/onboarding/creator');
         }
 
         toast({
           title: "Account created successfully",
-          description: "Welcome to NINO!",
+          description: "Please complete your profile setup",
         });
-        
-        // Redirect based on user type
-        if (data.userType === 'brand') {
-          navigate('/onboarding/brand');
-        } else if (data.userType === 'creator') {
-          navigate('/onboarding/creator');
-        }
       }
     } catch (error: any) {
       console.error('Sign up error:', error);
