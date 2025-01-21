@@ -50,7 +50,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
       if (profileError) throw profileError;
 
-      // Create user type specific record
+      // Create user type specific record and navigate to appropriate onboarding
       if (data.userType === 'brand') {
         const { error: brandError } = await supabase
           .from('brands')
@@ -63,6 +63,14 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           ]);
 
         if (brandError) throw brandError;
+        
+        toast({
+          title: "Account created successfully",
+          description: "Let's set up your brand profile",
+        });
+        
+        navigate('/onboarding/brand');
+        return;
       }
       
       if (data.userType === 'creator') {
@@ -76,12 +84,15 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           ]);
 
         if (creatorError) throw creatorError;
+        
+        toast({
+          title: "Account created successfully",
+          description: "Let's set up your creator profile",
+        });
+        
+        navigate('/onboarding/creator');
+        return;
       }
-
-      toast({
-        title: "Account created successfully",
-        description: "Please sign in to continue",
-      });
 
     } catch (error: any) {
       console.error('Sign up error:', error);
