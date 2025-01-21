@@ -1,4 +1,14 @@
-import { CreatorFiltersProps } from '@/types/creator';
+import { Button } from "@/components/ui/button";
+
+interface CreatorFiltersProps {
+  selectedSpecialties: string[];
+  selectedCreatorType: string | null;
+  selectedLocations: string[];
+  onSpecialtyChange: (specialty: string) => void;
+  onCreatorTypeChange: (type: string | null) => void;
+  onLocationChange: (location: string) => void;
+  onInvite: (creatorId: string) => void;
+}
 
 const CreatorFilters = ({
   selectedSpecialties,

@@ -13,6 +13,8 @@ export interface BrandData {
   profile_image_url: string | null;
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface LoginHistory {
@@ -24,8 +26,8 @@ export interface LoginHistory {
 }
 
 export interface BrandOnboardingProps {
-  currentStep: string;
-  setCurrentStep: (step: string) => void;
+  currentStep: OnboardingStep;
+  setCurrentStep: (step: OnboardingStep) => void;
   profileImage: string | null;
   brandData: BrandData;
   updateField: (field: keyof BrandData, value: any) => void;
@@ -34,3 +36,5 @@ export interface BrandOnboardingProps {
   handleBack: () => void;
   handleSubmit: () => Promise<void>;
 }
+
+export type OnboardingStep = 'basic' | 'details' | 'social' | 'managers';

@@ -5,8 +5,7 @@ import InvitationAcceptance from "@/components/onboarding/brand/managers/Invitat
 import PaymentStep from "@/components/onboarding/brand/PaymentStep";
 import { useBrandOnboarding } from "@/hooks/useBrandOnboarding";
 import { useState } from "react";
-
-type OnboardingStep = "basic" | "details" | "social" | "managers";
+import { OnboardingStep } from "@/types/brand";
 
 const BrandOnboardingWrapper = () => {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("basic");
