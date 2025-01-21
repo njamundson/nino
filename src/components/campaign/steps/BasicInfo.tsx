@@ -67,7 +67,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-4">
           <Label className="text-sm font-medium text-gray-700">Start Date</Label>
           <Popover>
