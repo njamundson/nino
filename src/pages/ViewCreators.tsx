@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 const ViewCreators = () => {
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
   const [selectedCreatorType, setSelectedCreatorType] = useState<string | null>(null);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const { toast } = useToast();
 
   const handleSpecialtyChange = (specialty: string) => {
@@ -21,8 +22,15 @@ const ViewCreators = () => {
     setSelectedCreatorType(type);
   };
 
+  const handleLocationChange = (location: string) => {
+    setSelectedLocations((prev) =>
+      prev.includes(location)
+        ? prev.filter((l) => l !== location)
+        : [...prev, location]
+    );
+  };
+
   const handleInvite = (creatorId: string) => {
-    // This is a placeholder function that will be implemented later
     toast({
       title: "Success",
       description: "Creator has been invited.",
@@ -38,12 +46,15 @@ const ViewCreators = () => {
       <CreatorFilters 
         selectedSpecialties={selectedSpecialties}
         selectedCreatorType={selectedCreatorType}
+        selectedLocations={selectedLocations}
         onSpecialtyChange={handleSpecialtyChange}
         onCreatorTypeChange={handleCreatorTypeChange}
+        onLocationChange={handleLocationChange}
       />
       <CreatorGrid 
         selectedSpecialties={selectedSpecialties}
         selectedCreatorType={selectedCreatorType}
+        selectedLocations={selectedLocations}
         onInvite={handleInvite}
       />
     </div>
