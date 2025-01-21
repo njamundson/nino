@@ -17,26 +17,20 @@ const CreatorFilters = ({
   onCreatorTypeChange 
 }: CreatorFiltersProps) => {
   return (
-    <div className="space-y-8 bg-[#F1F0FB] p-6 rounded-2xl">
+    <div className="space-y-6">
       <div>
-        <h3 className="text-[#222222] font-medium mb-4">Creator Type</h3>
+        <h3 className="text-sm font-medium mb-3">Creator Type</h3>
         <Select
           value={selectedCreatorType || "all"}
           onValueChange={(value) => onCreatorTypeChange(value === "all" ? null : value)}
         >
-          <SelectTrigger className="w-full md:w-[280px] bg-white border-0 shadow-sm h-12 text-[#333333] hover:bg-white/90 transition-colors">
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
-          <SelectContent className="bg-white border-0 shadow-lg">
-            <SelectItem value="all" className="text-[#333333] hover:bg-[#F1F1F1] cursor-pointer">
-              All Types
-            </SelectItem>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
             {CREATOR_TYPES.map((type) => (
-              <SelectItem 
-                key={type} 
-                value={type}
-                className="text-[#333333] hover:bg-[#F1F1F1] cursor-pointer"
-              >
+              <SelectItem key={type} value={type}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </SelectItem>
             ))}
@@ -45,17 +39,17 @@ const CreatorFilters = ({
       </div>
 
       <div>
-        <h3 className="text-[#222222] font-medium mb-4">Specialties</h3>
+        <h3 className="text-sm font-medium mb-3">Specialties</h3>
         <div className="flex flex-wrap gap-2">
           {CREATOR_SPECIALTIES.map((specialty) => (
             <Badge
               key={specialty}
               variant="outline"
               className={cn(
-                "px-4 py-2 text-sm cursor-pointer transition-all duration-200 rounded-full border-0",
+                "px-4 py-2 text-base cursor-pointer transition-all duration-200 border-2",
                 selectedSpecialties.includes(specialty)
-                  ? "bg-[#1EAEDB] text-white hover:bg-[#0FA0CE] shadow-sm"
-                  : "bg-white text-[#333333] hover:bg-[#F1F1F1] shadow-sm"
+                  ? "bg-nino-primary text-white hover:bg-nino-primary/90 border-nino-primary"
+                  : "bg-transparent text-nino-primary hover:bg-nino-primary/10 border-nino-primary"
               )}
               onClick={() => onSpecialtyChange(specialty)}
             >
