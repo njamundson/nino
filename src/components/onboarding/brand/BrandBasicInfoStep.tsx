@@ -25,9 +25,9 @@ const BrandBasicInfoStep = ({
 
   useEffect(() => {
     const setUserEmail = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        onUpdateField("brandEmail", user.email);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email) {
+        onUpdateField("brandEmail", session.user.email);
       }
     };
     
@@ -39,6 +39,16 @@ const BrandBasicInfoStep = ({
     if (!file) return;
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to upload images",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
@@ -79,17 +89,19 @@ const BrandBasicInfoStep = ({
       <div className="space-y-6">
         <div className="flex flex-col items-center space-y-4">
           <div className="relative group">
-            <Avatar className="w-32 h-32 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20">
-              <AvatarImage src={profileImage || ""} />
-              <AvatarFallback className="bg-nino-bg">
-                <Camera className="w-12 h-12 text-nino-gray" />
-              </AvatarFallback>
-            </Avatar>
             <label
               htmlFor="photo-upload"
-              className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full cursor-pointer hover:bg-nino-primary/90 transition-colors shadow-lg"
+              className="cursor-pointer block"
             >
-              <Camera className="w-5 h-5 text-white" />
+              <Avatar className="w-32 h-32 ring-4 ring-nino-bg transition-all duration-200 group-hover:ring-nino-primary/20">
+                <AvatarImage src={profileImage || ""} />
+                <AvatarFallback className="bg-nino-bg">
+                  <Camera className="w-12 h-12 text-nino-gray" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="absolute bottom-0 right-0 p-3 bg-nino-primary rounded-full hover:bg-nino-primary/90 transition-colors shadow-lg">
+                <Camera className="w-5 h-5 text-white" />
+              </div>
             </label>
             <input
               type="file"
