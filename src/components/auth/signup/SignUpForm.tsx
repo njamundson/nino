@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Form } from "@/components/ui/form";
 import NameFields from "./form/NameFields";
 import EmailField from "./form/EmailField";
 import PasswordFields from "./form/PasswordFields";
@@ -60,12 +61,14 @@ const SignUpForm = () => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <NameFields form={form} disabled={form.formState.isSubmitting} />
-      <EmailField form={form} disabled={form.formState.isSubmitting} />
-      <PasswordFields form={form} disabled={form.formState.isSubmitting} />
-      <SubmitButton loading={form.formState.isSubmitting} />
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <NameFields form={form} disabled={form.formState.isSubmitting} />
+        <EmailField form={form} disabled={form.formState.isSubmitting} />
+        <PasswordFields form={form} disabled={form.formState.isSubmitting} />
+        <SubmitButton loading={form.formState.isSubmitting} />
+      </form>
+    </Form>
   );
 };
 
