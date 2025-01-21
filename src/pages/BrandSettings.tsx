@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ArrowLeft } from "lucide-react";
 import BrandDetailsForm from "@/components/settings/profile/BrandDetailsForm";
 import AccountManagersSection from "@/components/settings/profile/AccountManagersSection";
 import { Button } from "@/components/ui/button";
@@ -29,23 +29,49 @@ const BrandSettings = () => {
   const pages: Record<SettingsPage, React.ReactNode> = {
     profile: (
       <div className="max-w-2xl mx-auto space-y-8">
-        <h2 className="text-2xl font-semibold">Brand Profile</h2>
-        <BrandDetailsForm
-          loading={loading}
-          profileImage={profileImage}
-          brandData={brandData}
-          onUpdateField={onUpdateField}
-          onUpdateImage={setProfileImage}
-        />
-        <Button onClick={handleSave} disabled={loading}>
-          Save Changes
-        </Button>
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCurrentPage("menu")}
+            className="hover:bg-nino-accent/10"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h2 className="text-2xl font-semibold">Brand Profile</h2>
+        </div>
+        <div className="bg-white/50 backdrop-blur-xl rounded-xl shadow-sm p-6">
+          <BrandDetailsForm
+            loading={loading}
+            profileImage={profileImage}
+            brandData={brandData}
+            onUpdateField={onUpdateField}
+            onUpdateImage={setProfileImage}
+          />
+          <div className="mt-6">
+            <Button onClick={handleSave} disabled={loading}>
+              Save Changes
+            </Button>
+          </div>
+        </div>
       </div>
     ),
     managers: (
       <div className="max-w-2xl mx-auto space-y-8">
-        <h2 className="text-2xl font-semibold">Account Managers</h2>
-        <AccountManagersSection />
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCurrentPage("menu")}
+            className="hover:bg-nino-accent/10"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h2 className="text-2xl font-semibold">Account Managers</h2>
+        </div>
+        <div className="bg-white/50 backdrop-blur-xl rounded-xl shadow-sm p-6">
+          <AccountManagersSection />
+        </div>
       </div>
     ),
     menu: null,
@@ -83,15 +109,6 @@ const BrandSettings = () => {
             className="h-full p-8"
           >
             {pages[currentPage]}
-            <div className="fixed bottom-8 left-0 right-0 flex justify-center">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage("menu")}
-                className="bg-nino-white/80 backdrop-blur-xl border-0 shadow-lg hover:bg-nino-white/90 text-nino-text"
-              >
-                Back to Settings
-              </Button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -102,7 +119,7 @@ const BrandSettings = () => {
 const SettingsButton = ({ label, onClick }: { label: string; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="w-full p-4 bg-nino-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between group"
+    className="w-full p-4 bg-white/50 backdrop-blur-xl rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-between group"
   >
     <span className="text-nino-text font-medium">{label}</span>
     <ChevronRight className="w-5 h-5 text-nino-gray group-hover:text-nino-text transition-colors" />
