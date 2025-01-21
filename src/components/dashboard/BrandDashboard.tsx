@@ -12,7 +12,7 @@ const LoadingSpinner = () => (
 
 const BrandDashboard = () => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <DashboardHeader />
       
       <Suspense fallback={<LoadingSpinner />}>
