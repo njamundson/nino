@@ -3,31 +3,20 @@ import { AnimatePresence, motion } from "framer-motion";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 1000 : -1000,
+const fadeVariants = {
+  enter: {
     opacity: 0
-  }),
+  },
   center: {
-    zIndex: 1,
-    x: 0,
     opacity: 1
   },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? 1000 : -1000,
+  exit: {
     opacity: 0
-  })
+  }
 };
 
 const AuthCard = () => {
   const [isSignIn, setIsSignIn] = useState(true);
-  const [[page, direction], setPage] = useState([0, 0]);
-
-  const paginate = (newDirection: number) => {
-    setPage([page + newDirection, newDirection]);
-    setIsSignIn(!isSignIn);
-  };
 
   return (
     <div className="w-full max-w-md p-6">
@@ -40,24 +29,22 @@ const AuthCard = () => {
           />
         </div>
 
-        <AnimatePresence mode="wait" custom={direction} initial={false}>
+        <AnimatePresence mode="wait">
           <motion.div
             key={isSignIn ? "signin" : "signup"}
-            custom={direction}
-            variants={slideVariants}
+            variants={fadeVariants}
             initial="enter"
             animate="center"
             exit="exit"
             transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
               opacity: { duration: 0.2 }
             }}
             className="bg-white rounded-2xl p-8 shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
           >
             {isSignIn ? (
-              <SignIn onToggleAuth={() => paginate(1)} />
+              <SignIn onToggleAuth={() => setIsSignIn(false)} />
             ) : (
-              <SignUp onToggleAuth={() => paginate(-1)} />
+              <SignUp onToggleAuth={() => setIsSignIn(true)} />
             )}
           </motion.div>
         </AnimatePresence>
