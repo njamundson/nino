@@ -10,10 +10,7 @@ import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
 import { adminRoutes } from "./routes/adminRoutes";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "./hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,109 +24,22 @@ const queryClient = new QueryClient({
 });
 
 const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { toast } = useToast();
   const navigate = useNavigate();
-  const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
+    // Simple check for user data in localStorage
+    const userData = localStorage.getItem('userData');
+    const isIndexRoute = window.location.pathname === '/';
 
-    const initializeAuth = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Clear session if there's an invalid refresh token
-        const currentSession = await supabase.auth.getSession();
-        if (currentSession.error?.message?.includes('refresh_token_not_found')) {
-          console.log('Invalid refresh token detected, clearing session');
-          await supabase.auth.signOut();
-          if (window.location.pathname !== '/') {
-            navigate('/');
-          }
-          return;
-        }
+    // If no user data and not on index, redirect to index
+    if (!userData && !isIndexRoute) {
+      navigate('/');
+    }
 
-        // Get the current session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          // If the error is related to refresh token, clear the session
-          if (sessionError.message?.includes('refresh_token_not_found')) {
-            await supabase.auth.signOut();
-          }
-          throw sessionError;
-        }
-
-        // If no session and not on index page, redirect to index
-        if (!session && window.location.pathname !== '/') {
-          navigate('/');
-          return;
-        }
-
-        // If session exists, verify it's still valid
-        if (session) {
-          const { error: userError } = await supabase.auth.getUser();
-          if (userError) {
-            console.error('User verification error:', userError);
-            await supabase.auth.signOut();
-            toast({
-              title: "Session expired",
-              description: "Please sign in again to continue.",
-              variant: "destructive",
-            });
-            navigate('/');
-            return;
-          }
-        }
-
-        if (mounted) {
-          setIsInitialized(true);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        if (mounted) {
-          // Clear the session on error
-          await supabase.auth.signOut();
-          setIsInitialized(true);
-          setIsLoading(false);
-          if (window.location.pathname !== '/') {
-            navigate('/');
-          }
-        }
-      }
-    };
-
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event);
-      
-      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-        // Handle token refresh failure
-        if (!session && event === 'TOKEN_REFRESHED') {
-          console.error('Token refresh failed');
-          navigate('/');
-          return;
-        }
-        
-        if (event === 'SIGNED_OUT') {
-          navigate('/');
-        }
-      } else if (event === 'SIGNED_IN') {
-        await initializeAuth();
-      }
-    });
-
-    // Initial auth check
-    initializeAuth();
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
+    // Finish loading
+    setIsLoading(false);
+  }, [navigate]);
 
   // Only protect non-index routes
   const isIndexRoute = window.location.pathname === '/';
@@ -137,10 +47,10 @@ const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;
   }
 
-  if (!isInitialized || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-nino-bg">
-        <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-nino-primary border-t-transparent"></div>
       </div>
     );
   }
