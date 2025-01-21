@@ -47,18 +47,20 @@ const CreatorFilters = ({
   onCreatorTypeChange,
   onLocationChange
 }: CreatorFiltersProps) => {
-  const [selectedCountries, setSelectedCountries] = useState<{ [key: number]: string }>({});
-  const [selectedRegions, setSelectedRegions] = useState<{ [key: number]: string }>({});
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedRegion, setSelectedRegion] = useState<string>("");
 
-  const handleCountryChange = (value: string, index: number) => {
-    setSelectedCountries(prev => ({ ...prev, [index]: value }));
-    setSelectedRegions(prev => ({ ...prev, [index]: "" }));
+  const handleCountryChange = (value: string) => {
+    setSelectedCountry(value);
+    setSelectedRegion("");
+    if (selectedLocations.length > 0) {
+      onLocationChange(selectedLocations[0]); // Remove previous location
+    }
   };
 
-  const handleRegionChange = (value: string, index: number) => {
-    setSelectedRegions(prev => ({ ...prev, [index]: value }));
-    const country = selectedCountries[index];
-    onLocationChange(`${value}, ${country}`);
+  const handleRegionChange = (value: string) => {
+    setSelectedRegion(value);
+    onLocationChange(`${value}, ${selectedCountry}`);
   };
 
   const getRegionLabel = (country: string) => {
@@ -130,45 +132,41 @@ const CreatorFilters = ({
       </div>
 
       <div>
-        <h3 className="text-sm font-medium mb-3">Locations</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[0, 1, 2, 3].map((index) => (
-            <div key={index} className="space-y-2">
-              <Select
-                value={selectedCountries[index] || ""}
-                onValueChange={(value) => handleCountryChange(value, index)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Country" />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRIES.map((country) => (
-                    <SelectItem key={country} value={country}>
-                      {country}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <h3 className="text-sm font-medium mb-3">Location</h3>
+        <div className="space-y-2 max-w-md">
+          <Select
+            value={selectedCountry}
+            onValueChange={handleCountryChange}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Country" />
+            </SelectTrigger>
+            <SelectContent>
+              {COUNTRIES.map((country) => (
+                <SelectItem key={country} value={country}>
+                  {country}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-              {selectedCountries[index] && (
-                <Select
-                  value={selectedRegions[index] || ""}
-                  onValueChange={(value) => handleRegionChange(value, index)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={`Select ${getRegionLabel(selectedCountries[index])}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getRegionOptions(selectedCountries[index]).map((region) => (
-                      <SelectItem key={region} value={region}>
-                        {region}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-          ))}
+          {selectedCountry && (
+            <Select
+              value={selectedRegion}
+              onValueChange={handleRegionChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={`Select ${getRegionLabel(selectedCountry)}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {getRegionOptions(selectedCountry).map((region) => (
+                  <SelectItem key={region} value={region}>
+                    {region}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
       </div>
     </div>

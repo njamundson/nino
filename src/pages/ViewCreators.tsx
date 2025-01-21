@@ -23,11 +23,8 @@ const ViewCreators = () => {
   };
 
   const handleLocationChange = (location: string) => {
-    setSelectedLocations((prev) =>
-      prev.includes(location)
-        ? prev.filter((l) => l !== location)
-        : [...prev, location]
-    );
+    // Replace the current location instead of adding to array
+    setSelectedLocations([location]);
   };
 
   const handleInvite = (creatorId: string) => {
