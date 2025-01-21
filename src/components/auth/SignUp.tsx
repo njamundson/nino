@@ -61,7 +61,10 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             ]);
 
           if (brandError) throw brandError;
+          
+          // Immediately redirect to brand onboarding
           navigate('/onboarding/brand');
+          return; // Important: return here to prevent further execution
         } else if (data.userType === 'creator') {
           const { error: creatorError } = await supabase
             .from('creators')
@@ -73,7 +76,10 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             ]);
 
           if (creatorError) throw creatorError;
+          
+          // Immediately redirect to creator onboarding
           navigate('/onboarding/creator');
+          return; // Important: return here to prevent further execution
         }
 
         toast({
