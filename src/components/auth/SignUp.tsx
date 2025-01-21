@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useSignUp } from "./signup/useSignUp";
 import SignUpForm from "./signup/SignUpForm";
 import SignUpHeader from "./signup/SignUpHeader";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
 
 interface SignUpProps {
   onToggleAuth: () => void;
@@ -11,98 +10,29 @@ interface SignUpProps {
 
 const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { loading, handleSignUp } = useSignUp();
   const { toast } = useToast();
 
-  const handleSignUp = async (data: any) => {
+  const onSignUp = async (data: any) => {
     try {
-      setLoading(true);
+      // This will be replaced with Supabase auth.signUp
+      console.log('Preparing for Supabase auth signup:', { email: data.email });
+      await handleSignUp(data);
       
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            first_name: data.firstName,
-            last_name: data.lastName,
-            user_type: data.userType,
-          },
-        },
-      });
-
-      if (signUpError) throw signUpError;
-
-      if (!authData.user) {
-        throw new Error("Failed to create user account");
-      }
-
-      // Create initial profile record
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            id: authData.user.id,
-            first_name: data.firstName,
-            last_name: data.lastName,
-            onboarding_completed: false
-          }
-        ]);
-
-      if (profileError) throw profileError;
-
-      // Create user type specific record and navigate to appropriate onboarding
-      if (data.userType === 'brand') {
-        const { error: brandError } = await supabase
-          .from('brands')
-          .insert([
-            {
-              user_id: authData.user.id,
-              company_name: '',
-              brand_type: 'retail',
-            }
-          ]);
-
-        if (brandError) throw brandError;
-        
-        toast({
-          title: "Account created successfully",
-          description: "Let's set up your brand profile",
-        });
-        
-        navigate('/onboarding/brand');
-        return;
-      }
+      // After successful signup, we'll create the user profile in Supabase
+      // and store the session
+      console.log('User signed up, preparing for profile creation');
       
-      if (data.userType === 'creator') {
-        const { error: creatorError } = await supabase
-          .from('creators')
-          .insert([
-            {
-              user_id: authData.user.id,
-              creator_type: 'solo',
-            }
-          ]);
-
-        if (creatorError) throw creatorError;
-        
-        toast({
-          title: "Account created successfully",
-          description: "Let's set up your creator profile",
-        });
-        
-        navigate('/onboarding/creator');
-        return;
-      }
-
-    } catch (error: any) {
+      // For now, navigate to onboarding
+      // Later, this will be handled after Supabase profile creation
+      navigate('/onboarding');
+    } catch (error) {
       console.error('Sign up error:', error);
       toast({
         variant: "destructive",
         title: "Error signing up",
-        description: error.message || "Please try again.",
+        description: error instanceof Error ? error.message : "Please try again.",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -113,7 +43,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         subtitle="Sign up to get started" 
       />
 
-      <SignUpForm onSubmit={handleSignUp} loading={loading} />
+      <SignUpForm onSubmit={onSignUp} loading={loading} />
 
       <div className="text-center text-sm text-nino-gray">
         Already have an account?{" "}

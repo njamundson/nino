@@ -23,6 +23,7 @@ const ViewCreators = () => {
   };
 
   const handleLocationChange = (location: string) => {
+    // Replace the current location instead of adding to array
     setSelectedLocations([location]);
   };
 
@@ -46,7 +47,6 @@ const ViewCreators = () => {
         onSpecialtyChange={handleSpecialtyChange}
         onCreatorTypeChange={handleCreatorTypeChange}
         onLocationChange={handleLocationChange}
-        onInvite={handleInvite}
       />
       <CreatorGrid 
         selectedSpecialties={selectedSpecialties}

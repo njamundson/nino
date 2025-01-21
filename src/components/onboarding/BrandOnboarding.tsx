@@ -8,62 +8,45 @@ import AccountManagersStep from "./brand/managers/AccountManagersStep";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
-import { BrandOnboardingProps } from "@/types/brand";
-import { supabase } from "@/integrations/supabase/client";
 
-type OnboardingStep = "basic" | "details" | "social" | "managers";
-
-const BrandOnboarding = ({
-  currentStep,
-  setCurrentStep,
-  profileImage,
-  brandData,
-  updateField,
-  setProfileImage,
-  handleNext,
-  handleBack,
-  handleSubmit: propHandleSubmit
-}: BrandOnboardingProps) => {
+const BrandOnboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const {
+    currentStep,
+    setCurrentStep,
+    profileImage,
+    brandData,
+    updateField,
+    setProfileImage,
+    handleNext,
+    handleBack,
+  } = useBrandOnboarding();
 
-  const handleSubmit = async () => {
+  const handleComplete = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("No authenticated user found");
-      }
+      // For local development, we'll skip the user check
+      // Store brand data in localStorage
+      localStorage.setItem('brandData', JSON.stringify({
+        ...brandData,
+        profileImage,
+        onboardingCompleted: true
+      }));
 
-      // Update the profile to mark onboarding as completed
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ onboarding_completed: true })
-        .eq('id', user.id);
-
-      if (profileError) throw profileError;
-
-      // Call the original submit handler
-      await propHandleSubmit();
-
+      // Navigate to transition page
+      navigate("/onboarding/brand/payment");
+    } catch (error) {
+      console.error('Error in handleComplete:', error);
       toast({
-        title: "Onboarding completed",
-        description: "Welcome to NINO!",
-      });
-      
-      navigate('/brand/dashboard');
-    } catch (error: any) {
-      console.error('Error completing onboarding:', error);
-      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
         variant: "destructive",
-        title: "Error completing onboarding",
-        description: error.message || "Please try again.",
       });
     }
   };
 
   const getCurrentStep = () => {
-    switch (currentStep as OnboardingStep) {
+    switch (currentStep) {
       case 'basic':
         return (
           <BrandBasicInfoStep
@@ -96,12 +79,12 @@ const BrandOnboarding = ({
 
   return (
     <BrandOnboardingContainer>
-      <BrandOnboardingProgress currentStep={currentStep as OnboardingStep} />
+      <BrandOnboardingProgress currentStep={currentStep} />
       {getCurrentStep()}
       <BrandOnboardingNavigation
-        currentStep={currentStep as OnboardingStep}
+        currentStep={currentStep}
         onBack={handleBack}
-        onNext={currentStep === 'managers' ? handleSubmit : handleNext}
+        onNext={currentStep === 'managers' ? handleComplete : handleNext}
       />
     </BrandOnboardingContainer>
   );

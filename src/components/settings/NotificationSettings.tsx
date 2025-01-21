@@ -6,24 +6,16 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-interface NotificationSettings {
-  push_enabled: boolean;
-  email_enabled: boolean;
-  message_notifications: boolean;
-  application_updates: boolean;
-  marketing_updates: boolean;
-}
-
 const NotificationSettings = () => {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [settings, setSettings] = useState<NotificationSettings>({
+  const [settings, setSettings] = useState({
     push_enabled: true,
     email_enabled: true,
     message_notifications: true,
     application_updates: true,
     marketing_updates: false,
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchNotificationSettings();
@@ -48,13 +40,7 @@ const NotificationSettings = () => {
           .single();
 
         if (notificationSettings) {
-          setSettings({
-            push_enabled: notificationSettings.push_enabled,
-            email_enabled: notificationSettings.email_enabled,
-            message_notifications: notificationSettings.message_notifications,
-            application_updates: notificationSettings.application_updates,
-            marketing_updates: notificationSettings.marketing_updates,
-          });
+          setSettings(notificationSettings);
         }
       }
     } catch (error) {
@@ -62,7 +48,7 @@ const NotificationSettings = () => {
     }
   };
 
-  const handleToggle = async (field: keyof NotificationSettings, value: boolean) => {
+  const handleToggle = async (field: string, value: boolean) => {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();

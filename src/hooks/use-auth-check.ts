@@ -45,7 +45,6 @@ export const useAuthCheck = () => {
             setHasAccess(false);
             setIsLoading(false);
           }
-          navigate('/', { replace: true });
           return false;
         }
 
@@ -61,12 +60,11 @@ export const useAuthCheck = () => {
         }
 
         if (!brands) {
-          console.log("No brand profile found, redirecting to onboarding");
+          console.log("No brand profile found");
           if (mounted) {
             setHasAccess(false);
             setIsLoading(false);
           }
-          navigate('/onboarding/brand', { replace: true });
           return false;
         }
 
@@ -109,7 +107,7 @@ export const useAuthCheck = () => {
             description: "You need a brand profile to access this area.",
             variant: "destructive",
           });
-          navigate('/onboarding/brand', { replace: true });
+          navigate('/onboarding', { replace: true });
         }
       }
     });

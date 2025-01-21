@@ -6,7 +6,18 @@ import { ChatSearch } from "./chat-list/ChatSearch";
 import { NewChatButton } from "./chat-list/NewChatButton";
 import { ChatItem } from "./chat-list/ChatItem";
 import { EmptyState } from "./chat-list/EmptyState";
-import { Message, CreatorProfile } from "@/types/creator";
+
+interface Message {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  created_at: string;
+  profiles: {
+    first_name: string;
+    last_name: string;
+  };
+}
 
 interface ChatListProps {
   onSelectChat: (userId: string) => void;
@@ -47,6 +58,43 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
+  const fetchChats = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select(`
+          *,
+          profiles:sender_id(first_name, last_name)
+        `)
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const groupedChats: { [key: string]: Message[] } = {};
+      messages?.forEach((message: Message) => {
+        const partnerId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
+        if (!groupedChats[partnerId]) {
+          groupedChats[partnerId] = [];
+        }
+        groupedChats[partnerId].push(message);
+      });
+
+      setChats(groupedChats);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching chats:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load chats",
+        variant: "destructive",
+      });
+    }
+  };
+
   const checkIfBrand = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -80,53 +128,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   }, []);
 
   useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const { data: messages, error } = await supabase
-          .from('messages')
-          .select(`
-            *,
-            profiles:sender_id(first_name, last_name)
-          `)
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        const groupedChats: { [key: string]: Message[] } = {};
-        messages?.forEach((message: any) => {
-          const partnerId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
-          if (!groupedChats[partnerId]) {
-            groupedChats[partnerId] = [];
-          }
-          // Transform the profiles data to match CreatorProfile type
-          const transformedMessage: Message = {
-            ...message,
-            profiles: {
-              first_name: message.profiles?.first_name || '',
-              last_name: message.profiles?.last_name || ''
-            }
-          };
-          groupedChats[partnerId].push(transformedMessage);
-        });
-
-        setChats(groupedChats);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching chats:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load chats",
-          variant: "destructive",
-        });
-      }
-    };
-
     fetchChats();
-    
     const channel = supabase
       .channel('messages')
       .on(
@@ -145,7 +147,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [toast]);
+  }, []);
 
   if (loading) {
     return (

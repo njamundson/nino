@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ResetPassword from "./ResetPassword";
 import SignInForm from "./signin/SignInForm";
 import SignInHeader from "./signin/SignInHeader";
-import { supabase } from "@/integrations/supabase/client";
+import { useSignInWithEmail } from "@/hooks/useSignInWithEmail";
 import { useToast } from "@/hooks/use-toast";
 
 interface SignInProps {
@@ -12,69 +12,37 @@ interface SignInProps {
 
 const SignIn = ({ onToggleAuth }: SignInProps) => {
   const [showResetPassword, setShowResetPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, signIn } = useSignInWithEmail();
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSignIn = async (email: string, password: string) => {
     try {
-      setLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        // Fetch user profile to determine user type
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
-          .maybeSingle();
-
-        // Check if user has a brand profile
-        const { data: brandData } = await supabase
-          .from('brands')
-          .select('id')
-          .eq('user_id', data.user.id)
-          .maybeSingle();
-
-        // Check if user has a creator profile
-        const { data: creatorData } = await supabase
-          .from('creators')
-          .select('id')
-          .eq('user_id', data.user.id)
-          .maybeSingle();
-
-        if (!profileData) {
-          navigate('/onboarding');
-          return;
-        }
-
-        if (brandData) {
-          navigate('/brand/dashboard');
-        } else if (creatorData) {
-          navigate('/creator/dashboard');
-        } else {
-          navigate('/onboarding');
-        }
-
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in.",
-        });
+      // This will be replaced with Supabase auth
+      console.log('Preparing for Supabase auth integration');
+      await signIn(email, password);
+      
+      // After successful auth, we'll fetch the user profile from Supabase
+      // and determine the correct route based on user type
+      const mockUserType = localStorage.getItem('userType') || 'brand';
+      const route = mockUserType === 'brand' ? '/brand/dashboard' : '/creator/dashboard';
+      
+      // Check if onboarding is completed (will be handled by Supabase query)
+      const isOnboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
+      
+      if (!isOnboardingCompleted) {
+        navigate('/onboarding');
+        return;
       }
-    } catch (error: any) {
+      
+      navigate(route);
+    } catch (error) {
       console.error('Sign in error:', error);
       toast({
         variant: "destructive",
         title: "Error signing in",
-        description: error.message || "Please check your credentials and try again.",
+        description: "Please check your credentials and try again.",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
