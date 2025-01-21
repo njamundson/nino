@@ -3,16 +3,12 @@ import { southAmericanCountries, statesByCountry as southAmericanStates } from '
 import { europeanCountries, statesByCountry as europeanStates, citiesByCountry } from './europe';
 import { caribbeanCountries } from './caribbean';
 
-// Export all countries as a single array for filters
-export const LOCATIONS = [
+export const COUNTRIES = [
   ...northAmericanCountries,
   ...southAmericanCountries,
   ...europeanCountries,
   ...caribbeanCountries
 ];
-
-// Maintain backwards compatibility for PersonalInfoFields.tsx
-export const COUNTRIES = LOCATIONS;
 
 export const STATES_BY_COUNTRY = {
   ...northAmericanStates,
