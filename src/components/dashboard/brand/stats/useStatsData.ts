@@ -5,8 +5,8 @@ import { useEffect } from "react";
 export const useStatsData = () => {
   const queryClient = useQueryClient();
 
-  const { data: activeProjects } = useQuery({
-    queryKey: ['active-projects'],
+  const { data: completedProjects } = useQuery({
+    queryKey: ['completed-projects'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return 0;
@@ -23,7 +23,7 @@ export const useStatsData = () => {
         .from('opportunities')
         .select('*', { count: 'exact', head: true })
         .eq('brand_id', brand.id)
-        .eq('status', 'open');
+        .eq('status', 'completed');
 
       return count || 0;
     }
@@ -81,7 +81,7 @@ export const useStatsData = () => {
           table: 'opportunities'
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['active-projects'] });
+          queryClient.invalidateQueries({ queryKey: ['completed-projects'] });
         }
       )
       .on(
@@ -114,7 +114,7 @@ export const useStatsData = () => {
   }, [queryClient]);
 
   return {
-    activeProjects: activeProjects ?? 0,
+    completedProjects: completedProjects ?? 0,
     newProposals: newProposals ?? 0,
     newMessages: newMessages ?? 0
   };
