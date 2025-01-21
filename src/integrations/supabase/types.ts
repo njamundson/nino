@@ -54,6 +54,41 @@ export type Database = {
           },
         ]
       }
+      brand_login_history: {
+        Row: {
+          brand_id: string | null
+          created_at: string | null
+          device_info: string | null
+          id: string
+          ip_address: string | null
+          login_timestamp: string | null
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string | null
+          device_info?: string | null
+          id?: string
+          ip_address?: string | null
+          login_timestamp?: string | null
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string | null
+          device_info?: string | null
+          id?: string
+          ip_address?: string | null
+          login_timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_login_history_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_managers: {
         Row: {
           brand_id: string | null
@@ -88,6 +123,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "brand_managers_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_notification_settings: {
+        Row: {
+          application_updates: boolean | null
+          brand_id: string | null
+          created_at: string | null
+          email_enabled: boolean | null
+          id: string
+          marketing_updates: boolean | null
+          message_notifications: boolean | null
+          push_enabled: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          application_updates?: boolean | null
+          brand_id?: string | null
+          created_at?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          marketing_updates?: boolean | null
+          message_notifications?: boolean | null
+          push_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          application_updates?: boolean | null
+          brand_id?: string | null
+          created_at?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          marketing_updates?: boolean | null
+          message_notifications?: boolean | null
+          push_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_notification_settings_brand_id_fkey"
             columns: ["brand_id"]
             isOneToOne: false
             referencedRelation: "brands"

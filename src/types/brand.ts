@@ -12,3 +12,10 @@ export interface BrandData {
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;
 }
+
+export interface LoginHistory {
+  id: string;
+  login_timestamp: string;
+  ip_address: string;
+  device_info: string;
+}

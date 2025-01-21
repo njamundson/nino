@@ -28,7 +28,6 @@ const CreatorGrid = ({
           selectedLocations 
         });
         
-        // First get the profile IDs of brands
         const { data: brandProfiles, error: brandError } = await supabase
           .from('brands')
           .select('user_id');
@@ -38,41 +37,35 @@ const CreatorGrid = ({
           throw brandError;
         }
 
-        // Filter out any null values and create a clean array of IDs
         const brandProfileIds = brandProfiles
           ?.map(b => b.user_id)
           .filter(id => id !== null && id !== undefined);
           
         console.log("Brand profile IDs to exclude:", brandProfileIds);
 
-        // Then fetch creators excluding those profiles
         let query = supabase
           .from('creators')
           .select(`
             *,
-            profile:profiles(
+            profiles!creators_user_id_fkey (
               first_name,
               last_name
             )
           `)
           .not('user_id', 'is', null);
 
-        // Only add the brand profile filter if we have IDs to exclude
         if (brandProfileIds && brandProfileIds.length > 0) {
           query = query.not('user_id', 'in', `(${brandProfileIds.join(',')})`);
         }
 
-        // Apply creator type filter if selected
         if (selectedCreatorType) {
           query = query.eq('creator_type', selectedCreatorType);
         }
 
-        // Apply specialties filter if any are selected
         if (selectedSpecialties.length > 0) {
           query = query.overlaps('specialties', selectedSpecialties);
         }
 
-        // Apply location filter if any are selected
         if (selectedLocations.length > 0) {
           query = query.in('location', selectedLocations);
         }
@@ -88,16 +81,16 @@ const CreatorGrid = ({
 
         const formattedCreators: CreatorData[] = data.map(creator => ({
           id: creator.id,
-          firstName: creator.profile?.first_name || "",
-          lastName: creator.profile?.last_name || "",
+          firstName: creator.profiles?.first_name || "",
+          lastName: creator.profiles?.last_name || "",
           bio: creator.bio || "",
           specialties: creator.specialties || [],
           instagram: creator.instagram || "",
           website: creator.website || "",
           location: creator.location || "",
           profileImage: creator.profile_image_url,
-          creatorType: creator.creator_type || "",
-          profile: creator.profile
+          creatorType: creator.creator_type || "solo",
+          profile: creator.profiles
         }));
 
         console.log("Formatted creators:", formattedCreators);
