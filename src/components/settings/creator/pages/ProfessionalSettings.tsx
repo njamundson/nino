@@ -3,8 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import CreatorTypeSelect from "../../onboarding/creator/professional-info/CreatorTypeSelect";
-import SkillsSelection from "../../onboarding/creator/professional-info/SkillsSelection";
+import CreatorTypeSelect from "@/components/onboarding/creator/professional-info/CreatorTypeSelect";
+import SkillsSelection from "@/components/onboarding/creator/professional-info/SkillsSelection";
 
 const ProfessionalSettings = () => {
   const {
