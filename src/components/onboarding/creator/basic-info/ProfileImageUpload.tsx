@@ -1,9 +1,7 @@
 import { Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface ProfileImageUploadProps {
   profileImage: string | null;
@@ -12,7 +10,6 @@ interface ProfileImageUploadProps {
 
 const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadProps) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,26 +44,20 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
     <div className="flex flex-col items-center space-y-4">
       <label
         htmlFor="photo-upload"
-        className="relative group cursor-pointer"
+        className="relative cursor-pointer group"
       >
-        <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-white/50 transition-all duration-200 group-hover:ring-nino-primary/20">
-          {profileImage ? (
-            <Avatar className="w-full h-full">
-              <AvatarImage 
-                src={profileImage} 
-                className="object-cover w-full h-full"
-              />
-              <AvatarFallback className="bg-nino-bg w-full h-full">
-                <Plus className="w-8 h-8 text-gray-400" />
-              </AvatarFallback>
-            </Avatar>
-          ) : (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <Plus className="w-8 h-8 text-gray-400" />
-            </div>
-          )}
+        <div className="w-32 h-32 rounded-full overflow-hidden bg-white shadow-md transition-all duration-200 group-hover:shadow-lg">
+          <Avatar className="w-full h-full">
+            <AvatarImage 
+              src={profileImage || ''} 
+              className="object-cover w-full h-full"
+            />
+            <AvatarFallback className="w-full h-full bg-nino-bg flex items-center justify-center">
+              <Plus className="w-8 h-8 text-nino-gray" />
+            </AvatarFallback>
+          </Avatar>
           
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded-full flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
             <Plus className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
           </div>
         </div>
