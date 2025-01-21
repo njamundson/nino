@@ -4,11 +4,23 @@ import { CreatorData, CreatorType } from '@/types/creator';
 import CreatorCard from './CreatorCard';
 import { LoadingSpinner } from '../ui/loading-spinner';
 
-const CreatorGrid = () => {
+interface CreatorGridProps {
+  selectedSpecialties: string[];
+  selectedCreatorType: string | null;
+  selectedLocations: string[];
+  onInvite: (creatorId: string) => void;
+}
+
+const CreatorGrid = ({
+  selectedSpecialties,
+  selectedCreatorType,
+  selectedLocations,
+  onInvite
+}: CreatorGridProps) => {
   const { data: creators, isLoading } = useQuery({
-    queryKey: ['creators'],
+    queryKey: ['creators', selectedSpecialties, selectedCreatorType, selectedLocations],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('creators')
         .select(`
           *,
@@ -17,6 +29,20 @@ const CreatorGrid = () => {
             last_name
           )
         `);
+
+      if (selectedSpecialties.length > 0) {
+        query = query.contains('specialties', selectedSpecialties);
+      }
+
+      if (selectedCreatorType) {
+        query = query.eq('creator_type', selectedCreatorType);
+      }
+
+      if (selectedLocations.length > 0) {
+        query = query.ilike('location', `%${selectedLocations[0]}%`);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -56,17 +82,13 @@ const CreatorGrid = () => {
     );
   }
 
-  const handleInvite = async (creatorId: string) => {
-    console.log('Inviting creator:', creatorId);
-  };
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {creators.map((creator) => (
         <CreatorCard 
           key={creator.id} 
           creator={creator}
-          onInvite={handleInvite}
+          onInvite={onInvite}
         />
       ))}
     </div>
