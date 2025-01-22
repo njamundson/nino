@@ -49,7 +49,7 @@ const CreatorGrid = ({
 
         // Then fetch creators excluding those profiles
         let query = supabase
-          .from('creator_profiles')
+          .from('creators')
           .select(`
             *,
             profile:profiles(
@@ -90,8 +90,8 @@ const CreatorGrid = ({
 
         const formattedCreators: CreatorData[] = data.map(creator => ({
           id: creator.id,
-          firstName: creator.first_name || "",
-          lastName: creator.last_name || "",
+          firstName: creator.profile?.first_name || "",
+          lastName: creator.profile?.last_name || "",
           bio: creator.bio || "",
           specialties: creator.specialties || [],
           instagram: creator.instagram || "",
