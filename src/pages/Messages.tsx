@@ -1,56 +1,36 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { ChatContainer } from "@/components/messages/ChatContainer";
-import ChatList from "@/components/messages/ChatList";
+import { useSearchParams } from "react-router-dom";
+import ChatContainer from "@/components/messages/ChatContainer";
 import { Message } from "@/types/message";
+import { useMessages } from "@/hooks/useMessages";
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
-  const [selectedChat, setSelectedChat] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const navigate = useNavigate();
+  const userId = searchParams.get("user");
+  const { messages, sendMessage, markAsRead } = useMessages(userId);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("messages")
-        .select(`
-          *,
-          sender_profile:profiles!sender_profile_id(first_name, last_name),
-          receiver_profile:profiles!receiver_profile_id(first_name, last_name),
-          reactions(*)
-        `)
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching messages:", error);
-        return;
+    if (userId && messages.length > 0) {
+      const unreadMessages = messages.filter(
+        (msg) => !msg.read && msg.sender_id === userId
+      );
+      if (unreadMessages.length > 0) {
+        markAsRead(unreadMessages.map((msg) => msg.id));
       }
+    }
+  }, [userId, messages, markAsRead]);
 
-      setMessages(data as Message[]);
-    };
-
-    fetchMessages();
-  }, []);
+  // Type assertion to handle the conversion
+  const typedMessages = messages as unknown as Message[];
 
   return (
-    <div className="flex h-full">
-      <ChatList onSelectChat={setSelectedChat} selectedUserId={selectedChat} />
+    <div className="h-screen bg-gray-50">
       <ChatContainer
-        selectedChat={selectedChat}
-        newMessage=""
-        setNewMessage={() => {}}
-        handleSendMessage={() => {}}
-        isRecording={false}
-        setIsRecording={() => {}}
-        editingMessage={null}
-        setEditingMessage={() => {}}
-        messages={messages}
+        messages={typedMessages}
+        selectedMessage={selectedMessage}
+        onSelectMessage={setSelectedMessage}
+        onSendMessage={sendMessage}
       />
     </div>
   );

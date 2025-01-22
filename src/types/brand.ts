@@ -1,7 +1,9 @@
-export interface BrandSettings {
-  brand_type: string;
+export interface BrandData {
+  id?: string;
+  user_id?: string;
   company_name: string;
-  description: string | null;
+  brand_type: string;
+  description: string;
   website: string | null;
   instagram: string | null;
   location: string;
@@ -12,11 +14,7 @@ export interface BrandSettings {
   two_factor_enabled: boolean;
 }
 
-export type BrandType = 'hotel' | 'restaurant' | 'retail' | 'other';
-
-export interface BrandData extends BrandSettings {
-  id?: string;
-  user_id?: string;
-  created_at?: string;
-  updated_at?: string;
+export interface BrandSettings extends BrandData {
+  sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
 }
