@@ -103,7 +103,7 @@ const CreatorFilters = ({
       className="bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 transition-all duration-300"
     >
       <CollapsibleTrigger className="flex items-center justify-end w-full gap-2 p-6">
-        {hasActiveFilters && (
+        {isOpen && hasActiveFilters && (
           <Button
             variant="outline"
             size="sm"
