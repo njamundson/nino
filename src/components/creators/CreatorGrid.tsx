@@ -87,15 +87,29 @@ const CreatorGrid = ({
         console.log("Raw creator data from Supabase:", data);
 
         const formattedCreators: CreatorData[] = await Promise.all(data.map(async creator => {
-          let profileImageUrl = creator.profile_image_url;
+          let profileImageUrl = null;
           
-          // If there's a profile image URL, get the public URL
-          if (profileImageUrl) {
-            const { data: { publicUrl } } = supabase
-              .storage
-              .from('campaign-images')
-              .getPublicUrl(profileImageUrl);
-            profileImageUrl = publicUrl;
+          // Only try to get public URL if profile_image_url exists and is not null
+          if (creator.profile_image_url) {
+            try {
+              // Extract just the file path from the URL if it's a full URL
+              const imagePath = creator.profile_image_url.includes('http') 
+                ? new URL(creator.profile_image_url).pathname.split('/').pop()
+                : creator.profile_image_url;
+                
+              console.log("Getting public URL for image path:", imagePath);
+              
+              const { data: { publicUrl } } = supabase
+                .storage
+                .from('campaign-images')
+                .getPublicUrl(imagePath);
+                
+              profileImageUrl = publicUrl;
+              console.log("Generated public URL:", publicUrl);
+            } catch (error) {
+              console.error("Error getting public URL for profile image:", error);
+              profileImageUrl = null;
+            }
           }
 
           return {
