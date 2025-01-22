@@ -14,6 +14,9 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { handleInvite } = useCreatorInvite();
 
+  // Add console.log to debug creator data
+  console.log('CreatorCard - Full creator data:', creator);
+
   const handleInviteClick = async (creatorId: string) => {
     const success = await handleInvite(creatorId);
     if (success) {
@@ -29,11 +32,10 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
     specialties: creator.specialties,
     instagram: creator.instagram,
     website: creator.website,
-    profile: {
-      first_name: creator.firstName,
-      last_name: creator.lastName
-    },
-    profile_image_url: creator.profileImage
+    firstName: creator.firstName || creator.profile?.first_name || '',
+    lastName: creator.lastName || creator.profile?.last_name || '',
+    profileImage: creator.profileImage,
+    profile: creator.profile
   };
 
   return (
