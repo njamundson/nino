@@ -34,7 +34,7 @@ export const ChatContainer = ({
   currentUserId,
 }: ChatContainerProps) => {
   return (
-    <Card className="flex-1 bg-white/80 backdrop-blur-xl border-0 shadow-lg flex flex-col min-h-0 rounded-2xl overflow-hidden">
+    <Card className="h-full bg-white/80 backdrop-blur-xl border-0 shadow-sm flex flex-col rounded-xl overflow-hidden">
       {selectedChat ? (
         <>
           <ChatHeader
@@ -48,22 +48,22 @@ export const ChatContainer = ({
               selectedChat={selectedChat}
             />
           </div>
+          <ChatInput
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            handleSendMessage={handleSendMessage}
+            isRecording={isRecording}
+            setIsRecording={setIsRecording}
+            selectedChat={selectedChat}
+            editingMessage={editingMessage}
+            setEditingMessage={setEditingMessage}
+          />
         </>
       ) : (
         <div className="flex-1 flex items-center justify-center text-gray-500">
           <p>Select a conversation to start messaging</p>
         </div>
       )}
-      <ChatInput
-        newMessage={newMessage}
-        setNewMessage={setNewMessage}
-        handleSendMessage={handleSendMessage}
-        isRecording={isRecording}
-        setIsRecording={setIsRecording}
-        selectedChat={selectedChat}
-        editingMessage={editingMessage}
-        setEditingMessage={setEditingMessage}
-      />
     </Card>
   );
 };
