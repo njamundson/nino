@@ -17,8 +17,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Filter } from "lucide-react";
+import { Filter, RotateCcw } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const COUNTRIES = [
   ...northAmericanCountries,
@@ -81,13 +82,41 @@ const CreatorFilters = ({
     return STATES_BY_COUNTRY[country] || [];
   };
 
+  const handleReset = () => {
+    onCreatorTypeChange(null);
+    setSelectedCountry("");
+    setSelectedRegion("");
+    if (selectedLocations.length > 0) {
+      onLocationChange(selectedLocations[0]);
+    }
+    selectedSpecialties.forEach(specialty => {
+      onSpecialtyChange(specialty);
+    });
+  };
+
+  const hasActiveFilters = selectedCreatorType !== null || selectedSpecialties.length > 0 || selectedLocations.length > 0;
+
   return (
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
       className="bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 transition-all duration-300"
     >
-      <CollapsibleTrigger className="flex items-center justify-end w-full p-6">
+      <CollapsibleTrigger className="flex items-center justify-end w-full gap-2 p-6">
+        {hasActiveFilters && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleReset();
+            }}
+            className="gap-2"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Reset
+          </Button>
+        )}
         <div className={cn(
           "p-2 rounded-xl transition-all duration-300",
           isOpen 
