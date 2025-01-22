@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProjectModal from "./ProjectModal";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface Brand {
   id: string;
