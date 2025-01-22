@@ -35,11 +35,14 @@ const CompletedProjectsList = () => {
         return [];
       }
 
+      // First, let's log the creator ID to make sure we have it
+      console.log("Creator ID:", creator.id);
+
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
           *,
-          brand:brands (
+          brand:brands!inner (
             id,
             company_name,
             brand_type,
@@ -49,15 +52,21 @@ const CompletedProjectsList = () => {
             instagram
           )
         `)
-        .eq('status', 'completed')
-        .order('created_at', { ascending: false });
+        .eq('status', 'completed');
 
       if (error) {
         console.error("Error fetching opportunities:", error);
         throw error;
       }
 
-      console.log("Raw opportunities data:", JSON.stringify(data, null, 2));
+      // Log the raw data to see what we're getting back
+      console.log("Raw opportunities data:", data);
+      
+      // Verify the structure of each opportunity
+      data?.forEach((opp, index) => {
+        console.log(`Opportunity ${index} brand data:`, opp.brand);
+      });
+
       return data || [];
     }
   });
