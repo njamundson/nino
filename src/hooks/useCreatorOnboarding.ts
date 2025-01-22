@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { CreatorData } from "@/types/creator";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useCreatorOnboarding = () => {
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ export const useCreatorOnboarding = () => {
 
   const updateField = (field: keyof CreatorData, value: any) => {
     setCreatorData(prev => ({ ...prev, [field]: value }));
-    // Store in localStorage for persistence
     localStorage.setItem('creatorData', JSON.stringify({
       ...creatorData,
       [field]: value
@@ -70,20 +70,52 @@ export const useCreatorOnboarding = () => {
     }
   };
 
-  const handleComplete = () => {
-    // Store creator data in localStorage
-    localStorage.setItem('creatorData', JSON.stringify({
-      ...creatorData,
-      onboardingCompleted: true
-    }));
+  const handleComplete = async () => {
+    try {
+      // Get current user session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("No authenticated session found");
+      }
 
-    toast({
-      title: "Success!",
-      description: "Your creator profile has been created.",
-    });
+      // Create creator profile in the database
+      const { error: creatorError } = await supabase
+        .from('creators')
+        .insert({
+          user_id: session.user.id,
+          bio: creatorData.bio,
+          location: creatorData.location,
+          instagram: creatorData.instagram,
+          website: creatorData.website,
+          specialties: creatorData.specialties,
+          creator_type: creatorData.creatorType,
+          profile_image_url: creatorData.profileImage,
+        });
 
-    // Navigate to creator dashboard
-    navigate("/creator/dashboard");
+      if (creatorError) throw creatorError;
+
+      // Store creator data in localStorage
+      localStorage.setItem('creatorData', JSON.stringify({
+        ...creatorData,
+        onboardingCompleted: true
+      }));
+
+      toast({
+        title: "Success!",
+        description: "Your creator profile has been created.",
+      });
+
+      // Navigate to creator dashboard
+      navigate("/creator/dashboard");
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      toast({
+        variant: "destructive",
+        title: "Error creating profile",
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    }
   };
 
   return {
