@@ -11,8 +11,12 @@ interface CreatorCardImageProps {
 
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   const [imageError, setImageError] = useState(false);
-  const fullName = creator.firstName && creator.lastName 
-    ? `${creator.firstName} ${creator.lastName}`.trim()
+  
+  // Get the full name from the creator's profile data
+  const fullName = creator.profile?.first_name && creator.profile?.last_name 
+    ? `${creator.profile.first_name} ${creator.profile.last_name}`.trim()
+    : creator.profile?.first_name // If only first name is available
+    ? creator.profile.first_name.trim()
     : 'Anonymous Creator';
 
   const handleImageError = () => {
