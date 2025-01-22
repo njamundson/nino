@@ -15,45 +15,64 @@ const CompletedProjectsList = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
-        const { data: creator, error: creatorError } = await supabase
+        const { data: creator } = await supabase
           .from('creators')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
-
-        if (creatorError) {
-          console.error("Error fetching creator:", creatorError);
-          toast({
-            title: "Error",
-            description: "Could not fetch creator profile",
-            variant: "destructive",
-          });
-          return [];
-        }
 
         if (!creator) {
           console.log("No creator profile found");
           return [];
         }
 
-        // First get all completed opportunities with their brands in a single query
+        // Fetch opportunities and their associated brands in a single query
         const { data: opportunities, error: oppsError } = await supabase
           .from('opportunities')
           .select(`
-            *,
-            brand:brands(*)
+            id,
+            title,
+            description,
+            location,
+            start_date,
+            end_date,
+            perks,
+            requirements,
+            payment_details,
+            compensation_details,
+            deliverables,
+            image_url,
+            brand:brands (
+              id,
+              company_name,
+              brand_type,
+              location,
+              description,
+              website,
+              instagram
+            )
           `)
           .eq('status', 'completed');
 
         if (oppsError) {
           console.error("Error fetching opportunities:", oppsError);
-          throw oppsError;
+          toast({
+            title: "Error",
+            description: "Could not fetch completed projects",
+            variant: "destructive",
+          });
+          return [];
         }
 
         console.log("Fetched opportunities with brands:", opportunities);
         return opportunities || [];
       } catch (error) {
         console.error("Error in query:", error);
+        toast({
+          title: "Error",
+          description: "Could not fetch completed projects",
+          variant: "destructive",
+        });
         return [];
       }
     }

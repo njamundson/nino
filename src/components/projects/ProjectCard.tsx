@@ -58,7 +58,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
     }
   };
   
-  console.log("Rendering ProjectCard with opportunity:", opportunity);
+  const brandName = opportunity.brand?.company_name || "Unnamed Brand";
   
   return (
     <>
@@ -76,7 +76,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
         
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <p className="text-sm font-medium text-white/90 mb-1">
-            {opportunity.brand?.company_name || "Unnamed Brand"}
+            {brandName}
           </p>
           <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
             {opportunity.title}
