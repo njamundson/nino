@@ -22,17 +22,11 @@ const BrandBasicInfoStep = ({
 }: BrandBasicInfoStepProps) => {
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Set a mock email for development
-    onUpdateField("support_email", "test@example.com");
-  }, [onUpdateField]);
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      // Create a local URL for the uploaded file
       const imageUrl = URL.createObjectURL(file);
       onUpdateImage(imageUrl);
       
@@ -94,6 +88,7 @@ const BrandBasicInfoStep = ({
               value={brandData.company_name}
               className="h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
               onChange={(e) => onUpdateField("company_name", e.target.value)}
+              required
             />
           </div>
         </div>

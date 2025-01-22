@@ -32,6 +32,16 @@ const BrandOnboarding = () => {
         throw new Error("No authenticated session");
       }
 
+      if (!brandData.company_name) {
+        toast({
+          title: "Error",
+          description: "Please provide a brand name before continuing.",
+          variant: "destructive",
+        });
+        setCurrentStep('basic');
+        return;
+      }
+
       // Update brand profile and mark onboarding as complete
       const { error } = await supabase
         .from('brands')
