@@ -10,16 +10,19 @@ const NinoWelcomeMessage = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    let fadeTimeout: NodeJS.Timeout;
+    let redirectTimeout: NodeJS.Timeout;
+
     const checkUserAndRedirect = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
-        // Check if user has a brand profile and has completed onboarding
+        // Check if user has a brand profile
         const { data: brand } = await supabase
           .from('brands')
           .select('id, company_name')
@@ -27,38 +30,36 @@ const NinoWelcomeMessage = () => {
           .maybeSingle();
 
         if (!brand) {
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
-        // Only show welcome message and redirect to dashboard if onboarding is complete
-        if (brand.company_name) {
-          // Start fade out after 2 seconds
-          const fadeTimeout = setTimeout(() => {
-            setIsVisible(false);
-          }, 2000);
+        // Start fade out after 2 seconds
+        fadeTimeout = setTimeout(() => {
+          setIsVisible(false);
+        }, 2000);
 
-          // Navigate after fade out animation completes
-          const redirectTimeout = setTimeout(() => {
-            toast({
-              title: "Welcome!",
-              description: "Your brand profile has been set up successfully.",
-            });
-            navigate('/brand/dashboard', { replace: true });
-          }, 2500); // 2 seconds + 0.5 seconds for fade out
-
-          return () => {
-            clearTimeout(fadeTimeout);
-            clearTimeout(redirectTimeout);
-          };
-        }
+        // Navigate after fade out animation completes
+        redirectTimeout = setTimeout(() => {
+          toast({
+            title: "Welcome!",
+            description: "Your brand profile has been set up successfully.",
+          });
+          navigate('/brand/dashboard', { replace: true });
+        }, 2500); // 2 seconds + 0.5 seconds for fade out
       } catch (error) {
-        console.error('Error in redirect:', error);
-        navigate('/');
+        console.error('Error in welcome message redirect:', error);
+        navigate('/', { replace: true });
       }
     };
 
     checkUserAndRedirect();
+
+    // Cleanup timeouts
+    return () => {
+      if (fadeTimeout) clearTimeout(fadeTimeout);
+      if (redirectTimeout) clearTimeout(redirectTimeout);
+    };
   }, [navigate, toast]);
 
   return (

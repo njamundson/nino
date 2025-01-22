@@ -19,7 +19,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (!session) {
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
@@ -34,7 +34,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         const isWelcomeRoute = location.pathname === '/onboarding/brand/payment';
 
         if (!brand) {
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
@@ -42,21 +42,21 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           // If onboarding is complete
           if (isOnboardingRoute && !isWelcomeRoute) {
             // Redirect to welcome page if coming from onboarding
-            navigate('/onboarding/brand/payment');
+            navigate('/onboarding/brand/payment', { replace: true });
           } else {
             setHasAccess(true);
           }
         } else {
           // If onboarding is not complete, only allow access to onboarding routes
           if (!isOnboardingRoute) {
-            navigate('/onboarding/brand');
+            navigate('/onboarding/brand', { replace: true });
           } else {
             setHasAccess(true);
           }
         }
       } catch (error) {
         console.error('Error checking access:', error);
-        navigate('/');
+        navigate('/', { replace: true });
       } finally {
         setIsLoading(false);
       }
