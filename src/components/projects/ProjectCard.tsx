@@ -28,7 +28,7 @@ interface Opportunity {
   payment_details: string | null;
   compensation_details: string | null;
   deliverables: string[] | null;
-  brand: Brand;
+  brand: Brand | null;
   image_url: string | null;
 }
 
@@ -58,6 +58,9 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
     }
   };
   
+  // Add debug logging
+  console.log("Opportunity data:", opportunity);
+  
   return (
     <>
       <Card 
@@ -74,7 +77,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
         
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <p className="text-sm font-medium text-white/90 mb-1">
-            {opportunity.brand.company_name}
+            {opportunity.brand?.company_name || "Unknown Company"}
           </p>
           <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
             {opportunity.title}

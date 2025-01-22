@@ -35,14 +35,13 @@ const CompletedProjectsList = () => {
         return [];
       }
 
-      // First, let's log the creator ID to make sure we have it
       console.log("Creator ID:", creator.id);
 
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
           *,
-          brand:brands!inner (
+          brand:brands (
             id,
             company_name,
             brand_type,
@@ -59,15 +58,13 @@ const CompletedProjectsList = () => {
         throw error;
       }
 
-      // Log the raw data to see what we're getting back
       console.log("Raw opportunities data:", data);
       
-      // Verify the structure of each opportunity
-      data?.forEach((opp, index) => {
-        console.log(`Opportunity ${index} brand data:`, opp.brand);
-      });
+      // Filter out opportunities without brand data
+      const validOpportunities = data?.filter(opp => opp.brand !== null) || [];
+      console.log("Filtered opportunities:", validOpportunities);
 
-      return data || [];
+      return validOpportunities;
     }
   });
 
