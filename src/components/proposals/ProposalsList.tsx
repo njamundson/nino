@@ -1,33 +1,7 @@
 import { Card } from "@/components/ui/card";
 import ProposalCard from "./ProposalCard";
 import { FileSpreadsheet, Send } from "lucide-react";
-
-interface Brand {
-  company_name: string | null;
-}
-
-interface Opportunity {
-  id: string;
-  title: string;
-  description: string | null;
-  location: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  payment_details: string | null;
-  compensation_details: string | null;
-  deliverables: string[] | null;
-  requirements: string[] | null;
-  perks: string[] | null;
-  image_url: string | null;
-  brand: Brand | null;
-}
-
-interface Application {
-  id: string;
-  status: string;
-  opportunity: Opportunity;
-  cover_letter: string | null;
-}
+import { Application } from "@/integrations/supabase/types";
 
 interface ProposalsListProps {
   applications: Application[];

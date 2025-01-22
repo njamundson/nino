@@ -3,42 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import ProposalStatusBadge from "./ProposalStatusBadge";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
-
-interface Brand {
-  id: string;
-  company_name: string | null;
-  brand_type: string | null;
-  location: string | null;
-  description: string | null;
-  website: string | null;
-  instagram: string | null;
-}
-
-interface Opportunity {
-  id: string;
-  title: string;
-  description: string | null;
-  location: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  perks: string[] | null;
-  requirements: string[] | null;
-  payment_details: string | null;
-  compensation_details: string | null;
-  deliverables: string[] | null;
-  brand: Brand | null;
-  image_url: string | null;
-}
-
-interface Application {
-  id: string;
-  status: string;
-  opportunity: Opportunity;
-  cover_letter: string | null;
-}
+import { useToast } from "@/hooks/use-toast";
+import { Brand, Opportunity, Application } from "@/integrations/supabase/types";
 
 interface ProposalCardProps {
   application: Application;
@@ -55,7 +22,7 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
   const handleViewDetails = () => {
     setIsLoading(true);
     try {
-      navigate(`/creator/projects/${application.opportunity.id}`);
+      navigate(`/creator/projects/${application.opportunity_id}`);
     } catch (error) {
       toast({
         title: "Error",
@@ -67,7 +34,7 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
     }
   };
   
-  const brandName = application.opportunity.brand?.company_name || "Unnamed Brand";
+  const brandName = application.opportunity?.brand?.company_name || "Unnamed Brand";
   
   return (
     <>
@@ -76,25 +43,21 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
         onClick={() => setShowModal(true)}
       >
         <img
-          src={application.opportunity.image_url || "/placeholder.svg"}
-          alt={application.opportunity.title}
+          src={application.opportunity?.image_url || "/placeholder.svg"}
+          alt={application.opportunity?.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         
-        <div className="absolute top-6 right-6">
-          <ProposalStatusBadge status={application.status} />
-        </div>
-
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <p className="text-sm font-medium text-white/90 mb-1">
             {brandName}
           </p>
           <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
-            {application.opportunity.title}
+            {application.opportunity?.title}
           </h3>
-          {application.opportunity.location && (
+          {application.opportunity?.location && (
             <p className="text-sm text-white/80 mt-2">
               📍 {application.opportunity.location}
             </p>

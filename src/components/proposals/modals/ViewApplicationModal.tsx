@@ -9,7 +9,7 @@ interface ViewApplicationModalProps {
   application: {
     opportunity: {
       title: string;
-      description: string;
+      description: string | null;
       location: string | null;
       start_date: string | null;
       end_date: string | null;
@@ -25,9 +25,11 @@ interface ViewApplicationModalProps {
     };
     cover_letter: string | null;
   };
+  type: 'proposal' | 'application';
+  onUpdateStatus?: (applicationId: string, status: 'accepted' | 'rejected') => void;
 }
 
-const ViewApplicationModal = ({ isOpen, onClose, application }: ViewApplicationModalProps) => {
+const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStatus }: ViewApplicationModalProps) => {
   // Add null checks and default values
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
   const brandLocation = application.opportunity?.brand?.location;
@@ -138,5 +140,3 @@ const ViewApplicationModal = ({ isOpen, onClose, application }: ViewApplicationM
     </Dialog>
   );
 };
-
-export default ViewApplicationModal;
