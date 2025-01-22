@@ -9,8 +9,14 @@ export interface Message {
   media_type: string | null;
   created_at: string;
   updated_at: string;
-  profiles: {
+  deleted_at?: string;
+  sender_profile?: {
     first_name: string;
     last_name: string;
   };
+  receiver_profile?: {
+    first_name: string;
+    last_name: string;
+  };
+  reactions?: { emoji: string; user_id: string }[];
 }

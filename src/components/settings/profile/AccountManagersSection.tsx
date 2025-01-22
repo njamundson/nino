@@ -42,6 +42,7 @@ const AccountManagersSection = () => {
         .from('brand_managers')
         .insert({
           brand_id: brandData.id,
+          user_id: user.id,
           name: formData.get("managerName") as string,
           email: formData.get("managerEmail") as string,
           role: formData.get("managerRole") as string,
