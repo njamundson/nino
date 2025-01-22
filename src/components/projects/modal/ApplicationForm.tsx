@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useApplicationSubmit } from "@/hooks/useApplicationSubmit";
 import ApplicationFormHeader from "./ApplicationFormHeader";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export interface ApplicationFormProps {
   opportunity: {
@@ -19,9 +20,13 @@ export interface ApplicationFormProps {
 const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
   const [coverLetter, setCoverLetter] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { isSubmitting, submitApplication } = useApplicationSubmit({
     opportunityId: opportunity.id,
-    onClose,
+    onClose: () => {
+      onClose();
+      navigate("/creator/projects");
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
