@@ -3,12 +3,12 @@ export interface Message {
   content: string;
   sender_id: string;
   receiver_id: string;
-  created_at: string;
-  updated_at: string;
   read: boolean;
   message_type: string;
   media_url: string | null;
   media_type: string | null;
+  created_at: string;
+  updated_at: string;
   sender_profile_id: string;
   receiver_profile_id: string;
   deleted_at?: string;
@@ -17,7 +17,7 @@ export interface Message {
     first_name: string;
     last_name: string;
   };
-  reactions: {
+  reactions?: {
     id: string;
     emoji: string;
     user_id: string;

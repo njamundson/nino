@@ -1,6 +1,4 @@
 export interface BrandData {
-  id?: string;
-  user_id?: string;
   company_name: string;
   brand_type: string;
   description: string;
@@ -15,6 +13,6 @@ export interface BrandData {
 }
 
 export interface BrandSettings extends BrandData {
-  sms_notifications_enabled: boolean;
-  two_factor_enabled: boolean;
+  loading?: boolean;
+  onUpdateField?: (field: string, value: any) => void;
 }

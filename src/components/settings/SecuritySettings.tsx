@@ -1,5 +1,3 @@
-import { Switch } from "@/components/ui/switch";
-
 interface SecuritySettingsProps {
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;

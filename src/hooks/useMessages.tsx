@@ -14,50 +14,57 @@ export const useMessages = (selectedChat: string | null) => {
     queryKey: ["messages", selectedChat],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      if (!user || !selectedChat) return [];
 
       const { data, error } = await supabase
         .from("messages")
         .select(`
           *,
-          profiles!messages_sender_id_fkey(
+          profiles!messages_sender_profile_id_fkey(
             first_name,
             last_name
           ),
-          reactions:message_reactions(*)
+          reactions (
+            id,
+            emoji,
+            user_id
+          )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order("created_at", { ascending: true });
+        .order('created_at', { ascending: true });
 
       if (error) {
         console.error("Error fetching messages:", error);
         throw error;
       }
-      return data as Message[];
+
+      return (data as unknown as Message[]) || [];
     },
     enabled: !!selectedChat,
   });
 
   useEffect(() => {
-    const channel = supabase
-      .channel('messages')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'messages'
-        },
-        () => {
-          refetch();
-        }
-      )
-      .subscribe();
+    if (selectedChat) {
+      const subscription = supabase
+        .channel('messages')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'messages'
+          },
+          () => {
+            refetch();
+          }
+        )
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [refetch]);
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, [selectedChat, refetch]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedChat) {
@@ -124,6 +131,6 @@ export const useMessages = (selectedChat: string | null) => {
     setIsRecording,
     editingMessage,
     setEditingMessage,
-    handleSendMessage,
+    handleSendMessage
   };
 };
