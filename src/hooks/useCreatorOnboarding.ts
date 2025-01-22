@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { CreatorData } from "@/types/creator";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useCreatorOnboarding = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social' | 'payment'>('basic');
+  const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
     id: crypto.randomUUID(),
     firstName: "",
@@ -24,10 +22,6 @@ export const useCreatorOnboarding = () => {
 
   const updateField = (field: keyof CreatorData, value: any) => {
     setCreatorData(prev => ({ ...prev, [field]: value }));
-    localStorage.setItem('creatorData', JSON.stringify({
-      ...creatorData,
-      [field]: value
-    }));
   };
 
   const handleNext = () => {
@@ -51,20 +45,14 @@ export const useCreatorOnboarding = () => {
         return;
       }
       setCurrentStep('social');
-    } else if (currentStep === 'social') {
-      setCurrentStep('payment');
     }
   };
 
   const handleBack = () => {
-    if (currentStep === 'payment') {
-      setCurrentStep('social');
-    } else if (currentStep === 'social') {
+    if (currentStep === 'social') {
       setCurrentStep('professional');
     } else if (currentStep === 'professional') {
       setCurrentStep('basic');
-    } else {
-      navigate("/onboarding");
     }
   };
 
@@ -105,24 +93,21 @@ export const useCreatorOnboarding = () => {
 
       if (creatorError) throw creatorError;
 
-      localStorage.setItem('creatorData', JSON.stringify({
-        ...creatorData,
-        onboardingCompleted: true
-      }));
+      // Update the profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          first_name: creatorData.firstName,
+          last_name: creatorData.lastName,
+        })
+        .eq('id', session.user.id);
 
-      toast({
-        title: "Success!",
-        description: "Your creator profile has been created.",
-      });
+      if (profileError) throw profileError;
 
-      navigate("/creator/dashboard");
+      return true;
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      toast({
-        variant: "destructive",
-        title: "Error creating profile",
-        description: error instanceof Error ? error.message : "Please try again.",
-      });
+      throw error;
     }
   };
 

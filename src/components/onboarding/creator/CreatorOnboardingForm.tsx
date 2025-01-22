@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import BasicInfoStep from "./BasicInfoStep";
 import ProfessionalInfoStep from "./ProfessionalInfoStep";
 import SocialLinksStep from "./SocialLinksStep";
-import NinoWelcomeMessage from "./NinoWelcomeMessage";
-import { useCreatorOnboarding } from "@/hooks/useCreatorOnboarding";
 import CreatorOnboardingProgress from "./CreatorOnboardingProgress";
+import { useCreatorOnboarding } from "@/hooks/useCreatorOnboarding";
 
 const CreatorOnboardingForm = () => {
   const navigate = useNavigate();
@@ -16,8 +15,27 @@ const CreatorOnboardingForm = () => {
     creatorData,
     updateField,
     handleNext,
-    handleBack
+    handleBack,
+    handleComplete
   } = useCreatorOnboarding();
+
+  const onComplete = async () => {
+    try {
+      await handleComplete();
+      toast({
+        title: "Success!",
+        description: "Your creator profile has been created.",
+      });
+      navigate("/creator/dashboard", { replace: true });
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to complete onboarding. Please try again.",
+      });
+    }
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -31,7 +49,6 @@ const CreatorOnboardingForm = () => {
             location={creatorData.location}
             onUpdateField={updateField}
             onUpdateImage={(image: string | null) => {
-              console.log('Updating profile image:', image);
               updateField('profileImage', image);
             }}
           />
@@ -53,19 +70,10 @@ const CreatorOnboardingForm = () => {
             onUpdateField={updateField}
           />
         );
-      case 'payment':
-        return (
-          <NinoWelcomeMessage />
-        );
       default:
         return null;
     }
   };
-
-  // If we're on the payment step, only show the NinoWelcomeMessage component
-  if (currentStep === 'payment') {
-    return <NinoWelcomeMessage />;
-  }
 
   return (
     <div className="min-h-screen bg-nino-bg flex items-center justify-center p-8 md:p-12">
@@ -83,10 +91,10 @@ const CreatorOnboardingForm = () => {
             Back
           </Button>
           <Button
-            onClick={handleNext}
+            onClick={currentStep === 'social' ? onComplete : handleNext}
             variant="default"
           >
-            Continue
+            {currentStep === 'social' ? 'Complete Setup' : 'Continue'}
           </Button>
         </div>
       </div>
