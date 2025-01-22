@@ -30,14 +30,15 @@ const Proposals = () => {
     }
   };
 
-  // Filter applications based on their type and status
+  // Filter applications based on whether they were initiated by the brand (invitations)
+  // or by the creator (applications)
   const pendingProposals = applications?.filter(app => 
-    app.status === 'pending' && app.type === 'invitation'
+    app.status === 'pending' && app.opportunity?.brand?.user_id === app.creator?.user_id
   ) || [];
   
-  // Show all applications regardless of status
+  // Show all applications initiated by the creator
   const myApplications = applications?.filter(app => 
-    app.type === 'application'
+    app.opportunity?.brand?.user_id !== app.creator?.user_id
   ) || [];
 
   return (
