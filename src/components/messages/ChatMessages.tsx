@@ -4,7 +4,7 @@ import { DateDivider } from "./chat-messages/DateDivider";
 import { TypingIndicator } from "./chat-messages/TypingIndicator";
 import { useEffect, useRef } from "react";
 
-interface ChatMessagesProps {
+export interface ChatMessagesProps {
   messages: Message[];
   isTyping?: boolean;
   currentUserId?: string;
@@ -60,3 +60,5 @@ export const ChatMessages = ({
     </div>
   );
 };
+
+export default ChatMessages;

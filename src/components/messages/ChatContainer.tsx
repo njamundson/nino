@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { ChatHeader } from "@/components/messages/ChatHeader";
-import { ChatMessages } from "@/components/messages/ChatMessages";
+import ChatMessages from "@/components/messages/ChatMessages";
 import { ChatInput } from "@/components/messages/ChatInput";
 import { Message } from "@/types/message";
 
@@ -16,6 +16,7 @@ interface ChatContainerProps {
   editingMessage: { id: string; content: string; } | null;
   setEditingMessage: (message: { id: string; content: string; } | null) => void;
   messages?: Message[];
+  currentUserId?: string;
 }
 
 export const ChatContainer = ({
@@ -29,7 +30,8 @@ export const ChatContainer = ({
   setIsRecording,
   editingMessage,
   setEditingMessage,
-  messages,
+  messages = [],
+  currentUserId,
 }: ChatContainerProps) => {
   return (
     <Card className="flex-1 bg-white/80 backdrop-blur-xl border-0 shadow-lg flex flex-col min-h-0 rounded-2xl overflow-hidden">
@@ -42,7 +44,7 @@ export const ChatContainer = ({
           <div className="flex-1 min-h-0">
             <ChatMessages
               messages={messages}
-              selectedChat={selectedChat}
+              currentUserId={currentUserId}
             />
           </div>
         </>
@@ -64,3 +66,5 @@ export const ChatContainer = ({
     </Card>
   );
 };
+
+export default ChatContainer;
