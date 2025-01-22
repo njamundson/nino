@@ -4,11 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 const BasicInfoSettings = () => {
-  const navigate = useNavigate();
   const {
     loading,
     profileImage,
@@ -39,15 +37,7 @@ const BasicInfoSettings = () => {
 
   return (
     <div className="max-w-2xl mx-auto pt-12 px-6 pb-24">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => navigate('/creator/settings')}
-        className="absolute top-8 left-8 hover:bg-gray-100"
-      >
-        <ArrowLeft className="h-5 w-5 text-gray-600" />
-      </Button>
-      <h1 className="text-3xl font-semibold text-gray-900 mb-8 text-center">Basic Information</h1>
+      <h1 className="text-3xl font-semibold text-gray-900 mb-8">Basic Information</h1>
       
       <div className="space-y-8">
         <div className="bg-white rounded-2xl p-8 shadow-sm">
