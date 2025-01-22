@@ -22,11 +22,6 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
     }
   };
 
-  // Get the creator's name from their profile
-  const creatorName = creator.firstName && creator.lastName 
-    ? `${creator.firstName} ${creator.lastName}`.trim()
-    : creator.firstName || "Anonymous Creator"; // Fallback to firstName only or "Anonymous Creator"
-
   const modalCreator = {
     id: creator.id,
     bio: creator.bio,
@@ -47,10 +42,7 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
         className="group relative overflow-hidden rounded-3xl border-0 cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        <CreatorCardImage 
-          creator={{ ...creator, name: creatorName }} 
-          onInvite={handleInviteClick} 
-        />
+        <CreatorCardImage creator={creator} onInvite={handleInviteClick} />
       </Card>
 
       <CreatorModal

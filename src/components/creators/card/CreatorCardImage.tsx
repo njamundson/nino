@@ -1,82 +1,86 @@
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { CreatorData } from "@/types/creator";
 import { useState } from "react";
 
 interface CreatorCardImageProps {
-  creator: {
-    id: string;
-    name: string;
-    location?: string;
-    specialties?: string[];
-    profileImage?: string | null;
-  };
+  creator: CreatorData;
   onInvite: (creatorId: string) => void;
 }
 
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const fullName = creator.firstName && creator.lastName 
+    ? `${creator.firstName} ${creator.lastName}`.trim()
+    : 'Anonymous Creator';
 
-  const handleInviteClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsLoading(true);
-    try {
-      await onInvite(creator.id);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleImageError = () => {
+    console.log(`Profile image failed to load for creator ${creator.id}`, creator.profileImage);
+    setImageError(true);
   };
 
+  // Fallback placeholder images if profile image fails to load
+  const placeholderImages = [
+    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
+    'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952',
+    'https://images.unsplash.com/photo-1527576539890-dfa815648363'
+  ];
+
+  const getRandomPlaceholder = () => {
+    const randomIndex = Math.floor(Math.random() * placeholderImages.length);
+    return placeholderImages[randomIndex];
+  };
+
+  const imageUrl = !imageError && creator.profileImage 
+    ? creator.profileImage 
+    : getRandomPlaceholder();
+
   return (
-    <>
+    <div className="relative aspect-[3/4] w-full overflow-hidden">
       <img
-        src={creator.profileImage || "/placeholder.svg"}
-        alt={creator.name}
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        src={imageUrl}
+        alt={fullName}
+        onError={handleImageError}
+        className="h-full w-full object-cover"
       />
-
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-      
-      {creator.location && (
-        <p className="absolute top-6 left-6 text-sm text-white/90">
-          📍 {creator.location}
-        </p>
-      )}
-
-      <div className="absolute bottom-20 left-6 right-6 text-white">
-        <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
-          {creator.name}
+      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+        {creator.location && (
+          <p className="mb-2 text-sm font-medium opacity-90">
+            {creator.location}
+          </p>
+        )}
+        <h3 className="text-xl font-semibold">
+          {fullName}
         </h3>
+        {creator.specialties && creator.specialties.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {creator.specialties.map((specialty, index) => (
+              <Badge 
+                key={index} 
+                variant="secondary" 
+                className="bg-white/20 text-white hover:bg-white/30"
+              >
+                {specialty}
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
-
-      {creator.specialties && creator.specialties.length > 0 && (
-        <div className="absolute bottom-6 left-6 right-16 flex flex-wrap gap-1.5">
-          {creator.specialties.slice(0, 3).map((specialty, index) => (
-            <Badge
-              key={index}
-              variant="secondary"
-              className="bg-white/10 text-white border-0 backdrop-blur-sm"
-            >
-              {specialty}
-            </Badge>
-          ))}
-        </div>
-      )}
-
       <Button
         size="icon"
         variant="secondary"
-        className="absolute bottom-6 right-6 rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
-        onClick={handleInviteClick}
-        disabled={isLoading}
+        className="absolute bottom-6 right-6 rounded-full"
+        onClick={(e) => {
+          e.stopPropagation();
+          onInvite(creator.id);
+        }}
       >
-        {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Plus className="h-4 w-4 text-gray-900" />
-        )}
+        <Plus className="h-4 w-4" />
       </Button>
-    </>
+    </div>
   );
 };
 
