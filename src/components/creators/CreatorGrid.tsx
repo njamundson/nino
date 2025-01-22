@@ -52,7 +52,7 @@ const CreatorGrid = ({
           .from('creators')
           .select(`
             *,
-            profiles:profiles!inner (
+            profiles:profiles (
               first_name,
               last_name
             )
