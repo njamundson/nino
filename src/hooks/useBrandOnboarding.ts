@@ -53,28 +53,44 @@ export const useBrandOnboarding = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No authenticated user');
 
-      // Update the user_id in brandData before submitting
-      setBrandData(prev => ({ ...prev, user_id: user.id }));
-
-      const { error } = await supabase
+      // Check if brand already exists for this user
+      const { data: existingBrand, error: fetchError } = await supabase
         .from('brands')
-        .insert({
-          ...brandData,
-          user_id: user.id,
-          profile_image_url: profileImage
-        });
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (fetchError) throw fetchError;
+
+      // If brand exists, update it. Otherwise, insert new brand
+      const { error } = existingBrand 
+        ? await supabase
+            .from('brands')
+            .update({
+              ...brandData,
+              user_id: user.id,
+              profile_image_url: profileImage
+            })
+            .eq('id', existingBrand.id)
+        : await supabase
+            .from('brands')
+            .insert({
+              ...brandData,
+              user_id: user.id,
+              profile_image_url: profileImage
+            });
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Brand created successfully!",
+        description: "Brand profile saved successfully!",
       });
     } catch (error) {
-      console.error("Error creating brand:", error);
+      console.error("Error saving brand:", error);
       toast({
         title: "Error",
-        description: "Failed to create brand. Please try again.",
+        description: "Failed to save brand profile. Please try again.",
         variant: "destructive",
       });
     } finally {
