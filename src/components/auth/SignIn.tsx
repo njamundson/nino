@@ -19,6 +19,10 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
   const handleSignIn = async (email: string, password: string) => {
     try {
       setLoading(true);
+      
+      // Clear any existing session first
+      await supabase.auth.signOut();
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -28,33 +32,49 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
       if (data.user) {
         // Fetch user profile to determine type
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('id')
+          .eq('id', data.user.id)
           .single();
+
+        if (profileError) throw profileError;
 
         if (profile) {
           // Check if user is a brand or creator
-          const { data: brand } = await supabase
+          const { data: brand, error: brandError } = await supabase
             .from('brands')
-            .select('id')
+            .select('id, onboarding_completed')
             .eq('user_id', profile.id)
             .single();
 
-          const { data: creator } = await supabase
+          const { data: creator, error: creatorError } = await supabase
             .from('creators')
-            .select('id')
+            .select('id, onboarding_completed')
             .eq('user_id', profile.id)
             .single();
 
           if (brand) {
-            navigate('/brand/dashboard');
+            if (brand.onboarding_completed) {
+              navigate('/brand/dashboard', { replace: true });
+            } else {
+              navigate('/onboarding/brand', { replace: true });
+            }
           } else if (creator) {
-            navigate('/creator/dashboard');
+            if (creator.onboarding_completed) {
+              navigate('/creator/dashboard', { replace: true });
+            } else {
+              navigate('/onboarding/creator', { replace: true });
+            }
           } else {
             // If neither, they need to complete onboarding
-            navigate('/onboarding');
+            navigate('/onboarding', { replace: true });
           }
+
+          toast({
+            title: "Welcome back!",
+            description: "You have successfully signed in.",
+          });
         }
       }
     } catch (error) {
