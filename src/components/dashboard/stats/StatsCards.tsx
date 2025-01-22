@@ -2,8 +2,11 @@ import { Briefcase, FileText, CheckCircle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import StatsCard from '@/components/dashboard/brand/stats/StatsCard';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const StatsCards = () => {
+  const isMobile = useIsMobile();
+
   const { data: activeProjects } = useQuery({
     queryKey: ['active-projects'],
     queryFn: async () => {
@@ -77,7 +80,7 @@ const StatsCards = () => {
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-3 gap-6'} mb-6`}>
       <StatsCard
         icon={Briefcase}
         title="Active Projects"

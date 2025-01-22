@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CreatorCard from "./CreatorCard";
 import { supabase } from "@/integrations/supabase/client";
 import { CreatorData, CreatorType } from "@/types/creator";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
@@ -18,6 +19,7 @@ const CreatorGrid = ({
 }: CreatorGridProps) => {
   const [creators, setCreators] = useState<CreatorData[]>([]);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchCreators = async () => {
@@ -114,7 +116,7 @@ const CreatorGrid = ({
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
         {[1, 2, 3].map((n) => (
           <div
             key={n}
@@ -136,7 +138,7 @@ const CreatorGrid = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
       {creators.map((creator) => (
         <CreatorCard
           key={creator.id}
