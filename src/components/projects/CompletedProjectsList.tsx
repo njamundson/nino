@@ -24,6 +24,7 @@ const CompletedProjectsList = () => {
         .select(`
           *,
           brand:brands (
+            id,
             company_name,
             brand_type,
             location,
