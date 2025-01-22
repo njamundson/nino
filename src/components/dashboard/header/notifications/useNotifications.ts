@@ -24,6 +24,10 @@ export const useNotifications = () => {
           sender_profile:profiles!messages_sender_id_fkey(
             first_name,
             last_name
+          ),
+          receiver_profile:profiles!messages_receiver_id_fkey(
+            first_name,
+            last_name
           )
         `)
         .eq('receiver_id', user.id)

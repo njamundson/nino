@@ -10,11 +10,11 @@ export interface Message {
   created_at: string;
   updated_at: string;
   deleted_at?: string;
-  sender_profile?: {
+  sender_profile: {
     first_name: string;
     last_name: string;
   };
-  receiver_profile?: {
+  receiver_profile: {
     first_name: string;
     last_name: string;
   };
