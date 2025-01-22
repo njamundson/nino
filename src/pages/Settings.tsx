@@ -11,8 +11,12 @@ type SettingsPage = "basic" | "professional" | "account" | "menu";
 const Settings = () => {
   const [currentPage, setCurrentPage] = useState<SettingsPage>("menu");
 
+  const handleBackToMenu = () => {
+    setCurrentPage("menu");
+  };
+
   const pages: Record<SettingsPage, React.ReactNode> = {
-    basic: <BasicInfoSettings />,
+    basic: <BasicInfoSettings onBack={handleBackToMenu} />,
     professional: <ProfessionalSettings />,
     account: <AccountSettings />,
     menu: null
@@ -54,15 +58,6 @@ const Settings = () => {
             className="h-full"
           >
             {pages[currentPage]}
-            <div className="fixed bottom-8 left-0 right-0 flex justify-center">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage("menu")}
-                className="bg-nino-white/80 backdrop-blur-xl border-0 shadow-lg hover:bg-nino-white/90 text-nino-text"
-              >
-                Back to Settings
-              </Button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

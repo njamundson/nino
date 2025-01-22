@@ -5,10 +5,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
-const BasicInfoSettings = () => {
-  const navigate = useNavigate();
+interface BasicInfoSettingsProps {
+  onBack: () => void;
+}
+
+const BasicInfoSettings = ({ onBack }: BasicInfoSettingsProps) => {
   const {
     loading,
     profileImage,
@@ -43,7 +45,7 @@ const BasicInfoSettings = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate("/creator/settings")}
+          onClick={onBack}
           className="mr-4"
         >
           <ChevronLeft className="h-6 w-6" />
