@@ -121,6 +121,12 @@ const CreatorProfileModal = ({
     }
   };
 
+  const handleMessageClick = async () => {
+    if (typeof onMessageCreator === 'function') {
+      await Promise.resolve(onMessageCreator());
+    }
+  };
+
   const fullName = `${creator?.profile?.first_name || ''} ${creator?.profile?.last_name || ''}`.trim();
 
   return (
@@ -141,7 +147,7 @@ const CreatorProfileModal = ({
                   specialties={creator?.specialties}
                   instagram={creator?.instagram}
                   website={creator?.website}
-                  onMessageClick={onMessageCreator}
+                  onMessageClick={handleMessageClick}
                 />
 
                 <CreatorSocialLinks 

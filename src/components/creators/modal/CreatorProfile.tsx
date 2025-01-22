@@ -5,14 +5,15 @@ import { supabase } from "@/integrations/supabase/client";
 import CreatorImage from "./profile/CreatorImage";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorSocialLinks from "./profile/CreatorSocialLinks";
-import { Creator } from "@/types/creator";
+import { CreatorData } from "@/types/creator";
 
 interface CreatorProfileProps {
-  creator: Creator;
+  creator: CreatorData;
   onClose: () => void;
+  onInviteClick?: () => void;
 }
 
-const CreatorProfile = ({ creator, onClose }: CreatorProfileProps) => {
+const CreatorProfile = ({ creator, onClose, onInviteClick }: CreatorProfileProps) => {
   const navigate = useNavigate();
 
   const handleMessageClick = async () => {
@@ -36,11 +37,13 @@ const CreatorProfile = ({ creator, onClose }: CreatorProfileProps) => {
     }
   };
 
+  const fullName = `${creator.firstName || ''} ${creator.lastName || ''}`.trim();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
       <CreatorImage 
-        profileImage={creator.profileImage}
-        profile={creator.profile}
+        profileImageUrl={creator.profileImage}
+        fullName={fullName}
       />
       
       <div className="flex flex-col h-full space-y-6">

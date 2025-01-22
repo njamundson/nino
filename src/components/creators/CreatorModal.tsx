@@ -106,7 +106,8 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
             
             <CreatorProfile 
               creator={creator} 
-              onInviteClick={() => setShowCampaigns(true)} 
+              onClose={onClose}
+              onInviteClick={() => setShowCampaigns(true)}
             />
           </div>
         ) : (
