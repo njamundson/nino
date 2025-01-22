@@ -107,7 +107,10 @@ const CreatorFilters = ({
           : "bg-transparent"
       )}
     >
-      <CollapsibleTrigger className="flex items-center justify-end w-full gap-2 p-6">
+      <CollapsibleTrigger className={cn(
+        "flex items-center justify-end w-full gap-2 transition-all duration-300",
+        isOpen ? "p-6" : "p-2"
+      )}>
         {isOpen && hasActiveFilters && (
           <Button
             variant="outline"
