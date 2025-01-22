@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
@@ -11,6 +11,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -31,9 +32,14 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
         if (creator) {
           setHasAccess(true);
-          navigate('/creator/dashboard', { replace: true });
-        } else {
+          // Only redirect to dashboard if we're on the onboarding route
+          if (location.pathname.includes('/onboarding')) {
+            navigate('/creator/dashboard', { replace: true });
+          }
+        } else if (location.pathname.includes('/onboarding')) {
           setHasAccess(true); // Allow access to onboarding
+        } else {
+          navigate('/onboarding/creator', { replace: true });
         }
       } catch (error) {
         console.error('Error checking access:', error);
@@ -44,7 +50,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     };
 
     checkAccess();
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   if (isLoading) {
     return (
