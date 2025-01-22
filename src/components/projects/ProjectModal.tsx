@@ -12,6 +12,7 @@ import ProjectPerks from "./modal/ProjectPerks";
 import { Button } from "@/components/ui/button";
 
 interface Brand {
+  id: string;
   company_name: string;
   brand_type: string;
   location: string | null;
@@ -32,7 +33,7 @@ interface Opportunity {
   payment_details: string | null;
   compensation_details: string | null;
   deliverables: string[] | null;
-  brand: Brand;
+  brand: Brand | null;
 }
 
 interface ProjectModalProps {
@@ -84,7 +85,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
       <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-2xl">
         <ProjectHeader
           title={opportunity.title}
-          companyName={opportunity.brand.company_name}
+          companyName={opportunity.brand?.company_name || "Unknown Company"}
           location={opportunity.location}
           startDate={opportunity.start_date}
           endDate={opportunity.end_date}
