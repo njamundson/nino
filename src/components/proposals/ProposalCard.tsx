@@ -8,7 +8,13 @@ import ProposalStatusBadge from "./ProposalStatusBadge";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 
 interface Brand {
+  id: string;
   company_name: string | null;
+  brand_type: string | null;
+  location: string | null;
+  description: string | null;
+  website: string | null;
+  instagram: string | null;
 }
 
 interface Opportunity {
@@ -18,13 +24,13 @@ interface Opportunity {
   location: string | null;
   start_date: string | null;
   end_date: string | null;
+  perks: string[] | null;
+  requirements: string[] | null;
   payment_details: string | null;
   compensation_details: string | null;
   deliverables: string[] | null;
-  requirements: string[] | null;
-  perks: string[] | null;
-  image_url: string | null;
   brand: Brand | null;
+  image_url: string | null;
 }
 
 interface Application {
