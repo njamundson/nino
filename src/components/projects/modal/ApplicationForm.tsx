@@ -5,6 +5,8 @@ import { useApplicationSubmit } from "@/hooks/useApplicationSubmit";
 import ApplicationFormHeader from "./ApplicationFormHeader";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 export interface ApplicationFormProps {
   opportunity: {
@@ -22,6 +24,35 @@ const ApplicationForm = ({ opportunity, onClose, onModalClose }: ApplicationForm
   const [coverLetter, setCoverLetter] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Check if user has already applied
+  const { data: existingApplication, isLoading } = useQuery({
+    queryKey: ['existing-application', opportunity.id],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      // Get creator id
+      const { data: creator } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!creator) return null;
+
+      // Check for existing application
+      const { data } = await supabase
+        .from('applications')
+        .select('*')
+        .eq('opportunity_id', opportunity.id)
+        .eq('creator_id', creator.id)
+        .maybeSingle();
+
+      return data;
+    }
+  });
+
   const { isSubmitting, submitApplication } = useApplicationSubmit({
     opportunityId: opportunity.id,
     onClose: () => {
@@ -43,8 +74,33 @@ const ApplicationForm = ({ opportunity, onClose, onModalClose }: ApplicationForm
       return;
     }
 
+    if (existingApplication && existingApplication.status !== 'rejected') {
+      toast({
+        title: "Already Applied",
+        description: "You have already applied to this opportunity.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     await submitApplication(coverLetter);
   };
+
+  if (isLoading) {
+    return <div className="p-4 text-center">Checking application status...</div>;
+  }
+
+  if (existingApplication && existingApplication.status !== 'rejected') {
+    return (
+      <div className="p-6 text-center space-y-4">
+        <h3 className="text-lg font-medium">Application Already Submitted</h3>
+        <p className="text-gray-600">
+          You have already applied to this opportunity. You can only submit a new application if your previous one was rejected.
+        </p>
+        <Button onClick={onModalClose} variant="outline">Close</Button>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
