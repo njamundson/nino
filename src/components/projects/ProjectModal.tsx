@@ -83,7 +83,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-[32px] shadow-[0_20px_48px_-24px_rgba(0,0,0,0.18)]">
+      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-2xl">
         <ProjectHeader
           title={opportunity.title}
           companyName={opportunity.brand?.company_name || "Unnamed Brand"}
@@ -93,11 +93,11 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
           onApply={handleApply}
         />
 
-        <div className="overflow-y-auto px-6 py-4 relative h-full">
-          <div className="max-w-3xl mx-auto space-y-6 pb-20">
+        <div className="overflow-y-auto px-8 py-6 relative h-full">
+          <div className="max-w-3xl mx-auto space-y-8 pb-20">
             <ProjectDescription description={opportunity.description} />
             
-            <Separator className="my-4" />
+            <Separator className="my-8" />
 
             <ProjectCompensation
               paymentDetails={opportunity.payment_details}
@@ -117,11 +117,11 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
             )}
           </div>
           
-          <div className="fixed bottom-6 right-6">
+          <div className="fixed bottom-8 right-8">
             <Button 
               onClick={handleApply}
               size="lg"
-              className="bg-[#a55549] hover:bg-[#a55549]/90 text-white rounded-full px-8 transition-all shadow-lg hover:shadow-xl"
+              className="bg-[#a55549] hover:bg-[#a55549]/90 text-white rounded-full px-8 transition-all"
             >
               Apply Now
             </Button>

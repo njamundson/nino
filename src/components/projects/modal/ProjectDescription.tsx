@@ -1,13 +1,11 @@
 interface ProjectDescriptionProps {
-  description: string | null;
+  description: string;
 }
 
 const ProjectDescription = ({ description }: ProjectDescriptionProps) => {
-  if (!description) return null;
-  
   return (
     <div className="prose prose-gray max-w-none">
-      <p className="text-gray-600 leading-relaxed">
+      <p className="text-gray-600 leading-relaxed text-lg">
         {description}
       </p>
     </div>
