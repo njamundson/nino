@@ -42,7 +42,19 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
       return;
     }
 
-    await onImageUpload(file);
+    try {
+      await onImageUpload(file);
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

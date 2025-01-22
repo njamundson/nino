@@ -32,7 +32,7 @@ serve(async (req) => {
     const filePath = `${crypto.randomUUID()}.${fileExt}`
 
     const { data, error: uploadError } = await supabase.storage
-      .from('message-attachments')
+      .from('campaign-images')
       .upload(filePath, file, {
         contentType: file.type,
         upsert: false
@@ -43,11 +43,11 @@ serve(async (req) => {
     }
 
     const { data: { publicUrl } } = supabase.storage
-      .from('message-attachments')
+      .from('campaign-images')
       .getPublicUrl(filePath)
 
     return new Response(
-      JSON.stringify({ url: publicUrl, type: file.type }),
+      JSON.stringify({ url: publicUrl }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
