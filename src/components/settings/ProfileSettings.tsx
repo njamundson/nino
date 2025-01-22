@@ -1,19 +1,38 @@
-import { BrandSettings } from "@/types/brand";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import SecuritySettings from "./SecuritySettings";
+import { useBrandSettings } from "@/hooks/useBrandSettings";
 
 interface ProfileSettingsProps {
-  brandData: BrandSettings;
-  onUpdateField: (field: string, value: any) => void;
+  onBack?: () => void;
 }
 
-const ProfileSettings = ({ brandData, onUpdateField }: ProfileSettingsProps) => {
+const ProfileSettings = ({ onBack }: ProfileSettingsProps) => {
+  const { brandData, loading, handleUpdateField } = useBrandSettings();
+
   return (
-    <div className="space-y-8">
-      <SecuritySettings
-        two_factor_enabled={brandData.two_factor_enabled || false}
-        sms_notifications_enabled={brandData.sms_notifications_enabled || false}
-        onUpdateField={onUpdateField}
-      />
+    <div className="max-w-2xl mx-auto pt-12 px-6">
+      {onBack && (
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="mb-6"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Back to Settings
+        </Button>
+      )}
+      
+      <h2 className="text-2xl font-semibold mb-8">Profile Settings</h2>
+      
+      <div className="space-y-8">
+        <SecuritySettings
+          two_factor_enabled={brandData?.two_factor_enabled || false}
+          sms_notifications_enabled={brandData?.sms_notifications_enabled || false}
+          onUpdateField={handleUpdateField}
+        />
+      </div>
     </div>
   );
 };

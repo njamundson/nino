@@ -1,105 +1,78 @@
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Lock, LogOut, Trash2, Shield } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
-const AccountSettings = () => {
-  const { toast } = useToast();
+interface AccountSettingsProps {
+  onBack?: () => void;
+}
 
-  const handlePasswordChange = () => {
-    toast({
-      title: "Password reset email sent",
-      description: "Check your email for instructions to reset your password.",
-    });
-  };
-
-  const handleAccountDeletion = () => {
-    toast({
-      title: "Account deleted",
-      description: "Your account has been permanently deleted.",
-      variant: "destructive",
-    });
-  };
-
+const AccountSettings = ({ onBack }: AccountSettingsProps) => {
   return (
-    <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm">
-      <div className="flex items-center gap-2 mb-6">
-        <Shield className="w-5 h-5 text-nino-primary" />
-        <h3 className="text-xl font-semibold text-nino-text">Security & Account</h3>
-      </div>
+    <div className="max-w-2xl mx-auto pt-12 px-6">
+      {onBack && (
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="mb-6"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Back to Settings
+        </Button>
+      )}
+      
+      <h2 className="text-2xl font-semibold mb-8">Account & Security</h2>
       
       <div className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="current-password" className="text-base">Current Password</Label>
-            <div className="flex space-x-2 mt-1">
-              <Input
-                id="current-password"
-                type="password"
-                className="bg-white/50"
-                placeholder="Enter current password"
-              />
-              <Button
-                variant="outline"
-                className="flex items-center"
-                onClick={handlePasswordChange}
-              >
-                <Lock className="w-4 h-4 mr-2" />
-                Change
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6">
+          <h3 className="text-lg font-medium mb-4">Account Information</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <p className="text-gray-600">user@example.com</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Account Type</label>
+              <p className="text-gray-600">Brand Account</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Member Since</label>
+              <p className="text-gray-600">January 1, 2024</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6">
+          <h3 className="text-lg font-medium mb-4">Security Settings</h3>
+          <div className="space-y-4">
+            <div>
+              <Button variant="outline" className="w-full justify-start">
+                Change Password
+              </Button>
+            </div>
+            <div>
+              <Button variant="outline" className="w-full justify-start">
+                Enable Two-Factor Authentication
+              </Button>
+            </div>
+            <div>
+              <Button variant="outline" className="w-full justify-start">
+                Manage Connected Devices
               </Button>
             </div>
           </div>
-
-          <Button variant="outline" className="w-full sm:w-auto">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out of All Devices
-          </Button>
         </div>
 
-        <div className="pt-4 border-t border-gray-100">
-          <h4 className="text-base font-medium text-red-600 mb-4">Danger Zone</h4>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto text-red-600 border-red-200 hover:bg-red-50">
-                <Trash2 className="w-4 h-4 mr-2" />
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6">
+          <h3 className="text-lg font-medium text-red-600 mb-4">Danger Zone</h3>
+          <div className="space-y-4">
+            <div>
+              <Button variant="destructive" className="w-full">
                 Delete Account
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete your
-                  account and remove your data from our servers.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleAccountDeletion}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  Delete Account
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            </div>
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

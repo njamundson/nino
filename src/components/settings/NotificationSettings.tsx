@@ -1,162 +1,112 @@
-import { Card } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { Bell } from "lucide-react";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
+import { useBrandSettings } from "@/hooks/useBrandSettings";
 
-const NotificationSettings = () => {
-  const { toast } = useToast();
-  const [settings, setSettings] = useState({
-    push_enabled: true,
-    email_enabled: true,
-    message_notifications: true,
-    application_updates: true,
-    marketing_updates: false,
-  });
-  const [loading, setLoading] = useState(false);
+interface NotificationSettingsProps {
+  onBack?: () => void;
+}
 
-  useEffect(() => {
-    fetchNotificationSettings();
-  }, []);
-
-  const fetchNotificationSettings = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (brand) {
-        const { data: notificationSettings } = await supabase
-          .from('brand_notification_settings')
-          .select('*')
-          .eq('brand_id', brand.id)
-          .single();
-
-        if (notificationSettings) {
-          setSettings(notificationSettings);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching notification settings:', error);
-    }
-  };
-
-  const handleToggle = async (field: string, value: boolean) => {
-    setLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (brand) {
-        const { error } = await supabase
-          .from('brand_notification_settings')
-          .upsert({
-            brand_id: brand.id,
-            [field]: value,
-          });
-
-        if (error) throw error;
-
-        setSettings(prev => ({ ...prev, [field]: value }));
-        toast({
-          title: "Success",
-          description: "Notification settings updated",
-        });
-      }
-    } catch (error) {
-      console.error('Error updating notification settings:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update notification settings",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+const NotificationSettings = ({ onBack }: NotificationSettingsProps) => {
+  const { brandData, loading, handleUpdateField } = useBrandSettings();
 
   return (
-    <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm">
-      <div className="flex items-center gap-2 mb-6">
-        <Bell className="w-5 h-5 text-nino-primary" />
-        <h3 className="text-xl font-semibold text-nino-text">Notifications</h3>
-      </div>
-
+    <div className="max-w-2xl mx-auto pt-12 px-6">
+      {onBack && (
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="mb-6"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Back to Settings
+        </Button>
+      )}
+      
+      <h2 className="text-2xl font-semibold mb-8">Notification Preferences</h2>
+      
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label className="text-base">Push Notifications</Label>
-            <p className="text-sm text-nino-gray">Receive notifications on your device</p>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Email Notifications</Label>
+              <p className="text-sm text-nino-gray">Receive updates via email</p>
+            </div>
+            <Switch
+              checked={brandData?.email_notifications_enabled || false}
+              onCheckedChange={(checked) => handleUpdateField("email_notifications_enabled", checked)}
+              disabled={loading}
+            />
           </div>
-          <Switch
-            checked={settings.push_enabled}
-            onCheckedChange={(checked) => handleToggle('push_enabled', checked)}
-            disabled={loading}
-          />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>SMS Notifications</Label>
+              <p className="text-sm text-nino-gray">Receive updates via text message</p>
+            </div>
+            <Switch
+              checked={brandData?.sms_notifications_enabled || false}
+              onCheckedChange={(checked) => handleUpdateField("sms_notifications_enabled", checked)}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Push Notifications</Label>
+              <p className="text-sm text-nino-gray">Receive push notifications on your devices</p>
+            </div>
+            <Switch
+              checked={brandData?.push_notifications_enabled || false}
+              onCheckedChange={(checked) => handleUpdateField("push_notifications_enabled", checked)}
+              disabled={loading}
+            />
+          </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label className="text-base">Email Notifications</Label>
-            <p className="text-sm text-nino-gray">Receive updates via email</p>
-          </div>
-          <Switch
-            checked={settings.email_enabled}
-            onCheckedChange={(checked) => handleToggle('email_enabled', checked)}
-            disabled={loading}
-          />
-        </div>
+        <div className="pt-6 border-t border-gray-100">
+          <h3 className="text-lg font-medium mb-4">Notification Types</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>New Applications</Label>
+                <p className="text-sm text-nino-gray">When creators apply to your campaigns</p>
+              </div>
+              <Switch
+                checked={brandData?.application_notifications_enabled || false}
+                onCheckedChange={(checked) => handleUpdateField("application_notifications_enabled", checked)}
+                disabled={loading}
+              />
+            </div>
 
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label className="text-base">Message Notifications</Label>
-            <p className="text-sm text-nino-gray">Get notified about new messages</p>
-          </div>
-          <Switch
-            checked={settings.message_notifications}
-            onCheckedChange={(checked) => handleToggle('message_notifications', checked)}
-            disabled={loading}
-          />
-        </div>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Messages</Label>
+                <p className="text-sm text-nino-gray">When you receive new messages</p>
+              </div>
+              <Switch
+                checked={brandData?.message_notifications_enabled || false}
+                onCheckedChange={(checked) => handleUpdateField("message_notifications_enabled", checked)}
+                disabled={loading}
+              />
+            </div>
 
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label className="text-base">Application Updates</Label>
-            <p className="text-sm text-nino-gray">Get notified about application status changes</p>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Marketing Updates</Label>
+                <p className="text-sm text-nino-gray">News and updates about our platform</p>
+              </div>
+              <Switch
+                checked={brandData?.marketing_notifications_enabled || false}
+                onCheckedChange={(checked) => handleUpdateField("marketing_notifications_enabled", checked)}
+                disabled={loading}
+              />
+            </div>
           </div>
-          <Switch
-            checked={settings.application_updates}
-            onCheckedChange={(checked) => handleToggle('application_updates', checked)}
-            disabled={loading}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label className="text-base">Marketing Updates</Label>
-            <p className="text-sm text-nino-gray">Receive marketing and promotional emails</p>
-          </div>
-          <Switch
-            checked={settings.marketing_updates}
-            onCheckedChange={(checked) => handleToggle('marketing_updates', checked)}
-            disabled={loading}
-          />
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
