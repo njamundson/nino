@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Eye, MessageSquare } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Eye, MessageSquare, MapPin, Globe, Instagram } from "lucide-react";
 
 interface ApplicationItemProps {
   application: any;
@@ -18,68 +19,119 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     ? `${creatorProfile.first_name} ${creatorProfile.last_name}`
     : 'Anonymous Creator';
 
-  console.log('Creator profile data:', {
-    profile: creatorProfile,
-    fullCreator: application.creator
-  }); // Debug log
+  const specialties = application.creator?.specialties || [];
 
   return (
-    <div className="p-6 rounded-lg bg-gray-50 flex items-start justify-between gap-6">
-      <div className="flex-1 flex items-start gap-6">
-        <Avatar className="h-16 w-16 rounded-full border-2 border-white shadow-sm overflow-hidden">
-          {application.creator?.profile_image_url ? (
-            <AvatarImage
-              src={application.creator.profile_image_url}
-              alt={creatorName}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <AvatarFallback className="bg-gray-100 text-gray-600">
-              {getInitials(
-                creatorProfile?.first_name || '',
-                creatorProfile?.last_name || ''
-              )}
-            </AvatarFallback>
-          )}
-        </Avatar>
-        <div className="space-y-3 flex-1">
-          <div>
-            <h4 className="text-2xl font-medium text-gray-900 tracking-tight">
-              {creatorName}
-            </h4>
-            {application.creator?.location && (
-              <p className="text-sm text-gray-500">
-                📍 {application.creator.location}
-              </p>
+    <div className="p-6 rounded-lg bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300">
+      <div className="flex items-start justify-between gap-6">
+        <div className="flex-1 flex items-start gap-6">
+          <Avatar className="h-20 w-20 rounded-2xl border-2 border-white shadow-sm overflow-hidden">
+            {application.creator?.profile_image_url ? (
+              <AvatarImage
+                src={application.creator.profile_image_url}
+                alt={creatorName}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <AvatarFallback className="bg-gray-100 text-gray-600 text-xl">
+                {getInitials(
+                  creatorProfile?.first_name || '',
+                  creatorProfile?.last_name || ''
+                )}
+              </AvatarFallback>
             )}
-          </div>
-          <div className="space-y-2">
-            <h5 className="font-medium text-gray-700">Application Message:</h5>
-            <p className="text-gray-600 leading-relaxed">
-              {application.cover_letter}
-            </p>
+          </Avatar>
+          <div className="space-y-4 flex-1">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className="text-xl font-medium text-gray-900">
+                  {creatorName}
+                </h4>
+                {application.creator?.creator_type && (
+                  <Badge variant="secondary" className="capitalize">
+                    {application.creator.creator_type}
+                  </Badge>
+                )}
+              </div>
+              {application.creator?.location && (
+                <p className="text-sm text-gray-500 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5" />
+                  {application.creator.location}
+                </p>
+              )}
+            </div>
+
+            {/* Social Links */}
+            {(application.creator?.instagram || application.creator?.website) && (
+              <div className="flex gap-3">
+                {application.creator?.instagram && (
+                  <a
+                    href={`https://instagram.com/${application.creator.instagram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
+                  >
+                    <Instagram className="w-3.5 h-3.5" />
+                    {application.creator.instagram}
+                  </a>
+                )}
+                {application.creator?.website && (
+                  <a
+                    href={application.creator.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
+                  >
+                    <Globe className="w-3.5 h-3.5" />
+                    Website
+                  </a>
+                )}
+              </div>
+            )}
+
+            {/* Specialties */}
+            {specialties.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {specialties.map((specialty: string, index: number) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="bg-white/50"
+                  >
+                    {specialty}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <h5 className="font-medium text-gray-700">Application Message:</h5>
+              <p className="text-gray-600 leading-relaxed">
+                {application.cover_letter}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onViewProfile}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          <Eye className="h-4 w-4 mr-1" />
-          View Profile
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => onMessageCreator()}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          <MessageSquare className="h-4 w-4 mr-1" />
-          Message
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onViewProfile}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <Eye className="h-4 w-4 mr-1.5" />
+            View Profile
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onMessageCreator}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <MessageSquare className="h-4 w-4 mr-1.5" />
+            Message
+          </Button>
+        </div>
       </div>
     </div>
   );
