@@ -45,6 +45,7 @@ export const ChatContainer = ({
             <ChatMessages
               messages={messages}
               currentUserId={currentUserId}
+              selectedChat={selectedChat}
             />
           </div>
         </>

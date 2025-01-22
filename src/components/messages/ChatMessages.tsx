@@ -10,9 +10,10 @@ export interface ChatMessagesProps {
   currentUserId?: string;
   onReaction?: (messageId: string, emoji: string) => void;
   onDelete?: (messageId: string) => void;
+  selectedChat?: string | null;
 }
 
-export const ChatMessages = ({
+const ChatMessages = ({
   messages,
   isTyping,
   currentUserId,
