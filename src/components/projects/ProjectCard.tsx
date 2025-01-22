@@ -27,7 +27,7 @@ interface Opportunity {
   payment_details: string | null;
   compensation_details: string | null;
   deliverables: string[] | null;
-  brand: Brand;
+  brand: Brand | null;
   image_url: string | null;
 }
 
@@ -56,6 +56,14 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
       setIsLoading(false);
     }
   };
+
+  if (!opportunity.brand) {
+    return (
+      <Card className="p-6 bg-gray-50">
+        <p className="text-gray-500 text-center">Project details unavailable</p>
+      </Card>
+    );
+  }
   
   return (
     <>
