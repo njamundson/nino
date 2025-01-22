@@ -16,6 +16,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let mounted = true;
     let subscription: { data: { subscription: any } };
 
     const checkAccess = async () => {
@@ -23,8 +24,8 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         // First, check if we have a valid session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-        if (sessionError) {
-          console.error('Session error:', sessionError);
+        if (sessionError || !session) {
+          console.error('Session error or no session:', sessionError);
           await supabase.auth.signOut();
           toast({
             title: "Authentication Required",
@@ -35,17 +36,15 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
-        if (!session) {
-          console.log('No session found');
-          navigate('/', { replace: true });
-          return;
-        }
-
         // Set up auth state listener
         subscription = supabase.auth.onAuthStateChange(async (event, session) => {
           console.log('Auth state changed:', event);
           
           if (event === 'SIGNED_OUT' || !session) {
+            if (mounted) {
+              setHasAccess(false);
+              setIsLoading(false);
+            }
             navigate('/', { replace: true });
             return;
           }
@@ -123,13 +122,13 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           if (isOnboardingRoute && !isWelcomeRoute) {
             navigate('/creator/dashboard', { replace: true });
           } else {
-            setHasAccess(true);
+            if (mounted) setHasAccess(true);
           }
         } else {
           if (!isOnboardingRoute) {
             navigate('/onboarding/creator', { replace: true });
           } else {
-            setHasAccess(true);
+            if (mounted) setHasAccess(true);
           }
         }
       } catch (error) {
@@ -141,13 +140,14 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         });
         navigate('/', { replace: true });
       } finally {
-        setIsLoading(false);
+        if (mounted) setIsLoading(false);
       }
     };
 
     checkAccess();
 
     return () => {
+      mounted = false;
       if (subscription?.data?.subscription) {
         subscription.data.subscription.unsubscribe();
       }
