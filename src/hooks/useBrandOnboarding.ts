@@ -9,7 +9,7 @@ export const useBrandOnboarding = () => {
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({
-    user_id: '', // This will be set when user is authenticated
+    user_id: '',
     company_name: '',
     brand_type: '',
     description: '',
@@ -54,13 +54,11 @@ export const useBrandOnboarding = () => {
       if (!user) throw new Error('No authenticated user');
 
       // Check if brand already exists for this user
-      const { data: existingBrand, error: fetchError } = await supabase
+      const { data: existingBrand } = await supabase
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
         .maybeSingle();
-
-      if (fetchError) throw fetchError;
 
       // If brand exists, update it. Otherwise, insert new brand
       const { error } = existingBrand 
