@@ -8,9 +8,9 @@ export interface ApplicationFormProps {
   opportunity: {
     id: string;
     title: string;
-    brand: {
+    brand?: {
       company_name: string;
-    };
+    } | null;
   };
   onClose: () => void;
 }
@@ -31,7 +31,7 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <ApplicationFormHeader 
         title={opportunity.title}
-        companyName={opportunity.brand.company_name}
+        companyName={opportunity.brand?.company_name || "Unknown Company"}
       />
 
       <div className="space-y-2">
