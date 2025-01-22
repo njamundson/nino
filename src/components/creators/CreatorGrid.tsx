@@ -95,7 +95,7 @@ const CreatorGrid = ({
           instagram: creator.instagram || "",
           website: creator.website || "",
           location: creator.location || "",
-          profileImage: creator.profile_image_url,
+          profileImage: creator.profile_image_url || null,
           creatorType: creator.creator_type as CreatorType || "solo",
           profile: creator.profile
         }));
