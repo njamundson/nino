@@ -48,22 +48,22 @@ export const ChatContainer = ({
               selectedChat={selectedChat}
             />
           </div>
-          <ChatInput
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            handleSendMessage={handleSendMessage}
-            isRecording={isRecording}
-            setIsRecording={setIsRecording}
-            selectedChat={selectedChat}
-            editingMessage={editingMessage}
-            setEditingMessage={setEditingMessage}
-          />
         </>
       ) : (
         <div className="flex-1 flex items-center justify-center text-gray-500">
           <p>Select a conversation to start messaging</p>
         </div>
       )}
+      <ChatInput
+        newMessage={newMessage}
+        setNewMessage={setNewMessage}
+        handleSendMessage={handleSendMessage}
+        isRecording={isRecording}
+        setIsRecording={setIsRecording}
+        selectedChat={selectedChat}
+        editingMessage={editingMessage}
+        setEditingMessage={setEditingMessage}
+      />
     </Card>
   );
 };
