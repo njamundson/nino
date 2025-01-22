@@ -62,12 +62,25 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
+        // Check if user is trying to access brand routes
+        const { data: brand } = await supabase
+          .from('brands')
+          .select('id')
+          .eq('user_id', sessionData.session.user.id)
+          .maybeSingle();
+
+        if (brand) {
+          console.log('User has a brand profile, redirecting to brand dashboard');
+          navigate('/brand/dashboard', { replace: true });
+          return;
+        }
+
         const isOnboardingRoute = location.pathname.includes('/onboarding');
         const isWelcomeRoute = location.pathname === '/onboarding/creator/welcome';
 
         if (!creator) {
           console.log('No creator profile found');
-          navigate('/', { replace: true });
+          navigate('/onboarding', { replace: true });
           return;
         }
 
