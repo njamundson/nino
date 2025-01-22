@@ -15,18 +15,27 @@ const CompletedProjectsList = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
-        const { data: creator } = await supabase
+        const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
+
+        if (creatorError) {
+          console.error("Error fetching creator:", creatorError);
+          toast({
+            title: "Error",
+            description: "Could not fetch creator profile",
+            variant: "destructive",
+          });
+          return [];
+        }
 
         if (!creator) {
           console.log("No creator profile found");
           return [];
         }
 
-        // Fetch opportunities and their associated brands in a single query
         const { data: opportunities, error: oppsError } = await supabase
           .from('opportunities')
           .select(`
