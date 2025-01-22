@@ -3,21 +3,37 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProjectCard from "./ProjectCard";
+import { useToast } from "@/hooks/use-toast";
 
 const CompletedProjectsList = () => {
+  const { toast } = useToast();
+  
   const { data: projects, isLoading } = useQuery({
     queryKey: ['completed-projects'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data: creator } = await supabase
+      const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (!creator) throw new Error("Creator profile not found");
+      if (creatorError) {
+        console.error("Error fetching creator:", creatorError);
+        toast({
+          title: "Error",
+          description: "Could not fetch creator profile",
+          variant: "destructive",
+        });
+        return [];
+      }
+
+      if (!creator) {
+        console.log("No creator profile found");
+        return [];
+      }
 
       const { data, error } = await supabase
         .from('opportunities')
@@ -36,7 +52,12 @@ const CompletedProjectsList = () => {
         .eq('status', 'completed')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching opportunities:", error);
+        throw error;
+      }
+      
+      console.log("Fetched opportunities with brands:", data);
       return data || [];
     }
   });
