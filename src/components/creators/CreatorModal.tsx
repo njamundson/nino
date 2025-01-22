@@ -107,10 +107,6 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     profile_image_url: creator.profile_image_url
   };
 
-  const displayName = creator.profile?.first_name 
-    ? `${creator.profile.first_name}${creator.profile.last_name ? ' ' + creator.profile.last_name : ''}`
-    : 'Creator';
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-nino-bg">
@@ -118,7 +114,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {displayName}
+                {creator.profile?.first_name}
               </DialogTitle>
             </DialogHeader>
             
