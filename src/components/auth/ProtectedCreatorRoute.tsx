@@ -25,7 +25,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
         if (sessionError) {
           console.error('Session error:', sessionError);
-          await supabase.auth.signOut(); // Clear any invalid session data
+          await supabase.auth.signOut();
           toast({
             title: "Authentication Required",
             description: "Please sign in to continue.",
@@ -63,7 +63,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           .maybeSingle();
 
         if (creatorError) {
-          console.error('Error fetching creator profile:', creatorError);
+          console.error('Error checking creator profile:', creatorError);
           toast({
             title: "Error",
             description: "Could not verify creator access. Please try again.",
@@ -96,7 +96,26 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
         if (!creator) {
           console.log('No creator profile found');
-          navigate('/onboarding', { replace: true });
+          // Create a new creator profile
+          const { error: createError } = await supabase
+            .from('creators')
+            .insert({
+              user_id: session.user.id,
+              onboarding_completed: false
+            });
+
+          if (createError) {
+            console.error('Error creating creator profile:', createError);
+            toast({
+              title: "Error",
+              description: "Could not create creator profile. Please try again.",
+              variant: "destructive",
+            });
+            navigate('/', { replace: true });
+            return;
+          }
+
+          navigate('/onboarding/creator', { replace: true });
           return;
         }
 
