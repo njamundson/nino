@@ -7,7 +7,11 @@ import SocialLinksStep from "./SocialLinksStep";
 import CreatorOnboardingProgress from "./CreatorOnboardingProgress";
 import { useCreatorOnboarding } from "@/hooks/useCreatorOnboarding";
 
-const CreatorOnboardingForm = () => {
+interface CreatorOnboardingFormProps {
+  onComplete: (data: any) => Promise<void>;
+}
+
+const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const {
@@ -19,9 +23,10 @@ const CreatorOnboardingForm = () => {
     handleComplete
   } = useCreatorOnboarding();
 
-  const onComplete = async () => {
+  const onSubmit = async () => {
     try {
       await handleComplete();
+      await onComplete(creatorData);
       toast({
         title: "Success!",
         description: "Your creator profile has been created.",
@@ -92,7 +97,7 @@ const CreatorOnboardingForm = () => {
             Back
           </Button>
           <Button
-            onClick={currentStep === 'social' ? onComplete : handleNext}
+            onClick={currentStep === 'social' ? onSubmit : handleNext}
             variant="default"
           >
             {currentStep === 'social' ? 'Complete Setup' : 'Continue'}
