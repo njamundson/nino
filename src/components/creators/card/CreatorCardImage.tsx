@@ -14,16 +14,16 @@ const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
     : 'Anonymous Creator';
 
   return (
-    <div className="relative h-[400px] w-full overflow-hidden">
+    <div className="relative aspect-[3/4] overflow-hidden">
       <img
         src={creator.profileImage || '/placeholder.svg'}
         alt={fullName}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
         {creator.location && (
-          <p className="mb-2 text-sm font-medium text-white/90">
+          <p className="mb-2 text-sm font-medium opacity-90">
             {creator.location}
           </p>
         )}
