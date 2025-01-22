@@ -35,13 +35,11 @@ const CompletedProjectsList = () => {
         return [];
       }
 
-      console.log("Creator ID:", creator.id);
-
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
           *,
-          brand:brands (
+          brand:brands!inner (
             id,
             company_name,
             brand_type,
@@ -58,13 +56,8 @@ const CompletedProjectsList = () => {
         throw error;
       }
 
-      console.log("Raw opportunities data:", data);
-      
-      // Filter out opportunities without brand data
-      const validOpportunities = data?.filter(opp => opp.brand !== null) || [];
-      console.log("Filtered opportunities:", validOpportunities);
-
-      return validOpportunities;
+      console.log("Fetched opportunities with brands:", data);
+      return data || [];
     }
   });
 
