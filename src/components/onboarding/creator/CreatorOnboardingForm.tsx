@@ -46,24 +46,40 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
       case 'basic':
         return (
           <BasicInfoStep
-            creatorData={creatorData}
+            profileImage={creatorData.profileImage}
+            firstName={creatorData.firstName}
+            lastName={creatorData.lastName}
+            bio={creatorData.bio}
+            location={creatorData.location}
+            onUpdateField={(field, value) => handleUpdateField(field, value)}
+            onUpdateImage={(image) => handleUpdateField('profileImage', image)}
           />
         );
       case 'professional':
         return (
           <ProfessionalInfoStep
-            creatorData={creatorData}
+            creatorType={creatorData.creatorType}
+            skills={creatorData.specialties}
+            onUpdateField={(field, value) => handleUpdateField(field, value)}
+            onUpdateSkills={(skills) => handleUpdateField('specialties', skills)}
           />
         );
       case 'social':
         return (
           <SocialLinksStep
-            creatorData={creatorData}
+            instagram={creatorData.instagram}
+            website={creatorData.website}
+            onUpdateField={(field, value) => handleUpdateField(field, value)}
           />
         );
       default:
         return null;
     }
+  };
+
+  const handleUpdateField = (field: string, value: any) => {
+    // Update the field in creatorData
+    // This function should be implemented in useCreatorOnboarding
   };
 
   return (
