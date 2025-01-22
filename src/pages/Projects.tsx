@@ -17,6 +17,7 @@ const Projects = () => {
         .select(`
           *,
           brand:brands (
+            id,
             company_name,
             brand_type,
             location,
@@ -47,7 +48,7 @@ const Projects = () => {
       
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-nino-primary" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : error ? (
         <Alert variant="destructive">
