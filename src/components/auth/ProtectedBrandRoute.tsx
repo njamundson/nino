@@ -34,20 +34,19 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         const isPaymentRoute = location.pathname.includes('/payment');
 
         if (!brand) {
-          // No brand profile found
           navigate('/');
           return;
         }
 
+        // If user is on payment/welcome route and has completed onboarding,
+        // let them stay there as they'll be redirected to dashboard after animation
         if (brand.company_name) {
-          // Onboarding completed
           if (isOnboardingRoute && !isPaymentRoute) {
             navigate('/brand/dashboard');
           } else {
             setHasAccess(true);
           }
         } else {
-          // Onboarding not completed
           if (!isOnboardingRoute) {
             navigate('/onboarding/brand');
           } else {

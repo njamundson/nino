@@ -2,30 +2,50 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const NinoWelcomeMessage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    const userType = localStorage.getItem('userType');
-    const redirectTimeout = setTimeout(() => {
-      if (userType === 'creator') {
-        navigate('/creator/dashboard', { replace: true });
-      } else if (userType === 'brand') {
-        navigate('/brand/dashboard', { replace: true });
-      } else {
-        // Fallback to creator dashboard if userType is not set
-        navigate('/creator/dashboard', { replace: true });
+    const checkUserAndRedirect = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate('/');
+          return;
+        }
+
+        // Check if user has a creator profile
+        const { data: creator } = await supabase
+          .from('creators')
+          .select('id, bio')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        const redirectTimeout = setTimeout(() => {
+          if (creator?.bio) {
+            navigate('/creator/dashboard');
+          } else {
+            navigate('/onboarding/creator');
+          }
+          
+          toast({
+            title: "Welcome!",
+            description: "Your creator profile has been set up successfully.",
+          });
+        }, 2000);
+
+        return () => clearTimeout(redirectTimeout);
+      } catch (error) {
+        console.error('Error in redirect:', error);
+        navigate('/');
       }
+    };
 
-      toast({
-        title: "Welcome!",
-        description: "Your profile has been set up successfully.",
-      });
-    }, 2000);
-
-    return () => clearTimeout(redirectTimeout);
+    checkUserAndRedirect();
   }, [navigate, toast]);
 
   return (

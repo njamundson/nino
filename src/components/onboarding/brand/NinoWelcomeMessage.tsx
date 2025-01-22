@@ -2,22 +2,50 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const NinoWelcomeMessage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    const redirectTimeout = setTimeout(() => {
-      navigate('/brand/dashboard', { replace: true });
-      
-      toast({
-        title: "Welcome!",
-        description: "Your brand profile has been set up successfully.",
-      });
-    }, 2000);
+    const checkUserAndRedirect = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate('/');
+          return;
+        }
 
-    return () => clearTimeout(redirectTimeout);
+        // Check if user has a brand profile
+        const { data: brand } = await supabase
+          .from('brands')
+          .select('id, company_name')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        const redirectTimeout = setTimeout(() => {
+          if (brand?.company_name) {
+            navigate('/brand/dashboard');
+          } else {
+            navigate('/onboarding/brand');
+          }
+          
+          toast({
+            title: "Welcome!",
+            description: "Your brand profile has been set up successfully.",
+          });
+        }, 2000);
+
+        return () => clearTimeout(redirectTimeout);
+      } catch (error) {
+        console.error('Error in redirect:', error);
+        navigate('/');
+      }
+    };
+
+    checkUserAndRedirect();
   }, [navigate, toast]);
 
   return (
