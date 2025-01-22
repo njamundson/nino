@@ -1,42 +1,40 @@
-import SocialLinks from "./social/SocialLinks";
+import { Button } from "@/components/ui/button";
+import { MessageSquare } from "lucide-react";
 import CreatorSpecialties from "./bio/CreatorSpecialties";
 
-interface CreatorBioProps {
-  bio: string | null;
-  specialties: string[] | null;
+export interface CreatorBioProps {
+  bio: string;
   location: string | null;
+  specialties: string[];
   instagram: string | null;
   website: string | null;
-  onMessageClick?: () => void;
+  onMessageClick: () => Promise<void>;
 }
 
 const CreatorBio = ({ 
   bio, 
-  specialties, 
-  location,
-  instagram,
-  website,
-  onMessageClick 
+  location, 
+  specialties,
+  onMessageClick
 }: CreatorBioProps) => {
   return (
-    <div className="flex-grow space-y-6">
-      {location && (
-        <p className="text-nino-gray flex items-center gap-2">
-          <span className="text-lg">📍</span> {location}
-        </p>
-      )}
-      
-      <div className="space-y-2">
-        <SocialLinks 
-          instagram={instagram}
-          website={website}
-          onMessageClick={onMessageClick}
-        />
-
-        <h3 className="text-lg font-semibold text-nino-text">About</h3>
-        <p className="text-base leading-relaxed text-nino-text/90">
-          {bio || "No bio available"}
-        </p>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            {location && (
+              <p className="text-sm text-nino-gray">📍 {location}</p>
+            )}
+          </div>
+          <Button 
+            onClick={onMessageClick}
+            className="bg-nino-primary hover:bg-nino-primary/90 text-white"
+          >
+            <MessageSquare className="w-4 h-4 mr-2" />
+            Message Creator
+          </Button>
+        </div>
+        <p className="text-nino-gray leading-relaxed">{bio}</p>
       </div>
 
       <CreatorSpecialties specialties={specialties} />
