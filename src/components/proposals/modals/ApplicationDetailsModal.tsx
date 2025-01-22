@@ -15,9 +15,10 @@ interface ApplicationDetailsModalProps {
       end_date: string | null;
       payment_details: string | null;
       compensation_details: string | null;
-      brand: {
-        company_name: string;
-      };
+      brand?: {
+        company_name: string | null;
+        location: string | null;
+      } | null;
     };
     cover_letter: string | null;
     status: string;
@@ -25,6 +26,11 @@ interface ApplicationDetailsModalProps {
 }
 
 const ApplicationDetailsModal = ({ isOpen, onClose, application }: ApplicationDetailsModalProps) => {
+  // Add null checks and default values
+  const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
+  const brandLocation = application.opportunity?.brand?.location;
+  const title = application.opportunity?.title || "Untitled Opportunity";
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -34,18 +40,18 @@ const ApplicationDetailsModal = ({ isOpen, onClose, application }: ApplicationDe
 
         <div className="space-y-6 py-4">
           <div className="space-y-2">
-            <h3 className="text-xl font-medium">{application.opportunity.title}</h3>
-            <p className="text-muted-foreground">{application.opportunity.brand.company_name}</p>
+            <h3 className="text-xl font-medium">{title}</h3>
+            <p className="text-muted-foreground">{brandName}</p>
           </div>
 
-          {application.opportunity.location && (
+          {brandLocation && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <MapPin className="w-4 h-4" />
-              <span>{application.opportunity.location}</span>
+              <span>{brandLocation}</span>
             </div>
           )}
 
-          {(application.opportunity.start_date || application.opportunity.end_date) && (
+          {(application.opportunity?.start_date || application.opportunity?.end_date) && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="w-4 h-4" />
               <span>
@@ -55,10 +61,12 @@ const ApplicationDetailsModal = ({ isOpen, onClose, application }: ApplicationDe
             </div>
           )}
 
-          <div className="space-y-2">
-            <h4 className="font-medium">Campaign Details</h4>
-            <p className="text-muted-foreground">{application.opportunity.description}</p>
-          </div>
+          {application.opportunity?.description && (
+            <div className="space-y-2">
+              <h4 className="font-medium">Campaign Details</h4>
+              <p className="text-muted-foreground">{application.opportunity.description}</p>
+            </div>
+          )}
 
           {application.cover_letter && (
             <div className="space-y-2">
@@ -70,12 +78,12 @@ const ApplicationDetailsModal = ({ isOpen, onClose, application }: ApplicationDe
           )}
 
           <div className="flex flex-wrap gap-2">
-            {application.opportunity.payment_details && (
+            {application.opportunity?.payment_details && (
               <Badge variant="secondary" className="px-3 py-1">
                 💰 {application.opportunity.payment_details}
               </Badge>
             )}
-            {application.opportunity.compensation_details && (
+            {application.opportunity?.compensation_details && (
               <Badge variant="secondary" className="px-3 py-1">
                 🎁 {application.opportunity.compensation_details}
               </Badge>
