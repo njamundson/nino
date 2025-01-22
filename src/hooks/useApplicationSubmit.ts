@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 
 interface UseApplicationSubmitProps {
   opportunityId: string;
@@ -11,7 +10,6 @@ interface UseApplicationSubmitProps {
 export const useApplicationSubmit = ({ opportunityId, onClose }: UseApplicationSubmitProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const submitApplication = async (coverLetter: string) => {
     setIsSubmitting(true);
@@ -99,7 +97,6 @@ export const useApplicationSubmit = ({ opportunityId, onClose }: UseApplicationS
       });
       
       onClose();
-      navigate("/creator/projects");
       
     } catch (error) {
       toast({
