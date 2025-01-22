@@ -7,23 +7,32 @@ import { useToast } from "@/hooks/use-toast";
 import ProposalStatusBadge from "./ProposalStatusBadge";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 
-interface ProposalCardProps {
-  application: {
-    id: string;
-    status: string;
-    opportunity: {
-      id: string;
-      title: string;
-      location: string | null;
-      image_url: string | null;
-      brand: {
-        company_name: string | null;
-      } | null;
-    };
-  };
+interface Brand {
+  company_name: string | null;
 }
 
-const ProposalCard = ({ application }: ProposalCardProps) => {
+interface Opportunity {
+  id: string;
+  title: string;
+  location: string | null;
+  image_url: string | null;
+  brand: Brand | null;
+}
+
+interface Application {
+  id: string;
+  status: string;
+  opportunity: Opportunity;
+  cover_letter?: string | null;
+}
+
+interface ProposalCardProps {
+  application: Application;
+  type: 'proposal' | 'application';
+  onUpdateStatus?: (applicationId: string, status: 'accepted' | 'rejected') => void;
+}
+
+const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);

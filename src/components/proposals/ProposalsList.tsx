@@ -3,8 +3,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ProposalCard from "./ProposalCard";
 import { FileSpreadsheet, Send } from "lucide-react";
 
+interface Application {
+  id: string;
+  status: string;
+  opportunity: {
+    id: string;
+    title: string;
+    location: string | null;
+    image_url: string | null;
+    brand: {
+      company_name: string | null;
+    } | null;
+  };
+}
+
 interface ProposalsListProps {
-  applications: any[];
+  applications: Application[];
   isLoading: boolean;
   onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
   type: 'proposal' | 'application';
