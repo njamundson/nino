@@ -11,16 +11,21 @@ export const useApplications = (brandId?: string) => {
         .from('applications')
         .select(`
           *,
-          opportunity:opportunities (
+          opportunity:opportunities!inner (
             *,
-            brand:brands (*)
+            brand:brands!inner (*)
           ),
           creator:creators (
             *,
-            user_id
+            user_id,
+            profile:profiles (
+              first_name,
+              last_name
+            )
           )
         `)
-        .eq('status', 'pending');
+        .eq('status', 'pending')
+        .eq('opportunities.brand_id', brandId);
 
       if (error) {
         console.error('Error fetching applications:', error);
