@@ -73,12 +73,12 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         
         <div className="absolute bottom-20 left-6 right-6 text-white">
-          <p className="text-sm font-medium text-white/90 mb-1">
-            {opportunity.brand?.company_name || "Brand"}
-          </p>
-          <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
-            {opportunity.title}
+          <h3 className="text-2xl font-semibold leading-tight mb-2">
+            {opportunity.brand?.company_name || "Unknown Brand"}
           </h3>
+          <p className="text-sm text-white/90">
+            {opportunity.title}
+          </p>
           {opportunity.location && (
             <p className="text-sm text-white/80 mt-2">
               📍 {opportunity.location}
