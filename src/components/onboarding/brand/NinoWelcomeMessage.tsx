@@ -33,22 +33,22 @@ const NinoWelcomeMessage = () => {
 
         // Only show welcome message and redirect to dashboard if onboarding is complete
         if (brand.company_name) {
-          // Start the exit animation after 2 seconds
-          const animationTimeout = setTimeout(() => {
+          // Start fade out after 2 seconds
+          const fadeTimeout = setTimeout(() => {
             setIsVisible(false);
           }, 2000);
 
-          // Show toast and redirect after the exit animation
+          // Navigate after fade out animation completes
           const redirectTimeout = setTimeout(() => {
             toast({
               title: "Welcome!",
               description: "Your brand profile has been set up successfully.",
             });
             navigate('/brand/dashboard', { replace: true });
-          }, 2600); // 2 seconds + 0.6 seconds for exit animation
+          }, 2500); // 2 seconds + 0.5 seconds for fade out
 
           return () => {
-            clearTimeout(animationTimeout);
+            clearTimeout(fadeTimeout);
             clearTimeout(redirectTimeout);
           };
         }
@@ -69,7 +69,7 @@ const NinoWelcomeMessage = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
         >
           <motion.img 
             src="/lovable-uploads/7f312cab-6543-4c35-bf2f-5e8e832f9fa9.png"
@@ -79,7 +79,7 @@ const NinoWelcomeMessage = () => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ 
-              duration: 0.6,
+              duration: 0.5,
               ease: "easeInOut"
             }}
           />
