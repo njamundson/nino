@@ -25,7 +25,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
         if (sessionError) {
           console.error('Session error:', sessionError);
-          await supabase.auth.signOut(); // Clear any invalid session data
+          await supabase.auth.signOut();
           toast({
             title: "Authentication Required",
             description: "Please sign in to continue.",
@@ -63,7 +63,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           .maybeSingle();
 
         if (brandError) {
-          console.error('Error fetching brand profile:', brandError);
+          console.error('Error checking brand profile:', brandError);
           toast({
             title: "Error",
             description: "Could not verify brand access. Please try again.",
@@ -78,7 +78,26 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
         if (!brand) {
           console.log('No brand profile found');
-          navigate('/', { replace: true });
+          // Create a new brand profile
+          const { error: createError } = await supabase
+            .from('brands')
+            .insert({
+              user_id: session.user.id,
+              onboarding_completed: false
+            });
+
+          if (createError) {
+            console.error('Error creating brand profile:', createError);
+            toast({
+              title: "Error",
+              description: "Could not create brand profile. Please try again.",
+              variant: "destructive",
+            });
+            navigate('/', { replace: true });
+            return;
+          }
+
+          navigate('/onboarding/brand', { replace: true });
           return;
         }
 
