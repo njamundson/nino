@@ -18,6 +18,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {
+          console.log("No user found, redirecting to auth");
           setIsAuthenticated(false);
           setLoading(false);
           return;
@@ -37,8 +38,18 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
+        // If no creator record exists, we still authenticate but set onboarding as incomplete
+        if (!creator) {
+          console.log("No creator record found, redirecting to onboarding");
+          setIsAuthenticated(true);
+          setOnboardingCompleted(false);
+          setLoading(false);
+          return;
+        }
+
+        console.log("Creator found:", creator);
         setIsAuthenticated(true);
-        setOnboardingCompleted(creator?.onboarding_completed || false);
+        setOnboardingCompleted(creator.onboarding_completed || false);
         setLoading(false);
       } catch (error) {
         console.error('Error in checkAuth:', error);
