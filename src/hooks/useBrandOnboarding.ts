@@ -14,7 +14,7 @@ export const useBrandOnboarding = () => {
     user_id: '',
     company_name: '',
     brand_type: '',
-    description: '',
+    description: null,
     website: null,
     instagram: null,
     location: '',
@@ -29,14 +29,28 @@ export const useBrandOnboarding = () => {
     setBrandData(prev => ({ ...prev, [field]: value }));
   };
 
+  const validateBasicInfo = () => {
+    // Check if company_name is filled (trimmed to handle whitespace-only input)
+    const isCompanyNameValid = brandData.company_name.trim().length > 0;
+    
+    // Check if brand_type is selected
+    const isBrandTypeValid = brandData.brand_type.trim().length > 0;
+
+    if (!isCompanyNameValid || !isBrandTypeValid) {
+      toast({
+        title: "Required Fields Missing",
+        description: "Please fill in both brand name and type.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleNext = () => {
     if (currentStep === 'basic') {
-      if (!brandData.company_name || !brandData.brand_type) {
-        toast({
-          title: "Required Fields Missing",
-          description: "Please fill in all required fields.",
-          variant: "destructive",
-        });
+      if (!validateBasicInfo()) {
         return;
       }
       setCurrentStep('details');
@@ -70,23 +84,25 @@ export const useBrandOnboarding = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      // If brand exists, update it. Otherwise, insert new brand
-      const { error } = existingBrand 
-        ? await supabase
-            .from('brands')
-            .update({
-              ...brandData,
-              user_id: user.id,
-              profile_image_url: profileImage
-            })
-            .eq('id', existingBrand.id)
-        : await supabase
-            .from('brands')
-            .insert({
-              ...brandData,
-              user_id: user.id,
-              profile_image_url: profileImage
-            });
+      const brandPayload = {
+        ...brandData,
+        user_id: user.id,
+        profile_image_url: profileImage
+      };
+
+      let error;
+      if (existingBrand) {
+        // Update existing brand
+        ({ error } = await supabase
+          .from('brands')
+          .update(brandPayload)
+          .eq('id', existingBrand.id));
+      } else {
+        // Insert new brand
+        ({ error } = await supabase
+          .from('brands')
+          .insert(brandPayload));
+      }
 
       if (error) throw error;
 
