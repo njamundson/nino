@@ -107,10 +107,8 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     profile: creator.profile
   };
 
-  // Get the display name - either full name or "Anonymous Creator" if no name is provided
-  const displayName = creator.profile?.first_name || creator.profile?.last_name 
-    ? `${creator.profile.first_name || ''} ${creator.profile.last_name || ''}`.trim()
-    : 'Anonymous Creator';
+  // Since name is required during onboarding, we can safely display the full name
+  const fullName = `${creator.profile?.first_name} ${creator.profile?.last_name}`.trim();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -119,7 +117,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {displayName}
+                {fullName}
               </DialogTitle>
             </DialogHeader>
             
