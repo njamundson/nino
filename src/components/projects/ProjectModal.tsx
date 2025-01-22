@@ -41,9 +41,10 @@ interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   opportunity: Opportunity;
+  isCompleted?: boolean;
 }
 
-const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
+const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: ProjectModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -92,6 +93,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
           startDate={opportunity.start_date}
           endDate={opportunity.end_date}
           onApply={handleApply}
+          isCompleted={isCompleted}
         />
 
         <div className="overflow-y-auto px-6 py-4 relative h-full">
@@ -118,15 +120,17 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
             )}
           </div>
           
-          <div className="fixed bottom-6 right-6">
-            <Button 
-              onClick={handleApply}
-              size="lg"
-              className="bg-[#a55549] hover:bg-[#a55549]/90 text-white rounded-full px-8 transition-all"
-            >
-              Apply Now
-            </Button>
-          </div>
+          {!isCompleted && (
+            <div className="fixed bottom-6 right-6">
+              <Button 
+                onClick={handleApply}
+                size="lg"
+                className="bg-[#a55549] hover:bg-[#a55549]/90 text-white rounded-full px-8 transition-all"
+              >
+                Apply Now
+              </Button>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
