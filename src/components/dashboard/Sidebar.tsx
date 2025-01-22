@@ -16,12 +16,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/creator/dashboard" },
@@ -53,6 +55,12 @@ const Sidebar = () => {
     }
   };
 
+  const handleNavigation = () => {
+    if (isMobile) {
+      setIsOpen(false);
+    }
+  };
+
   const SidebarContent = () => (
     <div className="h-full bg-white rounded-xl shadow-md flex flex-col">
       <div className="p-6 border-b">
@@ -71,6 +79,7 @@ const Sidebar = () => {
             <li key={item.path}>
               <Link
                 to={item.path}
+                onClick={handleNavigation}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors",
                   location.pathname === item.path && "bg-gray-50 text-nino-primary font-medium"
@@ -99,7 +108,7 @@ const Sidebar = () => {
   if (isMobile) {
     return (
       <>
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="fixed top-4 left-4 z-50">
               <Menu className="h-6 w-6" />
