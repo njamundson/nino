@@ -1,5 +1,7 @@
 import { useCreatorSettings } from "@/hooks/useCreatorSettings";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Loader2, ChevronLeft } from "lucide-react";
 import CreatorTypeSelect from "@/components/onboarding/creator/professional-info/CreatorTypeSelect";
 import SkillsSelection from "@/components/onboarding/creator/professional-info/SkillsSelection";
