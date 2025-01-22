@@ -42,8 +42,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  const handleViewDetails = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleViewDetails = () => {
     setIsLoading(true);
     try {
       navigate(`/creator/projects/${opportunity.id}`);
@@ -88,19 +87,24 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
           )}
         </div>
 
-        <Button
-          size="icon"
-          variant="secondary"
-          className="absolute bottom-6 right-6 rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
-          onClick={handleViewDetails}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="h-4 w-4 text-gray-900" />
-          )}
-        </Button>
+        <div className="absolute bottom-6 right-6">
+          <Button
+            size="icon"
+            variant="secondary"
+            className="rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewDetails();
+            }}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4 text-gray-900" />
+            )}
+          </Button>
+        </div>
       </Card>
 
       <ProjectModal 
