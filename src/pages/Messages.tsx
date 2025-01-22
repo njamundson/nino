@@ -1,14 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import ChatList from "@/components/messages/ChatList";
 import { ChatContainer } from "@/components/messages/ChatContainer";
+import { Message } from "@/types/message";
 import { useMessages } from "@/hooks/useMessages";
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("user");
-  const [selectedChat, setSelectedChat] = useState<string | null>(userId);
-  
   const { 
     messages, 
     newMessage,
@@ -18,29 +16,32 @@ const Messages = () => {
     editingMessage,
     setEditingMessage,
     handleSendMessage 
-  } = useMessages(selectedChat);
+  } = useMessages(userId);
+
+  useEffect(() => {
+    if (userId && messages && messages.length > 0) {
+      const unreadMessages = messages.filter(
+        (msg) => !msg.read && msg.sender_id === userId
+      );
+      if (unreadMessages.length > 0) {
+        // Handle marking messages as read through Supabase if needed
+      }
+    }
+  }, [userId, messages]);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] gap-4">
-      <div className="w-80 bg-white rounded-xl shadow-sm overflow-hidden">
-        <ChatList 
-          onSelectChat={setSelectedChat} 
-          selectedUserId={selectedChat} 
-        />
-      </div>
-      <div className="flex-1">
-        <ChatContainer
-          selectedChat={selectedChat}
-          messages={messages}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          handleSendMessage={handleSendMessage}
-          isRecording={isRecording}
-          setIsRecording={setIsRecording}
-          editingMessage={editingMessage}
-          setEditingMessage={setEditingMessage}
-        />
-      </div>
+    <div className="h-screen bg-gray-50">
+      <ChatContainer
+        selectedChat={userId}
+        messages={messages}
+        newMessage={newMessage}
+        setNewMessage={setNewMessage}
+        handleSendMessage={handleSendMessage}
+        isRecording={isRecording}
+        setIsRecording={setIsRecording}
+        editingMessage={editingMessage}
+        setEditingMessage={setEditingMessage}
+      />
     </div>
   );
 };
