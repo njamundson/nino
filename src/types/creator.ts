@@ -13,6 +13,7 @@ export interface CreatorData {
     first_name: string | null;
     last_name: string | null;
   } | null;
+  profile_image_url: string | null;
 }
 
 export type CreatorType = 'solo' | 'couple' | 'family' | 'group';

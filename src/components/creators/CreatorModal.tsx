@@ -103,11 +103,9 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     location: creator.location || '',
     profileImage: creator.profile_image_url,
     creatorType: 'solo',
-    profile: creator.profile
+    profile: creator.profile,
+    profile_image_url: creator.profile_image_url
   };
-
-  // Display the creator's name which is stored in first_name
-  const creatorName = creator.profile?.first_name || '';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -116,7 +114,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {creatorName}
+                {creator.profile?.first_name}
               </DialogTitle>
             </DialogHeader>
             
