@@ -34,7 +34,6 @@ const BrandSidebar = () => {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Clear local storage
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('brandData');
       
@@ -55,8 +54,8 @@ const BrandSidebar = () => {
   };
 
   return (
-    <div className="w-64 h-screen sticky top-0 p-4">
-      <div className="bg-white rounded-xl shadow-sm h-full flex flex-col">
+    <div className="h-screen sticky top-0 w-64 p-4">
+      <div className="h-full bg-white rounded-xl shadow-sm flex flex-col">
         <div className="p-6 border-b">
           <Link to="/brand/dashboard" className="flex items-center">
             <motion.img 
@@ -69,7 +68,7 @@ const BrandSidebar = () => {
           </Link>
         </div>
         
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 overflow-hidden">
           {menuItems.map((item) => (
             <Link
               key={item.path}

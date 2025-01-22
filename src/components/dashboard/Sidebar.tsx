@@ -49,7 +49,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 m-4">
+    <div className="h-screen sticky top-0 w-64 p-4">
       <div className="h-full bg-white rounded-xl shadow-md flex flex-col">
         <div className="p-6 border-b">
           <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ const Sidebar = () => {
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-4">
+        <nav className="flex-1 px-4 py-4 overflow-hidden">
           <ul className="space-y-1">
             {menuItems.map((item) => (
               <li key={item.path}>
