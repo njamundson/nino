@@ -20,28 +20,28 @@ const ProposalsTabs = ({
 
   return (
     <Tabs defaultValue="pending" className="w-full">
-      <TabsList className={`grid w-full ${isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:w-[400px]'} p-1 rounded-full bg-nino-bg`}>
+      <TabsList className="grid w-full grid-cols-2 p-1 rounded-full bg-nino-bg">
         <TabsTrigger 
           value="pending" 
-          className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
+          className="rounded-full data-[state=active]:bg-white flex items-center justify-center gap-2 transition-all duration-300 px-3 py-2"
         >
-          <Inbox className="w-4 h-4" />
-          <span className={`${isMobile ? 'text-sm' : ''}`}>
-            Pending Proposals ({pendingProposals.length})
+          <Inbox className="w-4 h-4 shrink-0" />
+          <span className={`${isMobile ? 'text-xs' : 'text-sm'} whitespace-nowrap`}>
+            Pending ({pendingProposals.length})
           </span>
         </TabsTrigger>
         <TabsTrigger 
           value="applications" 
-          className="rounded-full data-[state=active]:bg-white flex items-center gap-2 transition-all duration-300"
+          className="rounded-full data-[state=active]:bg-white flex items-center justify-center gap-2 transition-all duration-300 px-3 py-2"
         >
-          <Send className="w-4 h-4" />
-          <span className={`${isMobile ? 'text-sm' : ''}`}>
-            My Applications ({myApplications.length})
+          <Send className="w-4 h-4 shrink-0" />
+          <span className={`${isMobile ? 'text-xs' : 'text-sm'} whitespace-nowrap`}>
+            Applied ({myApplications.length})
           </span>
         </TabsTrigger>
       </TabsList>
       
-      <TabsContent value="pending" className={`${isMobile ? 'mt-4' : 'mt-6'}`}>
+      <TabsContent value="pending" className="mt-4">
         <ProposalsList
           applications={pendingProposals}
           isLoading={isLoading}
@@ -50,7 +50,7 @@ const ProposalsTabs = ({
         />
       </TabsContent>
       
-      <TabsContent value="applications" className={`${isMobile ? 'mt-4' : 'mt-6'}`}>
+      <TabsContent value="applications" className="mt-4">
         <ProposalsList
           applications={myApplications}
           isLoading={isLoading}

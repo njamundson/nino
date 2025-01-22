@@ -42,19 +42,21 @@ const Proposals = () => {
   ) || [];
 
   return (
-    <div className={`${isMobile ? 'p-4' : 'p-8'} max-w-7xl mx-auto`}>
-      <PageHeader 
-        title="Proposals" 
-        description="Track the status of your project applications and manage brand invitations"
-      />
-      
-      <div className={`${isMobile ? 'mt-4' : 'mt-8'}`}>
-        <ProposalsTabs
-          pendingProposals={pendingProposals}
-          myApplications={myApplications}
-          isLoading={isLoadingApplications}
-          onUpdateStatus={handleUpdateApplicationStatus}
+    <div className="min-h-screen bg-white">
+      <div className={`${isMobile ? 'px-4 py-6' : 'p-8'} max-w-7xl mx-auto`}>
+        <PageHeader 
+          title="Proposals" 
+          description="Track the status of your project applications and manage brand invitations"
         />
+        
+        <div className="mt-6">
+          <ProposalsTabs
+            pendingProposals={pendingProposals}
+            myApplications={myApplications}
+            isLoading={isLoadingApplications}
+            onUpdateStatus={handleUpdateApplicationStatus}
+          />
+        </div>
       </div>
     </div>
   );
