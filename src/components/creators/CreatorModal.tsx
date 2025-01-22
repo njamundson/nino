@@ -103,11 +103,10 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     location: creator.location || '',
     profileImage: creator.profile_image_url,
     creatorType: 'solo',
-    profile: creator.profile,
+    profile: creator.profile || null,
     profile_image_url: creator.profile_image_url
   };
 
-  // Get display name from profile, prioritizing full name if available
   const displayName = creator.profile?.first_name 
     ? `${creator.profile.first_name}${creator.profile.last_name ? ' ' + creator.profile.last_name : ''}`
     : 'Creator';
