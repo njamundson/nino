@@ -15,7 +15,7 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
 
   return (
     <div className="flex min-h-screen bg-nino-bg">
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       <div className={`flex-1 p-4 md:p-8 ${isMobile ? 'w-full' : ''}`}>
         {!isDashboard && <DashboardHeader />}
         <main className="animate-fadeIn">

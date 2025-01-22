@@ -7,7 +7,8 @@ import {
   MessageSquare,
   Settings,
   LogOut,
-  CheckCircle
+  CheckCircle,
+  Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +16,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -98,16 +98,18 @@ const Sidebar = () => {
 
   if (isMobile) {
     return (
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="fixed top-4 left-4 z-50">
-            <Menu className="h-6 w-6" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-72">
-          <SidebarContent />
-        </SheetContent>
-      </Sheet>
+      <>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="fixed top-4 left-4 z-50">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-72">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      </>
     );
   }
 
