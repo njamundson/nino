@@ -58,9 +58,6 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
           className="h-40 resize-none"
           required
         />
-        <p className="text-sm text-gray-500 mt-1">
-          Write a compelling cover letter that highlights your relevant experience and enthusiasm for this opportunity.
-        </p>
       </div>
 
       <div className="flex justify-between pt-4">
