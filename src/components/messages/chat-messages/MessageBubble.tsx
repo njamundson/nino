@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Message } from "../ChatMessages";
+import { Message } from "@/types/message";
 import { Smile, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
