@@ -20,6 +20,21 @@ const BasicInfoSettings = () => {
     setCreatorData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fullName = e.target.value;
+    const names = fullName.trim().split(/\s+/);
+    
+    if (names.length >= 2) {
+      const firstName = names[0];
+      const lastName = names.slice(1).join(' ');
+      handleUpdateField('firstName', firstName);
+      handleUpdateField('lastName', lastName);
+    } else {
+      handleUpdateField('firstName', fullName);
+      handleUpdateField('lastName', '');
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto pt-12 px-6 pb-24">
       <h1 className="text-3xl font-semibold text-gray-900 mb-8">Basic Information</h1>
@@ -33,23 +48,14 @@ const BasicInfoSettings = () => {
         </div>
 
         <div className="bg-white rounded-2xl p-8 shadow-sm space-y-6">
-          <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">First Name</Label>
-              <Input
-                value={creatorData.firstName}
-                onChange={(e) => handleUpdateField("firstName", e.target.value)}
-                className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-black rounded-xl"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-700">Last Name</Label>
-              <Input
-                value={creatorData.lastName}
-                onChange={(e) => handleUpdateField("lastName", e.target.value)}
-                className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-black rounded-xl"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-700">Full Name or Creator Name</Label>
+            <Input
+              value={`${creatorData.firstName}${creatorData.lastName ? ' ' + creatorData.lastName : ''}`}
+              onChange={handleFullNameChange}
+              className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-black rounded-xl"
+              placeholder="Enter your full name"
+            />
           </div>
 
           <div className="space-y-2">
