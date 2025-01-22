@@ -45,16 +45,28 @@ export const useCampaignSubmit = () => {
         return;
       }
 
+      // Get the brand_id for the current user
       const { data: brandData, error: brandError } = await supabase
         .from("brands")
         .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (brandError) throw brandError;
-      if (!brandData) throw new Error("No brand found for user");
+      if (brandError) {
+        console.error("Brand error:", brandError);
+        throw brandError;
+      }
+      
+      if (!brandData) {
+        toast({
+          title: "Error",
+          description: "No brand found for user",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      const { error: insertError } = await supabase.from("opportunities").insert({
+      const campaignData = {
         brand_id: brandData.id,
         title: formData.title,
         description: formData.description,
@@ -67,11 +79,25 @@ export const useCampaignSubmit = () => {
         start_date: formData.start_date,
         end_date: formData.end_date,
         image_url: uploadedImage,
-      });
+        status: 'open'
+      };
 
-      if (insertError) throw insertError;
+      const { error: insertError } = await supabase
+        .from("opportunities")
+        .insert(campaignData);
+
+      if (insertError) {
+        console.error("Insert error:", insertError);
+        throw insertError;
+      }
 
       setIsSuccessModalOpen(true);
+      
+      // Redirect to campaigns page after successful creation
+      setTimeout(() => {
+        navigate('/brand/campaigns');
+      }, 3000);
+
     } catch (error) {
       console.error("Error submitting campaign:", error);
       toast({
