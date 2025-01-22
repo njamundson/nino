@@ -44,7 +44,8 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
           if (brandError) throw brandError;
           
-          navigate('/onboarding/brand');
+          // Directly navigate to brand dashboard
+          navigate('/brand/dashboard', { replace: true });
         } else {
           const { error: creatorError } = await supabase
             .from('creators')
@@ -54,12 +55,13 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
 
           if (creatorError) throw creatorError;
           
-          navigate('/onboarding/creator');
+          // Directly navigate to creator dashboard
+          navigate('/creator/dashboard', { replace: true });
         }
 
         toast({
           title: "Account created successfully",
-          description: "Please complete your profile setup.",
+          description: "Welcome to your dashboard!",
         });
       }
     } catch (error) {
