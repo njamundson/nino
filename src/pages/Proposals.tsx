@@ -42,7 +42,7 @@ const Proposals = () => {
   ) || [];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <div className={`${isMobile ? 'px-4 py-6' : 'p-8'} max-w-7xl mx-auto`}>
         <PageHeader 
           title="Proposals" 
