@@ -17,7 +17,7 @@ const SubscriptionSettings = () => {
 
   if (isLoading) {
     return (
-      <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm">
+      <Card className="p-6 bg-nino-white rounded-2xl shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)]">
         <div className="flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin" />
         </div>
@@ -26,7 +26,7 @@ const SubscriptionSettings = () => {
   }
 
   return (
-    <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm space-y-6">
+    <Card className="bg-nino-white rounded-2xl p-8 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-6">
       <div className="space-y-2">
         <h3 className="text-xl font-semibold text-nino-text">Subscription</h3>
         <p className="text-sm text-nino-gray">
@@ -36,10 +36,10 @@ const SubscriptionSettings = () => {
         </p>
       </div>
 
-      <div className="p-4 bg-nino-bg rounded-lg">
-        <div className="flex items-center justify-between">
+      <div className="p-4 bg-nino-bg rounded-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h4 className="font-medium">
+            <h4 className="font-medium text-nino-text">
               {subscriptionData?.subscribed ? "Active Subscription" : "Nino Pro"}
             </h4>
             <p className="text-sm text-nino-gray">
@@ -50,7 +50,7 @@ const SubscriptionSettings = () => {
           </div>
           <Button 
             onClick={handleManageSubscription}
-            className="bg-nino-primary hover:bg-nino-primary/90"
+            className="w-full sm:w-auto bg-[#A55549] hover:bg-[#A55549]/90 text-white"
           >
             <CreditCard className="w-4 h-4 mr-2" />
             {subscriptionData?.subscribed ? "Manage Subscription" : "Subscribe Now"}
