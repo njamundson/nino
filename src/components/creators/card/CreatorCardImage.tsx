@@ -8,7 +8,7 @@ interface CreatorCardImageProps {
   onInvite: (creatorId: string) => void;
 }
 
-const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
+const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   const fullName = creator.firstName && creator.lastName 
     ? `${creator.firstName} ${creator.lastName}`.trim()
     : 'Anonymous Creator';
@@ -18,7 +18,7 @@ const CreatorCardImage = ({ creator }: CreatorCardImageProps) => {
       <img
         src={creator.profileImage || '/placeholder.svg'}
         alt={fullName}
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
