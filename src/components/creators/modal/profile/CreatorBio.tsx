@@ -7,7 +7,6 @@ interface CreatorBioProps {
   location: string | null;
   instagram: string | null;
   website: string | null;
-  creatorType?: string;
   onMessageClick?: () => void;
 }
 
@@ -17,7 +16,6 @@ const CreatorBio = ({
   location,
   instagram,
   website,
-  creatorType,
   onMessageClick 
 }: CreatorBioProps) => {
   return (
