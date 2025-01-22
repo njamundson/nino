@@ -5,7 +5,9 @@ import { BrandData } from "@/types/brand";
 
 export const useBrandOnboarding = () => {
   const { toast } = useToast();
+  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
   const [loading, setLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({
     company_name: '',
     brand_type: '',
@@ -20,20 +22,45 @@ export const useBrandOnboarding = () => {
     two_factor_enabled: false
   });
 
-  const onUpdateField = (field: string, value: any) => {
+  const updateField = (field: string, value: any) => {
     setBrandData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleNext = () => {
+    if (currentStep === 'basic') {
+      setCurrentStep('details');
+    } else if (currentStep === 'details') {
+      setCurrentStep('social');
+    } else if (currentStep === 'social') {
+      setCurrentStep('managers');
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep === 'managers') {
+      setCurrentStep('social');
+    } else if (currentStep === 'social') {
+      setCurrentStep('details');
+    } else if (currentStep === 'details') {
+      setCurrentStep('basic');
+    }
   };
 
   const onSubmit = async () => {
     setLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No authenticated user');
+
       const { error } = await supabase
         .from('brands')
-        .insert([brandData]);
+        .insert({
+          ...brandData,
+          user_id: user.id,
+          profile_image_url: profileImage
+        });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       toast({
         title: "Success",
@@ -53,8 +80,14 @@ export const useBrandOnboarding = () => {
 
   return {
     loading,
+    currentStep,
+    setCurrentStep,
+    profileImage,
     brandData,
-    onUpdateField,
+    updateField,
+    setProfileImage,
+    handleNext,
+    handleBack,
     onSubmit,
   };
 };

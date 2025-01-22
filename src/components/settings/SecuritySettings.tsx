@@ -1,46 +1,48 @@
-import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { SecuritySettingsProps } from "@/types/brand";
+
+interface SecuritySettingsProps {
+  sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
+  onUpdateField: (field: string, value: any) => void;
+}
 
 const SecuritySettings = ({
   sms_notifications_enabled,
   two_factor_enabled,
-  onUpdateField
+  onUpdateField,
 }: SecuritySettingsProps) => {
   return (
-    <Card className="p-6 space-y-6">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-medium">SMS Notifications</h3>
-            <p className="text-sm text-gray-500">
-              Receive SMS notifications for important updates
-            </p>
-          </div>
-          <Switch
-            checked={sms_notifications_enabled}
-            onCheckedChange={(checked) =>
-              onUpdateField("sms_notifications_enabled", checked)
-            }
-          />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-0.5">
+          <Label className="text-base">SMS Notifications</Label>
+          <p className="text-sm text-muted-foreground">
+            Receive notifications via SMS
+          </p>
         </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-medium">Two-Factor Authentication</h3>
-            <p className="text-sm text-gray-500">
-              Add an extra layer of security to your account
-            </p>
-          </div>
-          <Switch
-            checked={two_factor_enabled}
-            onCheckedChange={(checked) =>
-              onUpdateField("two_factor_enabled", checked)
-            }
-          />
-        </div>
+        <Switch
+          checked={sms_notifications_enabled}
+          onCheckedChange={(checked) =>
+            onUpdateField("sms_notifications_enabled", checked)
+          }
+        />
       </div>
-    </Card>
+      <div className="flex items-center justify-between">
+        <div className="space-y-0.5">
+          <Label className="text-base">Two Factor Authentication</Label>
+          <p className="text-sm text-muted-foreground">
+            Add an extra layer of security
+          </p>
+        </div>
+        <Switch
+          checked={two_factor_enabled}
+          onCheckedChange={(checked) =>
+            onUpdateField("two_factor_enabled", checked)
+          }
+        />
+      </div>
+    </div>
   );
 };
 

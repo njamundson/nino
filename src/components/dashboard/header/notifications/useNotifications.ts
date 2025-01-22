@@ -21,11 +21,11 @@ export const useNotifications = () => {
         .from('messages')
         .select(`
           *,
-          sender:sender_profile_id(
+          sender:profiles!messages_sender_profile_id_fkey(
             first_name,
             last_name
           ),
-          receiver:receiver_profile_id(
+          receiver:profiles!messages_receiver_profile_id_fkey(
             first_name,
             last_name
           )
