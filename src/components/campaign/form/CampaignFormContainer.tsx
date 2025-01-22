@@ -8,6 +8,7 @@ import Compensation from "../steps/Compensation";
 import SuccessModal from "../SuccessModal";
 import ImageUpload from "../ImageUpload";
 import { useCampaignSubmit } from "@/hooks/useCampaignSubmit";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FormData {
   title: string;
@@ -18,8 +19,8 @@ interface FormData {
   location: string;
   payment_details: string;
   compensation_details: string;
-  startDate: string | null;  // Changed from start_date to match BasicInfo props
-  endDate: string | null;    // Changed from end_date to match BasicInfo props
+  startDate: string | null;
+  endDate: string | null;
 }
 
 const steps = [
@@ -46,27 +47,25 @@ const CampaignFormContainer = () => {
     location: "",
     payment_details: "",
     compensation_details: "",
-    startDate: null,  // Changed from start_date to startDate
-    endDate: null,    // Changed from end_date to endDate
+    startDate: null,
+    endDate: null,
   });
 
   const handleImageUpload = async (file: File) => {
     setIsUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload-attachment', {
+      const { data, error } = await supabase.functions.invoke('upload-attachment', {
+        body: { name: file.name, type: file.type },
         method: 'POST',
-        body: formData,
       });
 
-      if (!response.ok) throw new Error('Upload failed');
+      if (error) throw error;
 
-      const { url } = await response.json();
+      const { url } = data;
       setUploadedImage(url);
     } catch (error) {
       console.error('Error uploading image:', error);
+      throw error;
     } finally {
       setIsUploading(false);
     }
@@ -89,7 +88,6 @@ const CampaignFormContainer = () => {
   };
 
   const handleSubmit = () => {
-    // Transform the data back to snake_case for API submission
     const submissionData = {
       ...formData,
       start_date: formData.startDate,

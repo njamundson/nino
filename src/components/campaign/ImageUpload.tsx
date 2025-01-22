@@ -1,6 +1,7 @@
 import { useRef, type ChangeEvent } from 'react';
 import { Camera, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ImageUploadProps {
   uploadedImage: string | null;
@@ -49,6 +50,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
         description: "Image uploaded successfully",
       });
     } catch (error) {
+      console.error('Error uploading image:', error);
       toast({
         title: "Error",
         description: "Failed to upload image. Please try again.",
