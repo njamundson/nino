@@ -3,10 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import ProposalsTabs from "@/components/proposals/ProposalsTabs";
 import { useApplications } from "@/hooks/useApplications";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Proposals = () => {
   const { toast } = useToast();
   const { data: applications, isLoading: isLoadingApplications } = useApplications();
+  const isMobile = useIsMobile();
 
   const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected') => {
     try {
@@ -30,26 +32,23 @@ const Proposals = () => {
     }
   };
 
-  // Filter applications based on whether they were initiated by the brand (invitations)
-  // or by the creator (applications)
   const pendingProposals = applications?.filter(app => 
     app.status === 'pending' && 
     app.opportunity?.brand?.user_id === app.creator?.user_id
   ) || [];
   
-  // Show all applications initiated by the creator
   const myApplications = applications?.filter(app => 
     app.opportunity?.brand?.user_id !== app.creator?.user_id
   ) || [];
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className={`${isMobile ? 'p-4' : 'p-8'} max-w-7xl mx-auto`}>
       <PageHeader 
         title="Proposals" 
         description="Track the status of your project applications and manage brand invitations"
       />
       
-      <div className="mt-8">
+      <div className={`${isMobile ? 'mt-4' : 'mt-8'}`}>
         <ProposalsTabs
           pendingProposals={pendingProposals}
           myApplications={myApplications}
