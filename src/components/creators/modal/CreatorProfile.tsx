@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorImage from "./profile/CreatorImage";
-import CreatorSocialLinks from "./profile/CreatorSocialLinks";
 
 interface Creator {
   id: string;
@@ -42,11 +41,6 @@ const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfi
             instagram={creator.instagram}
             website={creator.website}
             onMessageClick={onMessageClick}
-          />
-
-          <CreatorSocialLinks 
-            instagram={creator.instagram}
-            website={creator.website}
           />
 
           <div className="mt-auto">
