@@ -86,9 +86,7 @@ const CreatorFilters = ({
     onCreatorTypeChange(null);
     setSelectedCountry("");
     setSelectedRegion("");
-    if (selectedLocations.length > 0) {
-      onLocationChange(selectedLocations[0]);
-    }
+    onLocationChange("");  // Reset location by passing empty string
     selectedSpecialties.forEach(specialty => {
       onSpecialtyChange(specialty);
     });
