@@ -78,6 +78,7 @@ const CreatorProfileModal = ({
       
       // Invalidate queries before navigation
       await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+      await queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
       
       // Navigate after everything is done
       navigate('/brand/bookings');
@@ -88,17 +89,30 @@ const CreatorProfileModal = ({
   };
 
   const handleReject = async () => {
+    if (isProcessing) return;
+    
     try {
       onUpdateStatus('rejected');
       
-      const { error } = await supabase
-        .from('applications')
-        .update({ status: 'rejected' })
-        .eq('creator_id', creator.id);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
 
-      if (error) throw error;
+      // Send rejection message to creator
+      const { error: messageError } = await supabase.from('messages').insert({
+        sender_id: user.id,
+        receiver_id: creator.user_id,
+        content: `I've reviewed your application but unfortunately, we won't be moving forward at this time. Thank you for your interest!`,
+        message_type: 'text'
+      });
 
-      queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+      if (messageError) throw messageError;
+
+      // Success flow
+      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+      await queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
+      
       toast.success("Application rejected");
       onClose();
     } catch (error) {
