@@ -33,7 +33,7 @@ const CreatorOnboarding = () => {
       if (error) throw error;
 
       // Navigate to welcome screen
-      navigate("/onboarding/creator/welcome");
+      navigate("/creator/welcome");
     } catch (error) {
       console.error('Error completing onboarding:', error);
       toast({

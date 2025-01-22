@@ -8,8 +8,17 @@ import Bookings from "@/pages/Bookings";
 import Messages from "@/pages/Messages";
 import Settings from "@/pages/Settings";
 import CompletedProjects from "@/pages/CompletedProjects";
+import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
 
 export const creatorRoutes = [
+  {
+    path: "/creator/welcome",
+    element: (
+      <ProtectedCreatorRoute>
+        <NinoWelcomeMessage />
+      </ProtectedCreatorRoute>
+    ),
+  },
   {
     path: "/creator/dashboard",
     element: (
