@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, ChevronLeft } from "lucide-react";
 import CreatorTypeSelect from "@/components/onboarding/creator/professional-info/CreatorTypeSelect";
 import SkillsSelection from "@/components/onboarding/creator/professional-info/SkillsSelection";
+import LocationField from "@/components/onboarding/creator/basic-info/fields/LocationField";
 
 interface ProfessionalSettingsProps {
   onBack: () => void;
@@ -45,6 +46,11 @@ const ProfessionalSettings = ({ onBack }: ProfessionalSettingsProps) => {
               onUpdateSkills={(skills) => handleUpdateField("specialties", skills)}
             />
           </div>
+
+          <LocationField
+            location={creatorData.location}
+            onUpdateField={handleUpdateField}
+          />
         </div>
 
         <div className="bg-nino-white rounded-2xl p-8 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-6">
