@@ -8,6 +8,7 @@ interface ProjectHeaderProps {
   startDate: string | null;
   endDate: string | null;
   onApply: () => void;
+  isCompleted?: boolean;
 }
 
 const ProjectHeader = ({
@@ -17,6 +18,7 @@ const ProjectHeader = ({
   startDate,
   endDate,
   onApply,
+  isCompleted = false,
 }: ProjectHeaderProps) => {
   return (
     <div className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 border-b border-gray-100 p-8">
