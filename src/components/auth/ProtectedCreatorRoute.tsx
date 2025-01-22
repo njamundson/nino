@@ -18,7 +18,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (!session) {
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
@@ -31,12 +31,13 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
         if (creator) {
           setHasAccess(true);
+          navigate('/creator/dashboard', { replace: true });
         } else {
-          navigate('/onboarding/creator');
+          setHasAccess(true); // Allow access to onboarding
         }
       } catch (error) {
         console.error('Error checking access:', error);
-        navigate('/');
+        navigate('/', { replace: true });
       } finally {
         setIsLoading(false);
       }
