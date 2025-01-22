@@ -8,16 +8,16 @@ interface ChatMessagesProps {
   messages: Message[];
   isTyping?: boolean;
   currentUserId?: string;
-  onReaction: (messageId: string, emoji: string) => void;
-  onDelete: (messageId: string) => void;
+  onReaction?: (messageId: string, emoji: string) => void;
+  onDelete?: (messageId: string) => void;
 }
 
-const ChatMessages = ({
+export const ChatMessages = ({
   messages,
   isTyping,
   currentUserId,
-  onReaction,
-  onDelete,
+  onReaction = () => {},
+  onDelete = () => {},
 }: ChatMessagesProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -60,5 +60,3 @@ const ChatMessages = ({
     </div>
   );
 };
-
-export default ChatMessages;

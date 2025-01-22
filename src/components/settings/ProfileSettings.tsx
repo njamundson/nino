@@ -6,6 +6,12 @@ import NotificationSettings from "./NotificationSettings";
 import SecuritySettings from "./SecuritySettings";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
 
+interface BrandSettings {
+  sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
+  [key: string]: any;
+}
+
 const ProfileSettings = () => {
   const {
     brandData,
@@ -53,7 +59,9 @@ const ProfileSettings = () => {
           <TabsContent value="security">
             <SecuritySettings
               two_factor_enabled={brandData.two_factor_enabled || false}
+              sms_notifications_enabled={brandData.sms_notifications_enabled || false}
               onUpdateField={(field, value) => setBrandData(prev => ({ ...prev, [field]: value }))}
+              loginHistory={[]}
             />
           </TabsContent>
         </Tabs>
