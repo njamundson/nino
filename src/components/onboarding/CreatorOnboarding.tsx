@@ -44,7 +44,11 @@ const CreatorOnboarding = () => {
     }
   };
 
-  return <CreatorOnboardingForm onComplete={handleComplete} />;
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <CreatorOnboardingForm onComplete={handleComplete} />
+    </div>
+  );
 };
 
 export default CreatorOnboarding;
