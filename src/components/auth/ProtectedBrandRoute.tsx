@@ -23,7 +23,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        // Check if user has completed onboarding by looking for their brand profile
+        // Check if user has a brand profile
         const { data: brand } = await supabase
           .from('brands')
           .select('id, company_name')
@@ -33,15 +33,21 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         const isOnboardingRoute = location.pathname.includes('/onboarding');
         const isPaymentRoute = location.pathname.includes('/payment');
 
-        if (brand?.company_name) {
-          // User has completed onboarding
+        if (!brand) {
+          // No brand profile found
+          navigate('/');
+          return;
+        }
+
+        if (brand.company_name) {
+          // Onboarding completed
           if (isOnboardingRoute && !isPaymentRoute) {
             navigate('/brand/dashboard');
           } else {
             setHasAccess(true);
           }
         } else {
-          // User hasn't completed onboarding
+          // Onboarding not completed
           if (!isOnboardingRoute) {
             navigate('/onboarding/brand');
           } else {
