@@ -19,74 +19,76 @@ const ProfessionalSettings = ({ onBack }: ProfessionalSettingsProps) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto pt-12 px-6 pb-24">
-      <div className="flex items-center mb-8">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onBack}
-          className="mr-4"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-        <h1 className="text-3xl font-semibold text-nino-text">Professional & Social</h1>
-      </div>
-      
-      <div className="space-y-8">
-        <div className="bg-nino-white rounded-2xl p-8 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-6">
-          <CreatorTypeSelect
-            creatorType={creatorData.creatorType}
-            onUpdateField={handleUpdateField}
-          />
-
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-nino-text">Skills & Expertise</Label>
-            <SkillsSelection
-              skills={creatorData.specialties}
-              onUpdateSkills={(skills) => handleUpdateField("specialties", skills)}
-            />
-          </div>
-
-          <LocationField
-            location={creatorData.location}
-            onUpdateField={handleUpdateField}
-          />
+    <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-nino-bg">
+      <div className="max-w-2xl mx-auto pt-12 px-6 pb-24">
+        <div className="flex items-center mb-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="mr-4"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+          <h1 className="text-3xl font-semibold text-nino-text">Professional & Social</h1>
         </div>
+        
+        <div className="space-y-8">
+          <div className="bg-nino-white rounded-2xl p-8 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-6">
+            <CreatorTypeSelect
+              creatorType={creatorData.creatorType}
+              onUpdateField={handleUpdateField}
+            />
 
-        <div className="bg-nino-white rounded-2xl p-8 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-6">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-nino-text">Instagram Username</Label>
-            <Input
-              value={creatorData.instagram}
-              onChange={(e) => handleUpdateField("instagram", e.target.value)}
-              className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-nino-primary rounded-xl"
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-nino-text">Skills & Expertise</Label>
+              <SkillsSelection
+                skills={creatorData.specialties}
+                onUpdateSkills={(skills) => handleUpdateField("specialties", skills)}
+              />
+            </div>
+
+            <LocationField
+              location={creatorData.location}
+              onUpdateField={handleUpdateField}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-nino-text">Website</Label>
-            <Input
-              value={creatorData.website}
-              onChange={(e) => handleUpdateField("website", e.target.value)}
-              className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-nino-primary rounded-xl"
-            />
+          <div className="bg-nino-white rounded-2xl p-8 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-6">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-nino-text">Instagram Username</Label>
+              <Input
+                value={creatorData.instagram}
+                onChange={(e) => handleUpdateField("instagram", e.target.value)}
+                className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-nino-primary rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-nino-text">Website</Label>
+              <Input
+                value={creatorData.website}
+                onChange={(e) => handleUpdateField("website", e.target.value)}
+                className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-nino-primary rounded-xl"
+              />
+            </div>
           </div>
+
+          <Button
+            onClick={handleSave}
+            disabled={loading}
+            className="w-full bg-nino-primary hover:bg-nino-primary/90 text-nino-white h-12"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving Changes...
+              </>
+            ) : (
+              "Save Changes"
+            )}
+          </Button>
         </div>
-
-        <Button
-          onClick={handleSave}
-          disabled={loading}
-          className="w-full bg-nino-primary hover:bg-nino-primary/90 text-nino-white h-12"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Saving Changes...
-            </>
-          ) : (
-            "Save Changes"
-          )}
-        </Button>
       </div>
     </div>
   );
