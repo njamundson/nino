@@ -5,8 +5,13 @@ import ProfessionalInfoStep from './ProfessionalInfoStep';
 import SocialLinksStep from './SocialLinksStep';
 import OnboardingNavigation from './navigation/OnboardingNavigation';
 import { useCreatorOnboarding } from '@/hooks/useCreatorOnboarding';
+import { CreatorData } from '@/types/creator';
 
-const CreatorOnboardingForm = () => {
+interface CreatorOnboardingFormProps {
+  onComplete: (data: CreatorData) => Promise<void>;
+}
+
+const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
   const {
     currentStep,
     creatorData,
@@ -27,14 +32,16 @@ const CreatorOnboardingForm = () => {
             location={creatorData.location}
             profileImage={creatorData.profileImage}
             onUpdateField={updateField}
+            onUpdateImage={(url) => updateField('profileImage', url)}
           />
         );
       case 'professional':
         return (
           <ProfessionalInfoStep
             creatorType={creatorData.creatorType}
-            specialties={creatorData.specialties}
+            skills={creatorData.specialties}
             onUpdateField={updateField}
+            onUpdateSkills={(skills) => updateField('specialties', skills)}
           />
         );
       case 'social':
@@ -50,6 +57,13 @@ const CreatorOnboardingForm = () => {
     }
   };
 
+  const handleFormComplete = async () => {
+    const success = await handleComplete();
+    if (success) {
+      await onComplete(creatorData);
+    }
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto p-6">
       {renderStep()}
@@ -57,7 +71,8 @@ const CreatorOnboardingForm = () => {
         currentStep={currentStep}
         onNext={handleNext}
         onBack={handleBack}
-        onComplete={handleComplete}
+        onComplete={handleFormComplete}
+        isLastStep={currentStep === 'social'}
       />
     </Card>
   );

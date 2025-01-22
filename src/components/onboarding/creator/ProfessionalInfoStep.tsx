@@ -1,11 +1,12 @@
 import { Label } from "@/components/ui/label";
 import CreatorTypeSelect from "./professional-info/CreatorTypeSelect";
 import SkillsSelection from "./professional-info/SkillsSelection";
+import { CreatorType } from "@/types/creator";
 
 interface ProfessionalInfoStepProps {
-  creatorType: string;
+  creatorType: CreatorType;
   skills: string[];
-  onUpdateField: (field: string, value: string) => void;
+  onUpdateField: (field: string, value: any) => void;
   onUpdateSkills: (skills: string[]) => void;
 }
 

@@ -4,6 +4,7 @@ interface OnboardingNavigationProps {
   currentStep: string;
   onBack: () => void;
   onNext: () => void;
+  onComplete: () => Promise<void>;
   isLastStep: boolean;
 }
 
@@ -11,6 +12,7 @@ const OnboardingNavigation = ({
   currentStep,
   onBack,
   onNext,
+  onComplete,
   isLastStep
 }: OnboardingNavigationProps) => {
   return (
@@ -23,7 +25,7 @@ const OnboardingNavigation = ({
         Back
       </Button>
       <Button
-        onClick={onNext}
+        onClick={isLastStep ? onComplete : onNext}
         variant="default"
         type="button"
       >
