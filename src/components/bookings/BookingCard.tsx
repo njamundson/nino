@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MessageSquare, Calendar } from "lucide-react";
+import { MessageSquare, Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 interface BookingCardProps {
@@ -11,6 +11,9 @@ interface BookingCardProps {
       status: string;
       start_date: string | null;
       end_date: string | null;
+      location: string | null;
+      payment_details: string | null;
+      compensation_details: string | null;
     };
     creator: {
       bio: string | null;
@@ -33,75 +36,88 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
     'Anonymous Creator';
 
   return (
-    <Card className="p-6 border rounded-lg space-y-4 hover:border-nino-primary transition-colors">
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
-            {booking.creator.profile_image_url ? (
-              <img 
-                src={booking.creator.profile_image_url} 
-                alt={creatorName}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-nino-primary/10 text-nino-primary font-medium">
+    <Card 
+      className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
+    >
+      <div className="relative h-full">
+        {/* Creator Image */}
+        <div className="h-full w-full">
+          {booking.creator.profile_image_url ? (
+            <img 
+              src={booking.creator.profile_image_url} 
+              alt={creatorName}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="h-full w-full bg-nino-primary/10 flex items-center justify-center">
+              <span className="text-4xl font-medium text-nino-primary">
                 {creatorName.split(' ').map(n => n[0]).join('')}
-              </div>
-            )}
-          </div>
-          <div>
-            <h3 className="text-lg font-medium">{booking.opportunity.title}</h3>
-            <p className="text-sm text-muted-foreground">
-              with {creatorName}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+
+        {/* Content */}
+        <div className="absolute bottom-20 left-6 right-6 text-white">
+          <p className="text-sm font-medium text-white/90 mb-1">
+            {creatorName}
+          </p>
+          <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
+            {booking.opportunity.title}
+          </h3>
+          {booking.opportunity.location && (
+            <p className="text-sm text-white/80 mt-2 flex items-center gap-1">
+              <MapPin className="w-4 h-4" />
+              {booking.opportunity.location}
             </p>
-          </div>
+          )}
+          {(booking.opportunity.payment_details || booking.opportunity.compensation_details) && (
+            <div className="flex gap-2 mt-2">
+              {booking.opportunity.payment_details && (
+                <Badge variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-0">
+                  💰 {booking.opportunity.payment_details}
+                </Badge>
+              )}
+              {booking.opportunity.compensation_details && (
+                <Badge variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-0">
+                  🎁 {booking.opportunity.compensation_details}
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
-        <Badge variant="outline" className="capitalize">
-          {booking.opportunity.status}
-        </Badge>
-      </div>
 
-      <p className="text-sm text-muted-foreground">
-        {booking.creator.bio || "No bio available"}
-      </p>
-
-      {booking.creator.specialties && booking.creator.specialties.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {booking.creator.specialties.map((specialty: string, index: number) => (
-            <Badge 
-              key={index}
-              variant="secondary"
-              className="bg-nino-primary/10 text-nino-primary"
-            >
-              {specialty}
-            </Badge>
-          ))}
-        </div>
-      )}
-
-      <div className="flex items-center justify-between pt-2 border-t">
-        <div className="flex items-center gap-2">
+        {/* Action Buttons */}
+        <div className="absolute bottom-6 right-6 flex gap-2">
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={onViewCreator}
+            className="bg-white/90 hover:bg-white text-gray-900 transition-all duration-300 hover:scale-105 shadow-md"
           >
             View Creator
           </Button>
           <Button
-            variant="default"
+            variant="secondary"
             size="sm"
             onClick={onChatClick}
-            className="flex items-center gap-2"
+            className="bg-white/90 hover:bg-white text-gray-900 transition-all duration-300 hover:scale-105 shadow-md"
           >
-            <MessageSquare className="w-4 h-4" />
+            <MessageSquare className="w-4 h-4 mr-2" />
             Chat
           </Button>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Calendar className="w-4 h-4" />
-          <span>Booked on {formatDate(booking.created_at)}</span>
-        </div>
+
+        {/* Status Badge */}
+        <Badge 
+          variant="secondary" 
+          className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-900 capitalize shadow-md"
+        >
+          {booking.opportunity.status}
+        </Badge>
       </div>
     </Card>
   );

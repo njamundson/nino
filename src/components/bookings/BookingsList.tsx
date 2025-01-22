@@ -28,27 +28,18 @@ const BookingsList = ({ bookings, onChatClick, onViewCreator }: BookingsListProp
   }
 
   return (
-    <Card className="p-8">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-nino-text">Active Bookings</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage your active collaborations and communicate with creators
-        </p>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {activeBookings.map((booking: any) => (
+          <BookingCard
+            key={booking.id}
+            booking={booking}
+            onChatClick={() => onChatClick(booking.creator.user_id)}
+            onViewCreator={() => onViewCreator(booking.creator)}
+          />
+        ))}
       </div>
-
-      <ScrollArea className="h-[600px] pr-4">
-        <div className="space-y-6">
-          {activeBookings.map((booking: any) => (
-            <BookingCard
-              key={booking.id}
-              booking={booking}
-              onChatClick={() => onChatClick(booking.creator.user_id)}
-              onViewCreator={() => onViewCreator(booking.creator)}
-            />
-          ))}
-        </div>
-      </ScrollArea>
-    </Card>
+    </div>
   );
 };
 
