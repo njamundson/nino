@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface ProtectedCreatorRouteProps {
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
@@ -19,31 +19,36 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (!session) {
-          navigate('/', { replace: true });
+          navigate('/');
           return;
         }
 
-        // Check if user has a creator profile
+        // Check if user has completed onboarding by looking for their creator profile
         const { data: creator } = await supabase
           .from('creators')
-          .select('id')
+          .select('id, bio')  // bio is required in onboarding, so we can use it to check completion
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        if (creator) {
+        const isOnboardingRoute = location.pathname.includes('/onboarding');
+
+        if (creator?.bio) {
+          // User has completed onboarding
           setHasAccess(true);
-          // Only redirect to dashboard if we're on the onboarding route
-          if (location.pathname.includes('/onboarding')) {
+          if (isOnboardingRoute) {
             navigate('/creator/dashboard', { replace: true });
           }
-        } else if (location.pathname.includes('/onboarding')) {
-          setHasAccess(true); // Allow access to onboarding
         } else {
-          navigate('/onboarding/creator', { replace: true });
+          // User hasn't completed onboarding
+          if (!isOnboardingRoute) {
+            navigate('/onboarding/creator', { replace: true });
+          } else {
+            setHasAccess(true);
+          }
         }
       } catch (error) {
         console.error('Error checking access:', error);
-        navigate('/', { replace: true });
+        navigate('/');
       } finally {
         setIsLoading(false);
       }

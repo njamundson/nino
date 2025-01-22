@@ -23,23 +23,29 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        // Check if user has a brand profile
+        // Check if user has completed onboarding by looking for their brand profile
         const { data: brand } = await supabase
           .from('brands')
-          .select('id')
+          .select('id, company_name')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        if (brand) {
+        const isOnboardingRoute = location.pathname.includes('/onboarding');
+        const isPaymentRoute = location.pathname.includes('/payment');
+
+        if (brand?.company_name) {
+          // User has completed onboarding
           setHasAccess(true);
-          // Only redirect to dashboard if we're on the onboarding route
-          if (location.pathname.includes('/onboarding')) {
+          if (isOnboardingRoute && !isPaymentRoute) {
             navigate('/brand/dashboard', { replace: true });
           }
-        } else if (location.pathname.includes('/onboarding')) {
-          setHasAccess(true); // Allow access to onboarding
         } else {
-          navigate('/onboarding/brand', { replace: true });
+          // User hasn't completed onboarding
+          if (!isOnboardingRoute) {
+            navigate('/onboarding/brand', { replace: true });
+          } else {
+            setHasAccess(true);
+          }
         }
       } catch (error) {
         console.error('Error checking access:', error);
