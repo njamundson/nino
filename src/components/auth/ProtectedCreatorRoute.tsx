@@ -16,32 +16,29 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let subscription: { data: { subscription: any } };
+
     const checkAccess = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        // First, check if we have a valid session
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-        if (sessionError) {
+        if (sessionError || !sessionData.session) {
           console.error('Session error:', sessionError);
           toast({
-            title: "Authentication Error",
-            description: "Please sign in again to continue.",
+            title: "Authentication Required",
+            description: "Please sign in to continue.",
             variant: "destructive",
           });
-          navigate('/');
-          return;
-        }
-
-        if (!session) {
-          console.log('No session found');
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
         // Set up auth state listener
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, currentSession) => {
-            if (event === 'SIGNED_OUT' || !currentSession) {
-              navigate('/');
+        subscription = await supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+              navigate('/', { replace: true });
               return;
             }
           }
@@ -51,7 +48,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('id, onboarding_completed')
-          .eq('user_id', session.user.id)
+          .eq('user_id', sessionData.session.user.id)
           .maybeSingle();
 
         if (creatorError) {
@@ -61,7 +58,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
             description: "Could not verify creator access. Please try again.",
             variant: "destructive",
           });
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
@@ -70,7 +67,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
         if (!creator) {
           console.log('No creator profile found');
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
@@ -90,11 +87,6 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
             setHasAccess(true);
           }
         }
-
-        // Cleanup subscription on unmount
-        return () => {
-          subscription.unsubscribe();
-        };
       } catch (error) {
         console.error('Error checking access:', error);
         toast({
@@ -102,13 +94,19 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           description: "An unexpected error occurred. Please try again.",
           variant: "destructive",
         });
-        navigate('/');
+        navigate('/', { replace: true });
       } finally {
         setIsLoading(false);
       }
     };
 
     checkAccess();
+
+    return () => {
+      if (subscription?.data?.subscription) {
+        subscription.data.subscription.unsubscribe();
+      }
+    };
   }, [navigate, location.pathname, toast]);
 
   if (isLoading) {

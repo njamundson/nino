@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProtectedBrandRouteProps {
   children: React.ReactNode;
@@ -12,28 +13,60 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   const [hasAccess, setHasAccess] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
+    let subscription: { data: { subscription: any } };
+
     const checkAccess = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        // First, check if we have a valid session
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-        if (!session) {
+        if (sessionError || !sessionData.session) {
+          console.error('Session error:', sessionError);
+          toast({
+            title: "Authentication Required",
+            description: "Please sign in to continue.",
+            variant: "destructive",
+          });
           navigate('/', { replace: true });
           return;
         }
 
+        // Set up auth state listener
+        subscription = await supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+              navigate('/', { replace: true });
+              return;
+            }
+          }
+        );
+
         // Check if user has a brand profile
-        const { data: brand } = await supabase
+        const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id, onboarding_completed')
-          .eq('user_id', session.user.id)
+          .eq('user_id', sessionData.session.user.id)
           .maybeSingle();
+
+        if (brandError) {
+          console.error('Error fetching brand profile:', brandError);
+          toast({
+            title: "Error",
+            description: "Could not verify brand access. Please try again.",
+            variant: "destructive",
+          });
+          navigate('/', { replace: true });
+          return;
+        }
 
         const isOnboardingRoute = location.pathname.includes('/onboarding');
         const isWelcomeRoute = location.pathname === '/onboarding/brand/payment';
 
         if (!brand) {
+          console.log('No brand profile found');
           navigate('/', { replace: true });
           return;
         }
@@ -56,6 +89,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         }
       } catch (error) {
         console.error('Error checking access:', error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
         navigate('/', { replace: true });
       } finally {
         setIsLoading(false);
@@ -63,7 +101,13 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     };
 
     checkAccess();
-  }, [navigate, location.pathname]);
+
+    return () => {
+      if (subscription?.data?.subscription) {
+        subscription.data.subscription.unsubscribe();
+      }
+    };
+  }, [navigate, location.pathname, toast]);
 
   if (isLoading) {
     return (
