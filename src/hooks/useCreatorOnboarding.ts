@@ -64,34 +64,52 @@ export const useCreatorOnboarding = () => {
         throw new Error("No authenticated session found");
       }
 
-      // Check if creator profile already exists
+      // First check if creator profile exists
       const { data: existingCreator, error: checkError } = await supabase
         .from('creators')
         .select('id')
         .eq('user_id', session.user.id)
-        .maybeSingle();
+        .single();
 
-      if (checkError) throw checkError;
-
-      if (existingCreator) {
-        throw new Error("Creator profile already exists");
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        throw checkError;
       }
 
-      // Create creator profile
-      const { error: creatorError } = await supabase
-        .from('creators')
-        .insert({
-          user_id: session.user.id,
-          bio: creatorData.bio,
-          location: creatorData.location,
-          instagram: creatorData.instagram,
-          website: creatorData.website,
-          specialties: creatorData.specialties,
-          creator_type: creatorData.creatorType,
-          profile_image_url: creatorData.profileImage,
-        });
+      if (existingCreator) {
+        // Update existing creator profile
+        const { error: updateError } = await supabase
+          .from('creators')
+          .update({
+            bio: creatorData.bio,
+            location: creatorData.location,
+            instagram: creatorData.instagram,
+            website: creatorData.website,
+            specialties: creatorData.specialties,
+            creator_type: creatorData.creatorType,
+            profile_image_url: creatorData.profileImage,
+            onboarding_completed: true
+          })
+          .eq('user_id', session.user.id);
 
-      if (creatorError) throw creatorError;
+        if (updateError) throw updateError;
+      } else {
+        // Create new creator profile
+        const { error: creatorError } = await supabase
+          .from('creators')
+          .insert({
+            user_id: session.user.id,
+            bio: creatorData.bio,
+            location: creatorData.location,
+            instagram: creatorData.instagram,
+            website: creatorData.website,
+            specialties: creatorData.specialties,
+            creator_type: creatorData.creatorType,
+            profile_image_url: creatorData.profileImage,
+            onboarding_completed: true
+          });
+
+        if (creatorError) throw creatorError;
+      }
 
       // Update the profile
       const { error: profileError } = await supabase
