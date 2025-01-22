@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import BasicInfoStep from "./BasicInfoStep";
 import ProfessionalInfoStep from "./ProfessionalInfoStep";
 import SocialLinksStep from "./SocialLinksStep";
 import CreatorOnboardingProgress from "./CreatorOnboardingProgress";
 import { useCreatorOnboarding } from "@/hooks/useCreatorOnboarding";
+import OnboardingNavigation from "./navigation/OnboardingNavigation";
 
 interface CreatorOnboardingFormProps {
   onComplete: (data: any) => Promise<void>;
@@ -17,7 +17,6 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
   const {
     currentStep,
     creatorData,
-    updateField,
     handleNext,
     handleBack,
     handleComplete
@@ -31,49 +30,35 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
         title: "Success!",
         description: "Your creator profile has been created.",
       });
-      // Navigate to creator dashboard after successful onboarding
-      navigate("/creator/dashboard", { replace: true });
+      navigate("/creator/welcome");
     } catch (error) {
-      console.error('Error completing onboarding:', error);
+      console.error("Error completing onboarding:", error);
       toast({
-        variant: "destructive",
         title: "Error",
         description: "Failed to complete onboarding. Please try again.",
+        variant: "destructive",
       });
     }
   };
 
-  const renderStep = () => {
+  const getCurrentStep = () => {
     switch (currentStep) {
       case 'basic':
         return (
           <BasicInfoStep
-            profileImage={creatorData.profileImage}
-            firstName={creatorData.firstName}
-            lastName={creatorData.lastName}
-            bio={creatorData.bio}
-            location={creatorData.location}
-            onUpdateField={updateField}
-            onUpdateImage={(image: string | null) => {
-              updateField('profileImage', image);
-            }}
+            creatorData={creatorData}
           />
         );
       case 'professional':
         return (
           <ProfessionalInfoStep
-            creatorType={creatorData.creatorType}
-            skills={creatorData.specialties}
-            onUpdateField={updateField}
-            onUpdateSkills={(skills: string[]) => updateField('specialties', skills)}
+            creatorData={creatorData}
           />
         );
       case 'social':
         return (
           <SocialLinksStep
-            instagram={creatorData.instagram}
-            website={creatorData.website}
-            onUpdateField={updateField}
+            creatorData={creatorData}
           />
         );
       default:
@@ -82,27 +67,18 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-nino-bg flex items-center justify-center p-8 md:p-12">
-      <div className="w-full max-w-md space-y-10 bg-white p-8 md:p-10 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] backdrop-blur-sm">
-        <CreatorOnboardingProgress currentStep={currentStep} />
-        <div className="mt-8">
-          {renderStep()}
-        </div>
+    <div className="w-full max-w-2xl mx-auto">
+      <CreatorOnboardingProgress currentStep={currentStep} />
+      
+      <div className="mt-8 space-y-8">
+        {getCurrentStep()}
         
-        <div className="flex justify-between pt-8 border-t border-gray-100">
-          <Button
-            onClick={handleBack}
-            variant="outline"
-          >
-            Back
-          </Button>
-          <Button
-            onClick={currentStep === 'social' ? onSubmit : handleNext}
-            variant="default"
-          >
-            {currentStep === 'social' ? 'Complete Setup' : 'Continue'}
-          </Button>
-        </div>
+        <OnboardingNavigation
+          currentStep={currentStep}
+          onBack={handleBack}
+          onNext={currentStep === 'social' ? onSubmit : handleNext}
+          isLastStep={currentStep === 'social'}
+        />
       </div>
     </div>
   );
