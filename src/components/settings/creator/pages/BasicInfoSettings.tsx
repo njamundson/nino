@@ -39,17 +39,15 @@ const BasicInfoSettings = () => {
 
   return (
     <div className="max-w-2xl mx-auto pt-12 px-6 pb-24">
-      <div className="flex items-center mb-8">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/creator/settings')}
-          className="mr-4 hover:bg-gray-100"
-        >
-          <ArrowLeft className="h-5 w-5 text-gray-600" />
-        </Button>
-        <h1 className="text-3xl font-semibold text-gray-900">Basic Information</h1>
-      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => navigate('/creator/settings')}
+        className="absolute top-8 left-8 hover:bg-gray-100"
+      >
+        <ArrowLeft className="h-5 w-5 text-gray-600" />
+      </Button>
+      <h1 className="text-3xl font-semibold text-gray-900 mb-8 text-center">Basic Information</h1>
       
       <div className="space-y-8">
         <div className="bg-white rounded-2xl p-8 shadow-sm">
