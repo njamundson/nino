@@ -17,7 +17,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Filter, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -126,12 +126,14 @@ const CreatorFilters = ({
           </Button>
         )}
         <div className={cn(
-          "p-2 rounded-xl transition-all duration-300",
+          "flex flex-col gap-[3px] transition-all duration-300",
           isOpen 
-            ? "bg-nino-primary text-white shadow-md" 
-            : "bg-white/80 text-gray-500 hover:bg-nino-primary/10"
+            ? "text-nino-primary" 
+            : "text-gray-500 hover:text-nino-primary/80"
         )}>
-          <Filter className="h-5 w-5" />
+          <div className="h-[2px] w-4 bg-current rounded-full" />
+          <div className="h-[2px] w-3 bg-current rounded-full ml-1" />
+          <div className="h-[2px] w-2 bg-current rounded-full ml-2" />
         </div>
       </CollapsibleTrigger>
       
