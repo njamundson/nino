@@ -43,10 +43,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           if (isOnboardingRoute && !isWelcomeRoute) {
             // Redirect to welcome page if coming from onboarding
             navigate('/onboarding/brand/payment', { replace: true });
-          } else if (isWelcomeRoute) {
-            setHasAccess(true);
           } else {
-            // For dashboard routes
             setHasAccess(true);
           }
         } else {
