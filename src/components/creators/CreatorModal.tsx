@@ -92,7 +92,6 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     }
   };
 
-  // Transform Creator type to CreatorData type
   const creatorData: CreatorData = {
     id: creator.id,
     firstName: creator.profile?.first_name || '',
@@ -107,8 +106,8 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     profile: creator.profile
   };
 
-  // Since name is required during onboarding, we can safely display the full name
-  const fullName = `${creator.profile?.first_name} ${creator.profile?.last_name}`.trim();
+  // Display the creator's name which is stored in first_name
+  const creatorName = creator.profile?.first_name || '';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -117,7 +116,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {fullName}
+                {creatorName}
               </DialogTitle>
             </DialogHeader>
             

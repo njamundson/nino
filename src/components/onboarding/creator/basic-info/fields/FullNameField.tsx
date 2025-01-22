@@ -8,19 +8,11 @@ interface FullNameFieldProps {
 }
 
 const FullNameField = ({ firstName, lastName, onUpdateField }: FullNameFieldProps) => {
-  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fullName = e.target.value;
-    const names = fullName.trim().split(/\s+/);
-    
-    if (names.length >= 2) {
-      const firstName = names[0];
-      const lastName = names.slice(1).join(' ');
-      onUpdateField('firstName', firstName);
-      onUpdateField('lastName', lastName);
-    } else {
-      onUpdateField('firstName', fullName);
-      onUpdateField('lastName', '');
-    }
+    // Simply store the full name as firstName, we don't need to split it
+    onUpdateField('firstName', fullName);
+    onUpdateField('lastName', ''); // Keep lastName empty since we're using firstName for full name
   };
 
   return (
@@ -31,9 +23,9 @@ const FullNameField = ({ firstName, lastName, onUpdateField }: FullNameFieldProp
       </Label>
       <Input
         id="fullName"
-        value={`${firstName}${lastName ? ' ' + lastName : ''}`}
-        onChange={handleFullNameChange}
-        placeholder="Enter your full name"
+        value={firstName} // Just use firstName since it contains the full name
+        onChange={handleNameChange}
+        placeholder="Enter your full name or creator name"
         className="bg-nino-bg border-transparent focus:border-nino-primary h-12 text-base"
         required
       />
