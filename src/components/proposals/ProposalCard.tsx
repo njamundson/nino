@@ -18,6 +18,8 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
 
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
   const brandProfileImage = application.opportunity?.brand?.profile_image_url;
+  const compensationAmount = application.opportunity?.compensation_amount;
+  const compensationType = application.opportunity?.compensation_type;
 
   return (
     <>
@@ -30,7 +32,17 @@ const ProposalCard = ({ application, onUpdateStatus, type }: ProposalCardProps) 
             startDate={application.opportunity?.start_date}
             status={application.status}
             profileImage={brandProfileImage}
+            compensationAmount={compensationAmount}
+            compensationType={compensationType}
           />
+
+          {application.cover_letter && (
+            <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 whitespace-pre-line">
+                {application.cover_letter}
+              </p>
+            </div>
+          )}
 
           <div className="flex items-center justify-end">
             <ProposalActions

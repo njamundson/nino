@@ -1,6 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProposalMetadata from "../ProposalMetadata";
 import ProposalStatusBadge from "../ProposalStatusBadge";
+import { Badge } from "@/components/ui/badge";
+import { DollarSign } from "lucide-react";
 
 interface ProposalCardHeaderProps {
   brandName: string;
@@ -9,6 +11,8 @@ interface ProposalCardHeaderProps {
   startDate?: string;
   status: string;
   profileImage?: string;
+  compensationAmount?: number;
+  compensationType?: string;
 }
 
 const ProposalCardHeader = ({ 
@@ -17,7 +21,9 @@ const ProposalCardHeader = ({
   location, 
   startDate, 
   status,
-  profileImage
+  profileImage,
+  compensationAmount,
+  compensationType
 }: ProposalCardHeaderProps) => {
   const brandInitial = brandName[0].toUpperCase();
 
@@ -30,7 +36,7 @@ const ProposalCardHeader = ({
             {brandInitial}
           </AvatarFallback>
         </Avatar>
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h3 className="text-xl font-semibold text-gray-900">
             {title}
           </h3>
@@ -39,6 +45,12 @@ const ProposalCardHeader = ({
             location={location}
             startDate={startDate}
           />
+          {compensationAmount && compensationType && (
+            <Badge variant="secondary" className="bg-green-500/10 text-green-600 hover:bg-green-500/20">
+              <DollarSign className="w-4 h-4 mr-1" />
+              {compensationAmount} {compensationType}
+            </Badge>
+          )}
         </div>
       </div>
       <ProposalStatusBadge status={status} />
