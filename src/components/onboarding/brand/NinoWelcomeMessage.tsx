@@ -45,7 +45,8 @@ const NinoWelcomeMessage = () => {
             title: "Welcome!",
             description: "Your brand profile has been set up successfully.",
           });
-          navigate('/brand/dashboard', { replace: true });
+          // Force navigation to the brand dashboard
+          window.location.href = '/brand/dashboard';
         }, 2500); // 2 seconds + 0.5 seconds for fade out
       } catch (error) {
         console.error('Error in welcome message redirect:', error);
