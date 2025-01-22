@@ -63,11 +63,15 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         }
 
         // Check if user is trying to access brand routes
-        const { data: brand } = await supabase
+        const { data: brand, error: brandError } = await supabase
           .from('brands')
-          .select('id')
+          .select('id, onboarding_completed')
           .eq('user_id', sessionData.session.user.id)
           .maybeSingle();
+
+        if (brandError) {
+          console.error('Error checking brand profile:', brandError);
+        }
 
         if (brand) {
           console.log('User has a brand profile, redirecting to brand dashboard');
