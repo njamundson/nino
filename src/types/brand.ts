@@ -11,6 +11,11 @@ export interface BrandData {
   support_email: string | null;
   profile_image_url: string | null;
   sms_notifications_enabled: boolean;
+  email_notifications_enabled?: boolean;
+  push_notifications_enabled?: boolean;
+  application_notifications_enabled?: boolean;
+  message_notifications_enabled?: boolean;
+  marketing_notifications_enabled?: boolean;
   created_at?: string;
   updated_at?: string;
 }
