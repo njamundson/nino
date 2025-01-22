@@ -85,13 +85,20 @@ const CreatorFilters = ({
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100"
+      className="bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 transition-all duration-300"
     >
       <CollapsibleTrigger className="flex items-center justify-end w-full p-6">
-        <Filter className="h-5 w-5 text-gray-500" />
+        <div className={cn(
+          "p-2 rounded-xl transition-all duration-300",
+          isOpen 
+            ? "bg-nino-primary text-white shadow-md" 
+            : "bg-white/80 text-gray-500 hover:bg-nino-primary/10"
+        )}>
+          <Filter className="h-5 w-5" />
+        </div>
       </CollapsibleTrigger>
       
-      <CollapsibleContent className="space-y-8 px-6 pb-6">
+      <CollapsibleContent className="space-y-8 px-6 pb-6 data-[state=open]:animate-[slideDown_300ms_ease-out] data-[state=closed]:animate-[slideUp_300ms_ease-out]">
         <div>
           <h3 className="text-base font-semibold text-gray-900 mb-4">Creator Type</h3>
           <div className="flex flex-wrap gap-2">
