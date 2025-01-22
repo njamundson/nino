@@ -121,8 +121,6 @@ const CreatorProfileModal = ({
     }
   };
 
-  const fullName = `${creator?.profile?.first_name || ''} ${creator?.profile?.last_name || ''}`.trim();
-
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -130,8 +128,8 @@ const CreatorProfileModal = ({
           <div className="w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
               <CreatorImage 
-                profileImageUrl={creator?.profile_image_url} 
-                fullName={fullName}
+                profileImage={creator?.profile_image_url}
+                profile={creator?.profile}
               />
               
               <div className="flex flex-col h-full space-y-6">
@@ -166,7 +164,7 @@ const CreatorProfileModal = ({
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
         onConfirm={handleAcceptConfirm}
-        creatorName={fullName}
+        creatorName={`${creator?.profile?.first_name || ''} ${creator?.profile?.last_name || ''}`.trim()}
         isProcessing={isProcessing}
       />
     </>
