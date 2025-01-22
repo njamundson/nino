@@ -11,53 +11,83 @@ const CompletedProjectsList = () => {
   const { data: projects, isLoading } = useQuery({
     queryKey: ['completed-projects'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not authenticated");
 
-      const { data: creator, error: creatorError } = await supabase
-        .from('creators')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (creatorError) {
-        console.error("Error fetching creator:", creatorError);
-        toast({
-          title: "Error",
-          description: "Could not fetch creator profile",
-          variant: "destructive",
-        });
-        return [];
-      }
+        if (creatorError) {
+          console.error("Error fetching creator:", creatorError);
+          toast({
+            title: "Error",
+            description: "Could not fetch creator profile",
+            variant: "destructive",
+          });
+          return [];
+        }
 
-      if (!creator) {
-        console.log("No creator profile found");
-        return [];
-      }
+        if (!creator) {
+          console.log("No creator profile found");
+          return [];
+        }
 
-      const { data, error } = await supabase
-        .from('opportunities')
-        .select(`
-          *,
-          brand:brands!inner (
+        // First get all completed opportunities
+        const { data: opportunities, error: oppsError } = await supabase
+          .from('opportunities')
+          .select(`
             id,
-            company_name,
-            brand_type,
-            location,
+            title,
             description,
-            website,
-            instagram
-          )
-        `)
-        .eq('status', 'completed');
+            location,
+            start_date,
+            end_date,
+            perks,
+            requirements,
+            payment_details,
+            compensation_details,
+            deliverables,
+            image_url,
+            brand_id
+          `)
+          .eq('status', 'completed');
 
-      if (error) {
-        console.error("Error fetching opportunities:", error);
-        throw error;
+        if (oppsError) {
+          console.error("Error fetching opportunities:", oppsError);
+          throw oppsError;
+        }
+
+        if (!opportunities?.length) {
+          return [];
+        }
+
+        // Then fetch brand details for these opportunities
+        const { data: brands, error: brandsError } = await supabase
+          .from('brands')
+          .select('*')
+          .in('id', opportunities.map(o => o.brand_id));
+
+        if (brandsError) {
+          console.error("Error fetching brands:", brandsError);
+          throw brandsError;
+        }
+
+        // Combine the data
+        const projectsWithBrands = opportunities.map(opp => ({
+          ...opp,
+          brand: brands?.find(b => b.id === opp.brand_id) || null
+        }));
+
+        console.log("Combined projects with brands:", projectsWithBrands);
+        return projectsWithBrands;
+      } catch (error) {
+        console.error("Error in query:", error);
+        return [];
       }
-
-      console.log("Fetched opportunities with brands:", data);
-      return data || [];
     }
   });
 
