@@ -54,15 +54,18 @@ const CampaignFormContainer = () => {
   const handleImageUpload = async (file: File) => {
     setIsUploading(true);
     try {
+      const formData = new FormData();
+      formData.append('file', file);
+
       const { data, error } = await supabase.functions.invoke('upload-attachment', {
-        body: { name: file.name, type: file.type },
+        body: formData,
         method: 'POST',
       });
 
       if (error) throw error;
+      if (!data?.url) throw new Error('No URL returned from upload');
 
-      const { url } = data;
-      setUploadedImage(url);
+      setUploadedImage(data.url);
     } catch (error) {
       console.error('Error uploading image:', error);
       throw error;

@@ -1,7 +1,6 @@
 import { useRef, type ChangeEvent } from 'react';
 import { Camera, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface ImageUploadProps {
   uploadedImage: string | null;
@@ -59,6 +58,10 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
     }
   };
 
+  const handleChangeImage = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="flex flex-col items-center space-y-4 w-full max-w-2xl mx-auto">
       <div className="relative group cursor-pointer w-full">
@@ -72,6 +75,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
             ${uploadedImage ? 'border-nino-primary/20 shadow-sm border-solid' : 'border-gray-200'}
             ${isUploading ? 'animate-pulse' : ''}
           `}
+          onClick={handleChangeImage}
         >
           {uploadedImage ? (
             <div className="relative w-full h-full overflow-hidden rounded-xl">
@@ -102,7 +106,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
           type="file"
           onChange={handleImageUpload}
           accept="image/*"
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="hidden"
           disabled={isUploading}
         />
       </div>
