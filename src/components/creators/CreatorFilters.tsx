@@ -82,11 +82,12 @@ const CreatorFilters = ({
   };
 
   return (
-    <div className="bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100">
-      <CollapsibleTrigger
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full p-6 text-base font-semibold text-gray-900"
-      >
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100"
+    >
+      <CollapsibleTrigger className="flex items-center justify-between w-full p-6 text-base font-semibold text-gray-900">
         <span>Filter Creators</span>
         {isOpen ? (
           <ChevronUp className="h-5 w-5 text-gray-500" />
@@ -198,7 +199,7 @@ const CreatorFilters = ({
           </div>
         </div>
       </CollapsibleContent>
-    </div>
+    </Collapsible>
   );
 };
 
