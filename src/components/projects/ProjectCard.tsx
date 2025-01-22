@@ -87,24 +87,18 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
           )}
         </div>
 
-        <div className="absolute bottom-6 right-6">
-          <Button
-            size="icon"
-            variant="secondary"
-            className="rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleViewDetails();
-            }}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Plus className="h-4 w-4 text-gray-900" />
-            )}
-          </Button>
-        </div>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="absolute bottom-6 right-6 rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="h-4 w-4 text-gray-900" />
+          )}
+        </Button>
       </Card>
 
       <ProjectModal 
