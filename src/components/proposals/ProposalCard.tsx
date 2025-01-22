@@ -1,71 +1,102 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
 import { useState } from "react";
-import ViewApplicationModal from "./modals/ViewApplicationModal";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Plus, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import ProposalStatusBadge from "./ProposalStatusBadge";
+import ViewApplicationModal from "./modals/ViewApplicationModal";
 
 interface ProposalCardProps {
-  application: any;
-  onUpdateStatus?: (applicationId: string, status: 'accepted' | 'rejected') => void;
-  type: 'proposal' | 'application';
+  application: {
+    id: string;
+    status: string;
+    opportunity: {
+      id: string;
+      title: string;
+      location: string | null;
+      image_url: string | null;
+      brand: {
+        company_name: string | null;
+      } | null;
+    };
+  };
 }
 
-const ProposalCard = ({ application, type }: ProposalCardProps) => {
-  const [showApplicationModal, setShowApplicationModal] = useState(false);
+const ProposalCard = ({ application }: ProposalCardProps) => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   
-  const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
-  const title = application.opportunity?.title || "Untitled Opportunity";
-  const location = application.opportunity?.brand?.location;
-  const imageUrl = application.opportunity?.image_url;
-
+  const handleViewDetails = () => {
+    setIsLoading(true);
+    try {
+      navigate(`/creator/projects/${application.opportunity.id}`);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Could not load project details. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const brandName = application.opportunity.brand?.company_name || "Unnamed Brand";
+  
   return (
     <>
       <Card 
         className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
-        onClick={() => setShowApplicationModal(true)}
+        onClick={() => setShowModal(true)}
       >
         <img
-          src={imageUrl || "/placeholder.svg"}
-          alt={title}
+          src={application.opportunity.image_url || "/placeholder.svg"}
+          alt={application.opportunity.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         
+        <div className="absolute top-6 right-6">
+          <ProposalStatusBadge status={application.status} />
+        </div>
+
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <p className="text-sm font-medium text-white/90 mb-1">
             {brandName}
           </p>
           <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
-            {title}
+            {application.opportunity.title}
           </h3>
-          {location && (
+          {application.opportunity.location && (
             <p className="text-sm text-white/80 mt-2">
-              📍 {location}
+              📍 {application.opportunity.location}
             </p>
           )}
         </div>
 
-        <div className="absolute bottom-6 right-6 flex items-center gap-2">
-          <ProposalStatusBadge status={application.status} />
-          <Button
-            size="icon"
-            variant="secondary"
-            className="rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
-          >
-            <ExternalLink className="h-4 w-4 text-gray-900" />
-          </Button>
-        </div>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="absolute bottom-6 right-6 rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="h-4 w-4 text-gray-900" />
+          )}
+        </Button>
       </Card>
 
-      {showApplicationModal && (
-        <ViewApplicationModal
-          isOpen={showApplicationModal}
-          onClose={() => setShowApplicationModal(false)}
-          application={application}
-        />
-      )}
+      <ViewApplicationModal 
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        application={application}
+      />
     </>
   );
 };
