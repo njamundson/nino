@@ -1,26 +1,33 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ChevronLeft } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ChatHeaderProps {
   senderFirstName?: string;
   senderLastName?: string;
+  onBack?: () => void;
 }
 
-export const ChatHeader = ({ senderFirstName, senderLastName }: ChatHeaderProps) => {
+export const ChatHeader = ({ 
+  senderFirstName, 
+  senderLastName,
+  onBack 
+}: ChatHeaderProps) => {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="p-4 border-b flex justify-between items-center bg-white/50 backdrop-blur-lg shadow-md">
+    <div className="border-b border-gray-100 p-4">
       <div className="flex items-center gap-3">
-        <Avatar className="w-10 h-10 shadow-md">
-          <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
-            {senderFirstName?.[0]}
-            {senderLastName?.[0]}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <h3 className="font-medium text-nino-text">
-            {senderFirstName} {senderLastName}
-          </h3>
-          <p className="text-xs text-gray-500">Active now</p>
-        </div>
+        {isMobile && onBack && (
+          <button 
+            onClick={onBack}
+            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-600" />
+          </button>
+        )}
+        <h2 className="font-semibold text-gray-900">
+          {senderFirstName} {senderLastName}
+        </h2>
       </div>
     </div>
   );
