@@ -2,9 +2,11 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { BrandData } from "@/types/brand";
+import { useNavigate } from "react-router-dom";
 
 export const useBrandOnboarding = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -23,12 +25,20 @@ export const useBrandOnboarding = () => {
     two_factor_enabled: false
   });
 
-  const updateField = (field: string, value: any) => {
-    setBrandData((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: keyof BrandData, value: any) => {
+    setBrandData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleNext = () => {
     if (currentStep === 'basic') {
+      if (!brandData.company_name || !brandData.brand_type) {
+        toast({
+          title: "Required Fields Missing",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        });
+        return;
+      }
       setCurrentStep('details');
     } else if (currentStep === 'details') {
       setCurrentStep('social');
@@ -84,6 +94,9 @@ export const useBrandOnboarding = () => {
         title: "Success",
         description: "Brand profile saved successfully!",
       });
+
+      // Navigate to brand dashboard after successful onboarding
+      navigate('/brand/dashboard', { replace: true });
     } catch (error) {
       console.error("Error saving brand:", error);
       toast({

@@ -26,7 +26,7 @@ const CreatorOnboardingForm = () => {
         title: "Success!",
         description: "Your creator profile has been created.",
       });
-      // Use replace to prevent going back to onboarding
+      // Navigate to creator dashboard after successful onboarding
       navigate("/creator/dashboard", { replace: true });
     } catch (error) {
       console.error('Error completing onboarding:', error);
