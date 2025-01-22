@@ -18,27 +18,33 @@ const NinoWelcomeMessage = () => {
           return;
         }
 
-        // Check if user has a brand profile
+        // Check if user has a brand profile and has completed onboarding
         const { data: brand } = await supabase
           .from('brands')
           .select('id, company_name')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        const redirectTimeout = setTimeout(() => {
-          if (brand?.company_name) {
-            navigate('/brand/dashboard');
-          } else {
-            navigate('/onboarding/brand');
-          }
-          
-          toast({
-            title: "Welcome!",
-            description: "Your brand profile has been set up successfully.",
-          });
-        }, 2000);
+        if (!brand) {
+          navigate('/');
+          return;
+        }
 
-        return () => clearTimeout(redirectTimeout);
+        // Only show welcome message and redirect to dashboard if onboarding is complete
+        if (brand.company_name) {
+          const redirectTimeout = setTimeout(() => {
+            navigate('/brand/dashboard');
+            toast({
+              title: "Welcome!",
+              description: "Your brand profile has been set up successfully.",
+            });
+          }, 2000);
+
+          return () => clearTimeout(redirectTimeout);
+        } else {
+          // If somehow they got here without completing onboarding, redirect back
+          navigate('/onboarding/brand');
+        }
       } catch (error) {
         console.error('Error in redirect:', error);
         navigate('/');

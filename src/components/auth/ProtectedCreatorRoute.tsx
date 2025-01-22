@@ -31,22 +31,22 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           .maybeSingle();
 
         const isOnboardingRoute = location.pathname.includes('/onboarding');
+        const isWelcomeRoute = location.pathname === '/onboarding/creator/welcome';
 
         if (!creator) {
-          // No creator profile found
           navigate('/');
           return;
         }
 
         if (creator.bio) {
-          // Onboarding completed
-          if (isOnboardingRoute) {
+          // If onboarding is complete, allow access to dashboard or welcome screen
+          if (isOnboardingRoute && !isWelcomeRoute) {
             navigate('/creator/dashboard');
           } else {
             setHasAccess(true);
           }
         } else {
-          // Onboarding not completed
+          // If onboarding is not complete, only allow access to onboarding routes
           if (!isOnboardingRoute) {
             navigate('/onboarding/creator');
           } else {

@@ -31,22 +31,22 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           .maybeSingle();
 
         const isOnboardingRoute = location.pathname.includes('/onboarding');
-        const isPaymentRoute = location.pathname.includes('/payment');
+        const isWelcomeRoute = location.pathname.includes('/payment');
 
         if (!brand) {
           navigate('/');
           return;
         }
 
-        // If user is on payment/welcome route and has completed onboarding,
-        // let them stay there as they'll be redirected to dashboard after animation
         if (brand.company_name) {
-          if (isOnboardingRoute && !isPaymentRoute) {
+          // If onboarding is complete, allow access to dashboard or welcome screen
+          if (isOnboardingRoute && !isWelcomeRoute) {
             navigate('/brand/dashboard');
           } else {
             setHasAccess(true);
           }
         } else {
+          // If onboarding is not complete, only allow access to onboarding routes
           if (!isOnboardingRoute) {
             navigate('/onboarding/brand');
           } else {

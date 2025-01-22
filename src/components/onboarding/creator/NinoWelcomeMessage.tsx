@@ -18,27 +18,33 @@ const NinoWelcomeMessage = () => {
           return;
         }
 
-        // Check if user has a creator profile
+        // Check if user has a creator profile and has completed onboarding
         const { data: creator } = await supabase
           .from('creators')
           .select('id, bio')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        const redirectTimeout = setTimeout(() => {
-          if (creator?.bio) {
-            navigate('/creator/dashboard');
-          } else {
-            navigate('/onboarding/creator');
-          }
-          
-          toast({
-            title: "Welcome!",
-            description: "Your creator profile has been set up successfully.",
-          });
-        }, 2000);
+        if (!creator) {
+          navigate('/');
+          return;
+        }
 
-        return () => clearTimeout(redirectTimeout);
+        // Only show welcome message and redirect to dashboard if onboarding is complete
+        if (creator.bio) {
+          const redirectTimeout = setTimeout(() => {
+            navigate('/creator/dashboard');
+            toast({
+              title: "Welcome!",
+              description: "Your creator profile has been set up successfully.",
+            });
+          }, 2000);
+
+          return () => clearTimeout(redirectTimeout);
+        } else {
+          // If somehow they got here without completing onboarding, redirect back
+          navigate('/onboarding/creator');
+        }
       } catch (error) {
         console.error('Error in redirect:', error);
         navigate('/');
