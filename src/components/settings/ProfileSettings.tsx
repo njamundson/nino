@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
+import { FormEvent } from "react";
 
 import BrandProfileForm from "./profile/BrandProfileForm";
 import ContactInformationForm from "./profile/ContactInformationForm";
@@ -11,27 +12,27 @@ import NotificationPreferences from "./profile/NotificationPreferences";
 const ProfileSettings = () => {
   const {
     loading,
-    profileImage,
     brandData,
-    loginHistory,
-    setProfileImage,
-    setBrandData,
-    handleSave,
+    updateBrandSettings,
   } = useBrandSettings();
 
   const handleUpdateField = (field: string, value: any) => {
-    setBrandData(prev => ({ ...prev, [field]: value }));
+    updateBrandSettings.mutate({ [field]: value });
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    await updateBrandSettings.mutateAsync(Object.fromEntries(formData));
   };
 
   return (
     <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm space-y-8">
-      <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <BrandProfileForm 
           loading={loading}
-          profileImage={profileImage}
           brandData={brandData}
           onUpdateField={handleUpdateField}
-          onUpdateImage={setProfileImage}
         />
 
         <ContactInformationForm 
@@ -49,17 +50,16 @@ const ProfileSettings = () => {
         <SecuritySettings 
           brandData={brandData}
           loading={loading}
-          loginHistory={loginHistory}
           onUpdateField={handleUpdateField}
         />
 
         <div className="flex justify-end">
           <Button
-            onClick={handleSave}
-            disabled={loading}
+            type="submit"
+            disabled={loading || updateBrandSettings.isPending}
             className="bg-nino-primary hover:bg-nino-primary/90"
           >
-            {loading ? (
+            {(loading || updateBrandSettings.isPending) ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span>Saving...</span>
@@ -69,7 +69,7 @@ const ProfileSettings = () => {
             )}
           </Button>
         </div>
-      </div>
+      </form>
     </Card>
   );
 };

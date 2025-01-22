@@ -53,8 +53,6 @@ export const useCreatorOnboarding = () => {
       setCurrentStep('social');
     } else if (currentStep === 'social') {
       setCurrentStep('payment');
-    } else if (currentStep === 'payment') {
-      handleComplete();
     }
   };
 
@@ -72,14 +70,26 @@ export const useCreatorOnboarding = () => {
 
   const handleComplete = async () => {
     try {
-      // Get current user session
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
         throw new Error("No authenticated session found");
       }
 
-      // Create creator profile in the database
+      // Check if creator profile already exists
+      const { data: existingCreator, error: checkError } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+
+      if (existingCreator) {
+        throw new Error("Creator profile already exists");
+      }
+
+      // Create creator profile
       const { error: creatorError } = await supabase
         .from('creators')
         .insert({
@@ -95,7 +105,6 @@ export const useCreatorOnboarding = () => {
 
       if (creatorError) throw creatorError;
 
-      // Store creator data in localStorage
       localStorage.setItem('creatorData', JSON.stringify({
         ...creatorData,
         onboardingCompleted: true
@@ -106,7 +115,6 @@ export const useCreatorOnboarding = () => {
         description: "Your creator profile has been created.",
       });
 
-      // Navigate to creator dashboard
       navigate("/creator/dashboard");
     } catch (error) {
       console.error('Error completing onboarding:', error);
