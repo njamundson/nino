@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreatorData } from "@/types/creator";
+import { useState } from "react";
 
 interface CreatorCardImageProps {
   creator: CreatorData;
@@ -9,16 +10,23 @@ interface CreatorCardImageProps {
 }
 
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
+  const [imageError, setImageError] = useState(false);
   const fullName = creator.firstName && creator.lastName 
     ? `${creator.firstName} ${creator.lastName}`.trim()
     : 'Anonymous Creator';
 
+  const handleImageError = () => {
+    console.log("Image failed to load, falling back to placeholder");
+    setImageError(true);
+  };
+
   return (
-    <div className="relative aspect-[3/4] overflow-hidden">
+    <div className="relative aspect-[3/4] w-full overflow-hidden">
       <img
-        src={creator.profileImage || '/placeholder.svg'}
+        src={!imageError ? creator.profileImage || '/placeholder.svg' : '/placeholder.svg'}
         alt={fullName}
-        className="absolute inset-0 h-full w-full object-cover"
+        onError={handleImageError}
+        className="h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -47,7 +55,11 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
       <Button
         size="icon"
         variant="secondary"
-        className="absolute bottom-6 right-6 rounded-full pointer-events-none"
+        className="absolute bottom-6 right-6 rounded-full"
+        onClick={(e) => {
+          e.stopPropagation();
+          onInvite(creator.id);
+        }}
       >
         <Plus className="h-4 w-4" />
       </Button>
