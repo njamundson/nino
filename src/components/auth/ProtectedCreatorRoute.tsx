@@ -21,10 +21,11 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     const checkAccess = async () => {
       try {
         // First, check if we have a valid session
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
         if (sessionError) {
           console.error('Session error:', sessionError);
+          await supabase.auth.signOut(); // Clear any invalid session data
           toast({
             title: "Authentication Required",
             description: "Please sign in to continue.",
@@ -34,27 +35,31 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
-        if (!sessionData.session) {
+        if (!session) {
           console.log('No session found');
           navigate('/', { replace: true });
           return;
         }
 
         // Set up auth state listener
-        subscription = await supabase.auth.onAuthStateChange(
-          async (event, session) => {
-            if (event === 'SIGNED_OUT' || !session) {
-              navigate('/', { replace: true });
-              return;
-            }
+        subscription = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log('Auth state changed:', event);
+          
+          if (event === 'SIGNED_OUT' || !session) {
+            navigate('/', { replace: true });
+            return;
           }
-        );
+
+          if (event === 'TOKEN_REFRESHED') {
+            console.log('Token refreshed successfully');
+          }
+        });
 
         // Check if user has a creator profile
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('id, onboarding_completed')
-          .eq('user_id', sessionData.session.user.id)
+          .eq('user_id', session.user.id)
           .maybeSingle();
 
         if (creatorError) {
@@ -68,11 +73,11 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
-        // Check if user is trying to access brand routes
+        // Check if user has a brand profile
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id, onboarding_completed')
-          .eq('user_id', sessionData.session.user.id)
+          .eq('user_id', session.user.id)
           .maybeSingle();
 
         if (brandError) {
@@ -96,15 +101,12 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         }
 
         if (creator.onboarding_completed) {
-          // If onboarding is complete
           if (isOnboardingRoute && !isWelcomeRoute) {
-            // Redirect to dashboard if trying to access onboarding routes
             navigate('/creator/dashboard', { replace: true });
           } else {
             setHasAccess(true);
           }
         } else {
-          // If onboarding is not complete, only allow access to onboarding routes
           if (!isOnboardingRoute) {
             navigate('/onboarding/creator', { replace: true });
           } else {

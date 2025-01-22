@@ -21,10 +21,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     const checkAccess = async () => {
       try {
         // First, check if we have a valid session
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-        if (sessionError || !sessionData.session) {
+        if (sessionError) {
           console.error('Session error:', sessionError);
+          await supabase.auth.signOut(); // Clear any invalid session data
           toast({
             title: "Authentication Required",
             description: "Please sign in to continue.",
@@ -34,21 +35,31 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
+        if (!session) {
+          console.log('No session found');
+          navigate('/', { replace: true });
+          return;
+        }
+
         // Set up auth state listener
-        subscription = await supabase.auth.onAuthStateChange(
-          async (event, session) => {
-            if (event === 'SIGNED_OUT' || !session) {
-              navigate('/', { replace: true });
-              return;
-            }
+        subscription = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log('Auth state changed:', event);
+          
+          if (event === 'SIGNED_OUT' || !session) {
+            navigate('/', { replace: true });
+            return;
           }
-        );
+
+          if (event === 'TOKEN_REFRESHED') {
+            console.log('Token refreshed successfully');
+          }
+        });
 
         // Check if user has a brand profile
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id, onboarding_completed')
-          .eq('user_id', sessionData.session.user.id)
+          .eq('user_id', session.user.id)
           .maybeSingle();
 
         if (brandError) {
@@ -72,15 +83,12 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         }
 
         if (brand.onboarding_completed) {
-          // If onboarding is complete
           if (isOnboardingRoute && !isWelcomeRoute) {
-            // Redirect to dashboard if trying to access onboarding routes
             navigate('/brand/dashboard', { replace: true });
           } else {
             setHasAccess(true);
           }
         } else {
-          // If onboarding is not complete, only allow access to onboarding routes
           if (!isOnboardingRoute) {
             navigate('/onboarding/brand', { replace: true });
           } else {
