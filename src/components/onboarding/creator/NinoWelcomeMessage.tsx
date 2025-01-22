@@ -1,14 +1,32 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 const NinoWelcomeMessage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleComplete = () => {
-    setTimeout(() => {
-      navigate('/creator/dashboard');
+  useEffect(() => {
+    const userType = localStorage.getItem('userType');
+    const redirectTimeout = setTimeout(() => {
+      if (userType === 'creator') {
+        navigate('/creator/dashboard', { replace: true });
+      } else if (userType === 'brand') {
+        navigate('/brand/dashboard', { replace: true });
+      } else {
+        // Fallback to creator dashboard if userType is not set
+        navigate('/creator/dashboard', { replace: true });
+      }
+
+      toast({
+        title: "Welcome!",
+        description: "Your profile has been set up successfully.",
+      });
     }, 2000);
-  };
+
+    return () => clearTimeout(redirectTimeout);
+  }, [navigate, toast]);
 
   return (
     <motion.img 
@@ -22,7 +40,6 @@ const NinoWelcomeMessage = () => {
         duration: 0.8,
         ease: "easeInOut"
       }}
-      onAnimationComplete={handleComplete}
     />
   );
 };
