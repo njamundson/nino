@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
+import { Archive } from "lucide-react";
 
 const CompletedProjectsList = () => {
   const { toast } = useToast();
@@ -15,56 +16,51 @@ const CompletedProjectsList = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
-        const { data: creator, error: creatorError } = await supabase
+        const { data: creator } = await supabase
           .from('creators')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
-
-        if (creatorError) {
-          console.error("Error fetching creator:", creatorError);
-          toast({
-            title: "Error",
-            description: "Could not fetch creator profile",
-            variant: "destructive",
-          });
-          return [];
-        }
 
         if (!creator) {
           console.log("No creator profile found");
           return [];
         }
 
-        const { data: opportunities, error: oppsError } = await supabase
-          .from('opportunities')
+        const { data: applications, error: appsError } = await supabase
+          .from('applications')
           .select(`
             id,
-            title,
-            description,
-            location,
-            start_date,
-            end_date,
-            perks,
-            requirements,
-            payment_details,
-            compensation_details,
-            deliverables,
-            image_url,
-            brand:brands (
+            status,
+            opportunity:opportunities (
               id,
-              company_name,
-              brand_type,
-              location,
+              title,
               description,
-              website,
-              instagram
+              location,
+              start_date,
+              end_date,
+              perks,
+              requirements,
+              payment_details,
+              compensation_details,
+              deliverables,
+              image_url,
+              brand:brands (
+                id,
+                company_name,
+                brand_type,
+                location,
+                description,
+                website,
+                instagram
+              )
             )
           `)
+          .eq('creator_id', creator.id)
           .eq('status', 'completed');
 
-        if (oppsError) {
-          console.error("Error fetching opportunities:", oppsError);
+        if (appsError) {
+          console.error("Error fetching applications:", appsError);
           toast({
             title: "Error",
             description: "Could not fetch completed projects",
@@ -73,8 +69,15 @@ const CompletedProjectsList = () => {
           return [];
         }
 
-        console.log("Fetched opportunities with brands:", opportunities);
-        return opportunities || [];
+        // Map the applications to match the opportunity structure
+        const completedProjects = applications.map(app => ({
+          ...app.opportunity,
+          application_status: app.status,
+          application_id: app.id
+        }));
+
+        console.log("Fetched completed projects:", completedProjects);
+        return completedProjects || [];
       } catch (error) {
         console.error("Error in query:", error);
         toast({
@@ -91,16 +94,7 @@ const CompletedProjectsList = () => {
     return (
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-6">
-            <div className="space-y-4">
-              <Skeleton className="h-6 w-2/3" />
-              <Skeleton className="h-4 w-1/3" />
-              <div className="flex gap-4">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-24" />
-              </div>
-            </div>
-          </Card>
+          <Card key={i} className="h-[400px] animate-pulse bg-gray-100" />
         ))}
       </div>
     );
@@ -109,8 +103,9 @@ const CompletedProjectsList = () => {
   if (!projects || projects.length === 0) {
     return (
       <Card className="p-12">
-        <div className="text-center">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+        <div className="text-center space-y-4">
+          <Archive className="w-12 h-12 mx-auto text-gray-400" />
+          <h3 className="text-lg font-medium text-gray-900">
             No completed projects yet
           </h3>
           <p className="text-gray-500">
@@ -124,7 +119,11 @@ const CompletedProjectsList = () => {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {projects.map((project) => (
-        <ProjectCard key={project.id} opportunity={project} />
+        <ProjectCard 
+          key={project.id} 
+          opportunity={project}
+          isCompleted={true}
+        />
       ))}
     </div>
   );

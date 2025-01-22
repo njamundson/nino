@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProjectModal from "./ProjectModal";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 interface Brand {
   id: string;
@@ -30,13 +31,16 @@ interface Opportunity {
   deliverables: string[] | null;
   brand: Brand | null;
   image_url: string | null;
+  application_status?: string;
+  application_id?: string;
 }
 
 interface ProjectCardProps {
   opportunity: Opportunity;
+  isCompleted?: boolean;
 }
 
-const ProjectCard = ({ opportunity }: ProjectCardProps) => {
+const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
@@ -73,6 +77,16 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         
+        {isCompleted && (
+          <Badge 
+            variant="secondary" 
+            className="absolute top-6 right-6 bg-green-500 text-white border-0"
+          >
+            <CheckCircle className="w-4 h-4 mr-1" />
+            Completed
+          </Badge>
+        )}
+
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <p className="text-sm font-medium text-white/90 mb-1">
             {brandName}
@@ -105,6 +119,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         opportunity={opportunity}
+        isCompleted={isCompleted}
       />
     </>
   );
