@@ -1,40 +1,44 @@
-import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import SocialLinks from "./social/SocialLinks";
 import CreatorSpecialties from "./bio/CreatorSpecialties";
 
-export interface CreatorBioProps {
-  bio: string;
+interface CreatorBioProps {
+  bio: string | null;
+  specialties: string[] | null;
   location: string | null;
-  specialties: string[];
   instagram: string | null;
   website: string | null;
-  onMessageClick: () => Promise<void>;
+  creatorType?: string;
+  onMessageClick?: () => void;
 }
 
 const CreatorBio = ({ 
   bio, 
-  location, 
-  specialties,
-  onMessageClick
+  specialties, 
+  location,
+  instagram,
+  website,
+  creatorType,
+  onMessageClick 
 }: CreatorBioProps) => {
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            {location && (
-              <p className="text-sm text-nino-gray">📍 {location}</p>
-            )}
-          </div>
-          <Button 
-            onClick={onMessageClick}
-            className="bg-nino-primary hover:bg-nino-primary/90 text-white"
-          >
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Message Creator
-          </Button>
-        </div>
-        <p className="text-nino-gray leading-relaxed">{bio}</p>
+    <div className="flex-grow space-y-6">
+      {location && (
+        <p className="text-nino-gray flex items-center gap-2">
+          <span className="text-lg">📍</span> {location}
+        </p>
+      )}
+      
+      <div className="space-y-2">
+        <SocialLinks 
+          instagram={instagram}
+          website={website}
+          onMessageClick={onMessageClick}
+        />
+
+        <h3 className="text-lg font-semibold text-nino-text">About</h3>
+        <p className="text-base leading-relaxed text-nino-text/90">
+          {bio || "No bio available"}
+        </p>
       </div>
 
       <CreatorSpecialties specialties={specialties} />
