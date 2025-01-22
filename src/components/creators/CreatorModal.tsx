@@ -38,24 +38,30 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
   const { data: campaigns } = useQuery({
     queryKey: ['brand-campaigns'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return [];
 
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        const { data: brand } = await supabase
+          .from('brands')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (!brand) return [];
+        if (!brand) return [];
 
-      const { data: opportunities } = await supabase
-        .from('opportunities')
-        .select('*')
-        .eq('brand_id', brand.id)
-        .eq('status', 'open');
+        const { data: opportunities } = await supabase
+          .from('opportunities')
+          .select('*')
+          .eq('brand_id', brand.id)
+          .eq('status', 'open');
 
-      return opportunities || [];
+        return opportunities || [];
+      } catch (error) {
+        console.error('Error fetching campaigns:', error);
+        toast.error("Failed to load campaigns");
+        return [];
+      }
     },
   });
 
@@ -103,7 +109,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     location: creator.location || '',
     profileImage: creator.profile_image_url,
     creatorType: 'solo',
-    profile: creator.profile || null,
+    profile: creator.profile,
     profile_image_url: creator.profile_image_url
   };
 
