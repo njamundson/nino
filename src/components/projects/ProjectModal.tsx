@@ -75,6 +75,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
           <ApplicationForm 
             opportunity={opportunity}
             onClose={() => setShowApplicationForm(false)}
+            onModalClose={onClose}
           />
         </DialogContent>
       </Dialog>

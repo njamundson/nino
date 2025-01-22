@@ -15,9 +15,10 @@ export interface ApplicationFormProps {
     } | null;
   };
   onClose: () => void;
+  onModalClose: () => void;
 }
 
-const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
+const ApplicationForm = ({ opportunity, onClose, onModalClose }: ApplicationFormProps) => {
   const [coverLetter, setCoverLetter] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const ApplicationForm = ({ opportunity, onClose }: ApplicationFormProps) => {
     opportunityId: opportunity.id,
     onClose: () => {
       onClose();
+      onModalClose();
       navigate("/creator/projects");
     },
   });
