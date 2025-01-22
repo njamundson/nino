@@ -83,7 +83,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-2xl">
+      <DialogContent className="max-w-4xl h-[85vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-2xl">
         <ProjectHeader
           title={opportunity.title}
           companyName={opportunity.brand?.company_name || "Unnamed Brand"}
@@ -93,11 +93,11 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
           onApply={handleApply}
         />
 
-        <div className="overflow-y-auto px-8 py-6 relative h-full">
-          <div className="max-w-3xl mx-auto space-y-8 pb-20">
+        <div className="overflow-y-auto px-6 py-4 relative h-full">
+          <div className="max-w-3xl mx-auto space-y-4 pb-16">
             <ProjectDescription description={opportunity.description} />
             
-            <Separator className="my-8" />
+            <Separator className="my-4" />
 
             <ProjectCompensation
               paymentDetails={opportunity.payment_details}
@@ -117,7 +117,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
             )}
           </div>
           
-          <div className="fixed bottom-8 right-8">
+          <div className="fixed bottom-6 right-6">
             <Button 
               onClick={handleApply}
               size="lg"
