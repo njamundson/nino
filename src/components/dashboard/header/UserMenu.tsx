@@ -49,7 +49,7 @@ export const UserMenu = () => {
       >
         <DropdownMenuItem 
           className="flex items-center px-4 py-3 text-sm text-nino-text hover:bg-nino-bg/50 rounded-lg mx-1 cursor-pointer transition-colors duration-200"
-          onClick={() => navigate('/brand/settings')}
+          onClick={() => navigate('/creator/settings')}
         >
           <Settings className="w-4 h-4 mr-3 text-nino-gray" />
           Settings
