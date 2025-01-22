@@ -64,18 +64,16 @@ const CreatorGrid = ({
           query = query.not('user_id', 'in', `(${brandProfileIds.join(',')})`);
         }
 
-        // Apply creator type filter if selected
+        // Only apply filters if they are actually selected
         if (selectedCreatorType) {
           query = query.eq('creator_type', selectedCreatorType);
         }
 
-        // Apply specialties filter if any are selected
         if (selectedSpecialties.length > 0) {
           query = query.overlaps('specialties', selectedSpecialties);
         }
 
-        // Apply location filter if any are selected
-        if (selectedLocations.length > 0) {
+        if (selectedLocations.length > 0 && selectedLocations[0] !== "") {
           query = query.in('location', selectedLocations);
         }
 
