@@ -28,7 +28,7 @@ interface Opportunity {
   payment_details: string | null;
   compensation_details: string | null;
   deliverables: string[] | null;
-  brand: Brand | null;
+  brand: Brand;
   image_url: string | null;
 }
 
@@ -57,6 +57,9 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
       setIsLoading(false);
     }
   };
+
+  // Debug log to check the brand data
+  console.log("Brand data in ProjectCard:", opportunity.brand);
   
   return (
     <>

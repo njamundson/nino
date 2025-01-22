@@ -35,7 +35,6 @@ const CompletedProjectsList = () => {
         return [];
       }
 
-      // Updated query to explicitly select all brand fields
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
@@ -57,9 +56,8 @@ const CompletedProjectsList = () => {
         console.error("Error fetching opportunities:", error);
         throw error;
       }
-      
-      // Add detailed logging to inspect the data
-      console.log("Fetched opportunities with brands:", JSON.stringify(data, null, 2));
+
+      console.log("Raw opportunities data:", JSON.stringify(data, null, 2));
       return data || [];
     }
   });
