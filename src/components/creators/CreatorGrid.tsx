@@ -47,12 +47,12 @@ const CreatorGrid = ({
           
         console.log("Brand profile IDs to exclude:", brandProfileIds);
 
-        // Then fetch creators excluding those profiles
+        // Then fetch creators with their profile information
         let query = supabase
           .from('creators')
           .select(`
             *,
-            profile:profiles(
+            profiles:profiles!inner (
               first_name,
               last_name
             )
@@ -114,8 +114,8 @@ const CreatorGrid = ({
 
           return {
             id: creator.id,
-            firstName: creator.profile?.first_name || "",
-            lastName: creator.profile?.last_name || "",
+            firstName: creator.profiles?.first_name || "",
+            lastName: creator.profiles?.last_name || "",
             bio: creator.bio || "",
             specialties: creator.specialties || [],
             instagram: creator.instagram || "",
@@ -123,7 +123,7 @@ const CreatorGrid = ({
             location: creator.location || "",
             profileImage: profileImageUrl,
             creatorType: creator.creator_type as CreatorType || "solo",
-            profile: creator.profile
+            profile: creator.profiles
           };
         }));
 
