@@ -36,23 +36,12 @@ const CompletedProjectsList = () => {
           return [];
         }
 
-        // First get all completed opportunities
+        // First get all completed opportunities with their brands in a single query
         const { data: opportunities, error: oppsError } = await supabase
           .from('opportunities')
           .select(`
-            id,
-            title,
-            description,
-            location,
-            start_date,
-            end_date,
-            perks,
-            requirements,
-            payment_details,
-            compensation_details,
-            deliverables,
-            image_url,
-            brand_id
+            *,
+            brand:brands(*)
           `)
           .eq('status', 'completed');
 
@@ -61,29 +50,8 @@ const CompletedProjectsList = () => {
           throw oppsError;
         }
 
-        if (!opportunities?.length) {
-          return [];
-        }
-
-        // Then fetch brand details for these opportunities
-        const { data: brands, error: brandsError } = await supabase
-          .from('brands')
-          .select('*')
-          .in('id', opportunities.map(o => o.brand_id));
-
-        if (brandsError) {
-          console.error("Error fetching brands:", brandsError);
-          throw brandsError;
-        }
-
-        // Combine the data
-        const projectsWithBrands = opportunities.map(opp => ({
-          ...opp,
-          brand: brands?.find(b => b.id === opp.brand_id) || null
-        }));
-
-        console.log("Combined projects with brands:", projectsWithBrands);
-        return projectsWithBrands;
+        console.log("Fetched opportunities with brands:", opportunities);
+        return opportunities || [];
       } catch (error) {
         console.error("Error in query:", error);
         return [];
