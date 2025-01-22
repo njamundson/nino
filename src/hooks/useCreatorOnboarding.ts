@@ -17,7 +17,8 @@ export const useCreatorOnboarding = () => {
     location: "",
     profileImage: null,
     creatorType: "solo",
-    profile: null
+    profile: null,
+    profile_image_url: null
   });
 
   const updateField = (field: keyof CreatorData, value: any) => {

@@ -30,7 +30,6 @@ const CreatorGrid = ({
           selectedLocations 
         });
         
-        // First get the profile IDs of brands
         const { data: brandProfiles, error: brandError } = await supabase
           .from('brands')
           .select('user_id');
@@ -40,14 +39,12 @@ const CreatorGrid = ({
           throw brandError;
         }
 
-        // Filter out any null values and create a clean array of IDs
         const brandProfileIds = brandProfiles
           ?.map(b => b.user_id)
           .filter(id => id !== null && id !== undefined);
           
         console.log("Brand profile IDs to exclude:", brandProfileIds);
 
-        // Then fetch creators with their profile information
         let query = supabase
           .from('creators')
           .select(`
@@ -59,12 +56,10 @@ const CreatorGrid = ({
           `)
           .not('user_id', 'is', null);
 
-        // Only add the brand profile filter if we have IDs to exclude
         if (brandProfileIds && brandProfileIds.length > 0) {
           query = query.not('user_id', 'in', `(${brandProfileIds.join(',')})`);
         }
 
-        // Only apply filters if they are actually selected
         if (selectedCreatorType) {
           query = query.eq('creator_type', selectedCreatorType);
         }
@@ -89,10 +84,8 @@ const CreatorGrid = ({
         const formattedCreators: CreatorData[] = await Promise.all(data.map(async creator => {
           let profileImageUrl = null;
           
-          // Only try to get public URL if profile_image_url exists and is not null
           if (creator.profile_image_url) {
             try {
-              // Extract just the file path from the URL if it's a full URL
               const imagePath = creator.profile_image_url.includes('http') 
                 ? new URL(creator.profile_image_url).pathname.split('/').pop()
                 : creator.profile_image_url;
@@ -123,7 +116,8 @@ const CreatorGrid = ({
             location: creator.location || "",
             profileImage: profileImageUrl,
             creatorType: creator.creator_type as CreatorType || "solo",
-            profile: creator.profiles
+            profile: creator.profiles,
+            profile_image_url: creator.profile_image_url
           };
         }));
 
