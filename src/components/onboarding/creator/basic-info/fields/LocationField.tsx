@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -17,6 +17,18 @@ interface LocationFieldProps {
 const LocationField = ({ location, onUpdateField }: LocationFieldProps) => {
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedRegion, setSelectedRegion] = useState<string>("");
+
+  useEffect(() => {
+    if (location && !selectedCountry) {
+      const [region, country] = location.split(", ").reverse();
+      if (country && COUNTRIES.includes(country)) {
+        setSelectedCountry(country);
+        if (region) {
+          setSelectedRegion(region);
+        }
+      }
+    }
+  }, [location]);
 
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
