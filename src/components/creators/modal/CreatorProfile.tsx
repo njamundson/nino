@@ -17,13 +17,6 @@ const CreatorProfile = ({ creator, onClose }: CreatorProfileProps) => {
 
   const handleMessageClick = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast.error("Please sign in to message creators");
-        return;
-      }
-
       // Get the creator's user_id from the creators table
       const { data: creatorData, error: creatorError } = await supabase
         .from('creators')
