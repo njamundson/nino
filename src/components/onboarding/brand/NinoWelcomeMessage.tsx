@@ -44,7 +44,6 @@ const NinoWelcomeMessage = () => {
               title: "Welcome!",
               description: "Your brand profile has been set up successfully.",
             });
-            // Use replace: true to prevent going back to welcome page
             navigate('/brand/dashboard', { replace: true });
           }, 2500); // 2 seconds + 0.5 seconds for fade out
 
@@ -52,9 +51,6 @@ const NinoWelcomeMessage = () => {
             clearTimeout(fadeTimeout);
             clearTimeout(redirectTimeout);
           };
-        } else {
-          // If company_name is not set, user hasn't completed onboarding
-          navigate('/onboarding/brand');
         }
       } catch (error) {
         console.error('Error in redirect:', error);
