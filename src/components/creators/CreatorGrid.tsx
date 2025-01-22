@@ -100,7 +100,7 @@ const CreatorGrid = ({
           profile: creator.profile
         }));
 
-        console.log("Formatted creators:", formattedCreators);
+        console.log("Formatted creators with profile images:", formattedCreators);
         setCreators(formattedCreators);
       } catch (error) {
         console.error("Error in fetchCreators:", error);

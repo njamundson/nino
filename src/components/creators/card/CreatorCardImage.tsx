@@ -16,11 +16,11 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     : 'Anonymous Creator';
 
   const handleImageError = () => {
-    console.log("Image failed to load, falling back to placeholder");
+    console.log(`Image failed to load for creator ${creator.id}, using placeholder`);
     setImageError(true);
   };
 
-  // Random placeholder selection from Unsplash
+  // Fallback placeholder images if profile image fails to load
   const placeholderImages = [
     'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
     'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
@@ -33,8 +33,9 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     return placeholderImages[randomIndex];
   };
 
-  const imageUrl = !imageError 
-    ? (creator.profileImage || getRandomPlaceholder()) 
+  // Only use placeholder if the profile image fails to load or doesn't exist
+  const imageUrl = !imageError && creator.profileImage 
+    ? creator.profileImage 
     : getRandomPlaceholder();
 
   return (
