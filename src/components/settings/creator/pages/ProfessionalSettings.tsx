@@ -1,12 +1,14 @@
 import { useCreatorSettings } from "@/hooks/useCreatorSettings";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft } from "lucide-react";
 import CreatorTypeSelect from "@/components/onboarding/creator/professional-info/CreatorTypeSelect";
 import SkillsSelection from "@/components/onboarding/creator/professional-info/SkillsSelection";
 
-const ProfessionalSettings = () => {
+interface ProfessionalSettingsProps {
+  onBack: () => void;
+}
+
+const ProfessionalSettings = ({ onBack }: ProfessionalSettingsProps) => {
   const { loading, creatorData, setCreatorData, handleSave } = useCreatorSettings();
 
   const handleUpdateField = (field: string, value: any) => {
@@ -15,7 +17,17 @@ const ProfessionalSettings = () => {
 
   return (
     <div className="max-w-2xl mx-auto pt-12 px-6 pb-24">
-      <h1 className="text-3xl font-semibold text-nino-text mb-8">Professional & Social</h1>
+      <div className="flex items-center mb-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onBack}
+          className="mr-4"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <h1 className="text-3xl font-semibold text-nino-text">Professional & Social</h1>
+      </div>
       
       <div className="space-y-8">
         <div className="bg-nino-white rounded-2xl p-8 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-6">

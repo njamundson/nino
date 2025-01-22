@@ -4,7 +4,6 @@ import { ChevronRight } from "lucide-react";
 import BasicInfoSettings from "@/components/settings/creator/pages/BasicInfoSettings";
 import ProfessionalSettings from "@/components/settings/creator/pages/ProfessionalSettings";
 import AccountSettings from "@/components/settings/creator/pages/AccountSettings";
-import { Button } from "@/components/ui/button";
 
 type SettingsPage = "basic" | "professional" | "account" | "menu";
 
@@ -17,8 +16,8 @@ const Settings = () => {
 
   const pages: Record<SettingsPage, React.ReactNode> = {
     basic: <BasicInfoSettings onBack={handleBackToMenu} />,
-    professional: <ProfessionalSettings />,
-    account: <AccountSettings />,
+    professional: <ProfessionalSettings onBack={handleBackToMenu} />,
+    account: <AccountSettings onBack={handleBackToMenu} />,
     menu: null
   };
 
