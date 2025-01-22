@@ -1,76 +1,64 @@
+import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { useBrandSettings } from "@/hooks/useBrandSettings";
-import { FormEvent } from "react";
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BrandProfileForm from "./profile/BrandProfileForm";
-import ContactInformationForm from "./profile/ContactInformationForm";
-import SecuritySettings from "./profile/SecuritySettings";
-import NotificationPreferences from "./profile/NotificationPreferences";
+import NotificationSettings from "./NotificationSettings";
+import SecuritySettings from "./SecuritySettings";
+import { useBrandSettings } from "@/hooks/useBrandSettings";
 
 const ProfileSettings = () => {
   const {
-    loading,
     brandData,
-    updateBrandSettings,
+    setBrandData,
+    profileImage,
+    setProfileImage,
+    loading,
+    handleSave,
+    updateBrandSettings
   } = useBrandSettings();
 
-  const handleUpdateField = (field: string, value: any) => {
-    updateBrandSettings.mutate({ [field]: value });
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    await updateBrandSettings.mutateAsync(Object.fromEntries(formData));
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    await handleSave(formData);
   };
 
   return (
-    <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm space-y-8">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <BrandProfileForm 
-          loading={loading}
-          brandData={brandData}
-          onUpdateField={handleUpdateField}
-        />
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Card className="p-6">
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            <TabsTrigger value="security">Security</TabsTrigger>
+          </TabsList>
 
-        <ContactInformationForm 
-          brandData={brandData}
-          loading={loading}
-          onUpdateField={handleUpdateField}
-        />
+          <TabsContent value="profile" className="space-y-6">
+            <BrandProfileForm
+              loading={loading}
+              brandData={brandData}
+              profileImage={profileImage}
+              onUpdateImage={setProfileImage}
+              onUpdateField={(field, value) => setBrandData(prev => ({ ...prev, [field]: value }))}
+            />
+          </TabsContent>
 
-        <NotificationPreferences 
-          brandData={brandData}
-          loading={loading}
-          onUpdateField={handleUpdateField}
-        />
+          <TabsContent value="notifications">
+            <NotificationSettings
+              sms_notifications_enabled={brandData.sms_notifications_enabled || false}
+              onUpdateField={(field, value) => setBrandData(prev => ({ ...prev, [field]: value }))}
+            />
+          </TabsContent>
 
-        <SecuritySettings 
-          brandData={brandData}
-          loading={loading}
-          onUpdateField={handleUpdateField}
-        />
-
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={loading || updateBrandSettings.isPending}
-            className="bg-nino-primary hover:bg-nino-primary/90"
-          >
-            {(loading || updateBrandSettings.isPending) ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Saving...</span>
-              </div>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
-        </div>
-      </form>
-    </Card>
+          <TabsContent value="security">
+            <SecuritySettings
+              two_factor_enabled={brandData.two_factor_enabled || false}
+              onUpdateField={(field, value) => setBrandData(prev => ({ ...prev, [field]: value }))}
+            />
+          </TabsContent>
+        </Tabs>
+      </Card>
+    </form>
   );
 };
 

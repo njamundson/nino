@@ -27,7 +27,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           .from('creators')
           .select('id')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (creator) {
           setHasAccess(true);

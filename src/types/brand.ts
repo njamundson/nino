@@ -13,3 +13,10 @@ export interface BrandSettings {
 }
 
 export type BrandType = 'hotel' | 'restaurant' | 'retail' | 'other';
+
+export interface BrandData extends BrandSettings {
+  id?: string;
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+}
