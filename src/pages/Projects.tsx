@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import ProjectCard from "@/components/projects/ProjectCard";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import EmptyProjects from "@/components/projects/EmptyProjects";
 import PageHeader from "@/components/shared/PageHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 
 const Projects = () => {
   const { data: opportunities, isLoading, error } = useQuery({

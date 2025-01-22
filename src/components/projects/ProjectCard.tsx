@@ -7,6 +7,7 @@ import ProjectModal from "./ProjectModal";
 import { useToast } from "@/components/ui/use-toast";
 
 interface Brand {
+  id: string;
   company_name: string;
   brand_type: string;
   location: string | null;
@@ -45,7 +46,7 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
     e.stopPropagation();
     setIsLoading(true);
     try {
-      navigate(`/projects/${opportunity.id}`);
+      navigate(`/creator/projects/${opportunity.id}`);
     } catch (error) {
       toast({
         title: "Error",
@@ -56,14 +57,6 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
       setIsLoading(false);
     }
   };
-
-  if (!opportunity.brand) {
-    return (
-      <Card className="p-6 bg-gray-50">
-        <p className="text-gray-500 text-center">Project details unavailable</p>
-      </Card>
-    );
-  }
   
   return (
     <>
@@ -81,11 +74,16 @@ const ProjectCard = ({ opportunity }: ProjectCardProps) => {
         
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <p className="text-sm font-medium text-white/90 mb-1">
-            {opportunity.brand.company_name}
+            {opportunity.brand?.company_name || "Brand"}
           </p>
           <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
             {opportunity.title}
           </h3>
+          {opportunity.location && (
+            <p className="text-sm text-white/80 mt-2">
+              📍 {opportunity.location}
+            </p>
+          )}
         </div>
 
         <Button
