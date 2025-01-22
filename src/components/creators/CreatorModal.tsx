@@ -102,7 +102,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     instagram: creator.instagram || '',
     website: creator.website || '',
     location: creator.location || '',
-    profileImage: creator.profile_image_url,
+    profileImage: creator.profile_image_url || null,
     creatorType: 'solo', // Default to solo as it's required by CreatorData type
     profile: creator.profile
   };
