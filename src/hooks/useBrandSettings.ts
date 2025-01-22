@@ -2,30 +2,21 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-export interface BrandSettings {
-  brand_type: string;
-  company_name: string;
-  description: string;
-  website: string;
-  instagram: string;
-  location: string;
-  phone_number: string;
-  support_email: string;
-  profile_image_url: string;
-}
+import { BrandSettings } from "@/types/brand";
 
 export const useBrandSettings = () => {
   const [brandData, setBrandData] = useState<BrandSettings>({
-    brand_type: "",
+    user_id: "",
     company_name: "",
+    brand_type: "",
     description: "",
-    website: "",
-    instagram: "",
+    website: null,
+    instagram: null,
     location: "",
-    phone_number: "",
-    support_email: "",
-    profile_image_url: "",
+    phone_number: null,
+    support_email: null,
+    profile_image_url: null,
+    sms_notifications_enabled: false,
   });
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -70,6 +61,10 @@ export const useBrandSettings = () => {
     },
   });
 
+  const handleUpdateField = (field: string, value: any) => {
+    setBrandData((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleSave = async (formData: FormData) => {
     setLoading(true);
     try {
@@ -87,5 +82,6 @@ export const useBrandSettings = () => {
     loading,
     handleSave,
     updateBrandSettings,
+    handleUpdateField,
   };
 };

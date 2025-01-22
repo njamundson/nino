@@ -28,7 +28,6 @@ const ProfileSettings = ({ onBack }: ProfileSettingsProps) => {
       
       <div className="space-y-8">
         <SecuritySettings
-          two_factor_enabled={brandData?.two_factor_enabled || false}
           sms_notifications_enabled={brandData?.sms_notifications_enabled || false}
           onUpdateField={handleUpdateField}
         />

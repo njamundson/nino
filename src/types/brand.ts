@@ -11,7 +11,6 @@ export interface BrandData {
   support_email: string | null;
   profile_image_url: string | null;
   sms_notifications_enabled: boolean;
-  two_factor_enabled: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -21,8 +20,6 @@ export interface BrandSettings extends BrandData {
 }
 
 export interface SecuritySettingsProps {
-  two_factor_enabled: boolean;
   sms_notifications_enabled: boolean;
   onUpdateField: (field: string, value: any) => void;
-  loginHistory?: any[];
 }

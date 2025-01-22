@@ -3,13 +3,11 @@ import { Switch } from "@/components/ui/switch";
 
 interface SecuritySettingsProps {
   sms_notifications_enabled: boolean;
-  two_factor_enabled: boolean;
   onUpdateField: (field: string, value: any) => void;
 }
 
 const SecuritySettings = ({
   sms_notifications_enabled,
-  two_factor_enabled,
   onUpdateField,
 }: SecuritySettingsProps) => {
   return (
@@ -25,20 +23,6 @@ const SecuritySettings = ({
           checked={sms_notifications_enabled}
           onCheckedChange={(checked) =>
             onUpdateField("sms_notifications_enabled", checked)
-          }
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label className="text-base">Two Factor Authentication</Label>
-          <p className="text-sm text-muted-foreground">
-            Add an extra layer of security
-          </p>
-        </div>
-        <Switch
-          checked={two_factor_enabled}
-          onCheckedChange={(checked) =>
-            onUpdateField("two_factor_enabled", checked)
           }
         />
       </div>
