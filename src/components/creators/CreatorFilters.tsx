@@ -100,7 +100,12 @@ const CreatorFilters = ({
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100 transition-all duration-300"
+      className={cn(
+        "transition-all duration-300",
+        isOpen 
+          ? "bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100" 
+          : "bg-transparent"
+      )}
     >
       <CollapsibleTrigger className="flex items-center justify-end w-full gap-2 p-6">
         {isOpen && hasActiveFilters && (
