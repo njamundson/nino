@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import ProposalCard from "./ProposalCard";
 import { FileSpreadsheet, Send } from "lucide-react";
-import { Application } from "@/integrations/supabase/types";
+import { Application } from "@/integrations/supabase/types/opportunity";
 
 interface ProposalsListProps {
   applications: Application[];

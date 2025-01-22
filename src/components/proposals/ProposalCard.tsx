@@ -5,7 +5,7 @@ import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useToast } from "@/hooks/use-toast";
-import { Brand, Opportunity, Application } from "@/integrations/supabase/types";
+import { Application } from "@/integrations/supabase/types/opportunity";
 
 interface ProposalCardProps {
   application: Application;

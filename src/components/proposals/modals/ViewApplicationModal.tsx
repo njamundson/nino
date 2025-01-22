@@ -2,29 +2,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { Application } from "@/integrations/supabase/types/opportunity";
 
 interface ViewApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  application: {
-    opportunity: {
-      title: string;
-      description: string | null;
-      location: string | null;
-      start_date: string | null;
-      end_date: string | null;
-      payment_details: string | null;
-      compensation_details: string | null;
-      deliverables: string[] | null;
-      requirements: string[] | null;
-      perks: string[] | null;
-      brand?: {
-        company_name: string | null;
-        location: string | null;
-      } | null;
-    };
-    cover_letter: string | null;
-  };
+  application: Application;
   type: 'proposal' | 'application';
   onUpdateStatus?: (applicationId: string, status: 'accepted' | 'rejected') => void;
 }
@@ -140,3 +123,5 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
     </Dialog>
   );
 };
+
+export default ViewApplicationModal;
