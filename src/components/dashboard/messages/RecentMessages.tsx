@@ -32,7 +32,6 @@ const RecentMessages = () => {
         `)
         .eq('receiver_id', user.id)
         .neq('sender_id', user.id)
-        .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .limit(3);
       
@@ -62,7 +61,7 @@ const RecentMessages = () => {
   }, [refetch]);
 
   const handleMessagesClick = () => {
-    navigate('/brand/messages');
+    navigate('/creator/messages');
   };
 
   const formatMessagePreview = (content: string) => {
