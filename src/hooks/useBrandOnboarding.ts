@@ -9,6 +9,7 @@ export const useBrandOnboarding = () => {
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandData>({
+    user_id: '', // This will be set when user is authenticated
     company_name: '',
     brand_type: '',
     description: '',
@@ -51,6 +52,9 @@ export const useBrandOnboarding = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No authenticated user');
+
+      // Update the user_id in brandData before submitting
+      setBrandData(prev => ({ ...prev, user_id: user.id }));
 
       const { error } = await supabase
         .from('brands')
