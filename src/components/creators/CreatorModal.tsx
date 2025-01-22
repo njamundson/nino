@@ -105,8 +105,17 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
             </DialogHeader>
             
             <CreatorProfile 
-              creator={creator} 
-              onInviteClick={() => setShowCampaigns(true)} 
+              creator={{
+                id: creator.id,
+                bio: creator.bio || '',
+                location: creator.location || '',
+                specialties: creator.specialties || [],
+                instagram: creator.instagram || '',
+                website: creator.website || '',
+                profile: creator.profile,
+                profileImage: creator.profile_image_url || '',
+              }}
+              onClose={onClose}
             />
           </div>
         ) : (
