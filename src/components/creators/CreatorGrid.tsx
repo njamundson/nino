@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import CreatorCard from "./CreatorCard";
 import { supabase } from "@/integrations/supabase/client";
-import { CreatorData } from "@/types/creator";
+import { CreatorData, CreatorType } from "@/types/creator";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
@@ -47,7 +47,7 @@ const CreatorGrid = ({
 
         // Then fetch creators excluding those profiles
         let query = supabase
-          .from('creators')
+          .from('creator_profiles')
           .select(`
             *,
             profile:profiles(
@@ -88,15 +88,15 @@ const CreatorGrid = ({
 
         const formattedCreators: CreatorData[] = data.map(creator => ({
           id: creator.id,
-          firstName: creator.profile?.first_name || "",
-          lastName: creator.profile?.last_name || "",
+          firstName: creator.first_name || "",
+          lastName: creator.last_name || "",
           bio: creator.bio || "",
           specialties: creator.specialties || [],
           instagram: creator.instagram || "",
           website: creator.website || "",
           location: creator.location || "",
           profileImage: creator.profile_image_url,
-          creatorType: creator.creator_type || "",
+          creatorType: creator.creator_type as CreatorType || "solo",
           profile: creator.profile
         }));
 

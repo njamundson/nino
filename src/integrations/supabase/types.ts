@@ -42,6 +42,13 @@ export type Database = {
             foreignKeyName: "applications_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "creator_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "creators"
             referencedColumns: ["id"]
           },
@@ -90,8 +97,10 @@ export type Database = {
         Row: {
           brand_id: string
           created_at: string | null
+          email: string | null
           id: string
           invitation_status: string | null
+          name: string | null
           role: string
           updated_at: string | null
           user_id: string
@@ -99,8 +108,10 @@ export type Database = {
         Insert: {
           brand_id: string
           created_at?: string | null
+          email?: string | null
           id?: string
           invitation_status?: string | null
+          name?: string | null
           role: string
           updated_at?: string | null
           user_id: string
@@ -108,8 +119,10 @@ export type Database = {
         Update: {
           brand_id?: string
           created_at?: string | null
+          email?: string | null
           id?: string
           invitation_status?: string | null
+          name?: string | null
           role?: string
           updated_at?: string | null
           user_id?: string
@@ -230,6 +243,7 @@ export type Database = {
           id: string
           instagram: string | null
           location: string | null
+          profile_id: string | null
           profile_image_url: string | null
           specialties: string[] | null
           updated_at: string
@@ -243,6 +257,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           location?: string | null
+          profile_id?: string | null
           profile_image_url?: string | null
           specialties?: string[] | null
           updated_at?: string
@@ -256,13 +271,22 @@ export type Database = {
           id?: string
           instagram?: string | null
           location?: string | null
+          profile_id?: string | null
           profile_image_url?: string | null
           specialties?: string[] | null
           updated_at?: string
           user_id?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "creators_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       message_reactions: {
         Row: {
@@ -287,6 +311,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "message_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "message_reactions_message_id_fkey"
             columns: ["message_id"]
@@ -339,11 +370,16 @@ export type Database = {
         Row: {
           brand_id: string
           compensation_amount: number | null
+          compensation_details: string | null
           compensation_type: string | null
           created_at: string | null
+          deliverables: string[] | null
           description: string | null
           end_date: string | null
           id: string
+          image_url: string | null
+          location: string | null
+          payment_details: string | null
           perks: string[] | null
           requirements: string[] | null
           start_date: string | null
@@ -354,11 +390,16 @@ export type Database = {
         Insert: {
           brand_id: string
           compensation_amount?: number | null
+          compensation_details?: string | null
           compensation_type?: string | null
           created_at?: string | null
+          deliverables?: string[] | null
           description?: string | null
           end_date?: string | null
           id?: string
+          image_url?: string | null
+          location?: string | null
+          payment_details?: string | null
           perks?: string[] | null
           requirements?: string[] | null
           start_date?: string | null
@@ -369,11 +410,16 @@ export type Database = {
         Update: {
           brand_id?: string
           compensation_amount?: number | null
+          compensation_details?: string | null
           compensation_type?: string | null
           created_at?: string | null
+          deliverables?: string[] | null
           description?: string | null
           end_date?: string | null
           id?: string
+          image_url?: string | null
+          location?: string | null
+          payment_details?: string | null
           perks?: string[] | null
           requirements?: string[] | null
           start_date?: string | null
@@ -441,7 +487,52 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      creator_profiles: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          creator_type: string | null
+          first_name: string | null
+          id: string | null
+          instagram: string | null
+          last_name: string | null
+          location: string | null
+          profile_id: string | null
+          profile_image_url: string | null
+          specialties: string[] | null
+          updated_at: string | null
+          user_id: string | null
+          website: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creators_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_profiles: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string | null
+          media_type: string | null
+          media_url: string | null
+          message_type: string | null
+          read: boolean | null
+          receiver_first_name: string | null
+          receiver_id: string | null
+          receiver_last_name: string | null
+          sender_first_name: string | null
+          sender_id: string | null
+          sender_last_name: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

@@ -28,8 +28,8 @@ const Messages = () => {
     return null;
   });
 
-  const selectedFirstName = selectedChatProfile?.sender_profile?.first_name || selectedChatProfile?.receiver_profile?.first_name;
-  const selectedLastName = selectedChatProfile?.sender_profile?.last_name || selectedChatProfile?.receiver_profile?.last_name;
+  const selectedFirstName = selectedChatProfile?.profiles?.first_name;
+  const selectedLastName = selectedChatProfile?.profiles?.last_name;
 
   return (
     <div className="h-[calc(100vh-6rem)] flex flex-col">
