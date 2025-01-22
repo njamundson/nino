@@ -84,7 +84,7 @@ const CreatorGrid = ({
           throw error;
         }
 
-        console.log("Fetched creators:", data);
+        console.log("Raw creator data from Supabase:", data);
 
         const formattedCreators: CreatorData[] = data.map(creator => ({
           id: creator.id,
@@ -95,7 +95,7 @@ const CreatorGrid = ({
           instagram: creator.instagram || "",
           website: creator.website || "",
           location: creator.location || "",
-          profileImage: creator.profile_image_url || null,
+          profileImage: creator.profile_image_url,
           creatorType: creator.creator_type as CreatorType || "solo",
           profile: creator.profile
         }));

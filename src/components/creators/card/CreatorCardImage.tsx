@@ -16,7 +16,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     : 'Anonymous Creator';
 
   const handleImageError = () => {
-    console.log(`Image failed to load for creator ${creator.id}, using placeholder`);
+    console.log(`Profile image failed to load for creator ${creator.id}`, creator.profileImage);
     setImageError(true);
   };
 
@@ -33,7 +33,6 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     return placeholderImages[randomIndex];
   };
 
-  // Only use placeholder if the profile image fails to load or doesn't exist
   const imageUrl = !imageError && creator.profileImage 
     ? creator.profileImage 
     : getRandomPlaceholder();
