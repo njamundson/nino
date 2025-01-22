@@ -86,18 +86,31 @@ const CreatorGrid = ({
 
         console.log("Raw creator data from Supabase:", data);
 
-        const formattedCreators: CreatorData[] = data.map(creator => ({
-          id: creator.id,
-          firstName: creator.profile?.first_name || "",
-          lastName: creator.profile?.last_name || "",
-          bio: creator.bio || "",
-          specialties: creator.specialties || [],
-          instagram: creator.instagram || "",
-          website: creator.website || "",
-          location: creator.location || "",
-          profileImage: creator.profile_image_url,
-          creatorType: creator.creator_type as CreatorType || "solo",
-          profile: creator.profile
+        const formattedCreators: CreatorData[] = await Promise.all(data.map(async creator => {
+          let profileImageUrl = creator.profile_image_url;
+          
+          // If there's a profile image URL, get the public URL
+          if (profileImageUrl) {
+            const { data: { publicUrl } } = supabase
+              .storage
+              .from('campaign-images')
+              .getPublicUrl(profileImageUrl);
+            profileImageUrl = publicUrl;
+          }
+
+          return {
+            id: creator.id,
+            firstName: creator.profile?.first_name || "",
+            lastName: creator.profile?.last_name || "",
+            bio: creator.bio || "",
+            specialties: creator.specialties || [],
+            instagram: creator.instagram || "",
+            website: creator.website || "",
+            location: creator.location || "",
+            profileImage: profileImageUrl,
+            creatorType: creator.creator_type as CreatorType || "solo",
+            profile: creator.profile
+          };
         }));
 
         console.log("Formatted creators with profile images:", formattedCreators);
