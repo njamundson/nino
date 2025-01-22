@@ -1,6 +1,6 @@
 import { Plus, Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -28,7 +28,7 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
 
       // Upload to Supabase storage
       const { error: uploadError, data } = await supabase.storage
-        .from('avatars')
+        .from('profile-images')
         .upload(filePath, file, {
           upsert: true
         });
@@ -37,7 +37,7 @@ const ProfileImageUpload = ({ profileImage, onUpdateImage }: ProfileImageUploadP
 
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
+        .from('profile-images')
         .getPublicUrl(filePath);
 
       onUpdateImage(publicUrl);

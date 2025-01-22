@@ -20,7 +20,9 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
         setLoading(true);
         
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('No authenticated user found');
+        if (!user) {
+          throw new Error('Creator profile not found');
+        }
 
         // First get the creator record
         const { data: creator } = await supabase
@@ -37,7 +39,7 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
         const filePath = `${user.id}-${Date.now()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
-          .from('avatars')
+          .from('profile-images')
           .upload(filePath, file, {
             upsert: true
           });
@@ -45,7 +47,7 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
+          .from('profile-images')
           .getPublicUrl(filePath);
 
         // Update the creator's profile_image_url
