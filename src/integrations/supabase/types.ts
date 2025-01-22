@@ -337,7 +337,9 @@ export type Database = {
           message_type: string | null
           read: boolean | null
           receiver_id: string
+          receiver_profile_id: string | null
           sender_id: string
+          sender_profile_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -349,7 +351,9 @@ export type Database = {
           message_type?: string | null
           read?: boolean | null
           receiver_id: string
+          receiver_profile_id?: string | null
           sender_id: string
+          sender_profile_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -361,10 +365,27 @@ export type Database = {
           message_type?: string | null
           read?: boolean | null
           receiver_id?: string
+          receiver_profile_id?: string | null
           sender_id?: string
+          sender_profile_id?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_receiver_profile_id_fkey"
+            columns: ["receiver_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_profile_id_fkey"
+            columns: ["sender_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       opportunities: {
         Row: {

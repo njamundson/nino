@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Users, Building2, UserCheck, FileSpreadsheet, ClipboardCheck, UserCog, AlertCircle } from "lucide-react";
 
-type AdminAnalytics = {
+interface AdminAnalytics {
   total_users: number;
   total_brands: number;
   total_creators: number;
@@ -11,10 +11,10 @@ type AdminAnalytics = {
   total_applications: number;
   pending_applications: number;
   pending_verifications: number;
-};
+}
 
 export const AdminDashboard = () => {
-  const { data: analytics, isLoading, error } = useQuery({
+  const { data: analytics, isLoading, error } = useQuery<AdminAnalytics>({
     queryKey: ["adminAnalytics"],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_admin_analytics');
