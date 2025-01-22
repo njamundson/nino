@@ -67,7 +67,14 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         .from('messages')
         .select(`
           *,
-          profiles:sender_id(first_name, last_name)
+          sender:sender_profile_id(
+            first_name,
+            last_name
+          ),
+          receiver:receiver_profile_id(
+            first_name,
+            last_name
+          )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
@@ -75,12 +82,18 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       if (error) throw error;
 
       const groupedChats: { [key: string]: Message[] } = {};
-      messages?.forEach((message: Message) => {
+      messages?.forEach((message: any) => {
         const partnerId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
         if (!groupedChats[partnerId]) {
           groupedChats[partnerId] = [];
         }
-        groupedChats[partnerId].push(message);
+        groupedChats[partnerId].push({
+          ...message,
+          profiles: {
+            first_name: message.sender?.first_name || '',
+            last_name: message.sender?.last_name || ''
+          }
+        });
       });
 
       setChats(groupedChats);

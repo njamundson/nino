@@ -16,16 +16,16 @@ export const useNotifications = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      // First, get unread messages
+      // First, get unread messages with profile data
       const { data: messages, error: messagesError } = await supabase
         .from('messages')
         .select(`
           *,
-          sender_profile:profiles!messages_sender_id_fkey(
+          sender:sender_profile_id(
             first_name,
             last_name
           ),
-          receiver_profile:profiles!messages_receiver_id_fkey(
+          receiver:receiver_profile_id(
             first_name,
             last_name
           )
@@ -38,6 +38,16 @@ export const useNotifications = () => {
         console.error('Error fetching messages:', messagesError);
         return [];
       }
+
+      // Transform messages into notifications
+      const messageNotifications = (messages || []).map(message => ({
+        id: message.id,
+        type: 'message',
+        content: `New message from ${message.sender?.first_name} ${message.sender?.last_name}`,
+        created_at: message.created_at,
+        read: message.read,
+        action_url: '/messages'
+      }));
 
       // Then, get unread applications (proposals)
       const { data: applications, error: applicationsError } = await supabase
@@ -62,16 +72,7 @@ export const useNotifications = () => {
         return [];
       }
 
-      // Transform messages and applications into a unified notification format
-      const messageNotifications = (messages || []).map(message => ({
-        id: message.id,
-        type: 'message',
-        content: `New message from ${message.sender_profile.first_name} ${message.sender_profile.last_name}`,
-        created_at: message.created_at,
-        read: message.read,
-        action_url: '/brand/messages'
-      }));
-
+      // Transform applications into notifications
       const applicationNotifications = (applications || []).map(application => ({
         id: application.id,
         type: 'application',

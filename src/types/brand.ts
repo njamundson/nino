@@ -16,3 +16,9 @@ export interface BrandSettings extends BrandData {
   loading?: boolean;
   onUpdateField?: (field: string, value: any) => void;
 }
+
+export interface SecuritySettingsProps {
+  sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
+  onUpdateField: (field: string, value: any) => void;
+}

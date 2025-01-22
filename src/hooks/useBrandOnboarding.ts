@@ -1,86 +1,60 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { BrandData } from "@/types/brand";
 
 export const useBrandOnboarding = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'basic' | 'details' | 'social' | 'managers'>('basic');
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [brandData, setBrandData] = useState<BrandData>({
-    company_name: "",
-    brand_type: "hotel",
-    description: "",
+    company_name: '',
+    brand_type: '',
+    description: '',
     website: null,
     instagram: null,
-    location: "",
+    location: '',
     phone_number: null,
     support_email: null,
+    profile_image_url: null,
     sms_notifications_enabled: false,
-    two_factor_enabled: false,
+    two_factor_enabled: false
   });
 
-  const updateField = (field: keyof BrandData, value: string) => {
-    setBrandData(prev => ({ ...prev, [field]: value }));
+  const onUpdateField = (field: string, value: any) => {
+    setBrandData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleNext = async () => {
-    if (currentStep === 'basic') {
-      if (!brandData.company_name || !brandData.support_email) {
-        toast({
-          title: "Required Fields Missing",
-          description: "Please fill in all required fields.",
-          variant: "destructive",
-        });
-        return;
+  const onSubmit = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('brands')
+        .insert([brandData]);
+
+      if (error) {
+        throw error;
       }
-      setCurrentStep('details');
-    } else if (currentStep === 'details') {
-      setCurrentStep('social');
-    } else if (currentStep === 'social') {
-      setCurrentStep('managers');
+
+      toast({
+        title: "Success",
+        description: "Brand created successfully!",
+      });
+    } catch (error) {
+      console.error("Error creating brand:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create brand. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleBack = () => {
-    if (currentStep === 'managers') {
-      setCurrentStep('social');
-    } else if (currentStep === 'social') {
-      setCurrentStep('details');
-    } else if (currentStep === 'details') {
-      setCurrentStep('basic');
-    } else {
-      navigate("/onboarding");
-    }
-  };
-
-  const handleComplete = () => {
-    // Store brand data in localStorage
-    localStorage.setItem('brandData', JSON.stringify({
-      ...brandData,
-      profileImage,
-      onboardingCompleted: true
-    }));
-
-    toast({
-      title: "Success!",
-      description: "Your brand profile has been created.",
-    });
-
-    // Navigate to brand dashboard
-    navigate("/brand/dashboard");
   };
 
   return {
-    currentStep,
-    setCurrentStep,
-    profileImage,
+    loading,
     brandData,
-    updateField,
-    setProfileImage,
-    handleNext,
-    handleBack,
-    handleComplete,
+    onUpdateField,
+    onSubmit,
   };
 };

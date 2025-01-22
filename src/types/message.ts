@@ -9,8 +9,8 @@ export interface Message {
   media_type: string | null;
   created_at: string;
   updated_at: string;
-  sender_profile_id: string;
-  receiver_profile_id: string;
+  sender_profile_id: string | null;
+  receiver_profile_id: string | null;
   deleted_at?: string;
   is_edited?: boolean;
   profiles: {
