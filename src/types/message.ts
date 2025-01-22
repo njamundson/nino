@@ -11,6 +11,8 @@ export interface Message {
   media_type: string | null;
   sender_profile_id: string;
   receiver_profile_id: string;
+  deleted_at?: string;
+  is_edited?: boolean;
   profiles: {
     first_name: string;
     last_name: string;

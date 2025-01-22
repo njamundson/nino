@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { ChatHeader } from "@/components/messages/ChatHeader";
 import { ChatMessages } from "@/components/messages/ChatMessages";
 import { ChatInput } from "@/components/messages/ChatInput";
+import { Message } from "@/types/message";
 
 interface ChatContainerProps {
   selectedChat: string | null;
@@ -14,7 +15,7 @@ interface ChatContainerProps {
   setIsRecording: (isRecording: boolean) => void;
   editingMessage: { id: string; content: string; } | null;
   setEditingMessage: (message: { id: string; content: string; } | null) => void;
-  messages?: any[];
+  messages?: Message[];
 }
 
 export const ChatContainer = ({

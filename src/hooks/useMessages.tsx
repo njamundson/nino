@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Message } from "@/types/message";
 
 export const useMessages = (selectedChat: string | null) => {
   const [newMessage, setNewMessage] = useState("");
@@ -9,7 +10,7 @@ export const useMessages = (selectedChat: string | null) => {
   const [editingMessage, setEditingMessage] = useState<{ id: string; content: string; } | null>(null);
   const { toast } = useToast();
 
-  const { data: messages, refetch } = useQuery({
+  const { data: messages = [], refetch } = useQuery({
     queryKey: ["messages", selectedChat],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -19,11 +20,7 @@ export const useMessages = (selectedChat: string | null) => {
         .from("messages")
         .select(`
           *,
-          sender_profile:profiles!messages_sender_id_fkey(
-            first_name,
-            last_name
-          ),
-          receiver_profile:profiles!messages_receiver_id_fkey(
+          profiles!messages_sender_id_fkey(
             first_name,
             last_name
           ),
@@ -36,8 +33,9 @@ export const useMessages = (selectedChat: string | null) => {
         console.error("Error fetching messages:", error);
         throw error;
       }
-      return data;
+      return data as Message[];
     },
+    enabled: !!selectedChat,
   });
 
   useEffect(() => {
@@ -50,8 +48,7 @@ export const useMessages = (selectedChat: string | null) => {
           schema: 'public',
           table: 'messages'
         },
-        (payload) => {
-          console.log('Message change received:', payload);
+        () => {
           refetch();
         }
       )
