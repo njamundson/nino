@@ -14,7 +14,15 @@ interface Brand {
 interface Opportunity {
   id: string;
   title: string;
+  description: string | null;
   location: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  payment_details: string | null;
+  compensation_details: string | null;
+  deliverables: string[] | null;
+  requirements: string[] | null;
+  perks: string[] | null;
   image_url: string | null;
   brand: Brand | null;
 }
@@ -23,7 +31,7 @@ interface Application {
   id: string;
   status: string;
   opportunity: Opportunity;
-  cover_letter?: string | null;
+  cover_letter: string | null;
 }
 
 interface ProposalCardProps {
@@ -105,6 +113,8 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         application={application}
+        type={type}
+        onUpdateStatus={onUpdateStatus}
       />
     </>
   );

@@ -1,20 +1,32 @@
 import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import ProposalCard from "./ProposalCard";
 import { FileSpreadsheet, Send } from "lucide-react";
+
+interface Brand {
+  company_name: string | null;
+}
+
+interface Opportunity {
+  id: string;
+  title: string;
+  description: string | null;
+  location: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  payment_details: string | null;
+  compensation_details: string | null;
+  deliverables: string[] | null;
+  requirements: string[] | null;
+  perks: string[] | null;
+  image_url: string | null;
+  brand: Brand | null;
+}
 
 interface Application {
   id: string;
   status: string;
-  opportunity: {
-    id: string;
-    title: string;
-    location: string | null;
-    image_url: string | null;
-    brand: {
-      company_name: string | null;
-    } | null;
-  };
+  opportunity: Opportunity;
+  cover_letter: string | null;
 }
 
 interface ProposalsListProps {
@@ -27,20 +39,9 @@ interface ProposalsListProps {
 const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: ProposalsListProps) => {
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <div className="space-y-2 flex-1">
-                  <Skeleton className="h-6 w-2/3" />
-                  <Skeleton className="h-4 w-1/3" />
-                </div>
-              </div>
-              <Skeleton className="h-20 w-full" />
-            </div>
-          </Card>
+          <Card key={i} className="h-[400px] animate-pulse bg-gray-100" />
         ))}
       </div>
     );
@@ -49,39 +50,39 @@ const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: Propos
   if (!applications || applications.length === 0) {
     return (
       <Card className="p-12">
-        <div className="text-center">
-          <div className="flex justify-center mb-4">
-            {type === 'proposal' ? (
-              <FileSpreadsheet className="h-12 w-12 text-gray-400" />
-            ) : (
-              <Send className="h-12 w-12 text-gray-400" />
-            )}
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {type === 'proposal' 
-              ? 'No pending proposals'
-              : 'No applications submitted yet'
-            }
-          </h3>
-          <p className="text-gray-500">
-            {type === 'proposal'
-              ? 'When brands invite you to their campaigns, they will appear here.'
-              : 'When you apply to campaigns, your applications will appear here.'
-            }
-          </p>
+        <div className="text-center space-y-4">
+          {type === 'proposal' ? (
+            <>
+              <Send className="w-12 h-12 mx-auto text-gray-400" />
+              <h3 className="text-lg font-medium text-gray-900">No proposals yet</h3>
+              <p className="text-gray-500">
+                You haven't submitted any proposals to projects yet.
+                Browse available projects to get started!
+              </p>
+            </>
+          ) : (
+            <>
+              <FileSpreadsheet className="w-12 h-12 mx-auto text-gray-400" />
+              <h3 className="text-lg font-medium text-gray-900">No applications yet</h3>
+              <p className="text-gray-500">
+                You haven't received any applications to your projects yet.
+                Share your projects to attract creators!
+              </p>
+            </>
+          )}
         </div>
       </Card>
     );
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {applications.map((application) => (
         <ProposalCard
           key={application.id}
           application={application}
-          onUpdateStatus={onUpdateStatus}
           type={type}
+          onUpdateStatus={onUpdateStatus}
         />
       ))}
     </div>
