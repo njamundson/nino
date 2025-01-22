@@ -86,7 +86,7 @@ const CreatorFilters = ({
     onCreatorTypeChange(null);
     setSelectedCountry("");
     setSelectedRegion("");
-    onLocationChange("");  // Reset location by passing empty string
+    onLocationChange("");
     selectedSpecialties.forEach(specialty => {
       onSpecialtyChange(specialty);
     });
@@ -120,7 +120,7 @@ const CreatorFilters = ({
             className="gap-2"
           >
             <RotateCcw className="h-4 w-4" />
-            Reset
+            Reset Filters
           </Button>
         )}
         <div className={cn(
