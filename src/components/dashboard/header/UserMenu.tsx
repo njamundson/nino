@@ -8,10 +8,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Settings } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const UserMenu = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isBrandDashboard = location.pathname.startsWith("/brand");
+
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -33,6 +36,14 @@ export const UserMenu = () => {
     }
   });
 
+  const handleSettingsClick = () => {
+    if (isBrandDashboard) {
+      navigate('/brand/settings');
+    } else {
+      navigate('/creator/settings');
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -49,7 +60,7 @@ export const UserMenu = () => {
       >
         <DropdownMenuItem 
           className="flex items-center px-4 py-3 text-sm text-nino-text hover:bg-nino-bg/50 rounded-lg mx-1 cursor-pointer transition-colors duration-200"
-          onClick={() => navigate('/creator/settings')}
+          onClick={handleSettingsClick}
         >
           <Settings className="w-4 h-4 mr-3 text-nino-gray" />
           Settings
