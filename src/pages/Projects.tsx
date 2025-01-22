@@ -33,7 +33,6 @@ const Projects = () => {
         throw error;
       }
 
-      // Log the fetched data to verify brand information
       console.log("Fetched opportunities with brands:", data);
       return data;
     },

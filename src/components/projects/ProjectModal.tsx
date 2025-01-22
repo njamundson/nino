@@ -13,18 +13,18 @@ import { Button } from "@/components/ui/button";
 
 interface Brand {
   id: string;
-  company_name: string;
-  brand_type: string;
+  company_name: string | null;
+  brand_type: string | null;
   location: string | null;
-  description: string;
-  website: string;
-  instagram: string;
+  description: string | null;
+  website: string | null;
+  instagram: string | null;
 }
 
 interface Opportunity {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   location: string | null;
   start_date: string | null;
   end_date: string | null;
@@ -34,6 +34,7 @@ interface Opportunity {
   compensation_details: string | null;
   deliverables: string[] | null;
   brand: Brand | null;
+  image_url: string | null;
 }
 
 interface ProjectModalProps {
@@ -85,7 +86,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity }: ProjectModalProps) => {
       <DialogContent className="max-w-4xl h-[90vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-2xl">
         <ProjectHeader
           title={opportunity.title}
-          companyName={opportunity.brand?.company_name || "Unknown Company"}
+          companyName={opportunity.brand?.company_name || "Unnamed Brand"}
           location={opportunity.location}
           startDate={opportunity.start_date}
           endDate={opportunity.end_date}
