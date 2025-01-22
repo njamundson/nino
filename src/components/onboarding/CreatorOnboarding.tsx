@@ -45,7 +45,7 @@ const CreatorOnboarding = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-nino-bg">
       <CreatorOnboardingForm onComplete={handleComplete} />
     </div>
   );

@@ -65,7 +65,7 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto p-6">
+    <Card className="w-full max-w-2xl mx-auto p-6 bg-nino-white shadow-lg">
       {renderStep()}
       <OnboardingNavigation
         currentStep={currentStep}
