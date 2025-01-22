@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { useEffect } from "react";
 import { BrandData } from "@/types/brand";
 import { useToast } from "@/hooks/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface BrandBasicInfoStepProps {
   profileImage: string | null;
@@ -96,29 +95,6 @@ const BrandBasicInfoStep = ({
               className="h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary"
               onChange={(e) => onUpdateField("company_name", e.target.value)}
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="brand_type" className="text-base">Brand Type</Label>
-            <Select
-              value={brandData.brand_type}
-              onValueChange={(value) => onUpdateField("brand_type", value)}
-            >
-              <SelectTrigger id="brand_type" className="h-12 text-base bg-nino-bg border-transparent focus:border-nino-primary">
-                <SelectValue placeholder="Select your brand type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fashion">Fashion</SelectItem>
-                <SelectItem value="beauty">Beauty</SelectItem>
-                <SelectItem value="technology">Technology</SelectItem>
-                <SelectItem value="food_beverage">Food & Beverage</SelectItem>
-                <SelectItem value="lifestyle">Lifestyle</SelectItem>
-                <SelectItem value="health_wellness">Health & Wellness</SelectItem>
-                <SelectItem value="travel">Travel</SelectItem>
-                <SelectItem value="entertainment">Entertainment</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </div>

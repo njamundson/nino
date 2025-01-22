@@ -33,13 +33,10 @@ export const useBrandOnboarding = () => {
     // Check if company_name is filled (trimmed to handle whitespace-only input)
     const isCompanyNameValid = brandData.company_name.trim().length > 0;
     
-    // Check if brand_type is selected
-    const isBrandTypeValid = brandData.brand_type.trim().length > 0;
-
-    if (!isCompanyNameValid || !isBrandTypeValid) {
+    if (!isCompanyNameValid) {
       toast({
-        title: "Required Fields Missing",
-        description: "Please fill in both brand name and type.",
+        title: "Required Field Missing",
+        description: "Please enter your brand name.",
         variant: "destructive",
       });
       return false;
