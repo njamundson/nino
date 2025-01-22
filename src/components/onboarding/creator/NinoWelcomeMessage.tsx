@@ -21,7 +21,7 @@ const NinoWelcomeMessage = () => {
         // Check if user has a creator profile and has completed onboarding
         const { data: creator } = await supabase
           .from('creators')
-          .select('id, bio')
+          .select('id, onboarding_completed')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
@@ -31,7 +31,7 @@ const NinoWelcomeMessage = () => {
         }
 
         // Only show welcome message and redirect to dashboard if onboarding is complete
-        if (creator.bio) {
+        if (creator.onboarding_completed) {
           const redirectTimeout = setTimeout(() => {
             navigate('/creator/dashboard');
             toast({

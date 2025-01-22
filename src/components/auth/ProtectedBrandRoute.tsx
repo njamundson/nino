@@ -26,7 +26,7 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         // Check if user has a brand profile
         const { data: brand } = await supabase
           .from('brands')
-          .select('id, company_name')
+          .select('id, onboarding_completed')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
@@ -38,11 +38,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
           return;
         }
 
-        if (brand.company_name) {
+        if (brand.onboarding_completed) {
           // If onboarding is complete
           if (isOnboardingRoute && !isWelcomeRoute) {
-            // Redirect to welcome page if coming from onboarding
-            navigate('/onboarding/brand/payment', { replace: true });
+            // Redirect to dashboard if trying to access onboarding routes
+            navigate('/brand/dashboard', { replace: true });
           } else {
             setHasAccess(true);
           }

@@ -8,6 +8,7 @@ import AccountManagersStep from "./brand/managers/AccountManagersStep";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import BrandOnboardingContainer from "./brand/BrandOnboardingContainer";
+import { supabase } from "@/integrations/supabase/client";
 
 const BrandOnboarding = () => {
   const navigate = useNavigate();
@@ -25,21 +26,36 @@ const BrandOnboarding = () => {
 
   const handleComplete = async () => {
     try {
-      // For local development, we'll skip the user check
-      // Store brand data in localStorage
-      localStorage.setItem('brandData', JSON.stringify({
-        ...brandData,
-        profileImage,
-        onboardingCompleted: true
-      }));
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("No authenticated session");
+      }
 
-      // Navigate to welcome message
+      // Update brand profile and mark onboarding as complete
+      const { error } = await supabase
+        .from('brands')
+        .update({
+          company_name: brandData.company_name,
+          brand_type: brandData.brand_type,
+          description: brandData.description,
+          website: brandData.website,
+          instagram: brandData.instagram,
+          location: brandData.location,
+          profile_image_url: profileImage,
+          onboarding_completed: true
+        })
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+
+      // Navigate to welcome screen
       navigate("/onboarding/brand/payment");
     } catch (error) {
-      console.error('Error in handleComplete:', error);
+      console.error('Error completing onboarding:', error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: "Failed to complete onboarding. Please try again.",
         variant: "destructive",
       });
     }

@@ -26,7 +26,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         // Check if user has a creator profile
         const { data: creator } = await supabase
           .from('creators')
-          .select('id, bio')
+          .select('id, onboarding_completed')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
@@ -38,17 +38,18 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
-        if (creator.bio) {
-          // If onboarding is complete, allow access to dashboard or welcome screen
+        if (creator.onboarding_completed) {
+          // If onboarding is complete
           if (isOnboardingRoute && !isWelcomeRoute) {
-            navigate('/creator/dashboard');
+            // Redirect to dashboard if trying to access onboarding routes
+            navigate('/creator/dashboard', { replace: true });
           } else {
             setHasAccess(true);
           }
         } else {
           // If onboarding is not complete, only allow access to onboarding routes
           if (!isOnboardingRoute) {
-            navigate('/onboarding/creator');
+            navigate('/onboarding/creator', { replace: true });
           } else {
             setHasAccess(true);
           }

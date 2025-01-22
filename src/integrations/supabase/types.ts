@@ -190,6 +190,7 @@ export type Database = {
           id: string
           instagram: string | null
           location: string | null
+          onboarding_completed: boolean | null
           phone_number: string | null
           profile_image_url: string | null
           sms_notifications_enabled: boolean | null
@@ -207,6 +208,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           location?: string | null
+          onboarding_completed?: boolean | null
           phone_number?: string | null
           profile_image_url?: string | null
           sms_notifications_enabled?: boolean | null
@@ -224,6 +226,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           location?: string | null
+          onboarding_completed?: boolean | null
           phone_number?: string | null
           profile_image_url?: string | null
           sms_notifications_enabled?: boolean | null
@@ -243,6 +246,7 @@ export type Database = {
           id: string
           instagram: string | null
           location: string | null
+          onboarding_completed: boolean | null
           profile_id: string | null
           profile_image_url: string | null
           specialties: string[] | null
@@ -257,6 +261,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           location?: string | null
+          onboarding_completed?: boolean | null
           profile_id?: string | null
           profile_image_url?: string | null
           specialties?: string[] | null
@@ -271,6 +276,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           location?: string | null
+          onboarding_completed?: boolean | null
           profile_id?: string | null
           profile_image_url?: string | null
           specialties?: string[] | null
