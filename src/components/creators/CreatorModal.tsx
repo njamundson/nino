@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import CreatorProfile from "./modal/CreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
+import { CreatorData } from "@/types/creator";
 
 interface Creator {
   id: string;
@@ -60,8 +61,6 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
   if (!creator) return null;
 
-  const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
-
   const handleInvite = async (opportunityId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -93,6 +92,21 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     }
   };
 
+  // Transform Creator type to CreatorData type
+  const creatorData: CreatorData = {
+    id: creator.id,
+    firstName: creator.profile?.first_name || '',
+    lastName: creator.profile?.last_name || '',
+    bio: creator.bio || '',
+    specialties: creator.specialties || [],
+    instagram: creator.instagram || '',
+    website: creator.website || '',
+    location: creator.location || '',
+    profileImage: creator.profile_image_url,
+    creatorType: 'solo', // Default to solo as it's required by CreatorData type
+    profile: creator.profile
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-nino-bg">
@@ -100,13 +114,15 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {fullName || 'Anonymous Creator'}
+                {creator.profile?.first_name || creator.profile?.last_name 
+                  ? `${creator.profile.first_name || ''} ${creator.profile.last_name || ''}`.trim()
+                  : 'Anonymous Creator'}
               </DialogTitle>
             </DialogHeader>
             
             <CreatorProfile 
-              creator={creator} 
-              onInviteClick={() => setShowCampaigns(true)} 
+              creator={creatorData}
+              onInviteClick={() => setShowCampaigns(true)}
             />
           </div>
         ) : (
