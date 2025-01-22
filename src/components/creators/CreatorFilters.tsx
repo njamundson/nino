@@ -17,7 +17,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Filter } from "lucide-react";
 import { useState } from "react";
 
 const COUNTRIES = [
@@ -87,13 +87,8 @@ const CreatorFilters = ({
       onOpenChange={setIsOpen}
       className="bg-white/50 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-100"
     >
-      <CollapsibleTrigger className="flex items-center justify-between w-full p-6 text-base font-semibold text-gray-900">
-        <span>Filter Creators</span>
-        {isOpen ? (
-          <ChevronUp className="h-5 w-5 text-gray-500" />
-        ) : (
-          <ChevronDown className="h-5 w-5 text-gray-500" />
-        )}
+      <CollapsibleTrigger className="flex items-center justify-end w-full p-6">
+        <Filter className="h-5 w-5 text-gray-500" />
       </CollapsibleTrigger>
       
       <CollapsibleContent className="space-y-8 px-6 pb-6">
