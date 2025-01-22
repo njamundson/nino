@@ -100,7 +100,7 @@ const ProfileImageSection = ({ profileImage, setProfileImage }: ProfileImageSect
         />
       </div>
       <p className="text-sm text-nino-gray font-medium">
-        {loading ? "Uploading..." : "Upload your profile photo"}
+        {loading ? "Uploading..." : "Click to change your profile image"}
       </p>
     </div>
   );
