@@ -1,107 +1,57 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorImage from "./profile/CreatorImage";
 
 interface Creator {
   id: string;
-  firstName?: string;
-  lastName?: string;
-  bio?: string;
-  specialties?: string[];
-  instagram?: string;
-  website?: string;
-  location?: string;
-  profileImage?: string;
-  creatorType?: string;
-  profile?: {
-    first_name: string;
-    last_name: string;
+  bio: string | null;
+  location: string | null;
+  specialties: string[] | null;
+  instagram: string | null;
+  website: string | null;
+  profile: {
+    first_name: string | null;
+    last_name: string | null;
   } | null;
+  profile_image_url: string | null;
 }
 
 interface CreatorProfileProps {
   creator: Creator;
-  onClose: () => void;
+  onInviteClick: () => void;
   onMessageClick?: () => void;
 }
 
-const CreatorProfile = ({ creator, onClose }: CreatorProfileProps) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const handleMessageClick = async () => {
-    try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to message creators",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Get creator's user_id from creators table
-      const { data: creatorData } = await supabase
-        .from('creators')
-        .select('user_id')
-        .eq('id', creator.id)
-        .single();
-
-      if (!creatorData?.user_id) {
-        toast({
-          title: "Error",
-          description: "Unable to start conversation with this creator",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Navigate to messages with the creator's user_id as a parameter
-      navigate(`/brand/messages?user=${creatorData.user_id}`);
-      onClose();
-    } catch (error) {
-      console.error('Error starting conversation:', error);
-      toast({
-        title: "Error",
-        description: "Failed to start conversation. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
+const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfileProps) => {
+  const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 space-y-6">
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
         <CreatorImage 
-          profileImage={creator.profileImage}
-          firstName={creator.firstName}
-          lastName={creator.lastName}
-          profile={creator.profile}
+          profileImageUrl={creator.profile_image_url} 
+          fullName={fullName} 
         />
+        
+        <div className="flex flex-col h-full space-y-6">
+          <CreatorBio 
+            bio={creator.bio}
+            location={creator.location}
+            specialties={creator.specialties}
+            instagram={creator.instagram}
+            website={creator.website}
+            onMessageClick={onMessageClick}
+          />
 
-        <CreatorBio 
-          bio={creator.bio}
-          specialties={creator.specialties}
-          location={creator.location}
-          creatorType={creator.creatorType}
-          instagram={creator.instagram}
-          website={creator.website}
-          onMessageClick={handleMessageClick}
-        />
-
-        <div className="mt-auto">
-          <Button
-            size="lg"
-            onClick={handleMessageClick}
-            className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
-          >
-            Message Creator
-          </Button>
+          <div className="mt-auto">
+            <Button
+              size="lg"
+              className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white rounded-[24px] shadow-md transition-all duration-300 hover:shadow-lg"
+              onClick={onInviteClick}
+            >
+              Invite to Campaign
+            </Button>
+          </div>
         </div>
       </div>
     </div>
