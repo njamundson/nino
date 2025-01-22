@@ -39,7 +39,7 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
   return (
     <>
       <Card 
-        className="group relative overflow-hidden rounded-3xl border-0 cursor-pointer"
+        className="group relative overflow-hidden rounded-3xl border-0 cursor-pointer bg-gray-100"
         onClick={() => setIsModalOpen(true)}
       >
         <CreatorCardImage creator={creator} onInvite={handleInviteClick} />
