@@ -35,14 +35,15 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
         if (brand?.company_name) {
           // User has completed onboarding
-          setHasAccess(true);
           if (isOnboardingRoute && !isPaymentRoute) {
-            navigate('/brand/dashboard', { replace: true });
+            navigate('/brand/dashboard');
+          } else {
+            setHasAccess(true);
           }
         } else {
           // User hasn't completed onboarding
           if (!isOnboardingRoute) {
-            navigate('/onboarding/brand', { replace: true });
+            navigate('/onboarding/brand');
           } else {
             setHasAccess(true);
           }

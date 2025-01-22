@@ -26,7 +26,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         // Check if user has completed onboarding by looking for their creator profile
         const { data: creator } = await supabase
           .from('creators')
-          .select('id, bio')  // bio is required in onboarding, so we can use it to check completion
+          .select('id, bio')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
@@ -34,14 +34,15 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
         if (creator?.bio) {
           // User has completed onboarding
-          setHasAccess(true);
           if (isOnboardingRoute) {
-            navigate('/creator/dashboard', { replace: true });
+            navigate('/creator/dashboard');
+          } else {
+            setHasAccess(true);
           }
         } else {
           // User hasn't completed onboarding
           if (!isOnboardingRoute) {
-            navigate('/onboarding/creator', { replace: true });
+            navigate('/onboarding/creator');
           } else {
             setHasAccess(true);
           }
