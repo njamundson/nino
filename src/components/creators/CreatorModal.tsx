@@ -102,10 +102,15 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     instagram: creator.instagram || '',
     website: creator.website || '',
     location: creator.location || '',
-    profileImage: creator.profile_image_url || null,
-    creatorType: 'solo', // Default to solo as it's required by CreatorData type
+    profileImage: creator.profile_image_url,
+    creatorType: 'solo',
     profile: creator.profile
   };
+
+  // Get the display name - either full name or "Anonymous Creator" if no name is provided
+  const displayName = creator.profile?.first_name || creator.profile?.last_name 
+    ? `${creator.profile.first_name || ''} ${creator.profile.last_name || ''}`.trim()
+    : 'Anonymous Creator';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -114,9 +119,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {creator.profile?.first_name || creator.profile?.last_name 
-                  ? `${creator.profile.first_name || ''} ${creator.profile.last_name || ''}`.trim()
-                  : 'Anonymous Creator'}
+                {displayName}
               </DialogTitle>
             </DialogHeader>
             
