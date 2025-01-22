@@ -23,13 +23,19 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         // First, check if we have a valid session
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-        if (sessionError || !sessionData.session) {
+        if (sessionError) {
           console.error('Session error:', sessionError);
           toast({
             title: "Authentication Required",
             description: "Please sign in to continue.",
             variant: "destructive",
           });
+          navigate('/', { replace: true });
+          return;
+        }
+
+        if (!sessionData.session) {
+          console.log('No session found');
           navigate('/', { replace: true });
           return;
         }
@@ -73,7 +79,8 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           console.error('Error checking brand profile:', brandError);
         }
 
-        if (brand) {
+        // If user has a brand profile, redirect to brand dashboard
+        if (brand?.id) {
           console.log('User has a brand profile, redirecting to brand dashboard');
           navigate('/brand/dashboard', { replace: true });
           return;
