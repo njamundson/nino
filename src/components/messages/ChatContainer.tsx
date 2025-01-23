@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { ChatHeader } from "@/components/messages/ChatHeader";
 import ChatMessages from "@/components/messages/ChatMessages";
-import { ChatInput } from "@/components/messages/ChatInput";
+import ChatInput from "@/components/messages/ChatInput";
 import { Message } from "@/types/message";
 
 interface ChatContainerProps {

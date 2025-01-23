@@ -1,5 +1,5 @@
 import { Message } from "@/types/message";
-import { MessageBubble } from "./chat-messages/MessageBubble";
+import MessageBubble from "./chat-messages/MessageBubble";
 import { DateDivider } from "./chat-messages/DateDivider";
 import { TypingIndicator } from "./chat-messages/TypingIndicator";
 import { useEffect, useRef } from "react";
