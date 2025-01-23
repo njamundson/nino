@@ -12,21 +12,9 @@ export const useAuthCheck = () => {
   useEffect(() => {
     let mounted = true;
 
-    const checkBrandAccess = async () => {
+    const checkAccess = async () => {
       try {
         setIsLoading(true);
-
-        // For development, check localStorage
-        const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-        const brandData = localStorage.getItem('brandData');
-
-        if (isAuthenticated && brandData) {
-          if (mounted) {
-            setHasAccess(true);
-            setIsLoading(false);
-          }
-          return true;
-        }
 
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
@@ -48,19 +36,20 @@ export const useAuthCheck = () => {
           return false;
         }
 
-        const { data: brands, error: brandError } = await supabase
-          .from('brands')
-          .select('id')
+        // Check for creator profile since we're on creator dashboard
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('id, onboarding_completed')
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        if (brandError) {
-          console.error("Error checking brand profile:", brandError);
-          throw brandError;
+        if (creatorError) {
+          console.error("Error checking creator profile:", creatorError);
+          throw creatorError;
         }
 
-        if (!brands) {
-          console.log("No brand profile found");
+        if (!creator || !creator.onboarding_completed) {
+          console.log("No creator profile found or onboarding not completed");
           if (mounted) {
             setHasAccess(false);
             setIsLoading(false);
@@ -74,7 +63,7 @@ export const useAuthCheck = () => {
         }
         return true;
       } catch (error) {
-        console.error("Error in checkBrandAccess:", error);
+        console.error("Error in checkAccess:", error);
         if (mounted) {
           setIsLoading(false);
           setHasAccess(false);
@@ -84,7 +73,7 @@ export const useAuthCheck = () => {
     };
 
     // Initial check
-    checkBrandAccess();
+    checkAccess();
 
     // Set up auth state listener
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -100,14 +89,14 @@ export const useAuthCheck = () => {
       }
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        const hasAccess = await checkBrandAccess();
+        const hasAccess = await checkAccess();
         if (!hasAccess) {
           toast({
             title: "Access denied",
-            description: "You need a brand profile to access this area.",
+            description: "You need to complete creator onboarding to access this area.",
             variant: "destructive",
           });
-          navigate('/onboarding', { replace: true });
+          navigate('/onboarding/creator', { replace: true });
         }
       }
     });
