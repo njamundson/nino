@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, MessageSquare, MapPin, Globe, Instagram } from "lucide-react";
+import { useEffect } from "react";
 
 interface ApplicationItemProps {
   application: any;
@@ -13,6 +14,12 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
+
+  // Debug log to see the actual data structure
+  useEffect(() => {
+    console.log('Application data:', application);
+    console.log('Creator data:', application.creator);
+  }, [application]);
 
   // Access creator data directly from the application
   const creator = application.creator;
