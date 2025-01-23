@@ -1,19 +1,10 @@
 import { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 import Sidebar from "../dashboard/BrandSidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
-import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu } from "lucide-react";
-import { Button } from "../ui/button";
 
-interface BrandLayoutProps {
-  children: ReactNode;
-}
-
-const BrandLayout = ({ children }: BrandLayoutProps) => {
-  const location = useLocation();
-  const isDashboard = location.pathname === "/brand/dashboard";
-
+const BrandLayout = () => {
   return (
     <div className="flex min-h-screen bg-nino-bg">
       <Sidebar />
@@ -30,7 +21,7 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              {children}
+              <Outlet />
             </motion.div>
           </AnimatePresence>
         </div>

@@ -1,25 +1,16 @@
 import { ReactNode } from "react";
-import { useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 
-interface CreatorLayoutProps {
-  children: ReactNode;
-}
-
-const CreatorLayout = ({ children }: CreatorLayoutProps) => {
-  const location = useLocation();
-  const isMobile = useIsMobile();
-
+const CreatorLayout = () => {
   return (
     <div className="flex min-h-screen bg-nino-bg">
       <Sidebar />
-      <div className={`flex-1 ${isMobile ? 'w-full' : ''}`}>
-        <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 px-4 md:px-8">
-          <div className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/80 to-transparent" />
-          <div className="relative">
+      <main className="flex-1 overflow-x-hidden w-full">
+        <div className="fixed top-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-100">
+          <div className="p-4 md:p-8">
             <DashboardHeader />
           </div>
         </div>
@@ -32,11 +23,11 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
             >
-              {children}
+              <Outlet />
             </motion.div>
           </AnimatePresence>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
