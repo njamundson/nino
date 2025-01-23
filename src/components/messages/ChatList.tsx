@@ -4,7 +4,7 @@ import { NewChatButton } from "./chat-list/NewChatButton";
 import { EmptyState } from "./chat-list/EmptyState";
 
 interface ChatListProps {
-  onSelectChat: (userId: string) => void;
+  onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
   selectedUserId: string | null;
 }
 

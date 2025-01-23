@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import CreatorSelectionModal from "../CreatorSelectionModal";
 
 interface NewChatButtonProps {
-  onStartChat: (userId: string) => void;
+  onStartChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
 }
 
 export const NewChatButton = ({ onStartChat }: NewChatButtonProps) => {

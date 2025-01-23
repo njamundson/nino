@@ -10,7 +10,7 @@ import { Search, Loader2 } from "lucide-react";
 interface CreatorSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (userId: string) => void;
+  onSelect: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
 }
 
 const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionModalProps) => {
@@ -85,7 +85,12 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   key={creator.id}
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                   onClick={() => {
-                    onSelect(creator.user_id);
+                    onSelect(
+                      creator.user_id,
+                      creator.first_name || '',
+                      creator.last_name || '',
+                      creator.profile_image_url
+                    );
                     onClose();
                   }}
                 >
