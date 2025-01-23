@@ -14,23 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CreatorSelectionModal from "./chat-list/CreatorSelectionModal";
 
-interface ChatListProps {
-  onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
-  selectedUserId: string | null;
-}
-
-interface ChatUser {
-  id: string;
-  first_name: string;
-  last_name: string;
-  profile_image_url: string | null;
-  last_message?: {
-    content: string;
-    created_at: string;
-    read: boolean;
-  };
-}
-
 interface MessageUser {
   sender_id: string;
   receiver_id: string;
@@ -42,12 +25,19 @@ interface MessageUser {
     last_name: string;
   };
   receiver: {
-    profile_image_url: string;
+    first_name: string;
+    last_name: string;
+    profile_image_url: string | null;
   };
 }
 
+interface ChatListProps {
+  onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
+  selectedUserId: string | null;
+}
+
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
-  const [users, setUsers] = useState<ChatUser[]>([]);
+  const [users, setUsers] = useState<MessageUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
@@ -73,7 +63,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             first_name,
             last_name
           ),
-          receiver:profiles!receiver_profile_id (
+          receiver:creators!receiver_id (
+            first_name,
+            last_name,
             profile_image_url
           )
         `)
@@ -83,17 +75,14 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       if (error) throw error;
 
       // Process users to remove duplicates and format data
-      const uniqueUsers = new Map<string, ChatUser>();
+      const uniqueUsers = new Map<string, MessageUser>();
 
       (messageUsers as MessageUser[])?.forEach((msg) => {
         const otherUserId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
         
         if (!uniqueUsers.has(otherUserId)) {
           uniqueUsers.set(otherUserId, {
-            id: otherUserId,
-            first_name: msg.sender?.first_name || '',
-            last_name: msg.sender?.last_name || '',
-            profile_image_url: msg.receiver?.profile_image_url || null,
+            ...msg,
             last_message: {
               content: msg.content,
               created_at: msg.created_at,
@@ -169,7 +158,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   };
 
   const filteredUsers = users.filter(user => 
-    `${user.first_name} ${user.last_name}`
+    `${user.sender.first_name} ${user.sender.last_name}`
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
@@ -191,28 +180,33 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           <div className="divide-y divide-gray-100">
             {filteredUsers.map((user) => (
               <div
-                key={user.id}
+                key={user.receiver_id}
                 className={`group relative p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  selectedUserId === user.id ? "bg-gray-50" : ""
+                  selectedUserId === user.receiver_id ? "bg-gray-50" : ""
                 }`}
-                onClick={() => onSelectChat(user.id, user.first_name, user.last_name, user.profile_image_url)}
+                onClick={() => onSelectChat(
+                  user.receiver_id, 
+                  user.receiver.first_name, 
+                  user.receiver.last_name, 
+                  user.receiver.profile_image_url
+                )}
               >
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={user.profile_image_url || ""} />
+                    <AvatarImage src={user.receiver.profile_image_url || ""} />
                     <AvatarFallback>
-                      {user.first_name?.[0]}{user.last_name?.[0]}
+                      {user.receiver.first_name?.[0]}{user.receiver.last_name?.[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900">
-                      {user.first_name} {user.last_name}
+                      {user.receiver.first_name} {user.receiver.last_name}
                     </p>
-                    {user.last_message && (
+                    {user.content && (
                       <p className={`text-sm truncate ${
-                        user.last_message.read ? "text-gray-500" : "text-gray-900 font-medium"
+                        user.read ? "text-gray-500" : "text-gray-900 font-medium"
                       }`}>
-                        {user.last_message.content}
+                        {user.content}
                       </p>
                     )}
                   </div>
@@ -226,7 +220,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={(e) => {
                           e.stopPropagation();
-                          markAsUnread(user.id);
+                          markAsUnread(user.receiver_id);
                         }}>
                           <Mail className="h-4 w-4 mr-2" />
                           Mark as unread
@@ -235,7 +229,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                           className="text-red-600"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDeleteChat(user.id);
+                            handleDeleteChat(user.receiver_id);
                           }}
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
@@ -245,9 +239,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                     </DropdownMenu>
                   </div>
                 </div>
-                {user.last_message && (
+                {user.created_at && (
                   <p className="text-xs text-gray-500 mt-1">
-                    {new Date(user.last_message.created_at).toLocaleTimeString([], {
+                    {new Date(user.created_at).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit'
                     })}
