@@ -72,7 +72,15 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching chat users:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch chat users",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // Process users to remove duplicates and format data
       const uniqueUsers = new Map<string, MessageUser>();
@@ -154,8 +162,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   };
 
   const filteredUsers = users.filter(user => {
-    const senderName = `${user.sender.first_name} ${user.sender.last_name}`.toLowerCase();
-    const receiverName = `${user.receiver.first_name} ${user.receiver.last_name}`.toLowerCase();
+    const senderName = `${user.sender.first_name || ''} ${user.sender.last_name || ''}`.toLowerCase();
+    const receiverName = `${user.receiver.first_name || ''} ${user.receiver.last_name || ''}`.toLowerCase();
     const query = searchQuery.toLowerCase();
     return senderName.includes(query) || receiverName.includes(query);
   });
