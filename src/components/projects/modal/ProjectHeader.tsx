@@ -1,5 +1,4 @@
-import { Badge } from "@/components/ui/badge";
-import { formatDate } from "@/lib/utils";
+import { CalendarIcon, MapPinIcon } from "lucide-react";
 
 interface ProjectHeaderProps {
   title: string;
@@ -17,33 +16,31 @@ const ProjectHeader = ({
   endDate,
 }: ProjectHeaderProps) => {
   return (
-    <div className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 border-b border-gray-100 p-8 rounded-t-lg">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex flex-col gap-4">
-          <div className="relative">
-            <div>
-              <p className="text-sm font-medium text-gray-500 mb-2">
-                {companyName}
-              </p>
-              <h2 className="text-3xl font-semibold tracking-tight text-gray-900">
-                {title}
-              </h2>
-            </div>
-          </div>
+    <div className="px-8 py-6 bg-white">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold text-gray-900 tracking-tight">
+            {title}
+          </h2>
+          <p className="text-lg text-gray-600">{companyName}</p>
+        </div>
 
-          <div className="flex flex-wrap gap-3 mt-2">
-            {location && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
-                📍 {location}
+        <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+          {location && (
+            <div className="flex items-center gap-1.5">
+              <MapPinIcon className="h-4 w-4" />
+              <span>{location}</span>
+            </div>
+          )}
+          {(startDate || endDate) && (
+            <div className="flex items-center gap-1.5">
+              <CalendarIcon className="h-4 w-4" />
+              <span>
+                {startDate && new Date(startDate).toLocaleDateString()} 
+                {endDate && ` - ${new Date(endDate).toLocaleDateString()}`}
               </span>
-            )}
-            {startDate && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700">
-                🗓️ {formatDate(startDate)}
-                {endDate && ` - ${formatDate(endDate)}`}
-              </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
