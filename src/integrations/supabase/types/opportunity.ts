@@ -31,4 +31,16 @@ export interface Application {
   created_at: string | null;
   updated_at: string | null;
   opportunity?: Opportunity;
+  creator?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    profile_image_url: string;
+    location: string;
+    instagram: string;
+    website: string;
+    creator_type: string;
+    specialties: string[];
+    user_id: string;
+  };
 }

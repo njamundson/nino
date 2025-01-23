@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import ProposalsTabs from "@/components/proposals/ProposalsTabs";
 import { useApplications } from "@/hooks/useApplications";
+import { Application } from "@/integrations/supabase/types/opportunity";
 
 const Proposals = () => {
   const { toast } = useToast();
@@ -30,12 +31,12 @@ const Proposals = () => {
     }
   };
 
-  const pendingProposals = applications?.filter(app => 
+  const pendingProposals = applications?.filter((app: Application) => 
     app.status === 'pending' && 
     app.opportunity?.brand?.user_id === app.creator?.user_id
   ) || [];
   
-  const myApplications = applications?.filter(app => 
+  const myApplications = applications?.filter((app: Application) => 
     app.opportunity?.brand?.user_id !== app.creator?.user_id
   ) || [];
 
