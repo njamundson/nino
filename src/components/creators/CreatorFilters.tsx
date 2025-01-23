@@ -20,6 +20,7 @@ import {
 import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const COUNTRIES = [
   ...northAmericanCountries,
@@ -57,6 +58,7 @@ const CreatorFilters = ({
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [isOpen, setIsOpen] = useState(true);
+  const { toast } = useToast();
 
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
@@ -83,12 +85,19 @@ const CreatorFilters = ({
   };
 
   const handleReset = () => {
+    // Reset all filters
     onCreatorTypeChange(null);
     setSelectedCountry("");
     setSelectedRegion("");
     onLocationChange("");
     selectedSpecialties.forEach(specialty => {
       onSpecialtyChange(specialty);
+    });
+
+    // Show feedback toast
+    toast({
+      title: "Filters Reset",
+      description: "Showing all creators on the platform",
     });
   };
 
