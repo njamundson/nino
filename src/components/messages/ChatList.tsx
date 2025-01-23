@@ -60,7 +60,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get all unique users from messages table with their profiles
+      // Get all unique users from messages table with their profiles, ordered by most recent message
       const { data: messageUsers, error } = await supabase
         .from('messages')
         .select(`
@@ -78,7 +78,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true }); // Changed to ascending order
 
       if (error) throw error;
 

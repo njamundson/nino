@@ -28,10 +28,12 @@ const ChatMessages = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Scroll to bottom when messages change or when a new message arrives
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  // Subscribe to real-time updates
   useEffect(() => {
     if (!selectedChat) return;
 
@@ -47,6 +49,8 @@ const ChatMessages = ({
         },
         (payload) => {
           console.log('Typing status changed:', payload);
+          // Scroll to bottom when new message arrives
+          scrollToBottom();
         }
       )
       .subscribe();
