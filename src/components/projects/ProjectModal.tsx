@@ -7,9 +7,8 @@ import ProjectDeliverables from "./modal/ProjectDeliverables";
 import ProjectCompensation from "./modal/ProjectCompensation";
 import ApplicationForm from "./modal/ApplicationForm";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -55,7 +54,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl p-0">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden">
         <div className="max-h-[85vh] overflow-y-auto">
           {showApplicationForm ? (
             <ApplicationForm

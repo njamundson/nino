@@ -17,7 +17,7 @@ const ProjectHeader = ({
   endDate,
 }: ProjectHeaderProps) => {
   return (
-    <div className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 border-b border-gray-100 p-8">
+    <div className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 border-b border-gray-100 p-8 rounded-t-lg">
       <div className="max-w-3xl mx-auto">
         <div className="flex flex-col gap-4">
           <div className="relative">
