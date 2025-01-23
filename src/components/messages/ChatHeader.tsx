@@ -26,15 +26,13 @@ export const ChatHeader = ({
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </button>
           )}
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">
-              {senderFirstName} {senderLastName}
-            </h1>
-          </div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Messages
+          </h1>
         </div>
         
         <div>
-          <h2 className="text-lg font-semibold text-gray-700">
+          <h2 className="text-xl font-semibold text-nino-primary">
             {senderFirstName} {senderLastName}
           </h2>
         </div>
