@@ -9,10 +9,6 @@ export interface CreatorData {
   location: string;
   profileImage: string | null;
   creatorType: CreatorType;
-  profile?: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
   profile_image_url: string | null;
 }
 
@@ -27,6 +23,19 @@ export const CREATOR_SPECIALTIES = [
   'Model/Talent',
   'Public Relations/Writer'
 ] as const;
+
+export interface Creator {
+  id: string;
+  bio: string | null;
+  location: string | null;
+  specialties: string[] | null;
+  instagram: string | null;
+  website: string | null;
+  creator_type: CreatorType;
+  profile_image_url: string | null;
+  first_name: string | null;
+  last_name: string | null;
+}
 
 export const validateInstagramHandle = (handle: string): boolean => {
   const username = handle.startsWith('@') ? handle.slice(1) : handle;

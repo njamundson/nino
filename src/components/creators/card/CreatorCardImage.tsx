@@ -12,13 +12,11 @@ interface CreatorCardImageProps {
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   const [imageError, setImageError] = useState(false);
   
-  // Add console.log to debug profile data
   console.log('Creator data:', creator);
   
-  // Get the full name from the creator's data
   const fullName = creator.firstName && creator.lastName 
     ? `${creator.firstName} ${creator.lastName}`.trim()
-    : creator.firstName // If only first name is available
+    : creator.firstName 
     ? creator.firstName.trim()
     : 'Anonymous Creator';
 
@@ -27,7 +25,6 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     setImageError(true);
   };
 
-  // Fallback placeholder images if profile image fails to load
   const placeholderImages = [
     'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
     'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
