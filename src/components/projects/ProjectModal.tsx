@@ -57,9 +57,6 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
     setShowSuccessModal(true);
   };
 
-  // Ensure we have a valid brand name
-  const brandName = opportunity.brand?.company_name || "Company name not available";
-
   if (showSuccessModal) {
     return (
       <SuccessModal 
@@ -91,7 +88,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
       <DialogContent className="max-w-4xl h-[85vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-2xl">
         <ProjectHeader
           title={opportunity.title}
-          companyName={brandName}
+          companyName={opportunity.brand!.company_name!}
           location={opportunity.location}
           startDate={opportunity.start_date}
           endDate={opportunity.end_date}

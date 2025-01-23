@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface Brand {
   id: string;
-  company_name: string | null;
+  company_name: string;
   brand_type: string | null;
   location: string | null;
   description: string | null;
@@ -29,7 +29,7 @@ interface Opportunity {
   payment_details: string | null;
   compensation_details: string | null;
   deliverables: string[] | null;
-  brand: Brand | null;
+  brand: Brand;
   image_url: string | null;
   application_status?: string;
   application_id?: string;
@@ -61,9 +61,6 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
     }
   };
   
-  // Ensure we have a valid brand name
-  const brandName = opportunity.brand?.company_name || "Company name not available";
-  
   return (
     <>
       <Card 
@@ -90,7 +87,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
 
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <p className="text-sm font-medium text-white/90 mb-1">
-            {brandName}
+            {opportunity.brand.company_name}
           </p>
           <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
             {opportunity.title}
