@@ -15,20 +15,9 @@ export const useAuthCheck = () => {
     const checkBrandAccess = async () => {
       try {
         setIsLoading(true);
+        console.log("Checking brand access...");
 
-        // For development, check localStorage
-        const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-        const brandData = localStorage.getItem('brandData');
-
-        if (isAuthenticated && brandData) {
-          if (mounted) {
-            setHasAccess(true);
-            setIsLoading(false);
-          }
-          return true;
-        }
-
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
@@ -39,8 +28,8 @@ export const useAuthCheck = () => {
           return false;
         }
 
-        if (!session) {
-          console.log("No session found");
+        if (!sessionData.session) {
+          console.log("No active session found");
           if (mounted) {
             setHasAccess(false);
             setIsLoading(false);
@@ -48,10 +37,12 @@ export const useAuthCheck = () => {
           return false;
         }
 
+        console.log("Session found:", sessionData.session);
+
         const { data: brands, error: brandError } = await supabase
           .from('brands')
           .select('id')
-          .eq('user_id', session.user.id)
+          .eq('user_id', sessionData.session.user.id)
           .maybeSingle();
 
         if (brandError) {
@@ -68,6 +59,7 @@ export const useAuthCheck = () => {
           return false;
         }
 
+        console.log("Brand profile found:", brands);
         if (mounted) {
           setHasAccess(true);
           setIsLoading(false);
@@ -88,7 +80,7 @@ export const useAuthCheck = () => {
 
     // Set up auth state listener
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event);
+      console.log('Auth state changed:', event, session);
       
       if (event === 'SIGNED_OUT' || !session) {
         if (mounted) {
@@ -112,7 +104,6 @@ export const useAuthCheck = () => {
       }
     });
 
-    // Cleanup function
     return () => {
       mounted = false;
       if (authListener && authListener.subscription) {
