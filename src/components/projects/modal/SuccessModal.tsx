@@ -1,26 +1,31 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CheckCircle2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface SuccessModalProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
   opportunityTitle?: string;
+  onClose: () => void;
 }
 
-const SuccessModal = ({ isOpen, onOpenChange, opportunityTitle }: SuccessModalProps) => {
+const SuccessModal = ({ opportunityTitle, onClose }: SuccessModalProps) => {
+  const [isOpen, setIsOpen] = useState(true);
+
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
-        onOpenChange(false);
+        setIsOpen(false);
+        onClose();
       }, 3000);
 
       return () => clearTimeout(timer);
     }
-  }, [isOpen, onOpenChange]);
+  }, [isOpen, onClose]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      setIsOpen(open);
+      if (!open) onClose();
+    }}>
       <DialogContent className="sm:max-w-[425px] p-0 bg-white/90 backdrop-blur-sm border border-gray-100">
         <div className="flex flex-col items-center justify-center space-y-6 p-10">
           <div className="relative">
