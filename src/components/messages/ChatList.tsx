@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ChatSearch } from "./chat-list/ChatSearch";
-import { NewChatButton } from "./chat-list/NewChatButton";
 import { EmptyState } from "./chat-list/EmptyState";
 import { MoreHorizontal, Trash2, Mail } from "lucide-react";
 import {
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CreatorSelectionModal from "../CreatorSelectionModal";
 
 interface ChatListProps {
   onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
@@ -38,17 +38,18 @@ interface MessageUser {
   created_at: string;
   read: boolean;
   sender: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
+    first_name: string;
+    last_name: string;
+  };
   receiver: {
-    profile_image_url: string | null;
-  } | null;
+    profile_image_url: string;
+  };
 }
 
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [users, setUsers] = useState<ChatUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -177,8 +178,11 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-100">
-        <ChatSearch value={searchQuery} onChange={setSearchQuery} />
-        <NewChatButton />
+        <ChatSearch 
+          value={searchQuery} 
+          onChange={setSearchQuery}
+          onNewChat={() => setIsModalOpen(true)}
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -255,6 +259,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           </div>
         )}
       </div>
+
+      <CreatorSelectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={onSelectChat}
+      />
     </div>
   );
 };
