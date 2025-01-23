@@ -76,10 +76,22 @@ export default {
         },
         fadeIn: {
           "0%": { 
-            opacity: "0"
+            opacity: "0",
+            transform: "translateY(10px)"
           },
           "100%": { 
-            opacity: "1"
+            opacity: "1",
+            transform: "translateY(0)"
+          },
+        },
+        fadeOut: {
+          "0%": { 
+            opacity: "1",
+            transform: "translateY(0)"
+          },
+          "100%": { 
+            opacity: "0",
+            transform: "translateY(10px)"
           },
         },
       },
@@ -87,6 +99,7 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         fadeIn: "fadeIn 0.3s ease-out",
+        fadeOut: "fadeOut 0.3s ease-out",
       },
     },
   },

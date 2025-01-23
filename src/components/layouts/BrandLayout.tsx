@@ -48,7 +48,9 @@ const BrandLayout = () => {
         </div>
         
         <div className="p-4 pt-28 md:p-8 md:pt-32">
-          <Outlet />
+          <div className="animate-fadeIn">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>
