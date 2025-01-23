@@ -253,3 +253,5 @@ const CreatorFilters = ({
     </Collapsible>
   );
 };
+
+export default CreatorFilters;
