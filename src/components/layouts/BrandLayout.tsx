@@ -1,14 +1,35 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../dashboard/BrandSidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { AnimatePresence, motion } from "framer-motion";
 
 const BrandLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const location = useLocation();
+
+  const pageTransition = {
+    initial: { 
+      opacity: 0,
+      y: 20
+    },
+    animate: { 
+      opacity: 1,
+      y: 0
+    },
+    exit: { 
+      opacity: 0,
+      y: -20
+    },
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-nino-bg">
@@ -29,13 +50,22 @@ const BrandLayout = () => {
 
       {isMobile && isMobileMenuOpen && (
         <>
-          <div 
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="fixed inset-y-0 left-0 z-40 w-64">
+          <motion.div 
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", damping: 25 }}
+            className="fixed inset-y-0 left-0 z-40 w-64"
+          >
             <Sidebar />
-          </div>
+          </motion.div>
         </>
       )}
 
@@ -48,7 +78,15 @@ const BrandLayout = () => {
         </div>
         
         <div className="p-4 pt-28 md:p-8 md:pt-32">
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              {...pageTransition}
+              className="min-h-[calc(100vh-theme(spacing.32))]"
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
