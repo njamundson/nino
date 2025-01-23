@@ -11,9 +11,6 @@ interface CreatorCardImageProps {
 
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   const [imageError, setImageError] = useState(false);
-  
-  // Use firstName from the CreatorData type
-  const creatorName = creator.firstName || 'Anonymous Creator';
 
   const handleImageError = () => {
     console.log(`Profile image failed to load for creator ${creator.id}`, creator.profile_image_url);
@@ -28,7 +25,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     <div className="relative aspect-[3/4] w-full overflow-hidden">
       <img
         src={imageUrl}
-        alt={creatorName}
+        alt="Creator"
         onError={handleImageError}
         className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
       />
@@ -39,9 +36,6 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
             {creator.location}
           </p>
         )}
-        <h3 className="text-xl font-semibold">
-          {creatorName}
-        </h3>
         {creator.specialties && creator.specialties.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
             {creator.specialties.map((specialty, index) => (
