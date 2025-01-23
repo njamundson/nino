@@ -16,11 +16,8 @@ interface CreatorSelectionModalProps {
 interface Creator {
   id: string;
   profile_image_url: string | null;
-  profiles: {
-    first_name: string | null;
-    last_name: string | null;
-    id: string;
-  } | null;
+  first_name: string | null;
+  last_name: string | null;
 }
 
 const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionModalProps) => {
@@ -34,11 +31,8 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
         .select(`
           id,
           profile_image_url,
-          profiles (
-            first_name,
-            last_name,
-            id
-          )
+          first_name,
+          last_name
         `);
 
       if (error) {
@@ -46,23 +40,12 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
         throw error;
       }
 
-      // Ensure the data matches our Creator type
-      const typedData = (data || []).map((item: any): Creator => ({
-        id: item.id,
-        profile_image_url: item.profile_image_url,
-        profiles: item.profiles ? {
-          first_name: item.profiles.first_name,
-          last_name: item.profiles.last_name,
-          id: item.profiles.id
-        } : null
-      }));
-
-      return typedData;
+      return data || [];
     },
   });
 
   const filteredCreators = creators?.filter((creator) => {
-    const fullName = `${creator.profiles?.first_name || ''} ${creator.profiles?.last_name || ''}`.toLowerCase();
+    const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase());
   });
 
@@ -95,20 +78,20 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   key={creator.id}
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                   onClick={() => {
-                    onSelect(creator.profiles?.id || '');
+                    onSelect(creator.id);
                     onClose();
                   }}
                 >
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={creator.profile_image_url || ""} />
                     <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
-                      {creator.profiles?.first_name?.[0]}
-                      {creator.profiles?.last_name?.[0]}
+                      {creator.first_name?.[0]}
+                      {creator.last_name?.[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {creator.profiles?.first_name} {creator.profiles?.last_name}
+                      {creator.first_name} {creator.last_name}
                     </p>
                   </div>
                 </div>
