@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CreatorSelectionModal from "./chat-list/CreatorSelectionModal";
 
 interface MessageUser {
@@ -23,11 +23,14 @@ interface MessageUser {
   sender: {
     first_name: string | null;
     last_name: string | null;
-  } | null;
+  };
   receiver: {
     first_name: string | null;
     last_name: string | null;
-  } | null;
+    creator: {
+      profile_image_url: string | null;
+    } | null;
+  };
 }
 
 interface ChatListProps {
@@ -86,7 +89,10 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           ),
           receiver:profiles!receiver_profile_id (
             first_name,
-            last_name
+            last_name,
+            creator:creators (
+              profile_image_url
+            )
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -182,8 +188,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   };
 
   const filteredUsers = users.filter(user => {
-    const senderName = `${user.sender?.first_name || ''} ${user.sender?.last_name || ''}`.toLowerCase();
-    const receiverName = `${user.receiver?.first_name || ''} ${user.receiver?.last_name || ''}`.toLowerCase();
+    const senderName = `${user.sender.first_name || ''} ${user.sender.last_name || ''}`.toLowerCase();
+    const receiverName = `${user.receiver.first_name || ''} ${user.receiver.last_name || ''}`.toLowerCase();
     const query = searchQuery.toLowerCase();
     return senderName.includes(query) || receiverName.includes(query);
   });
@@ -226,21 +232,21 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                 }`}
                 onClick={() => onSelectChat(
                   user.receiver_id, 
-                  user.receiver?.first_name || '', 
-                  user.receiver?.last_name || '', 
-                  null
+                  user.receiver.first_name || '', 
+                  user.receiver.last_name || '', 
+                  user.receiver.creator?.profile_image_url || null
                 )}
               >
                 <div className="flex items-start space-x-3">
                   <Avatar className="h-12 w-12 shrink-0">
                     <AvatarFallback className="bg-gray-100 text-gray-600 font-medium text-lg">
-                      {user.receiver?.first_name?.[0]?.toUpperCase() || ''}
+                      {user.receiver.first_name?.[0]?.toUpperCase() || ''}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1">
                       <p className="text-base font-semibold text-gray-900 truncate">
-                        {user.receiver?.first_name || ''} {user.receiver?.last_name || ''}
+                        {user.receiver.first_name} {user.receiver.last_name}
                       </p>
                       <span className="text-xs text-gray-500">
                         {formatTime(user.created_at)}
