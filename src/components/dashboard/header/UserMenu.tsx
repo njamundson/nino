@@ -48,9 +48,20 @@ export const UserMenu = () => {
           console.error('Error fetching brand profile:', brandError);
           return null;
         }
+
+        // Get the public URL for the profile image if it exists
+        let profileImageUrl = null;
+        if (brandData?.profile_image_url) {
+          const { data: { publicUrl } } = supabase
+            .storage
+            .from('profile-images')
+            .getPublicUrl(brandData.profile_image_url);
+          profileImageUrl = publicUrl;
+        }
         
         return {
           ...brandData,
+          profile_image_url: profileImageUrl,
           first_name: brandData?.company_name?.charAt(0) || '',
           last_name: brandData?.company_name?.charAt(1) || '',
         } as BrandProfile;
