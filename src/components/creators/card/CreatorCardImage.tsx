@@ -12,8 +12,6 @@ interface CreatorCardImageProps {
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   const [imageError, setImageError] = useState(false);
   
-  console.log('Creator data:', creator);
-  
   const fullName = creator.firstName && creator.lastName 
     ? `${creator.firstName} ${creator.lastName}`.trim()
     : creator.firstName 
@@ -25,6 +23,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     setImageError(true);
   };
 
+  // Use profile_image_url directly from the creator object
   const imageUrl = !imageError && creator.profile_image_url 
     ? creator.profile_image_url 
     : '/placeholder.svg';
@@ -35,7 +34,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
         src={imageUrl}
         alt={fullName}
         onError={handleImageError}
-        className="h-full w-full object-cover"
+        className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
