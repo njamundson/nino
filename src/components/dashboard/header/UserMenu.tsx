@@ -10,12 +10,27 @@ import {
 import { Settings } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
+interface BrandProfile {
+  company_name: string | null;
+  profile_image_url: string | null;
+  first_name: string;
+  last_name: string;
+}
+
+interface UserProfile {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export const UserMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isBrandDashboard = location.pathname.startsWith("/brand");
 
-  const { data: profile } = useQuery({
+  const { data: profile } = useQuery<BrandProfile | UserProfile | null>({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -38,7 +53,7 @@ export const UserMenu = () => {
           ...brandData,
           first_name: brandData?.company_name?.charAt(0) || '',
           last_name: brandData?.company_name?.charAt(1) || '',
-        };
+        } as BrandProfile;
       }
       
       // Otherwise fetch regular profile
@@ -53,7 +68,7 @@ export const UserMenu = () => {
         return null;
       }
       
-      return data;
+      return data as UserProfile;
     }
   });
 
@@ -65,12 +80,17 @@ export const UserMenu = () => {
     }
   };
 
+  const getProfileImage = () => {
+    if (!profile) return "";
+    return 'profile_image_url' in profile ? profile.profile_image_url || "" : "";
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20 cursor-pointer hover:ring-nino-primary/40 transition-all duration-200">
           <AvatarImage 
-            src={profile?.profile_image_url || ""} 
+            src={getProfileImage()} 
             alt="Profile" 
           />
           <AvatarFallback className="bg-nino-primary text-nino-white">
