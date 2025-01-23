@@ -239,9 +239,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
               >
                 <div className="flex items-start space-x-3">
                   <Avatar className="h-12 w-12 shrink-0">
-                    <AvatarImage src={user.receiver.creator?.profile_image_url || ""} />
-                    <AvatarFallback className="bg-gray-200 text-gray-600 font-medium">
-                      {user.receiver.first_name?.[0]}{user.receiver.last_name?.[0]}
+                    <AvatarFallback className="bg-gray-100 text-gray-600 font-medium text-lg">
+                      {user.receiver.first_name?.[0]?.toUpperCase() || ''}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
