@@ -57,6 +57,11 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
     setShowSuccessModal(true);
   };
 
+  // If we don't have brand data, don't render the modal
+  if (!opportunity.brand) {
+    return null;
+  }
+
   if (showSuccessModal) {
     return (
       <SuccessModal 
@@ -88,7 +93,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
       <DialogContent className="max-w-4xl h-[85vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-2xl">
         <ProjectHeader
           title={opportunity.title}
-          companyName={opportunity.brand!.company_name!}
+          companyName={opportunity.brand.company_name || ''}
           location={opportunity.location}
           startDate={opportunity.start_date}
           endDate={opportunity.end_date}

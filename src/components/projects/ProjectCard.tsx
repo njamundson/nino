@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface Brand {
   id: string;
-  company_name: string;
+  company_name: string | null;
   brand_type: string | null;
   location: string | null;
   description: string | null;
@@ -29,7 +29,7 @@ interface Opportunity {
   payment_details: string | null;
   compensation_details: string | null;
   deliverables: string[] | null;
-  brand: Brand;
+  brand: Brand | null;
   image_url: string | null;
   application_status?: string;
   application_id?: string;
@@ -60,6 +60,11 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
       setIsLoading(false);
     }
   };
+
+  // If we don't have brand data, don't render the card
+  if (!opportunity.brand) {
+    return null;
+  }
   
   return (
     <>
@@ -113,12 +118,14 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
         </Button>
       </Card>
 
-      <ProjectModal 
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        opportunity={opportunity}
-        isCompleted={isCompleted}
-      />
+      {opportunity.brand && (
+        <ProjectModal 
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          opportunity={opportunity}
+          isCompleted={isCompleted}
+        />
+      )}
     </>
   );
 };
