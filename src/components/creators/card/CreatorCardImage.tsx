@@ -14,9 +14,8 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   
   // Add console.log to debug profile data
   console.log('Creator data:', creator);
-  console.log('Creator profile:', creator.profile);
   
-  // Get the full name from the creator's profile data
+  // Get the full name from the creator's data
   const fullName = creator.firstName && creator.lastName 
     ? `${creator.firstName} ${creator.lastName}`.trim()
     : creator.firstName // If only first name is available

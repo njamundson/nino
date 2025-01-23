@@ -243,8 +243,10 @@ export type Database = {
           bio: string | null
           created_at: string
           creator_type: string | null
+          first_name: string | null
           id: string
           instagram: string | null
+          last_name: string | null
           location: string | null
           onboarding_completed: boolean | null
           profile_id: string | null
@@ -258,8 +260,10 @@ export type Database = {
           bio?: string | null
           created_at?: string
           creator_type?: string | null
+          first_name?: string | null
           id?: string
           instagram?: string | null
+          last_name?: string | null
           location?: string | null
           onboarding_completed?: boolean | null
           profile_id?: string | null
@@ -273,8 +277,10 @@ export type Database = {
           bio?: string | null
           created_at?: string
           creator_type?: string | null
+          first_name?: string | null
           id?: string
           instagram?: string | null
+          last_name?: string | null
           location?: string | null
           onboarding_completed?: boolean | null
           profile_id?: string | null

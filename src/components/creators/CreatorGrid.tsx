@@ -48,11 +48,16 @@ const CreatorGrid = ({
         let query = supabase
           .from('creators')
           .select(`
-            *,
-            profiles:profiles (
-              first_name,
-              last_name
-            )
+            id,
+            first_name,
+            last_name,
+            bio,
+            specialties,
+            instagram,
+            website,
+            location,
+            profile_image_url,
+            creator_type
           `)
           .not('user_id', 'is', null);
 
@@ -81,47 +86,21 @@ const CreatorGrid = ({
 
         console.log("Raw creator data from Supabase:", data);
 
-        const formattedCreators: CreatorData[] = await Promise.all(data.map(async creator => {
-          let profileImageUrl = null;
-          
-          if (creator.profile_image_url) {
-            try {
-              const imagePath = creator.profile_image_url.includes('http') 
-                ? new URL(creator.profile_image_url).pathname.split('/').pop()
-                : creator.profile_image_url;
-                
-              console.log("Getting public URL for image path:", imagePath);
-              
-              const { data: { publicUrl } } = supabase
-                .storage
-                .from('campaign-images')
-                .getPublicUrl(imagePath);
-                
-              profileImageUrl = publicUrl;
-              console.log("Generated public URL:", publicUrl);
-            } catch (error) {
-              console.error("Error getting public URL for profile image:", error);
-              profileImageUrl = null;
-            }
-          }
-
-          return {
-            id: creator.id,
-            firstName: creator.profiles?.first_name || "",
-            lastName: creator.profiles?.last_name || "",
-            bio: creator.bio || "",
-            specialties: creator.specialties || [],
-            instagram: creator.instagram || "",
-            website: creator.website || "",
-            location: creator.location || "",
-            profileImage: profileImageUrl,
-            creatorType: creator.creator_type as CreatorType || "solo",
-            profile: creator.profiles,
-            profile_image_url: creator.profile_image_url
-          };
+        const formattedCreators: CreatorData[] = data.map(creator => ({
+          id: creator.id,
+          firstName: creator.first_name || "",
+          lastName: creator.last_name || "",
+          bio: creator.bio || "",
+          specialties: creator.specialties || [],
+          instagram: creator.instagram || "",
+          website: creator.website || "",
+          location: creator.location || "",
+          profileImage: creator.profile_image_url,
+          creatorType: creator.creator_type as CreatorType || "solo",
+          profile_image_url: creator.profile_image_url
         }));
 
-        console.log("Formatted creators with profile images:", formattedCreators);
+        console.log("Formatted creators:", formattedCreators);
         setCreators(formattedCreators);
       } catch (error) {
         console.error("Error in fetchCreators:", error);
