@@ -14,7 +14,7 @@ const CreatorImage = ({ profileImageUrl, fullName }: CreatorImageProps) => {
   return (
     <div className="relative w-full">
       <h2 className="text-2xl font-semibold mb-4 text-nino-text">
-        {fullName}
+        {fullName.split(' ')[0]}
       </h2>
       <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
         {profileImageUrl ? (
