@@ -23,14 +23,14 @@ interface MessageUser {
   sender: {
     first_name: string | null;
     last_name: string | null;
-  };
+  } | null;
   receiver: {
     first_name: string | null;
     last_name: string | null;
     creator: {
       profile_image_url: string | null;
     } | null;
-  };
+  } | null;
 }
 
 interface ChatListProps {
@@ -188,8 +188,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   };
 
   const filteredUsers = users.filter(user => {
-    const senderName = `${user.sender.first_name || ''} ${user.sender.last_name || ''}`.toLowerCase();
-    const receiverName = `${user.receiver.first_name || ''} ${user.receiver.last_name || ''}`.toLowerCase();
+    const senderName = `${user.sender?.first_name || ''} ${user.sender?.last_name || ''}`.toLowerCase();
+    const receiverName = `${user.receiver?.first_name || ''} ${user.receiver?.last_name || ''}`.toLowerCase();
     const query = searchQuery.toLowerCase();
     return senderName.includes(query) || receiverName.includes(query);
   });
@@ -209,6 +209,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
+  const getInitials = (firstName: string | null, lastName: string | null) => {
+    const first = firstName?.[0] || '';
+    const last = lastName?.[0] || '';
+    return (first + last).toUpperCase();
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-100">
@@ -224,73 +230,80 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           <EmptyState />
         ) : (
           <div className="divide-y divide-gray-100">
-            {filteredUsers.map((user) => (
-              <div
-                key={user.receiver_id}
-                className={`group relative p-4 cursor-pointer hover:bg-white transition-colors ${
-                  selectedUserId === user.receiver_id ? "bg-white" : ""
-                }`}
-                onClick={() => onSelectChat(
-                  user.receiver_id, 
-                  user.receiver.first_name || '', 
-                  user.receiver.last_name || '', 
-                  user.receiver.creator?.profile_image_url || null
-                )}
-              >
-                <div className="flex items-start space-x-3">
-                  <Avatar className="h-12 w-12 shrink-0">
-                    <AvatarFallback className="bg-gray-100 text-gray-600 font-medium text-lg">
-                      {user.receiver.first_name?.[0]?.toUpperCase() || ''}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start mb-1">
-                      <p className="text-base font-semibold text-gray-900 truncate">
-                        {user.receiver.first_name} {user.receiver.last_name}
-                      </p>
-                      <span className="text-xs text-gray-500">
-                        {formatTime(user.created_at)}
-                      </span>
+            {filteredUsers.map((user) => {
+              const { data: { user: currentUser } } = supabase.auth.getUser();
+              const isCurrentUserSender = user.sender_id === currentUser?.id;
+              const otherUser = isCurrentUserSender ? user.receiver : user.sender;
+              const initials = getInitials(otherUser?.first_name, otherUser?.last_name);
+
+              return (
+                <div
+                  key={isCurrentUserSender ? user.receiver_id : user.sender_id}
+                  className={`group relative p-4 cursor-pointer hover:bg-white transition-colors ${
+                    selectedUserId === (isCurrentUserSender ? user.receiver_id : user.sender_id) ? "bg-white" : ""
+                  }`}
+                  onClick={() => onSelectChat(
+                    isCurrentUserSender ? user.receiver_id : user.sender_id,
+                    otherUser?.first_name || '',
+                    otherUser?.last_name || '',
+                    otherUser?.creator?.profile_image_url || null
+                  )}
+                >
+                  <div className="flex items-start space-x-3">
+                    <Avatar className="h-12 w-12 shrink-0">
+                      <AvatarFallback className="bg-gray-100 text-gray-600 font-medium text-lg">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <p className="text-base font-semibold text-gray-900 truncate">
+                          {otherUser?.first_name} {otherUser?.last_name}
+                        </p>
+                        <span className="text-xs text-gray-500">
+                          {formatTime(user.created_at)}
+                        </span>
+                      </div>
+                      {user.content && (
+                        <p className={`text-sm truncate ${
+                          user.read ? "text-gray-500" : "text-gray-900"
+                        }`}>
+                          {user.content}
+                        </p>
+                      )}
                     </div>
-                    {user.content && (
-                      <p className={`text-sm truncate ${
-                        user.read ? "text-gray-500" : "text-gray-900"
-                      }`}>
-                        {user.content}
-                      </p>
-                    )}
-                  </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          markAsUnread(user.receiver_id);
-                        }}>
-                          <Mail className="h-4 w-4 mr-2" />
-                          Mark as unread
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={(e) => {
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={(e) => {
                             e.stopPropagation();
-                            handleDeleteChat(user.receiver_id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete conversation
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                            markAsUnread(isCurrentUserSender ? user.receiver_id : user.sender_id);
+                          }}>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Mark as unread
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteChat(isCurrentUserSender ? user.receiver_id : user.sender_id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete conversation
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
