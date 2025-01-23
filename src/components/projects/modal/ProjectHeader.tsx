@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 
 interface ProjectHeaderProps {
@@ -7,8 +7,6 @@ interface ProjectHeaderProps {
   location: string | null;
   startDate: string | null;
   endDate: string | null;
-  onApply: () => void;
-  isCompleted?: boolean;
 }
 
 const ProjectHeader = ({
@@ -17,8 +15,6 @@ const ProjectHeader = ({
   location,
   startDate,
   endDate,
-  onApply,
-  isCompleted = false,
 }: ProjectHeaderProps) => {
   return (
     <div className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 border-b border-gray-100 p-8">
@@ -27,7 +23,7 @@ const ProjectHeader = ({
           <div className="relative">
             <div>
               <p className="text-sm font-medium text-gray-500 mb-2">
-                Posted by {companyName}
+                {companyName}
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-gray-900">
                 {title}
