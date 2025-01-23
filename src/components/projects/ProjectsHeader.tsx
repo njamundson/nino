@@ -4,7 +4,7 @@ const ProjectsHeader = () => {
   return (
     <PageHeader
       title="Projects"
-      description="View and apply to projects"
+      description="Browse and apply to available projects from top brands"
     />
   );
 };
