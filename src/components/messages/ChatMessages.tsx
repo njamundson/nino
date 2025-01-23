@@ -28,12 +28,10 @@ const ChatMessages = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Scroll to bottom when messages change or when a new message arrives
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Subscribe to real-time updates
   useEffect(() => {
     if (!selectedChat) return;
 
@@ -49,7 +47,6 @@ const ChatMessages = ({
         },
         (payload) => {
           console.log('Typing status changed:', payload);
-          // Scroll to bottom when new message arrives
           scrollToBottom();
         }
       )
@@ -60,7 +57,6 @@ const ChatMessages = ({
     };
   }, [selectedChat]);
 
-  // Group messages by date
   const messagesByDate = messages.reduce((groups: { [key: string]: Message[] }, message) => {
     const date = new Date(message.created_at).toLocaleDateString();
     if (!groups[date]) {
@@ -71,7 +67,7 @@ const ChatMessages = ({
   }, {});
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+    <div className="h-full overflow-y-auto px-4 py-6 space-y-6">
       {Object.entries(messagesByDate).map(([date, dateMessages]) => (
         <div key={date} className="space-y-4">
           <DateDivider date={date} />
