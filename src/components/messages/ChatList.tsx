@@ -19,6 +19,16 @@ interface Message {
   };
 }
 
+interface Creator {
+  id: string;
+  profile_id: string;
+  profile_image_url: string | null;
+  profiles: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
 interface ChatListProps {
   onSelectChat: (userId: string) => void;
   selectedUserId: string | null;
@@ -27,7 +37,7 @@ interface ChatListProps {
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [chats, setChats] = useState<{ [key: string]: Message[] }>({});
   const [loading, setLoading] = useState(true);
-  const [creators, setCreators] = useState<any[]>([]);
+  const [creators, setCreators] = useState<Creator[]>([]);
   const [isBrand, setIsBrand] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
@@ -67,11 +77,11 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         .from('messages')
         .select(`
           *,
-          sender:sender_profile_id(
+          sender:profiles!messages_sender_profile_id_fkey(
             first_name,
             last_name
           ),
-          receiver:receiver_profile_id(
+          receiver:profiles!messages_receiver_profile_id_fkey(
             first_name,
             last_name
           )
@@ -87,13 +97,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         if (!groupedChats[partnerId]) {
           groupedChats[partnerId] = [];
         }
-        groupedChats[partnerId].push({
-          ...message,
-          profiles: {
-            first_name: message.sender?.first_name || '',
-            last_name: message.sender?.last_name || ''
-          }
-        });
+        groupedChats[partnerId].push(message);
       });
 
       setChats(groupedChats);
@@ -129,11 +133,28 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   };
 
   const startNewChat = async (profileId: string) => {
-    onSelectChat(profileId);
-    toast({
-      title: "Chat started",
-      description: "You can now send messages to this creator",
-    });
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', profileId)
+        .single();
+
+      if (profile) {
+        onSelectChat(profile.id);
+        toast({
+          title: "Chat started",
+          description: "You can now send messages to this creator",
+        });
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      toast({
+        title: "Error",
+        description: "Could not start chat",
+        variant: "destructive",
+      });
+    }
   };
 
   useEffect(() => {
