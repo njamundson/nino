@@ -60,11 +60,9 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
       setIsLoading(false);
     }
   };
-
-  // If we don't have brand data, don't render the card
-  if (!opportunity.brand) {
-    return null;
-  }
+  
+  // Ensure we have a valid brand name
+  const brandName = opportunity.brand?.company_name || "Company name not available";
   
   return (
     <>
@@ -92,7 +90,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
 
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <p className="text-sm font-medium text-white/90 mb-1">
-            {opportunity.brand.company_name}
+            {brandName}
           </p>
           <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
             {opportunity.title}
@@ -118,14 +116,12 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
         </Button>
       </Card>
 
-      {opportunity.brand && (
-        <ProjectModal 
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          opportunity={opportunity}
-          isCompleted={isCompleted}
-        />
-      )}
+      <ProjectModal 
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        opportunity={opportunity}
+        isCompleted={isCompleted}
+      />
     </>
   );
 };

@@ -32,8 +32,8 @@ const ProjectsList = () => {
         throw error;
       }
 
-      console.log("Raw opportunities data:", data);
-      return data || [];
+      console.log("Fetched opportunities with brands:", data);
+      return data;
     },
   });
 
