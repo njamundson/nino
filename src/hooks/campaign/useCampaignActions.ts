@@ -8,6 +8,15 @@ export const useCampaignActions = () => {
 
   const handleDelete = async (campaignId: string) => {
     try {
+      // First delete all related applications
+      const { error: applicationsError } = await supabase
+        .from('applications')
+        .delete()
+        .eq('opportunity_id', campaignId);
+
+      if (applicationsError) throw applicationsError;
+
+      // Then delete the campaign itself
       const { error } = await supabase
         .from('opportunities')
         .delete()
@@ -20,8 +29,10 @@ export const useCampaignActions = () => {
         description: "Campaign deleted successfully",
       });
       
+      // Invalidate and refetch the campaigns query to update the UI
       queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
     } catch (error) {
+      console.error('Error deleting campaign:', error);
       toast({
         title: "Error",
         description: "Failed to delete campaign",
