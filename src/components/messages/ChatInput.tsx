@@ -1,140 +1,113 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Plus, Mic, Send } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ChatInputProps {
+  onSendMessage: (message: string) => void;
   selectedChat: string | null;
-  newMessage: string;
-  setNewMessage: (message: string) => void;
-  handleSendMessage: () => void;
-  isRecording: boolean;
-  setIsRecording: (isRecording: boolean) => void;
-  editingMessage: { id: string; content: string; } | null;
-  setEditingMessage: (message: { id: string; content: string; } | null) => void;
+  isLoading?: boolean;
 }
 
-const ChatInput = ({
-  selectedChat,
-  newMessage,
-  setNewMessage,
-  handleSendMessage,
-  isRecording,
-  setIsRecording,
-  editingMessage,
-  setEditingMessage,
-}: ChatInputProps) => {
-  const { toast } = useToast();
+const ChatInput = ({ onSendMessage, selectedChat, isLoading }: ChatInputProps) => {
+  const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout>();
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (typingTimeout) {
-        clearTimeout(typingTimeout);
-      }
-    };
-  }, [typingTimeout]);
-
-  const handleTypingStatus = async (typing: boolean) => {
+  const updateTypingStatus = async (typing: boolean) => {
     if (!selectedChat) return;
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      if (typing && !isTyping) {
-        setIsTyping(true);
-        await supabase.from('typing_status').upsert({
-          user_id: user.id,
-          chat_with: selectedChat,
-          is_typing: true,
-        });
-      }
+      const { error } = await supabase
+        .from('typing_status')
+        .upsert(
+          {
+            user_id: user.id,
+            chat_with: selectedChat,
+            is_typing: typing
+          },
+          {
+            onConflict: 'user_id,chat_with',
+            ignoreDuplicates: false
+          }
+        );
 
+      if (error) {
+        console.error('Error updating typing status:', error);
+      }
+    } catch (error) {
+      console.error('Error in updateTypingStatus:', error);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
       if (typingTimeout) {
         clearTimeout(typingTimeout);
       }
+      updateTypingStatus(false);
+    };
+  }, [selectedChat]);
 
-      const timeout = setTimeout(async () => {
-        setIsTyping(false);
-        await supabase.from('typing_status').upsert({
-          user_id: user.id,
-          chat_with: selectedChat,
-          is_typing: false,
-        });
-      }, 1000);
-
-      setTypingTimeout(timeout);
-    } catch (error) {
-      console.error('Error updating typing status:', error);
+  const handleTyping = () => {
+    if (!isTyping) {
+      setIsTyping(true);
+      updateTypingStatus(true);
     }
+
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      setIsTyping(false);
+      updateTypingStatus(false);
+    }, 2000);
+
+    setTypingTimeout(timeout);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewMessage(e.target.value);
-    handleTypingStatus(true);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim() || !selectedChat) return;
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey && newMessage.trim()) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+    onSendMessage(message.trim());
+    setMessage("");
+    setIsTyping(false);
+    updateTypingStatus(false);
   };
 
   return (
-    <div className="p-4 bg-white border-t">
-      <div className="flex gap-3 items-center max-w-4xl mx-auto">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="shrink-0 text-gray-500 hover:text-gray-600 hover:bg-gray-100/80 rounded-full"
-          onClick={() => {
-            toast({
-              title: "Coming soon",
-              description: "File attachments will be available soon!",
-            });
+    <form onSubmit={handleSubmit} className="p-4 border-t bg-background">
+      <div className="flex gap-2">
+        <Textarea
+          value={message}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            handleTyping();
           }}
+          placeholder="Type a message..."
+          className="min-h-[44px] max-h-32"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
+        />
+        <Button 
+          type="submit" 
+          size="icon"
+          disabled={isLoading || !message.trim()}
         >
-          <Plus className="w-6 h-6" />
+          <Send className="h-4 w-4" />
         </Button>
-
-        <div className="flex-1 flex items-center gap-2 bg-[#F1F1F1] rounded-full p-1">
-          <Input
-            value={newMessage}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyPress}
-            placeholder={editingMessage ? "Edit message..." : "iMessage"}
-            className="bg-transparent border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
-          />
-          
-          {!newMessage.trim() && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="shrink-0 text-gray-500 hover:text-gray-600 hover:bg-gray-100/80 rounded-full"
-              onClick={() => setIsRecording(!isRecording)}
-            >
-              <Mic className="w-5 h-5" />
-            </Button>
-          )}
-          
-          {newMessage.trim() && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="shrink-0 text-nino-primary hover:bg-nino-primary/10 rounded-full"
-              onClick={handleSendMessage}
-            >
-              <Send className="w-5 h-5" />
-            </Button>
-          )}
-        </div>
       </div>
-    </div>
+    </form>
   );
 };
 
