@@ -242,11 +242,11 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto bg-gray-50">
+      <div className="flex-1 overflow-y-auto bg-white">
         {filteredUsers.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-50">
             {filteredUsers.map((user) => {
               if (!currentUser) return null;
               const isCurrentUserSender = user.sender_id === currentUser.id;
@@ -257,8 +257,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
               return (
                 <div
                   key={isCurrentUserSender ? user.receiver_id : user.sender_id}
-                  className={`group relative p-4 cursor-pointer hover:bg-white transition-colors ${
-                    selectedUserId === (isCurrentUserSender ? user.receiver_id : user.sender_id) ? "bg-white" : ""
+                  className={`group relative px-6 py-4 cursor-pointer hover:bg-gray-50/50 transition-colors ${
+                    selectedUserId === (isCurrentUserSender ? user.receiver_id : user.sender_id) ? "bg-gray-50/50" : ""
                   }`}
                   onClick={() => onSelectChat(
                     isCurrentUserSender ? user.receiver_id : user.sender_id,
@@ -269,14 +269,14 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                 >
                   <div className="flex items-start space-x-3">
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-1">
+                      <div className="flex justify-between items-center mb-1.5">
                         <div className="flex flex-col">
-                          <h3 className="text-base font-semibold text-gray-900 truncate">
+                          <h3 className="text-[15px] font-semibold text-gray-900 truncate">
                             {`${otherUser.first_name || 'Unknown'} ${otherUser.last_name || ''}`}
                           </h3>
-                          <p className="text-sm text-gray-500">Creator</p>
+                          <p className="text-sm text-gray-500 mt-0.5">{user.content || 'No messages yet'}</p>
                         </div>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-400">
                           {formatTime(user.created_at)}
                         </span>
                       </div>
