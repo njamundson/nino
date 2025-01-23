@@ -1,15 +1,28 @@
+import { Suspense } from "react";
 import { Card } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 import CampaignFormContainer from "@/components/campaign/form/CampaignFormContainer";
 import QuickNotes from "../../notes/QuickNotes";
+
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center h-[200px]">
+    <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
+  </div>
+);
 
 const DashboardContent = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
       <Card className="bg-white shadow-sm rounded-3xl overflow-hidden p-4 md:p-6">
         <h3 className="text-xl font-semibold text-nino-text mb-6 px-8">New Campaign</h3>
-        <CampaignFormContainer />
+        <Suspense fallback={<LoadingSpinner />}>
+          <CampaignFormContainer />
+        </Suspense>
       </Card>
-      <QuickNotes />
+      
+      <Suspense fallback={<LoadingSpinner />}>
+        <QuickNotes />
+      </Suspense>
     </div>
   );
 };

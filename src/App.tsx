@@ -5,8 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
-import BrandLayout from "./components/layouts/BrandLayout";
-import CreatorLayout from "./components/layouts/CreatorLayout";
 import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
@@ -41,29 +39,20 @@ const App = () => {
                     element={route.element}
                   />
                 ))}
-                
-                {/* Brand routes with layout */}
-                <Route element={<BrandLayout />}>
-                  {brandRoutes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={route.element}
-                    />
-                  ))}
-                </Route>
-
-                {/* Creator routes with layout */}
-                <Route element={<CreatorLayout />}>
-                  {creatorRoutes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={route.element}
-                    />
-                  ))}
-                </Route>
-
+                {brandRoutes.map((route) => (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={route.element}
+                  />
+                ))}
+                {creatorRoutes.map((route) => (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={route.element}
+                  />
+                ))}
                 {adminRoutes.map((route) => (
                   <Route
                     key={route.path}
