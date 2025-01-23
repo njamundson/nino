@@ -62,71 +62,37 @@ export const useCreatorOnboarding = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        throw new Error("No authenticated session found");
+        throw new Error("No authenticated session");
       }
 
-      // First check if creator profile exists
-      const { data: existingCreator, error: checkError } = await supabase
+      // Update creator profile and mark onboarding as complete
+      const { error } = await supabase
         .from('creators')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .single();
-
-      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-        throw checkError;
-      }
-
-      if (existingCreator) {
-        // Update existing creator profile
-        const { error: updateError } = await supabase
-          .from('creators')
-          .update({
-            bio: creatorData.bio,
-            location: creatorData.location,
-            instagram: creatorData.instagram,
-            website: creatorData.website,
-            specialties: creatorData.specialties,
-            creator_type: creatorData.creatorType,
-            profile_image_url: creatorData.profileImage,
-            onboarding_completed: true
-          })
-          .eq('user_id', session.user.id);
-
-        if (updateError) throw updateError;
-      } else {
-        // Create new creator profile
-        const { error: creatorError } = await supabase
-          .from('creators')
-          .insert({
-            user_id: session.user.id,
-            bio: creatorData.bio,
-            location: creatorData.location,
-            instagram: creatorData.instagram,
-            website: creatorData.website,
-            specialties: creatorData.specialties,
-            creator_type: creatorData.creatorType,
-            profile_image_url: creatorData.profileImage,
-            onboarding_completed: true
-          });
-
-        if (creatorError) throw creatorError;
-      }
-
-      // Update the profile
-      const { error: profileError } = await supabase
-        .from('profiles')
         .update({
+          bio: creatorData.bio,
+          location: creatorData.location,
+          instagram: creatorData.instagram,
+          website: creatorData.website,
+          specialties: creatorData.specialties,
+          creator_type: creatorData.creatorType,
+          profile_image_url: creatorData.profileImage,
+          onboarding_completed: true,
           first_name: creatorData.firstName,
-          last_name: creatorData.lastName,
+          last_name: creatorData.lastName
         })
-        .eq('id', session.user.id);
+        .eq('user_id', session.user.id);
 
-      if (profileError) throw profileError;
+      if (error) throw error;
 
       return true;
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      throw error;
+      toast({
+        title: "Error",
+        description: "Failed to complete onboarding. Please try again.",
+        variant: "destructive",
+      });
+      return false;
     }
   };
 

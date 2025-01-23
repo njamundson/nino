@@ -77,6 +77,8 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             .from('creators')
             .insert({
               user_id: authData.user.id,
+              first_name: firstName, // Add first_name field
+              last_name: lastName,   // Add last_name field
             });
 
           if (creatorError) throw creatorError;
