@@ -1,3 +1,5 @@
+import { Route } from "react-router-dom";
+import BrandLayout from "@/components/layouts/BrandLayout";
 import ProtectedBrandRoute from "@/components/auth/ProtectedBrandRoute";
 import Dashboard from "@/pages/Dashboard";
 import NewCampaign from "@/pages/NewCampaign";
@@ -13,7 +15,9 @@ export const brandRoutes = [
     path: "/brand/dashboard",
     element: (
       <ProtectedBrandRoute>
-        <Dashboard />
+        <BrandLayout>
+          <Dashboard />
+        </BrandLayout>
       </ProtectedBrandRoute>
     ),
   },
@@ -21,7 +25,9 @@ export const brandRoutes = [
     path: "/brand/campaigns/new",
     element: (
       <ProtectedBrandRoute>
-        <NewCampaign />
+        <BrandLayout>
+          <NewCampaign />
+        </BrandLayout>
       </ProtectedBrandRoute>
     ),
   },
@@ -29,7 +35,9 @@ export const brandRoutes = [
     path: "/brand/campaigns",
     element: (
       <ProtectedBrandRoute>
-        <MyCampaigns />
+        <BrandLayout>
+          <MyCampaigns />
+        </BrandLayout>
       </ProtectedBrandRoute>
     ),
   },
@@ -37,7 +45,9 @@ export const brandRoutes = [
     path: "/brand/creators",
     element: (
       <ProtectedBrandRoute>
-        <ViewCreators />
+        <BrandLayout>
+          <ViewCreators />
+        </BrandLayout>
       </ProtectedBrandRoute>
     ),
   },
@@ -45,7 +55,9 @@ export const brandRoutes = [
     path: "/brand/bookings",
     element: (
       <ProtectedBrandRoute>
-        <Bookings />
+        <BrandLayout>
+          <Bookings />
+        </BrandLayout>
       </ProtectedBrandRoute>
     ),
   },
@@ -53,7 +65,9 @@ export const brandRoutes = [
     path: "/brand/messages",
     element: (
       <ProtectedBrandRoute>
-        <Messages />
+        <BrandLayout>
+          <Messages />
+        </BrandLayout>
       </ProtectedBrandRoute>
     ),
   },
@@ -61,7 +75,9 @@ export const brandRoutes = [
     path: "/brand/completed-projects",
     element: (
       <ProtectedBrandRoute>
-        <CompletedProjects />
+        <BrandLayout>
+          <CompletedProjects />
+        </BrandLayout>
       </ProtectedBrandRoute>
     ),
   },
@@ -69,10 +85,22 @@ export const brandRoutes = [
     path: "/brand/settings",
     element: (
       <ProtectedBrandRoute>
-        <BrandSettings />
+        <BrandLayout>
+          <BrandSettings />
+        </BrandLayout>
       </ProtectedBrandRoute>
     ),
   },
 ];
 
-export default brandRoutes;
+export const BrandRoutes = () => {
+  return (
+    <>
+      {brandRoutes.map((route) => (
+        <Route key={route.path} path={route.path} element={route.element} />
+      ))}
+    </>
+  );
+};
+
+export default BrandRoutes;

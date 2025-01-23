@@ -73,13 +73,12 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           
           navigate('/onboarding/brand');
         } else {
-          // For creators, ensure first_name is set
           const { error: creatorError } = await supabase
             .from('creators')
             .insert({
               user_id: authData.user.id,
-              first_name: firstName || 'Anonymous', // Provide a default value
-              last_name: lastName,
+              first_name: firstName, // Add first_name field
+              last_name: lastName,   // Add last_name field
             });
 
           if (creatorError) throw creatorError;

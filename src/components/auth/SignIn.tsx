@@ -17,90 +17,88 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
   const navigate = useNavigate();
 
   const handleSignIn = async (email: string, password: string) => {
-    if (!email || !password) {
-      toast({
-        variant: "destructive",
-        title: "Missing credentials",
-        description: "Please enter both email and password.",
-      });
-      return;
-    }
-
     try {
       setLoading(true);
-      console.log("Attempting sign in with email:", email);
+      console.log("Attempting sign in...");
       
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password.trim(),
+        email,
+        password,
       });
 
       if (error) {
         console.error('Sign in error:', error);
+        if (error.message === "Invalid login credentials") {
+          toast({
+            variant: "destructive",
+            title: "Invalid credentials",
+            description: "Please check your email and password and try again.",
+          });
+          return;
+        }
+        throw error;
+      }
+
+      if (data.user) {
+        console.log("User authenticated, checking profile...");
+        // First check if user is a creator
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('id, onboarding_completed')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
+
+        if (creatorError) {
+          console.error('Error fetching creator profile:', creatorError);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to fetch user profile. Please try again.",
+          });
+          return;
+        }
+
+        // Then check if user is a brand
+        const { data: brand, error: brandError } = await supabase
+          .from('brands')
+          .select('id, onboarding_completed')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
+
+        if (brandError) {
+          console.error('Error fetching brand profile:', brandError);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to fetch brand profile. Please try again.",
+          });
+          return;
+        }
+
+        console.log("Profile check complete:", { creator, brand });
+
+        if (creator) {
+          if (creator.onboarding_completed) {
+            navigate('/creator/dashboard', { replace: true });
+          } else {
+            navigate('/onboarding/creator', { replace: true });
+          }
+        } else if (brand) {
+          if (brand.onboarding_completed) {
+            navigate('/brand/dashboard', { replace: true });
+          } else {
+            navigate('/onboarding/brand', { replace: true });
+          }
+        } else {
+          // If neither, they need to complete onboarding
+          navigate('/onboarding', { replace: true });
+        }
+
         toast({
-          variant: "destructive",
-          title: "Sign in failed",
-          description: error.message === "Invalid login credentials" 
-            ? "Invalid email or password. Please try again."
-            : "An error occurred during sign in. Please try again.",
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
         });
-        return;
       }
-
-      if (!data.user) {
-        throw new Error("No user data returned");
-      }
-
-      console.log("User authenticated, checking profile...");
-      
-      // Check for creator profile
-      const { data: creator, error: creatorError } = await supabase
-        .from('creators')
-        .select('id, onboarding_completed')
-        .eq('user_id', data.user.id)
-        .maybeSingle();
-
-      if (creatorError) {
-        console.error('Error fetching creator profile:', creatorError);
-        throw creatorError;
-      }
-
-      // Check for brand profile
-      const { data: brand, error: brandError } = await supabase
-        .from('brands')
-        .select('id, onboarding_completed')
-        .eq('user_id', data.user.id)
-        .maybeSingle();
-
-      if (brandError) {
-        console.error('Error fetching brand profile:', brandError);
-        throw brandError;
-      }
-
-      console.log("Profile check complete:", { creator, brand });
-
-      // Handle navigation based on user type and onboarding status
-      if (creator) {
-        if (creator.onboarding_completed) {
-          navigate('/creator/dashboard', { replace: true });
-        } else {
-          navigate('/onboarding/creator', { replace: true });
-        }
-      } else if (brand) {
-        if (brand.onboarding_completed) {
-          navigate('/brand/dashboard', { replace: true });
-        } else {
-          navigate('/onboarding/brand', { replace: true });
-        }
-      } else {
-        navigate('/onboarding', { replace: true });
-      }
-
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
-
     } catch (error) {
       console.error('Sign in error:', error);
       toast({
