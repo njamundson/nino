@@ -76,14 +76,13 @@ const CreatorGrid = ({
         bio: creator.bio || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
-        creatorType: (creator.creator_type || 'solo') as CreatorType, // Cast to CreatorType with default
+        creatorType: (creator.creator_type || 'solo') as CreatorType,
         instagram: creator.instagram || '',
         website: creator.website || '',
-        profile_image_url: creator.profile_image_url,
-        profileImage: creator.profile_image_url,
+        profileImage: creator.profile_image_url || '',
         profile: {
-          first_name: creator.first_name,
-          last_name: creator.last_name
+          first_name: creator.first_name || '',
+          last_name: creator.last_name || ''
         }
       }));
 
@@ -130,8 +129,8 @@ const CreatorGrid = ({
       {creators.map((creator) => (
         <CreatorCard 
           key={creator.id} 
-          creator={creator} 
-          onInvite={() => {}} // Add empty handler since it's required
+          creator={creator}
+          onInvite={() => {}} 
         />
       ))}
     </div>
