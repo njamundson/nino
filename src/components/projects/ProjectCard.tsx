@@ -61,7 +61,8 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
     }
   };
   
-  const brandName = opportunity.brand?.company_name || "Unnamed Brand";
+  // Ensure we have a valid brand name
+  const brandName = opportunity.brand?.company_name || "Company name not available";
   
   return (
     <>

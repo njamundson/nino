@@ -27,7 +27,7 @@ const ProjectHeader = ({
           <div className="relative">
             <div>
               <p className="text-sm font-medium text-gray-500 mb-2">
-                {companyName || "Unnamed Brand"}
+                {companyName}
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-gray-900">
                 {title}
