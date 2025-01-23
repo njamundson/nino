@@ -33,8 +33,8 @@ interface ProjectModalProps {
 const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: ProjectModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
 
-  // Fetch brand data
-  const { data: brandData } = useQuery({
+  // Fetch brand data with React Query for better caching and loading states
+  const { data: brandData, isLoading } = useQuery({
     queryKey: ['brand', opportunity.brand_id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -46,6 +46,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
       if (error) throw error;
       return data;
     },
+    enabled: isOpen, // Only fetch when modal is open
   });
 
   const handleApply = () => {
@@ -63,8 +64,16 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
         >
           <X className="h-4 w-4 text-gray-500" />
         </button>
+        
         <div className="max-h-[85vh] overflow-y-auto">
-          {showApplicationForm ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="h-6 w-6 border-2 border-nino-primary border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-gray-500">Loading project details...</p>
+              </div>
+            </div>
+          ) : showApplicationForm ? (
             <ApplicationForm
               opportunity={opportunity}
               onBack={() => setShowApplicationForm(false)}
