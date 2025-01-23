@@ -116,14 +116,14 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
                 type="button"
                 variant="ghost"
                 onClick={onBack}
-                className="rounded-2xl hover:bg-gray-100"
+                className="rounded-full hover:bg-gray-100"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
               <Button
                 type="submit"
-                className="px-8 py-2.5 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-2xl transition-colors"
+                className="px-8 py-2.5 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full transition-colors"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? (

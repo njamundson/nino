@@ -90,7 +90,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
                   <div className="flex justify-end pt-6">
                     <Button
                       onClick={handleApply}
-                      className="px-8 py-2.5 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-2xl transition-colors"
+                      className="px-8 py-2.5 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full transition-colors"
                     >
                       Apply Now
                     </Button>
