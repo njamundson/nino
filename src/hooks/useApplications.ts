@@ -19,7 +19,20 @@ export const useApplications = (brandId?: string) => {
               brand:brands (
                 id,
                 user_id,
-                company_name
+                company_name,
+                brand_type,
+                description,
+                website,
+                instagram,
+                location,
+                phone_number,
+                support_email,
+                profile_image_url,
+                sms_notifications_enabled,
+                two_factor_enabled,
+                created_at,
+                updated_at,
+                onboarding_completed
               )
             ),
             creator:creators!inner (
@@ -65,7 +78,20 @@ export const useApplications = (brandId?: string) => {
             brand:brands (
               id,
               user_id,
-              company_name
+              company_name,
+              brand_type,
+              description,
+              website,
+              instagram,
+              location,
+              phone_number,
+              support_email,
+              profile_image_url,
+              sms_notifications_enabled,
+              two_factor_enabled,
+              created_at,
+              updated_at,
+              onboarding_completed
             )
           ),
           creator:creators (
