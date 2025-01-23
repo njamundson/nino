@@ -24,6 +24,11 @@ export const useMessages = (userId: string): UseMessagesReturn => {
   const { data = [], isLoading, error } = useQuery({
     queryKey: ['messages', userId],
     queryFn: async () => {
+      // Only fetch messages if we have a valid userId
+      if (!userId) {
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('messages')
         .select(`
@@ -45,6 +50,7 @@ export const useMessages = (userId: string): UseMessagesReturn => {
 
       return data as Message[];
     },
+    enabled: Boolean(userId), // Only run the query if we have a userId
     staleTime: 1000 * 30, // 30 seconds
     gcTime: 1000 * 60 * 5, // 5 minutes
     refetchInterval: 10000, // Refetch every 10 seconds
