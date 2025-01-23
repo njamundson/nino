@@ -19,6 +19,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
   const handleSignIn = async (email: string, password: string) => {
     try {
       setLoading(true);
+      console.log("Attempting sign in...");
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -26,6 +27,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       });
 
       if (error) {
+        console.error('Sign in error:', error);
         if (error.message === "Invalid login credentials") {
           toast({
             variant: "destructive",
@@ -38,15 +40,16 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       }
 
       if (data.user) {
-        // Fetch user profile to determine type
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', data.user.id)
+        console.log("User authenticated, checking profile...");
+        // First check if user is a creator
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('id, onboarding_completed')
+          .eq('user_id', data.user.id)
           .maybeSingle();
 
-        if (profileError) {
-          console.error('Error fetching profile:', profileError);
+        if (creatorError) {
+          console.error('Error fetching creator profile:', creatorError);
           toast({
             variant: "destructive",
             title: "Error",
@@ -55,43 +58,46 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           return;
         }
 
-        if (profile) {
-          // First check if user is a creator
-          const { data: creator } = await supabase
-            .from('creators')
-            .select('id, onboarding_completed')
-            .eq('user_id', profile.id)
-            .maybeSingle();
+        // Then check if user is a brand
+        const { data: brand, error: brandError } = await supabase
+          .from('brands')
+          .select('id, onboarding_completed')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
 
-          // Then check if user is a brand
-          const { data: brand } = await supabase
-            .from('brands')
-            .select('id, onboarding_completed')
-            .eq('user_id', profile.id)
-            .maybeSingle();
-
-          if (creator) {
-            if (creator.onboarding_completed) {
-              navigate('/creator/dashboard', { replace: true });
-            } else {
-              navigate('/onboarding/creator', { replace: true });
-            }
-          } else if (brand) {
-            if (brand.onboarding_completed) {
-              navigate('/brand/dashboard', { replace: true });
-            } else {
-              navigate('/onboarding/brand', { replace: true });
-            }
-          } else {
-            // If neither, they need to complete onboarding
-            navigate('/onboarding', { replace: true });
-          }
-
+        if (brandError) {
+          console.error('Error fetching brand profile:', brandError);
           toast({
-            title: "Welcome back!",
-            description: "You have successfully signed in.",
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to fetch brand profile. Please try again.",
           });
+          return;
         }
+
+        console.log("Profile check complete:", { creator, brand });
+
+        if (creator) {
+          if (creator.onboarding_completed) {
+            navigate('/creator/dashboard', { replace: true });
+          } else {
+            navigate('/onboarding/creator', { replace: true });
+          }
+        } else if (brand) {
+          if (brand.onboarding_completed) {
+            navigate('/brand/dashboard', { replace: true });
+          } else {
+            navigate('/onboarding/brand', { replace: true });
+          }
+        } else {
+          // If neither, they need to complete onboarding
+          navigate('/onboarding', { replace: true });
+        }
+
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
       }
     } catch (error) {
       console.error('Sign in error:', error);
