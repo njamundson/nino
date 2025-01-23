@@ -6,6 +6,7 @@ export const useCampaignData = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    // Set up real-time subscription
     const channel = supabase
       .channel('schema-db-changes')
       .on(
@@ -16,22 +17,27 @@ export const useCampaignData = () => {
           table: 'opportunities'
         },
         () => {
-          // Refetch campaigns when a new one is created
+          console.log('New campaign detected, invalidating query cache');
           queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
         }
       )
       .subscribe();
 
     return () => {
+      console.log('Cleaning up Supabase channel');
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['my-campaigns'],
     queryFn: async () => {
+      console.log('Fetching campaigns data');
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
+      if (!user) {
+        console.log('No user found');
+        return [];
+      }
 
       const { data: brand } = await supabase
         .from('brands')
@@ -39,7 +45,10 @@ export const useCampaignData = () => {
         .eq('user_id', user.id)
         .single();
 
-      if (!brand) return [];
+      if (!brand) {
+        console.log('No brand found for user');
+        return [];
+      }
 
       const { data } = await supabase
         .from('opportunities')
@@ -68,7 +77,10 @@ export const useCampaignData = () => {
         .eq('brand_id', brand.id)
         .order('created_at', { ascending: false });
 
+      console.log('Campaigns data fetched:', data);
       return data || [];
     },
   });
+
+  return query;
 };

@@ -10,6 +10,7 @@ import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
 import { adminRoutes } from "./routes/adminRoutes";
 
+// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -21,6 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
+// Wrap the app with QueryClientProvider
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
