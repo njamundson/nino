@@ -10,6 +10,10 @@ export interface CreatorData {
   profileImage: string | null;
   creatorType: CreatorType;
   profile_image_url: string | null;
+  profile: {
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
 }
 
 export type CreatorType = 'solo' | 'couple' | 'family' | 'group';
@@ -35,6 +39,10 @@ export interface Creator {
   profile_image_url: string | null;
   first_name: string | null;
   last_name: string | null;
+  profile?: {
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
 }
 
 export const validateInstagramHandle = (handle: string): boolean => {

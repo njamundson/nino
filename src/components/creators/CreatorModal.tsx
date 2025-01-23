@@ -83,37 +83,6 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
   if (!creator) return null;
 
-  const handleInvite = async (opportunityId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("You must be logged in to invite creators");
-        return;
-      }
-
-      const { error } = await supabase
-        .from('applications')
-        .insert({
-          opportunity_id: opportunityId,
-          creator_id: creator.id,
-          status: 'invited'
-        });
-
-      if (error) {
-        console.error("Error inviting creator:", error);
-        toast.error("Failed to invite creator");
-        return;
-      }
-
-      toast.success("Creator invited successfully!");
-      setShowCampaigns(false);
-      onClose();
-    } catch (error) {
-      console.error("Error in handleInvite:", error);
-      toast.error("An unexpected error occurred");
-    }
-  };
-
   const creatorData: CreatorData = {
     id: creator.id,
     firstName: creator.profile?.first_name || '',
@@ -125,8 +94,8 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     location: creator.location || '',
     profileImage: creator.profile_image_url,
     creatorType: creator.creator_type as CreatorType || 'solo',
-    profile: creator.profile || null,
-    profile_image_url: creator.profile_image_url
+    profile_image_url: creator.profile_image_url,
+    profile: creator.profile || null
   };
 
   return (
