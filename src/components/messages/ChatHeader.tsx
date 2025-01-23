@@ -13,6 +13,7 @@ export const ChatHeader = ({
   onBack 
 }: ChatHeaderProps) => {
   const isMobile = useIsMobile();
+  const hasSelectedChat = senderFirstName && senderLastName;
 
   return (
     <div className="border-b border-gray-100 p-6 bg-white/50 backdrop-blur-xl">
@@ -27,15 +28,17 @@ export const ChatHeader = ({
             </button>
           )}
           <h1 className="text-2xl font-semibold text-gray-900">
-            Messages
+            {hasSelectedChat ? `${senderFirstName} ${senderLastName}` : "Messages"}
           </h1>
         </div>
         
-        <div>
-          <h2 className="text-xl font-semibold text-nino-primary">
-            {senderFirstName} {senderLastName}
-          </h2>
-        </div>
+        {hasSelectedChat && (
+          <div>
+            <h2 className="text-xl font-semibold text-nino-primary">
+              Creator
+            </h2>
+          </div>
+        )}
       </div>
     </div>
   );
