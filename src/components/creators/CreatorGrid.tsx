@@ -19,11 +19,14 @@ const CreatorGrid = ({
 }: CreatorGridProps) => {
   const [creators, setCreators] = useState<CreatorData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchCreators = async () => {
       try {
+        setLoading(true);
+        setError(null);
         console.log("Fetching creators with filters:", { 
           selectedSpecialties, 
           selectedCreatorType,
@@ -108,6 +111,7 @@ const CreatorGrid = ({
         setCreators(formattedCreators);
       } catch (error) {
         console.error("Error in fetchCreators:", error);
+        setError(error instanceof Error ? error : new Error('An error occurred'));
       } finally {
         setLoading(false);
       }
@@ -115,6 +119,16 @@ const CreatorGrid = ({
 
     fetchCreators();
   }, [selectedSpecialties, selectedCreatorType, selectedLocations]);
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-red-500">
+          Error loading creators. Please try again.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

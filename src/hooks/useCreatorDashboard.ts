@@ -80,8 +80,9 @@ export const useCreatorDashboard = () => {
         throw error;
       }
     },
-    retry: false,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+    retry: false,
     refetchOnWindowFocus: false,
     refetchOnMount: true
   });
