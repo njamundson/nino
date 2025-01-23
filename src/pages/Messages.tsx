@@ -53,7 +53,7 @@ const Messages = () => {
             editingMessage={editingMessage}
             setEditingMessage={setEditingMessage}
             messages={messages}
-            currentUserId={supabase.auth.getUser()?.data?.user?.id}
+            currentUserId={undefined}
           />
         </div>
       </div>
