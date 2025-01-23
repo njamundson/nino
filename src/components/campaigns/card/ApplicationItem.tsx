@@ -21,13 +21,10 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     console.log('Creator data:', application.creator);
   }, [application]);
 
-  // Access creator data directly from the application
   const creator = application.creator;
   const creatorName = creator?.first_name && creator?.last_name
     ? `${creator.first_name} ${creator.last_name}`
     : 'Anonymous Creator';
-
-  const specialties = creator?.specialties || [];
 
   return (
     <div className="p-6 rounded-lg bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300">
@@ -98,9 +95,9 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
             )}
 
             {/* Specialties */}
-            {specialties.length > 0 && (
+            {creator?.specialties && creator.specialties.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
-                {specialties.map((specialty: string, index: number) => (
+                {creator.specialties.map((specialty: string, index: number) => (
                   <Badge
                     key={index}
                     variant="outline"
