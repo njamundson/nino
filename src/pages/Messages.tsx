@@ -18,7 +18,7 @@ const Messages = () => {
   const { toast } = useToast();
 
   const {
-    messages,
+    data: messages,
     newMessage,
     setNewMessage,
     isRecording,
@@ -111,7 +111,7 @@ const Messages = () => {
             setIsRecording={setIsRecording}
             editingMessage={editingMessage}
             setEditingMessage={setEditingMessage}
-            messages={messages}
+            messages={messages || []}
           />
         </div>
       </div>

@@ -26,13 +26,6 @@ const ViewCreators = () => {
     setSelectedLocations([location]);
   };
 
-  const handleInvite = (creatorId: string) => {
-    toast({
-      title: "Success",
-      description: "Creator has been invited.",
-    });
-  };
-
   return (
     <div className="space-y-8">
       <PageHeader
@@ -51,7 +44,6 @@ const ViewCreators = () => {
         selectedSpecialties={selectedSpecialties}
         selectedCreatorType={selectedCreatorType}
         selectedLocations={selectedLocations}
-        onInvite={handleInvite}
       />
     </div>
   );

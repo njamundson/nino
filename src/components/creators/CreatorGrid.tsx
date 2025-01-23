@@ -36,9 +36,12 @@ const CreatorGrid = ({
           id,
           first_name,
           last_name,
+          bio,
           location,
           specialties,
           creator_type,
+          instagram,
+          website,
           profile_image_url
         `)
         .eq('onboarding_completed', true);
@@ -66,13 +69,22 @@ const CreatorGrid = ({
         return;
       }
 
-      const formattedCreators = creatorsData.map(creator => ({
+      const formattedCreators: CreatorData[] = creatorsData.map(creator => ({
         id: creator.id,
-        name: creator.first_name + (creator.last_name ? ` ${creator.last_name}` : ''),
+        firstName: creator.first_name || '',
+        lastName: creator.last_name || '',
+        bio: creator.bio || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
         creatorType: creator.creator_type || '',
-        profileImageUrl: creator.profile_image_url || '',
+        instagram: creator.instagram || '',
+        website: creator.website || '',
+        profile_image_url: creator.profile_image_url,
+        profileImage: creator.profile_image_url,
+        profile: {
+          first_name: creator.first_name,
+          last_name: creator.last_name
+        }
       }));
 
       console.log("Fetched creators:", formattedCreators);
@@ -116,7 +128,11 @@ const CreatorGrid = ({
       isMobile ? 'gap-4' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6'
     }`}>
       {creators.map((creator) => (
-        <CreatorCard key={creator.id} creator={creator} />
+        <CreatorCard 
+          key={creator.id} 
+          creator={creator} 
+          onInvite={() => {}} // Add empty handler since it's required
+        />
       ))}
     </div>
   );
