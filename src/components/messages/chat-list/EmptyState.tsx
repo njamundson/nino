@@ -1,8 +1,8 @@
 interface EmptyStateProps {
-  isBrand: boolean;
+  isBrand?: boolean;
 }
 
-export const EmptyState = ({ isBrand }: EmptyStateProps) => {
+export const EmptyState = ({ isBrand = true }: EmptyStateProps) => {
   return (
     <div className="text-center py-8 text-gray-500">
       {isBrand 

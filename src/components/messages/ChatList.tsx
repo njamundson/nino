@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import ChatSearch from "./chat-list/ChatSearch";
-import NewChatButton from "./chat-list/NewChatButton";
-import EmptyState from "./chat-list/EmptyState";
+import { ChatSearch } from "./chat-list/ChatSearch";
+import { NewChatButton } from "./chat-list/NewChatButton";
+import { EmptyState } from "./chat-list/EmptyState";
 import { MoreHorizontal, Trash2, Mail } from "lucide-react";
 import {
   DropdownMenu,
