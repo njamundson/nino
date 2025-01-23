@@ -14,7 +14,14 @@ export const useApplications = (brandId?: string) => {
           .from('applications')
           .select(`
             *,
-            opportunity:opportunities!inner (*),
+            opportunity:opportunities!inner (
+              *,
+              brand:brands (
+                id,
+                user_id,
+                company_name
+              )
+            ),
             creator:creators!inner (
               id,
               first_name,
@@ -24,7 +31,8 @@ export const useApplications = (brandId?: string) => {
               instagram,
               website,
               creator_type,
-              specialties
+              specialties,
+              user_id
             )
           `)
           .eq('status', 'pending')
@@ -54,7 +62,11 @@ export const useApplications = (brandId?: string) => {
           *,
           opportunity:opportunities (
             *,
-            brand:brands (*)
+            brand:brands (
+              id,
+              user_id,
+              company_name
+            )
           ),
           creator:creators (
             id,
@@ -65,7 +77,8 @@ export const useApplications = (brandId?: string) => {
             instagram,
             website,
             creator_type,
-            specialties
+            specialties,
+            user_id
           )
         `)
         .eq('creator_id', creator.id);
