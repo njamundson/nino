@@ -11,11 +11,14 @@ const CreatorDashboard = () => {
   const isMobile = useIsMobile();
   const { data: creator, isLoading, error } = useCreatorDashboard();
 
+  console.log("Dashboard state:", { creator, isLoading, error });
+
   if (isLoading) {
     return <DashboardLoading />;
   }
 
   if (error || !creator) {
+    console.error("Dashboard error:", error);
     return <DashboardError />;
   }
 
