@@ -19,6 +19,22 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       setLoading(true);
       const { email, password, userType, firstName, lastName } = data;
 
+      // Check if user exists first
+      const { data: existingUser } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (existingUser?.user) {
+        toast({
+          variant: "destructive",
+          title: "Account already exists",
+          description: "Please sign in instead.",
+        });
+        onToggleAuth(); // Switch to sign in form
+        return;
+      }
+
       // Sign up the user
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -31,7 +47,18 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         },
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        if (signUpError.message.includes("already registered")) {
+          toast({
+            variant: "destructive",
+            title: "Account already exists",
+            description: "Please sign in instead.",
+          });
+          onToggleAuth(); // Switch to sign in form
+          return;
+        }
+        throw signUpError;
+      }
 
       if (authData.user) {
         // Create initial profile based on user type
