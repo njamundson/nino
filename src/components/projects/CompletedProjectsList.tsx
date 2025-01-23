@@ -26,6 +26,7 @@ const CompletedProjectsList = () => {
           return [];
         }
 
+        // Get all accepted applications for this creator
         const { data: applications, error: appsError } = await supabase
           .from('applications')
           .select(`
@@ -45,6 +46,7 @@ const CompletedProjectsList = () => {
               compensation_details,
               deliverables,
               image_url,
+              status,
               brand:brands (
                 id,
                 company_name,
@@ -57,7 +59,8 @@ const CompletedProjectsList = () => {
             )
           `)
           .eq('creator_id', creator.id)
-          .eq('status', 'completed');
+          .eq('status', 'accepted')
+          .eq('opportunity.status', 'completed');
 
         if (appsError) {
           console.error("Error fetching applications:", appsError);
@@ -74,7 +77,7 @@ const CompletedProjectsList = () => {
           ...app.opportunity,
           application_status: app.status,
           application_id: app.id,
-          brand_id: app.opportunity.brand_id // Ensure brand_id is included
+          brand_id: app.opportunity.brand_id
         }));
 
         console.log("Fetched completed projects:", completedProjects);
@@ -88,7 +91,8 @@ const CompletedProjectsList = () => {
         });
         return [];
       }
-    }
+    },
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes to check for newly completed projects
   });
 
   if (isLoading) {

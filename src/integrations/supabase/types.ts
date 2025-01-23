@@ -582,7 +582,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      check_campaign_status: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
