@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CreatorSelectionModal from "./chat-list/CreatorSelectionModal";
 
 interface MessageUser {
@@ -27,9 +26,6 @@ interface MessageUser {
   receiver: {
     first_name: string | null;
     last_name: string | null;
-    creator?: {
-      profile_image_url: string | null;
-    } | null;
   } | null;
 }
 
@@ -255,18 +251,10 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                     isCurrentUserSender ? user.receiver_id : user.sender_id,
                     otherUser?.first_name || '',
                     otherUser?.last_name || '',
-                    otherUser?.creator?.profile_image_url || null
+                    null
                   )}
                 >
                   <div className="flex items-start space-x-3">
-                    <Avatar className="h-12 w-12 shrink-0">
-                      {otherUser?.creator?.profile_image_url && (
-                        <AvatarImage src={otherUser.creator.profile_image_url} alt="Profile" />
-                      )}
-                      <AvatarFallback className="bg-gray-100 text-gray-600 font-medium text-lg">
-                        {initials}
-                      </AvatarFallback>
-                    </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-1">
                         <p className="text-base font-semibold text-gray-900 truncate">
