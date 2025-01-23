@@ -28,7 +28,17 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === "Invalid login credentials") {
+          toast({
+            variant: "destructive",
+            title: "Invalid credentials",
+            description: "Please check your email and password and try again.",
+          });
+          return;
+        }
+        throw error;
+      }
 
       if (data.user) {
         // Fetch user profile to determine type
@@ -38,17 +48,25 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           .eq('id', data.user.id)
           .single();
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to fetch user profile. Please try again.",
+          });
+          return;
+        }
 
         if (profile) {
           // Check if user is a brand or creator
-          const { data: brand, error: brandError } = await supabase
+          const { data: brand } = await supabase
             .from('brands')
             .select('id, onboarding_completed')
             .eq('user_id', profile.id)
             .single();
 
-          const { data: creator, error: creatorError } = await supabase
+          const { data: creator } = await supabase
             .from('creators')
             .select('id, onboarding_completed')
             .eq('user_id', profile.id)
@@ -82,7 +100,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       toast({
         variant: "destructive",
         title: "Error signing in",
-        description: error instanceof Error ? error.message : "Please check your credentials and try again.",
+        description: "An unexpected error occurred. Please try again.",
       });
     } finally {
       setLoading(false);
