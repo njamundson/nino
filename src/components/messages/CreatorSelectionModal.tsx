@@ -17,10 +17,8 @@ interface Creator {
   id: string;
   profile_id: string;
   profile_image_url: string | null;
-  profiles: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
+  first_name: string | null;
+  last_name: string | null;
 }
 
 const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionModalProps) => {
@@ -35,10 +33,8 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
           id,
           profile_id,
           profile_image_url,
-          profiles (
-            first_name,
-            last_name
-          )
+          first_name,
+          last_name
         `);
 
       if (error) {
@@ -52,15 +48,15 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
 
   // Helper function to get initials safely
   const getInitials = (creator: Creator) => {
-    const firstName = creator.profiles?.first_name || '';
-    const lastName = creator.profiles?.last_name || '';
+    const firstName = creator.first_name || '';
+    const lastName = creator.last_name || '';
     return `${firstName[0] || ''}${lastName[0] || ''}`;
   };
 
   // Helper function to get full name safely
   const getFullName = (creator: Creator) => {
-    const firstName = creator.profiles?.first_name || '';
-    const lastName = creator.profiles?.last_name || '';
+    const firstName = creator.first_name || '';
+    const lastName = creator.last_name || '';
     return `${firstName} ${lastName}`.trim() || 'Unknown Creator';
   };
 
