@@ -15,21 +15,29 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let mounted = true;
+
     const checkAuth = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          setIsAuthenticated(false);
-          setLoading(false);
+        if (sessionError || !session) {
+          console.error('Session error or no session:', sessionError);
+          if (mounted) {
+            setIsAuthenticated(false);
+            setLoading(false);
+          }
           return;
         }
 
-        if (!session) {
-          console.log("No session found, redirecting to auth");
-          setIsAuthenticated(false);
-          setLoading(false);
+        // Refresh session if it exists
+        const { error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError) {
+          console.error('Error refreshing session:', refreshError);
+          if (mounted) {
+            setIsAuthenticated(false);
+            setLoading(false);
+          }
           return;
         }
 
@@ -46,23 +54,29 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
             description: "Failed to fetch creator profile",
             variant: "destructive",
           });
-          setIsAuthenticated(false);
-          setLoading(false);
+          if (mounted) {
+            setIsAuthenticated(false);
+            setLoading(false);
+          }
           return;
         }
 
         if (!creator) {
           console.log("No creator record found, redirecting to onboarding");
-          setIsAuthenticated(true);
-          setOnboardingCompleted(false);
-          setLoading(false);
+          if (mounted) {
+            setIsAuthenticated(true);
+            setOnboardingCompleted(false);
+            setLoading(false);
+          }
           return;
         }
 
         console.log("Creator found:", creator);
-        setIsAuthenticated(true);
-        setOnboardingCompleted(creator.onboarding_completed || false);
-        setLoading(false);
+        if (mounted) {
+          setIsAuthenticated(true);
+          setOnboardingCompleted(creator.onboarding_completed || false);
+          setLoading(false);
+        }
       } catch (error) {
         console.error('Error in checkAuth:', error);
         toast({
@@ -70,8 +84,10 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           description: "Please sign in again",
           variant: "destructive",
         });
-        setIsAuthenticated(false);
-        setLoading(false);
+        if (mounted) {
+          setIsAuthenticated(false);
+          setLoading(false);
+        }
       }
     };
 
@@ -79,11 +95,20 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     checkAuth();
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkAuth();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === 'SIGNED_OUT') {
+        if (mounted) {
+          setIsAuthenticated(false);
+          setLoading(false);
+        }
+      } else {
+        await checkAuth();
+      }
     });
 
+    // Cleanup function
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [toast]);
