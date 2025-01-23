@@ -92,7 +92,10 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           read,
           sender:profiles!sender_profile_id (
             first_name,
-            last_name
+            last_name,
+            creator:creators (
+              profile_image_url
+            )
           ),
           receiver:profiles!receiver_profile_id (
             first_name,
@@ -214,12 +217,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
-  const getInitials = (firstName: string | null, lastName: string | null) => {
-    const first = firstName?.[0] || '';
-    const last = lastName?.[0] || '';
-    return (first + last).toUpperCase();
-  };
-
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-100">
@@ -239,7 +236,10 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
               if (!currentUser) return null;
               const isCurrentUserSender = user.sender_id === currentUser.id;
               const otherUser = isCurrentUserSender ? user.receiver : user.sender;
-              const initials = getInitials(otherUser?.first_name, otherUser?.last_name);
+              const otherUserName = otherUser ? `${otherUser.first_name} ${otherUser.last_name}` : 'Unknown User';
+              const profileImage = isCurrentUserSender 
+                ? user.receiver?.creator?.profile_image_url 
+                : user.sender?.creator?.profile_image_url;
 
               return (
                 <div
@@ -251,16 +251,16 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                     isCurrentUserSender ? user.receiver_id : user.sender_id,
                     otherUser?.first_name || '',
                     otherUser?.last_name || '',
-                    null
+                    profileImage || null
                   )}
                 >
                   <div className="flex items-start space-x-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-1">
                         <div className="flex flex-col">
-                          <p className="text-base font-semibold text-gray-900 truncate">
-                            {otherUser?.first_name} {otherUser?.last_name}
-                          </p>
+                          <h3 className="text-base font-semibold text-gray-900 truncate">
+                            {otherUserName}
+                          </h3>
                           <p className="text-sm text-gray-500">Creator</p>
                         </div>
                         <span className="text-xs text-gray-500">
