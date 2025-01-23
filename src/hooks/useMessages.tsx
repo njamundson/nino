@@ -5,6 +5,7 @@ import { useState } from "react";
 
 interface UseMessagesReturn {
   data: Message[];
+  setMessages: (messages: Message[] | ((prev: Message[] | undefined) => Message[])) => void;
   isLoading: boolean;
   error: Error | null;
   newMessage: string;
@@ -21,10 +22,9 @@ export const useMessages = (userId: string): UseMessagesReturn => {
   const [isRecording, setIsRecording] = useState(false);
   const [editingMessage, setEditingMessage] = useState<{ id: string; content: string; } | null>(null);
 
-  const { data = [], isLoading, error } = useQuery({
+  const { data = [], isLoading, error, setData: setMessages } = useQuery({
     queryKey: ['messages', userId],
     queryFn: async () => {
-      // Only fetch messages if we have a valid userId
       if (!userId) {
         return [];
       }
@@ -37,11 +37,12 @@ export const useMessages = (userId: string): UseMessagesReturn => {
           created_at,
           sender_id,
           receiver_id,
-          read
+          read,
+          message_type,
+          updated_at
         `)
         .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .order('created_at', { ascending: true });
 
       if (error) {
         console.error("Error fetching messages:", error);
@@ -50,10 +51,10 @@ export const useMessages = (userId: string): UseMessagesReturn => {
 
       return data as Message[];
     },
-    enabled: Boolean(userId), // Only run the query if we have a userId
-    staleTime: 1000 * 30, // 30 seconds
-    gcTime: 1000 * 60 * 5, // 5 minutes
-    refetchInterval: 10000, // Refetch every 10 seconds
+    enabled: Boolean(userId),
+    staleTime: 1000 * 30,
+    gcTime: 1000 * 60 * 5,
+    refetchInterval: 10000,
     refetchOnWindowFocus: true,
     retry: 2
   });
@@ -64,6 +65,7 @@ export const useMessages = (userId: string): UseMessagesReturn => {
 
   return {
     data,
+    setMessages,
     isLoading,
     error,
     newMessage,

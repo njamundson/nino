@@ -20,6 +20,7 @@ const Messages = () => {
 
   const {
     data: messages,
+    setMessages, // Add this from the hook
     newMessage,
     setNewMessage,
     isRecording,
@@ -42,10 +43,10 @@ const Messages = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!selectedUserId) {
+    if (!selectedUserId || !newMessage.trim()) {
       toast({
         title: "Error",
-        description: "Please select a recipient",
+        description: "Please select a recipient and enter a message",
         variant: "destructive",
       });
       return;
@@ -62,18 +63,38 @@ const Messages = () => {
         return;
       }
 
-      await supabase.from('messages').insert({
+      // Create optimistic message
+      const optimisticMessage: Message = {
+        id: crypto.randomUUID(),
+        sender_id: user.id,
+        receiver_id: selectedUserId,
+        content: newMessage,
+        message_type: 'text',
+        read: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Add optimistic message to the UI immediately
+      setMessages(prev => [...(prev || []), optimisticMessage]);
+      
+      // Clear input
+      setNewMessage('');
+
+      // Send to server
+      const { error } = await supabase.from('messages').insert({
         sender_id: user.id,
         receiver_id: selectedUserId,
         content: newMessage,
         message_type: 'text'
       });
 
-      setNewMessage('');
-      toast({
-        title: "Success",
-        description: "Message sent successfully",
-      });
+      if (error) {
+        // Remove optimistic message if there was an error
+        setMessages(prev => prev?.filter(msg => msg.id !== optimisticMessage.id));
+        throw error;
+      }
+
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
