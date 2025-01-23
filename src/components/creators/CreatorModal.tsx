@@ -21,10 +21,8 @@ interface Creator {
   specialties: string[] | null;
   creator_type: CreatorType | null;
   profile_image_url: string | null;
-  profile?: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
+  first_name: string | null;
+  last_name: string | null;
 }
 
 interface CreatorModalProps {
@@ -116,8 +114,8 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
   const creatorData: CreatorData = {
     id: creator.id,
-    firstName: creator.profile?.first_name || '',
-    lastName: creator.profile?.last_name || '',
+    firstName: creator.first_name || '',
+    lastName: creator.last_name || '',
     bio: creator.bio || '',
     specialties: creator.specialties || [],
     instagram: creator.instagram || '',
@@ -126,7 +124,10 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     profileImage: creator.profile_image_url,
     creatorType: creator.creator_type as CreatorType || 'solo',
     profile_image_url: creator.profile_image_url,
-    profile: creator.profile || null
+    profile: {
+      first_name: creator.first_name,
+      last_name: creator.last_name
+    }
   };
 
   return (
@@ -136,7 +137,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {creator.profile?.first_name}
+                {creator.first_name}
               </DialogTitle>
             </DialogHeader>
             
