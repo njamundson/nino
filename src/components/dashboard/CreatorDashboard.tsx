@@ -6,25 +6,30 @@ import PageHeader from "@/components/shared/PageHeader";
 import { useCreatorDashboard } from "@/hooks/useCreatorDashboard";
 import DashboardLoading from "./states/DashboardLoading";
 import DashboardError from "./states/DashboardError";
+import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const CreatorDashboard = () => {
   const isMobile = useIsMobile();
   const { data: creator, isLoading, error } = useCreatorDashboard();
+  const { toast } = useToast();
 
-  console.log("Dashboard render state:", { creator, isLoading, error });
+  useEffect(() => {
+    if (error) {
+      console.error("Dashboard error:", error);
+      toast({
+        title: "Error loading dashboard",
+        description: "Please try refreshing the page",
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
 
   if (isLoading) {
-    console.log("Dashboard is loading...");
     return <DashboardLoading />;
   }
 
-  if (error) {
-    console.error("Dashboard error:", error);
-    return <DashboardError />;
-  }
-
-  if (!creator) {
-    console.log("No creator data available");
+  if (error || !creator) {
     return <DashboardError />;
   }
 
