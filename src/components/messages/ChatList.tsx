@@ -27,7 +27,7 @@ interface MessageUser {
   receiver: {
     first_name: string | null;
     last_name: string | null;
-    creator: {
+    creator?: {
       profile_image_url: string | null;
     } | null;
   } | null;
@@ -43,8 +43,19 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
+  const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
 
   useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error fetching current user:', error);
+        return;
+      }
+      setCurrentUser(user);
+    };
+
+    fetchCurrentUser();
     fetchChatUsers();
     subscribeToNewMessages();
   }, []);
@@ -132,13 +143,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   const handleDeleteChat = async (userId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!currentUser) return;
 
       const { error } = await supabase
         .from('messages')
         .delete()
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id})`);
+        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`);
 
       if (error) throw error;
 
@@ -160,14 +170,13 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   const markAsUnread = async (userId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!currentUser) return;
 
       const { error } = await supabase
         .from('messages')
         .update({ read: false })
         .eq('sender_id', userId)
-        .eq('receiver_id', user.id);
+        .eq('receiver_id', currentUser.id);
 
       if (error) throw error;
 
@@ -231,8 +240,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         ) : (
           <div className="divide-y divide-gray-100">
             {filteredUsers.map((user) => {
-              const { data: { user: currentUser } } = supabase.auth.getUser();
-              const isCurrentUserSender = user.sender_id === currentUser?.id;
+              if (!currentUser) return null;
+              const isCurrentUserSender = user.sender_id === currentUser.id;
               const otherUser = isCurrentUserSender ? user.receiver : user.sender;
               const initials = getInitials(otherUser?.first_name, otherUser?.last_name);
 
@@ -251,6 +260,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                 >
                   <div className="flex items-start space-x-3">
                     <Avatar className="h-12 w-12 shrink-0">
+                      {otherUser?.creator?.profile_image_url && (
+                        <AvatarImage src={otherUser.creator.profile_image_url} alt="Profile" />
+                      )}
                       <AvatarFallback className="bg-gray-100 text-gray-600 font-medium text-lg">
                         {initials}
                       </AvatarFallback>
