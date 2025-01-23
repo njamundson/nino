@@ -190,6 +190,21 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     return senderName.includes(query) || receiverName.includes(query);
   });
 
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    } else {
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-100">
@@ -200,7 +215,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         />
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-gray-50">
         {filteredUsers.length === 0 ? (
           <EmptyState />
         ) : (
@@ -208,8 +223,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             {filteredUsers.map((user) => (
               <div
                 key={user.receiver_id}
-                className={`group relative p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  selectedUserId === user.receiver_id ? "bg-gray-50" : ""
+                className={`group relative p-4 cursor-pointer hover:bg-white transition-colors ${
+                  selectedUserId === user.receiver_id ? "bg-white" : ""
                 }`}
                 onClick={() => onSelectChat(
                   user.receiver_id, 
@@ -218,26 +233,31 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                   user.receiver.profile_image_url
                 )}
               >
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-10 w-10">
+                <div className="flex items-start space-x-3">
+                  <Avatar className="h-12 w-12 shrink-0">
                     <AvatarImage src={user.receiver.profile_image_url || ""} />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-gray-200 text-gray-600 font-medium">
                       {user.receiver.first_name?.[0]}{user.receiver.last_name?.[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">
-                      {user.receiver.first_name} {user.receiver.last_name}
-                    </p>
+                    <div className="flex justify-between items-start mb-1">
+                      <p className="text-base font-semibold text-gray-900 truncate">
+                        {user.receiver.first_name} {user.receiver.last_name}
+                      </p>
+                      <span className="text-xs text-gray-500">
+                        {formatTime(user.created_at)}
+                      </span>
+                    </div>
                     {user.content && (
                       <p className={`text-sm truncate ${
-                        user.read ? "text-gray-500" : "text-gray-900 font-medium"
+                        user.read ? "text-gray-500" : "text-gray-900"
                       }`}>
                         {user.content}
                       </p>
                     )}
                   </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -266,14 +286,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                     </DropdownMenu>
                   </div>
                 </div>
-                {user.created_at && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(user.created_at).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                )}
               </div>
             ))}
           </div>
