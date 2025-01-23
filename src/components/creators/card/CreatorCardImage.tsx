@@ -21,12 +21,12 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     : 'Anonymous Creator';
 
   const handleImageError = () => {
-    console.log(`Profile image failed to load for creator ${creator.id}`, creator.profileImage);
+    console.log(`Profile image failed to load for creator ${creator.id}`, creator.profile_image_url);
     setImageError(true);
   };
 
-  const imageUrl = !imageError && creator.profileImage 
-    ? creator.profileImage 
+  const imageUrl = !imageError && creator.profile_image_url 
+    ? creator.profile_image_url 
     : '/placeholder.svg';
 
   return (
