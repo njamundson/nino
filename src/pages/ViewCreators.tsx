@@ -38,18 +38,15 @@ const ViewCreators = () => {
       <PageHeader
         title="Browse Creators"
         description="Discover and connect with talented creators for your campaigns."
-      >
-        <div className="w-[300px]">
-          <CreatorFilters 
-            selectedSpecialties={selectedSpecialties}
-            selectedCreatorType={selectedCreatorType}
-            selectedLocations={selectedLocations}
-            onSpecialtyChange={handleSpecialtyChange}
-            onCreatorTypeChange={handleCreatorTypeChange}
-            onLocationChange={handleLocationChange}
-          />
-        </div>
-      </PageHeader>
+      />
+      <CreatorFilters 
+        selectedSpecialties={selectedSpecialties}
+        selectedCreatorType={selectedCreatorType}
+        selectedLocations={selectedLocations}
+        onSpecialtyChange={handleSpecialtyChange}
+        onCreatorTypeChange={handleCreatorTypeChange}
+        onLocationChange={handleLocationChange}
+      />
       <CreatorGrid 
         selectedSpecialties={selectedSpecialties}
         selectedCreatorType={selectedCreatorType}
