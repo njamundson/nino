@@ -2,7 +2,6 @@ import { ReactNode, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../dashboard/BrandSidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
-import { AnimatePresence, motion } from "framer-motion";
 import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -49,16 +48,7 @@ const BrandLayout = () => {
           <div className="mb-8">
             <DashboardHeader />
           </div>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
+          <Outlet />
         </div>
       </main>
     </div>
