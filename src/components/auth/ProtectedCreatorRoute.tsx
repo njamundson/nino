@@ -41,7 +41,6 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
-        // Check for creator profile using maybeSingle() to handle no results
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('id, onboarding_completed')
