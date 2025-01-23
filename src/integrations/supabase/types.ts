@@ -243,7 +243,7 @@ export type Database = {
           bio: string | null
           created_at: string
           creator_type: string | null
-          first_name: string | null
+          first_name: string
           id: string
           instagram: string | null
           last_name: string | null
@@ -260,7 +260,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           creator_type?: string | null
-          first_name?: string | null
+          first_name: string
           id?: string
           instagram?: string | null
           last_name?: string | null
@@ -277,7 +277,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           creator_type?: string | null
-          first_name?: string | null
+          first_name?: string
           id?: string
           instagram?: string | null
           last_name?: string | null

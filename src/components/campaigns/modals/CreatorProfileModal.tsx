@@ -121,7 +121,8 @@ const CreatorProfileModal = ({
     }
   };
 
-  const fullName = `${creator?.profile?.first_name || ''} ${creator?.profile?.last_name || ''}`.trim();
+  // Use first_name and last_name directly from the creator object
+  const fullName = `${creator?.first_name || ''} ${creator?.last_name || ''}`.trim();
 
   return (
     <>
