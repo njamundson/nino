@@ -32,13 +32,11 @@ interface MessageWithProfiles {
     id: string;
     first_name: string;
     last_name: string;
-    profile_image_url: string | null;
   } | null;
   profiles_receiver: {
     id: string;
     first_name: string;
     last_name: string;
-    profile_image_url: string | null;
   } | null;
 }
 
@@ -62,14 +60,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           profiles_sender:profiles!messages_sender_profile_id_fkey (
             id,
             first_name,
-            last_name,
-            profile_image_url
+            last_name
           ),
           profiles_receiver:profiles!messages_receiver_profile_id_fkey (
             id,
             first_name,
-            last_name,
-            profile_image_url
+            last_name
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -96,7 +92,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             user_id: conversationId,
             first_name: otherUser.first_name,
             last_name: otherUser.last_name,
-            profile_image_url: otherUser.profile_image_url,
+            profile_image_url: null, // Profile images are not in the profiles table
             last_message: {
               content: message.content,
               created_at: message.created_at
