@@ -14,30 +14,27 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
-  const creatorProfile = application.creator?.profile;
-  const creatorName = creatorProfile?.first_name && creatorProfile?.last_name
-    ? `${creatorProfile.first_name} ${creatorProfile.last_name}`
+  const creator = application.creator;
+  const creatorName = creator?.first_name && creator?.last_name
+    ? `${creator.first_name} ${creator.last_name}`
     : 'Anonymous Creator';
 
-  const specialties = application.creator?.specialties || [];
+  const specialties = creator?.specialties || [];
 
   return (
     <div className="p-6 rounded-lg bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300">
       <div className="flex items-start justify-between gap-6">
         <div className="flex-1 flex items-start gap-6">
           <Avatar className="h-20 w-20 rounded-2xl border-2 border-white shadow-sm overflow-hidden">
-            {application.creator?.profile_image_url ? (
+            {creator?.profile_image_url ? (
               <AvatarImage
-                src={application.creator.profile_image_url}
+                src={creator.profile_image_url}
                 alt={creatorName}
                 className="h-full w-full object-cover"
               />
             ) : (
               <AvatarFallback className="bg-gray-100 text-gray-600 text-xl">
-                {getInitials(
-                  creatorProfile?.first_name || '',
-                  creatorProfile?.last_name || ''
-                )}
+                {getInitials(creator?.first_name || '', creator?.last_name || '')}
               </AvatarFallback>
             )}
           </Avatar>
@@ -47,37 +44,37 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
                 <h4 className="text-xl font-medium text-gray-900">
                   {creatorName}
                 </h4>
-                {application.creator?.creator_type && (
+                {creator?.creator_type && (
                   <Badge variant="secondary" className="capitalize">
-                    {application.creator.creator_type}
+                    {creator.creator_type}
                   </Badge>
                 )}
               </div>
-              {application.creator?.location && (
+              {creator?.location && (
                 <p className="text-sm text-gray-500 flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5" />
-                  {application.creator.location}
+                  {creator.location}
                 </p>
               )}
             </div>
 
             {/* Social Links */}
-            {(application.creator?.instagram || application.creator?.website) && (
+            {(creator?.instagram || creator?.website) && (
               <div className="flex gap-3">
-                {application.creator?.instagram && (
+                {creator?.instagram && (
                   <a
-                    href={`https://instagram.com/${application.creator.instagram.replace('@', '')}`}
+                    href={`https://instagram.com/${creator.instagram.replace('@', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
                   >
                     <Instagram className="w-3.5 h-3.5" />
-                    {application.creator.instagram}
+                    {creator.instagram}
                   </a>
                 )}
-                {application.creator?.website && (
+                {creator?.website && (
                   <a
-                    href={application.creator.website}
+                    href={creator.website}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
@@ -117,7 +114,7 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
             size="sm"
             variant="outline"
             onClick={onViewProfile}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-gray-600 hover:text-gray-900 rounded-full"
           >
             <Eye className="h-4 w-4 mr-1.5" />
             View Profile
@@ -126,7 +123,7 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
             size="sm"
             variant="outline"
             onClick={onMessageCreator}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-gray-600 hover:text-gray-900 rounded-full"
           >
             <MessageSquare className="h-4 w-4 mr-1.5" />
             Message
