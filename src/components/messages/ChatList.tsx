@@ -22,26 +22,24 @@ interface Conversation {
   };
 }
 
-interface MessageWithCreators {
+interface MessageWithProfiles {
   id: string;
   content: string;
   created_at: string;
   sender_id: string;
   receiver_id: string;
-  creators: {
-    messages_receiver_id_fkey: {
-      user_id: string;
-      first_name: string;
-      last_name: string;
-      profile_image_url: string | null;
-    };
-    messages_sender_id_fkey: {
-      user_id: string;
-      first_name: string;
-      last_name: string;
-      profile_image_url: string | null;
-    };
-  };
+  profiles_sender: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    profile_image_url: string | null;
+  } | null;
+  profiles_receiver: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    profile_image_url: string | null;
+  } | null;
 }
 
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
@@ -61,14 +59,14 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           created_at,
           sender_id,
           receiver_id,
-          creators:messages_sender_id_fkey (
-            user_id,
+          profiles_sender:profiles!messages_sender_profile_id_fkey (
+            id,
             first_name,
             last_name,
             profile_image_url
           ),
-          creators:messages_receiver_id_fkey (
-            user_id,
+          profiles_receiver:profiles!messages_receiver_profile_id_fkey (
+            id,
             first_name,
             last_name,
             profile_image_url
@@ -82,18 +80,20 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       // Process messages to get unique conversations
       const conversationsMap = new Map<string, Conversation>();
 
-      (messages as MessageWithCreators[])?.forEach(message => {
-        const otherUser = message.sender_id === user.id ? 
-          message.creators.messages_receiver_id_fkey : 
-          message.creators.messages_sender_id_fkey;
+      (messages as MessageWithProfiles[])?.forEach(message => {
+        const otherUser = message.sender_id === user.id 
+          ? message.profiles_receiver 
+          : message.profiles_sender;
 
         if (!otherUser) return;
 
-        const conversationId = otherUser.user_id;
+        const conversationId = message.sender_id === user.id 
+          ? message.receiver_id 
+          : message.sender_id;
         
         if (!conversationsMap.has(conversationId)) {
           conversationsMap.set(conversationId, {
-            user_id: otherUser.user_id,
+            user_id: conversationId,
             first_name: otherUser.first_name,
             last_name: otherUser.last_name,
             profile_image_url: otherUser.profile_image_url,
