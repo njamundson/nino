@@ -14,7 +14,7 @@ const DashboardContent = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
       <Card className="bg-white shadow-sm rounded-3xl overflow-hidden p-4 md:p-6">
-        <h3 className="text-xl font-semibold text-nino-text mb-4 md:mb-6 text-left">New Campaign</h3>
+        <h3 className="text-xl font-semibold text-nino-text mb-4 md:mb-6 px-8">New Campaign</h3>
         <Suspense fallback={<LoadingSpinner />}>
           <CampaignFormContainer />
         </Suspense>
