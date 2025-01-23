@@ -7,10 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const CreatorDashboard = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const { data: creator, isLoading, error } = useQuery({
     queryKey: ['creator-profile'],
@@ -44,15 +46,23 @@ const CreatorDashboard = () => {
             onboarding_completed
           `)
           .eq('user_id', user.id)
-          .maybeSingle();
+          .single();
 
         if (creatorError) {
           console.error("Error fetching creator:", creatorError);
           throw creatorError;
         }
 
+        // If no creator profile is found, redirect to onboarding
         if (!creator) {
-          throw new Error('Creator profile not found');
+          navigate('/creator/welcome');
+          return null;
+        }
+
+        // If onboarding is not completed, redirect to welcome page
+        if (!creator.onboarding_completed) {
+          navigate('/creator/welcome');
+          return null;
         }
 
         return creator;
@@ -68,7 +78,8 @@ const CreatorDashboard = () => {
     },
     retry: 1,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    refetchOnMount: true
   });
 
   if (isLoading) {
