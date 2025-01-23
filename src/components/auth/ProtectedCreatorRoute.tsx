@@ -24,7 +24,6 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
-        // Use maybeSingle() instead of single() to handle no results gracefully
         const { data: creator, error } = await supabase
           .from('creators')
           .select('id, onboarding_completed')
@@ -38,7 +37,6 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           return;
         }
 
-        // If no creator record exists, we still authenticate but set onboarding as incomplete
         if (!creator) {
           console.log("No creator record found, redirecting to onboarding");
           setIsAuthenticated(true);
