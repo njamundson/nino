@@ -19,7 +19,7 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
       <Sidebar />
       <div className={`flex-1 ${isMobile ? 'w-full' : ''}`}>
         <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 px-4 md:px-8">
-          <div className="absolute inset-0 bg-gradient-to-b from-nino-bg/95 via-nino-bg/50 to-transparent backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/80 to-transparent backdrop-blur-[2px]" />
           <div className="relative">
             <DashboardHeader />
           </div>
