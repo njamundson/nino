@@ -105,10 +105,7 @@ const CreatorFilters = ({
           : "bg-transparent"
       )}
     >
-      <CollapsibleTrigger className={cn(
-        "flex items-center justify-end w-full gap-2 transition-all duration-300",
-        isOpen ? "p-6" : "p-2"
-      )}>
+      <div className="flex items-center justify-between p-6">
         {isOpen && hasActiveFilters && (
           <Button
             variant="outline"
@@ -123,17 +120,19 @@ const CreatorFilters = ({
             Reset Filters
           </Button>
         )}
-        <div className={cn(
-          "flex flex-col gap-[3px] transition-all duration-300",
-          isOpen 
-            ? "text-nino-primary" 
-            : "text-gray-500 hover:text-nino-primary/80"
-        )}>
-          <div className="h-[2px] w-4 bg-current rounded-full" />
-          <div className="h-[2px] w-3 bg-current rounded-full ml-1" />
-          <div className="h-[2px] w-2 bg-current rounded-full ml-2" />
-        </div>
-      </CollapsibleTrigger>
+        <CollapsibleTrigger className="ml-auto">
+          <div className={cn(
+            "flex flex-col gap-[3px] transition-all duration-300",
+            isOpen 
+              ? "text-nino-primary" 
+              : "text-gray-500 hover:text-nino-primary/80"
+          )}>
+            <div className="h-[2px] w-4 bg-current rounded-full" />
+            <div className="h-[2px] w-3 bg-current rounded-full ml-1" />
+            <div className="h-[2px] w-2 bg-current rounded-full ml-2" />
+          </div>
+        </CollapsibleTrigger>
+      </div>
       
       <CollapsibleContent className="space-y-8 px-6 pb-6 data-[state=open]:animate-[slideDown_300ms_ease-out] data-[state=closed]:animate-[slideUp_300ms_ease-out]">
         <div>
