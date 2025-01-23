@@ -5,7 +5,7 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, description }: PageHeaderProps) => {
   return (
-    <div className="mb-8">
+    <div className="mb-8 animate-fadeIn">
       <h1 className="text-3xl font-medium tracking-tight text-nino-text">
         {title}
       </h1>

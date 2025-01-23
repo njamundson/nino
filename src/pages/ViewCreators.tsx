@@ -23,7 +23,6 @@ const ViewCreators = () => {
   };
 
   const handleLocationChange = (location: string) => {
-    // Replace the current location instead of adding to array
     setSelectedLocations([location]);
   };
 
