@@ -15,9 +15,12 @@ interface CreatorSelectionModalProps {
 
 interface Creator {
   id: string;
+  profile_id: string;
   profile_image_url: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  profiles: {
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
 }
 
 const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionModalProps) => {
@@ -30,9 +33,12 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
         .from("creators")
         .select(`
           id,
+          profile_id,
           profile_image_url,
-          first_name,
-          last_name
+          profiles (
+            first_name,
+            last_name
+          )
         `);
 
       if (error) {
@@ -44,8 +50,22 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
     },
   });
 
+  // Helper function to get initials safely
+  const getInitials = (creator: Creator) => {
+    const firstName = creator.profiles?.first_name || '';
+    const lastName = creator.profiles?.last_name || '';
+    return `${firstName[0] || ''}${lastName[0] || ''}`;
+  };
+
+  // Helper function to get full name safely
+  const getFullName = (creator: Creator) => {
+    const firstName = creator.profiles?.first_name || '';
+    const lastName = creator.profiles?.last_name || '';
+    return `${firstName} ${lastName}`.trim() || 'Unknown Creator';
+  };
+
   const filteredCreators = creators?.filter((creator) => {
-    const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.toLowerCase();
+    const fullName = getFullName(creator).toLowerCase();
     return fullName.includes(searchQuery.toLowerCase());
   });
 
@@ -78,20 +98,19 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   key={creator.id}
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                   onClick={() => {
-                    onSelect(creator.id);
+                    onSelect(creator.profile_id);
                     onClose();
                   }}
                 >
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={creator.profile_image_url || ""} />
                     <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
-                      {creator.first_name?.[0]}
-                      {creator.last_name?.[0]}
+                      {getInitials(creator)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {creator.first_name} {creator.last_name}
+                      {getFullName(creator)}
                     </p>
                   </div>
                 </div>
