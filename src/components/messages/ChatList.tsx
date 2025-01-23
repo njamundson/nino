@@ -85,7 +85,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       // Process users to remove duplicates and format data
       const uniqueUsers = new Map<string, MessageUser>();
 
-      messageUsers?.forEach((msg) => {
+      messageUsers?.forEach((msg: any) => {
         const otherUserId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
         
         if (!uniqueUsers.has(otherUserId)) {
