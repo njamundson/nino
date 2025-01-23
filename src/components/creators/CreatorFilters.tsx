@@ -85,14 +85,20 @@ const CreatorFilters = ({
   };
 
   const handleReset = () => {
-    // Reset all filters
+    // Reset creator type
     onCreatorTypeChange(null);
+    
+    // Reset location filters
     setSelectedCountry("");
     setSelectedRegion("");
     onLocationChange("");
-    selectedSpecialties.forEach(specialty => {
-      onSpecialtyChange(specialty);
-    });
+    
+    // Reset specialties - clear all selected specialties
+    if (selectedSpecialties.length > 0) {
+      selectedSpecialties.forEach(specialty => {
+        onSpecialtyChange(specialty);
+      });
+    }
 
     // Show feedback toast
     toast({
