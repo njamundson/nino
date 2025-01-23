@@ -1,5 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import ProjectHeader from "./modal/ProjectHeader";
 import ProjectDescription from "./modal/ProjectDescription";
 import ProjectRequirements from "./modal/ProjectRequirements";
@@ -54,7 +55,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-2xl shadow-2xl">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden">
         <div className="max-h-[85vh] overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
@@ -71,34 +72,29 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
               onModalClose={onClose}
             />
           ) : (
-            <div>
-              <div className="border-b border-gray-100">
-                <ProjectHeader
-                  title={opportunity.title}
-                  companyName={brandData?.company_name || 'Loading...'}
-                  location={opportunity.location}
-                  startDate={opportunity.start_date}
-                  endDate={opportunity.end_date}
-                />
-              </div>
+            <div className="space-y-8">
+              <ProjectHeader
+                title={opportunity.title}
+                companyName={brandData?.company_name || 'Loading...'}
+                location={opportunity.location}
+                startDate={opportunity.start_date}
+                endDate={opportunity.end_date}
+              />
 
-              <div className="px-8 py-6 space-y-8">
+              <div className="px-8 pb-8 space-y-8">
                 <ProjectDescription description={opportunity.description} />
-                
-                <div className="space-y-8">
-                  <ProjectRequirements requirements={opportunity.requirements} />
-                  <ProjectDeliverables deliverables={opportunity.deliverables} />
-                  <ProjectCompensation
-                    paymentDetails={opportunity.payment_details}
-                    compensationDetails={opportunity.compensation_details}
-                  />
-                </div>
+                <ProjectRequirements requirements={opportunity.requirements} />
+                <ProjectDeliverables deliverables={opportunity.deliverables} />
+                <ProjectCompensation
+                  paymentDetails={opportunity.payment_details}
+                  compensationDetails={opportunity.compensation_details}
+                />
 
                 {!isCompleted && (
-                  <div className="flex justify-end pt-6 border-t border-gray-100">
+                  <div className="flex justify-end pt-6">
                     <Button
                       onClick={handleApply}
-                      className="bg-nino-primary hover:bg-nino-primary/90 text-white px-8 py-2.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
+                      className="bg-nino-primary hover:bg-nino-primary/90"
                     >
                       Apply Now
                     </Button>
