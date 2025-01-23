@@ -26,10 +26,10 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
     )}>
       <div
         className={cn(
-          "px-4 py-2.5 rounded-2xl shadow-sm transition-all duration-200",
+          "px-4 py-2.5 rounded-[20px] shadow-sm transition-all duration-200",
           isCurrentUser
-            ? "bg-blue-500 text-white"
-            : "bg-gray-100 text-gray-900"
+            ? "bg-[#0B84FE] text-white"
+            : "bg-[#F1F1F1] text-[#1C1C1E]"
         )}
       >
         {message.message_type === 'image' ? (
@@ -51,7 +51,10 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
           <p className="text-[15px] leading-relaxed">{message.content}</p>
         )}
         
-        <p className="text-[10px] mt-1 opacity-70">
+        <p className={cn(
+          "text-[12px] mt-1",
+          isCurrentUser ? "opacity-70" : "text-[#8E8E93]"
+        )}>
           {new Date(message.created_at).toLocaleTimeString([], { 
             hour: '2-digit', 
             minute: '2-digit'
