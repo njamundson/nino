@@ -72,6 +72,7 @@ const Sidebar = () => {
             loading="eager"
             fetchPriority="high"
             decoding="sync"
+            style={{ imageRendering: 'crisp-edges' }}
           />
         </div>
       </div>
