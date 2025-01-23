@@ -43,7 +43,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           .from('profiles')
           .select('id')
           .eq('id', data.user.id)
-          .single();
+          .maybeSingle();
 
         if (profileError) {
           console.error('Error fetching profile:', profileError);
@@ -56,30 +56,31 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         }
 
         if (profile) {
-          // Check if user is a brand or creator
-          const { data: brand } = await supabase
-            .from('brands')
-            .select('id, onboarding_completed')
-            .eq('user_id', profile.id)
-            .single();
-
+          // First check if user is a creator
           const { data: creator } = await supabase
             .from('creators')
             .select('id, onboarding_completed')
             .eq('user_id', profile.id)
-            .single();
+            .maybeSingle();
 
-          if (brand) {
-            if (brand.onboarding_completed) {
-              navigate('/brand/dashboard', { replace: true });
-            } else {
-              navigate('/onboarding/brand', { replace: true });
-            }
-          } else if (creator) {
+          // Then check if user is a brand
+          const { data: brand } = await supabase
+            .from('brands')
+            .select('id, onboarding_completed')
+            .eq('user_id', profile.id)
+            .maybeSingle();
+
+          if (creator) {
             if (creator.onboarding_completed) {
               navigate('/creator/dashboard', { replace: true });
             } else {
               navigate('/onboarding/creator', { replace: true });
+            }
+          } else if (brand) {
+            if (brand.onboarding_completed) {
+              navigate('/brand/dashboard', { replace: true });
+            } else {
+              navigate('/onboarding/brand', { replace: true });
             }
           } else {
             // If neither, they need to complete onboarding
