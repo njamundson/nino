@@ -33,7 +33,6 @@ interface ProjectModalProps {
 const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: ProjectModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
 
-  // Fetch brand data with React Query for better caching and loading states
   const { data: brandData, isLoading } = useQuery({
     queryKey: ['brand', opportunity.brand_id],
     queryFn: async () => {
@@ -46,7 +45,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
       if (error) throw error;
       return data;
     },
-    enabled: isOpen, // Only fetch when modal is open
+    enabled: isOpen,
   });
 
   const handleApply = () => {
@@ -57,14 +56,6 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl p-0 overflow-hidden">
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-50"
-          aria-label="Close modal"
-        >
-          <X className="h-4 w-4 text-gray-500" />
-        </button>
-        
         <div className="max-h-[85vh] overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
