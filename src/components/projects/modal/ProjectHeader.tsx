@@ -26,6 +26,9 @@ const ProjectHeader = ({
         <div className="flex flex-col gap-4">
           <div className="relative">
             <div>
+              <p className="text-sm font-medium text-gray-500 mb-2">
+                Posted by {companyName}
+              </p>
               <h2 className="text-3xl font-semibold tracking-tight text-gray-900">
                 {title}
               </h2>
