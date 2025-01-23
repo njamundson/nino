@@ -16,9 +16,9 @@ interface MessageBubbleProps {
   onDelete: (messageId: string) => void;
 }
 
-const REACTION_EMOJIS = ['❤️', '👍', '😊', '😂', '🎉'];
+const REACTION_EMOJIS = ['❤️', '👍', '👎', '😂', '❗️', '❓', '🤣'];
 
-export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: MessageBubbleProps) => {
+const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: MessageBubbleProps) => {
   return (
     <div className={cn(
       "group relative max-w-[80%] animate-fadeIn",
@@ -26,10 +26,10 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
     )}>
       <div
         className={cn(
-          "px-4 py-2.5 rounded-[20px] shadow-sm transition-all duration-200",
+          "px-4 py-2.5 shadow-sm transition-all duration-200",
           isCurrentUser 
-            ? "bg-[#0B84FE] text-white rounded-tr-sm" 
-            : "bg-[#F1F1F1] text-[#1C1C1E] rounded-tl-sm"
+            ? "bg-[#0B84FE] text-white rounded-[20px] rounded-tr-[4px]" 
+            : "bg-[#E9E9EB] text-[#1C1C1E] rounded-[20px] rounded-tl-[4px]"
         )}
       >
         {message.message_type === 'image' ? (
@@ -75,24 +75,33 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
       </div>
 
       <div className={cn(
-        "absolute top-0 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1",
-        isCurrentUser ? "-left-16" : "-right-16"
+        "absolute -bottom-8 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1",
+        isCurrentUser ? "-left-2" : "-right-2"
       )}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full">
-              <Smile className="h-4 w-4" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 w-8 p-0 hover:bg-white rounded-full bg-white/80 backdrop-blur-sm shadow-sm"
+            >
+              <Smile className="h-4 w-4 text-gray-600" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={isCurrentUser ? "end" : "start"}>
-            {REACTION_EMOJIS.map((emoji) => (
-              <DropdownMenuItem
-                key={emoji}
-                onClick={() => onReaction(message.id, emoji)}
-              >
-                {emoji}
-              </DropdownMenuItem>
-            ))}
+          <DropdownMenuContent align={isCurrentUser ? "start" : "end"}>
+            <div className="flex p-1 gap-1">
+              {REACTION_EMOJIS.map((emoji) => (
+                <Button
+                  key={emoji}
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                  onClick={() => onReaction(message.id, emoji)}
+                >
+                  {emoji}
+                </Button>
+              ))}
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -100,10 +109,10 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full"
+            className="h-8 w-8 p-0 hover:bg-white rounded-full bg-white/80 backdrop-blur-sm shadow-sm"
             onClick={() => onDelete(message.id)}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-4 w-4 text-gray-600" />
           </Button>
         )}
       </div>
