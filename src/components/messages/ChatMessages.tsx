@@ -3,6 +3,7 @@ import { MessageBubble } from "./chat-messages/MessageBubble";
 import { DateDivider } from "./chat-messages/DateDivider";
 import { TypingIndicator } from "./chat-messages/TypingIndicator";
 import { useEffect, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface ChatMessagesProps {
   messages: Message[];
@@ -19,6 +20,7 @@ const ChatMessages = ({
   currentUserId,
   onReaction = () => {},
   onDelete = () => {},
+  selectedChat
 }: ChatMessagesProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -29,6 +31,30 @@ const ChatMessages = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (!selectedChat) return;
+
+    const channel = supabase
+      .channel('typing_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'typing_status',
+          filter: `chat_with=eq.${selectedChat}`
+        },
+        (payload) => {
+          console.log('Typing status changed:', payload);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedChat]);
 
   // Group messages by date
   const messagesByDate = messages.reduce((groups: { [key: string]: Message[] }, message) => {
