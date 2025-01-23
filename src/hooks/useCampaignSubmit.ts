@@ -92,11 +92,6 @@ export const useCampaignSubmit = () => {
       }
 
       setIsSuccessModalOpen(true);
-      
-      // Redirect to campaigns page after successful creation
-      setTimeout(() => {
-        navigate('/brand/campaigns');
-      }, 3000);
 
     } catch (error) {
       console.error("Error submitting campaign:", error);
