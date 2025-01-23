@@ -27,9 +27,9 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
       <div
         className={cn(
           "px-4 py-2.5 rounded-[20px] shadow-sm transition-all duration-200",
-          isCurrentUser
-            ? "bg-[#0B84FE] text-white"
-            : "bg-[#F1F1F1] text-[#1C1C1E]"
+          isCurrentUser 
+            ? "bg-[#0B84FE] text-white rounded-tr-sm" 
+            : "bg-[#F1F1F1] text-[#1C1C1E] rounded-tl-sm"
         )}
       >
         {message.message_type === 'image' ? (
@@ -48,12 +48,14 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
             📎 {message.content}
           </a>
         ) : (
-          <p className="text-[15px] leading-relaxed">{message.content}</p>
+          <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">
+            {message.content}
+          </p>
         )}
         
         <p className={cn(
-          "text-[12px] mt-1",
-          isCurrentUser ? "opacity-70" : "text-[#8E8E93]"
+          "text-[11px] mt-1 select-none",
+          isCurrentUser ? "text-white/70" : "text-[#8E8E93]"
         )}>
           {new Date(message.created_at).toLocaleTimeString([], { 
             hour: '2-digit', 
@@ -74,7 +76,7 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
 
       <div className={cn(
         "absolute top-0 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1",
-        isCurrentUser ? "left-0 -translate-x-full pl-2" : "right-0 translate-x-full pr-2"
+        isCurrentUser ? "-left-16" : "-right-16"
       )}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -108,3 +110,5 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
     </div>
   );
 };
+
+export default MessageBubble;

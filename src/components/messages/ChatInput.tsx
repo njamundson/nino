@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { Paperclip, Mic } from "lucide-react";
+import { Paperclip, Mic, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -134,6 +134,13 @@ export const ChatInput = ({
     });
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey && newMessage.trim()) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   return (
     <div className="p-4 bg-white border-t shadow-lg">
       <div className="flex gap-3 items-center max-w-4xl mx-auto">
@@ -160,18 +167,25 @@ export const ChatInput = ({
         >
           <Mic className="w-5 h-5" />
         </Button>
-        <Input
-          value={newMessage}
-          onChange={handleInputChange}
-          placeholder={editingMessage ? "Edit message..." : "Message"}
-          className="bg-white border shadow-md rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey && newMessage.trim()) {
-              e.preventDefault();
-              handleSendMessage();
-            }
-          }}
-        />
+        <div className="flex-1 flex gap-2">
+          <Input
+            value={newMessage}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyPress}
+            placeholder={editingMessage ? "Edit message..." : "Message"}
+            className="bg-white border shadow-md rounded-full focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
+          {newMessage.trim() && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-nino-primary hover:bg-nino-primary/10 rounded-full"
+              onClick={handleSendMessage}
+            >
+              <Send className="w-5 h-5" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
