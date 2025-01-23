@@ -257,15 +257,18 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                   <div className="flex items-start space-x-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-1">
-                        <p className="text-base font-semibold text-gray-900 truncate">
-                          {otherUser?.first_name} {otherUser?.last_name}
-                        </p>
+                        <div className="flex flex-col">
+                          <p className="text-base font-semibold text-gray-900 truncate">
+                            {otherUser?.first_name} {otherUser?.last_name}
+                          </p>
+                          <p className="text-sm text-gray-500">Creator</p>
+                        </div>
                         <span className="text-xs text-gray-500">
                           {formatTime(user.created_at)}
                         </span>
                       </div>
                       {user.content && (
-                        <p className={`text-sm truncate ${
+                        <p className={`text-sm truncate mt-1 ${
                           user.read ? "text-gray-500" : "text-gray-900"
                         }`}>
                           {user.content}
