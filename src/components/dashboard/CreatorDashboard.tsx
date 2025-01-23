@@ -10,22 +10,64 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 const CreatorDashboard = () => {
   const isMobile = useIsMobile();
 
-  const { data: creator, isLoading } = useQuery({
+  const { data: creator, isLoading, error } = useQuery({
     queryKey: ['creator-profile'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
+      try {
+        console.log("Fetching creator profile...");
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log("Current user:", user);
+        
+        if (!user) {
+          console.error("No user found");
+          throw new Error('No user found');
+        }
 
-      const { data: creator, error } = await supabase
-        .from('creators')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        const { data: creator, error } = await supabase
+          .from('creators')
+          .select(`
+            id,
+            first_name,
+            last_name,
+            bio,
+            location,
+            instagram,
+            website,
+            specialties,
+            creator_type,
+            profile_image_url,
+            user_id
+          `)
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (error) throw error;
-      return creator;
-    }
+        if (error) {
+          console.error("Error fetching creator:", error);
+          throw error;
+        }
+
+        console.log("Creator data:", creator);
+        return creator;
+      } catch (error) {
+        console.error("Error in creator profile query:", error);
+        throw error;
+      }
+    },
+    retry: 1
   });
+
+  console.log("Query state:", { isLoading, error, creator });
+
+  if (error) {
+    console.error("Error in component:", error);
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-red-500">
+          Error loading dashboard. Please try again later.
+        </p>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
