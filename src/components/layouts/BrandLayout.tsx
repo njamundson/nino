@@ -52,7 +52,7 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="min-h-[60px]"
+            className="min-h-[60px] mb-8"
           >
             {!isDashboard && <DashboardHeader />}
           </motion.div>
@@ -69,7 +69,6 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
-                className="mt-8"
               >
                 {children}
               </motion.div>
