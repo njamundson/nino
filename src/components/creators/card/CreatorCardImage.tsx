@@ -12,8 +12,8 @@ interface CreatorCardImageProps {
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   const [imageError, setImageError] = useState(false);
   
-  // Since we store the full name in firstName, we'll use that directly
-  const creatorName = creator.firstName?.trim() || 'Anonymous Creator';
+  // Use first_name directly from the creator object
+  const creatorName = creator.first_name || 'Anonymous Creator';
 
   const handleImageError = () => {
     console.log(`Profile image failed to load for creator ${creator.id}`, creator.profile_image_url);
