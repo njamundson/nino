@@ -10,15 +10,7 @@ import { Search, Loader2 } from "lucide-react";
 interface CreatorSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (creatorId: string) => void;
-}
-
-interface Creator {
-  id: string;
-  profile_id: string;
-  profile_image_url: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  onSelect: (userId: string) => void;
 }
 
 const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionModalProps) => {
@@ -27,16 +19,24 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
   const { data: creators, isLoading } = useQuery({
     queryKey: ["creators-for-messages"],
     queryFn: async () => {
+      const { data: brandProfiles } = await supabase
+        .from('brands')
+        .select('user_id');
+
+      const brandProfileIds = brandProfiles
+        ?.map(b => b.user_id)
+        .filter(id => id !== null && id !== undefined);
+
       const { data, error } = await supabase
-        .from("creators")
+        .from('creators')
         .select(`
           id,
-          profile_id,
-          profile_image_url,
+          user_id,
           first_name,
-          last_name
+          last_name,
+          profile_image_url
         `)
-        .not('first_name', 'is', null);
+        .not('user_id', 'is', null);
 
       if (error) {
         console.error("Error fetching creators:", error);
@@ -47,24 +47,14 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
     },
   });
 
-  // Helper function to get initials safely
-  const getInitials = (creator: Creator) => {
-    const firstName = creator.first_name || '';
-    const lastName = creator.last_name || '';
-    return `${firstName[0] || ''}${lastName[0] || ''}`;
-  };
-
-  // Helper function to get full name safely
-  const getFullName = (creator: Creator) => {
-    const firstName = creator.first_name || '';
-    const lastName = creator.last_name || '';
-    return `${firstName} ${lastName}`.trim() || 'Unknown Creator';
-  };
-
   const filteredCreators = creators?.filter((creator) => {
-    const fullName = getFullName(creator).toLowerCase();
+    const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.toLowerCase().trim();
     return fullName.includes(searchQuery.toLowerCase());
   });
+
+  const getInitials = (firstName: string | null, lastName: string | null) => {
+    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -95,19 +85,19 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   key={creator.id}
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
                   onClick={() => {
-                    onSelect(creator.profile_id);
+                    onSelect(creator.user_id);
                     onClose();
                   }}
                 >
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={creator.profile_image_url || ""} />
                     <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
-                      {getInitials(creator)}
+                      {getInitials(creator.first_name, creator.last_name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {getFullName(creator)}
+                      {creator.first_name} {creator.last_name}
                     </p>
                   </div>
                 </div>
