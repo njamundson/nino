@@ -22,6 +22,28 @@ interface Conversation {
   };
 }
 
+interface MessageWithCreators {
+  id: string;
+  content: string;
+  created_at: string;
+  sender_id: string;
+  receiver_id: string;
+  creators: {
+    messages_receiver_id_fkey: {
+      user_id: string;
+      first_name: string;
+      last_name: string;
+      profile_image_url: string | null;
+    };
+    messages_sender_id_fkey: {
+      user_id: string;
+      first_name: string;
+      last_name: string;
+      profile_image_url: string | null;
+    };
+  };
+}
+
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -31,7 +53,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Fetch messages where the current user is either sender or receiver
       const { data: messages, error } = await supabase
         .from('messages')
         .select(`
@@ -40,13 +61,13 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           created_at,
           sender_id,
           receiver_id,
-          creators!messages_sender_id_fkey (
+          creators:messages_sender_id_fkey (
             user_id,
             first_name,
             last_name,
             profile_image_url
           ),
-          creators!messages_receiver_id_fkey (
+          creators:messages_receiver_id_fkey (
             user_id,
             first_name,
             last_name,
@@ -61,10 +82,10 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       // Process messages to get unique conversations
       const conversationsMap = new Map<string, Conversation>();
 
-      messages?.forEach(message => {
+      (messages as MessageWithCreators[])?.forEach(message => {
         const otherUser = message.sender_id === user.id ? 
-          message.creators!messages_receiver_id_fkey : 
-          message.creators!messages_sender_id_fkey;
+          message.creators.messages_receiver_id_fkey : 
+          message.creators.messages_sender_id_fkey;
 
         if (!otherUser) return;
 
