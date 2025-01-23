@@ -4,7 +4,6 @@ import PageHeader from "@/components/shared/PageHeader";
 import ChatContainer from "@/components/messages/ChatContainer";
 import ChatList from "@/components/messages/ChatList";
 import { useMessages } from "@/hooks/useMessages";
-import { supabase } from "@/integrations/supabase/client";
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
@@ -53,7 +52,6 @@ const Messages = () => {
             editingMessage={editingMessage}
             setEditingMessage={setEditingMessage}
             messages={messages}
-            currentUserId={undefined}
           />
         </div>
       </div>
