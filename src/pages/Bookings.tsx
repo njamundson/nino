@@ -6,22 +6,7 @@ import { useState } from "react";
 import CreatorModal from "@/components/creators/CreatorModal";
 import { useNavigate } from "react-router-dom";
 import BookingsList from "@/components/bookings/BookingsList";
-import { CreatorType } from "@/types/creator";
-
-interface Creator {
-  id: string;
-  bio: string | null;
-  location: string | null;
-  specialties: string[] | null;
-  instagram: string | null;
-  website: string | null;
-  creator_type: CreatorType | null;
-  profile: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
-  profile_image_url: string | null;
-}
+import { Creator, CreatorType } from "@/types/creator";
 
 const Bookings = () => {
   const navigate = useNavigate();
@@ -74,8 +59,15 @@ const Bookings = () => {
       instagram: creator.instagram,
       website: creator.website,
       creator_type: creator.creator_type || 'solo',
-      profile: creator.profile,
       profile_image_url: creator.profile_image_url,
+      first_name: creator.profile?.first_name || creator.first_name || null,
+      last_name: creator.profile?.last_name || creator.last_name || null,
+      profile: creator.profile,
+      user_id: creator.user_id,
+      created_at: creator.created_at,
+      updated_at: creator.updated_at,
+      profile_id: creator.profile_id,
+      onboarding_completed: creator.onboarding_completed
     };
     setSelectedCreator(creatorData);
     setIsCreatorModalOpen(true);
