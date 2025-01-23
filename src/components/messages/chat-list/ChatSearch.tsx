@@ -12,7 +12,7 @@ export const ChatSearch = ({ searchQuery, setSearchQuery }: ChatSearchProps) => 
       <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
       <Input
         placeholder="Search conversations..."
-        className="pl-9"
+        className="pl-9 rounded-full"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />

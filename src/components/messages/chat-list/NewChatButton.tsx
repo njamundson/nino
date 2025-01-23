@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MessageSquarePlus } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -44,7 +44,7 @@ export const NewChatButton = ({ creators = [], onStartChat }: NewChatButtonProps
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" className="shrink-0">
-          <MessageSquarePlus className="h-5 w-5" />
+          <Plus className="h-5 w-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
