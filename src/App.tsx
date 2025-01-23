@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
+import BrandLayout from "./components/layouts/BrandLayout";
 import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
@@ -39,13 +40,15 @@ const App = () => {
                     element={route.element}
                   />
                 ))}
-                {brandRoutes.map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={route.element}
-                  />
-                ))}
+                <Route path="/brand" element={<BrandLayout />}>
+                  {brandRoutes.map((route) => (
+                    <Route
+                      key={route.path}
+                      path={route.path.replace('/brand/', '')}
+                      element={route.element}
+                    />
+                  ))}
+                </Route>
                 {creatorRoutes.map((route) => (
                   <Route
                     key={route.path}

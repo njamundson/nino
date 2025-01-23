@@ -1,19 +1,12 @@
-import { ReactNode, Suspense, useState } from "react";
+import { ReactNode, useState } from "react";
+import { Outlet } from "react-router-dom";
 import Sidebar from "../dashboard/BrandSidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
-import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { LoadingSpinner } from "../ui/loading-spinner";
 import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
 
-interface BrandLayoutProps {
-  children: ReactNode;
-}
-
-const BrandLayout = ({ children }: BrandLayoutProps) => {
-  const location = useLocation();
-  const isDashboard = location.pathname === "/brand/dashboard";
+const BrandLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -29,11 +22,13 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
       </Button>
 
       {/* Sidebar with mobile responsiveness */}
-      <div className={`
-        fixed inset-y-0 left-0 z-40 transform lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:block
-      `}>
+      <div
+        className={`
+          fixed inset-y-0 left-0 z-40 transform lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:block
+        `}
+      >
         <Sidebar />
       </div>
 
@@ -50,23 +45,16 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
           <div className="mb-8">
             <DashboardHeader />
           </div>
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <LoadingSpinner size="lg" />
-            </div>
-          }>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
-          </Suspense>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
     </div>
