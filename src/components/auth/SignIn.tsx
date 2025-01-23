@@ -20,9 +20,6 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
     try {
       setLoading(true);
       
-      // Clear any existing session first
-      await supabase.auth.signOut();
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
