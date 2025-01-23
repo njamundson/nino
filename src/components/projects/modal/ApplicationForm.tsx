@@ -17,10 +17,11 @@ export interface ApplicationFormProps {
     } | null;
   };
   onClose: () => void;
+  onBack: () => void;
   onModalClose: () => void;
 }
 
-const ApplicationForm = ({ opportunity, onClose, onModalClose }: ApplicationFormProps) => {
+const ApplicationForm = ({ opportunity, onClose, onBack, onModalClose }: ApplicationFormProps) => {
   const [coverLetter, setCoverLetter] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -127,10 +128,10 @@ const ApplicationForm = ({ opportunity, onClose, onModalClose }: ApplicationForm
         <Button 
           type="button" 
           variant="outline" 
-          onClick={onClose}
+          onClick={onBack}
           disabled={isSubmitting}
         >
-          Cancel
+          Back
         </Button>
         <Button 
           type="submit" 

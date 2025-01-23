@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Archive } from "lucide-react";
 import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
-import { Archive } from "lucide-react";
 
 const CompletedProjectsList = () => {
   const { toast } = useToast();
@@ -34,6 +33,7 @@ const CompletedProjectsList = () => {
             status,
             opportunity:opportunities (
               id,
+              brand_id,
               title,
               description,
               location,
@@ -73,7 +73,8 @@ const CompletedProjectsList = () => {
         const completedProjects = applications.map(app => ({
           ...app.opportunity,
           application_status: app.status,
-          application_id: app.id
+          application_id: app.id,
+          brand_id: app.opportunity.brand_id // Ensure brand_id is included
         }));
 
         console.log("Fetched completed projects:", completedProjects);
