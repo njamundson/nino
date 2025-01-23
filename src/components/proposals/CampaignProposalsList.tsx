@@ -128,7 +128,7 @@ const CampaignProposalsList = ({ campaignId }: CampaignProposalsListProps) => {
             />
           ))}
 
-          {(!dummyProposals || dummyProposals.length === 0) && <EmptyProposals />}
+          {(!dummyProposals || dummyProposals.length === 0) && <EmptyProposals type="proposal" />}
         </div>
       </CardContent>
     </Card>
