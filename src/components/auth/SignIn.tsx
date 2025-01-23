@@ -38,38 +38,38 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       }
 
       if (data.user) {
-        // First check if user has a brand profile
-        const { data: brand } = await supabase
-          .from('brands')
+        // First check if user has a creator profile
+        const { data: creator } = await supabase
+          .from('creators')
           .select('id, onboarding_completed')
           .eq('user_id', data.user.id)
           .maybeSingle();
 
-        // If no brand profile, check for creator profile
-        if (!brand) {
-          const { data: creator } = await supabase
-            .from('creators')
+        // If no creator profile, check for brand profile
+        if (!creator) {
+          const { data: brand } = await supabase
+            .from('brands')
             .select('id, onboarding_completed')
             .eq('user_id', data.user.id)
             .maybeSingle();
 
-          if (creator) {
-            // Creator exists, check onboarding status
-            if (creator.onboarding_completed) {
-              navigate('/creator/dashboard', { replace: true });
+          if (brand) {
+            // Brand exists, check onboarding status
+            if (brand.onboarding_completed) {
+              navigate('/brand/dashboard', { replace: true });
             } else {
-              navigate('/onboarding/creator', { replace: true });
+              navigate('/onboarding/brand', { replace: true });
             }
           } else {
-            // Neither brand nor creator profile exists, redirect to onboarding
+            // Neither creator nor brand profile exists, redirect to onboarding
             navigate('/onboarding', { replace: true });
           }
         } else {
-          // Brand exists, check onboarding status
-          if (brand.onboarding_completed) {
-            navigate('/brand/dashboard', { replace: true });
+          // Creator exists, check onboarding status
+          if (creator.onboarding_completed) {
+            navigate('/creator/dashboard', { replace: true });
           } else {
-            navigate('/onboarding/brand', { replace: true });
+            navigate('/onboarding/creator', { replace: true });
           }
         }
 
