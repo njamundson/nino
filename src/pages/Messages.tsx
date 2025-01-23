@@ -6,6 +6,7 @@ import ChatList from "@/components/messages/ChatList";
 import { useMessages } from "@/hooks/useMessages";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Message } from "@/types/message";
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
@@ -111,7 +112,7 @@ const Messages = () => {
             setIsRecording={setIsRecording}
             editingMessage={editingMessage}
             setEditingMessage={setEditingMessage}
-            messages={messages || []}
+            messages={messages as Message[]}
           />
         </div>
       </div>
