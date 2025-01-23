@@ -10,7 +10,22 @@ import { supabase } from "@/integrations/supabase/client";
 import CreatorProfile from "./modal/CreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
-import { Creator, CreatorData, CreatorType } from "@/types/creator";
+import { CreatorData, CreatorType } from "@/types/creator";
+
+interface Creator {
+  id: string;
+  bio: string | null;
+  location: string | null;
+  instagram: string | null;
+  website: string | null;
+  specialties: string[] | null;
+  creator_type: CreatorType | null;
+  profile_image_url: string | null;
+  profile?: {
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
+}
 
 interface CreatorModalProps {
   creator: Creator | null;
@@ -109,8 +124,8 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     website: creator.website || '',
     location: creator.location || '',
     profileImage: creator.profile_image_url,
-    creatorType: creator.creator_type,
-    profile: creator.profile,
+    creatorType: creator.creator_type as CreatorType || 'solo',
+    profile: creator.profile || null,
     profile_image_url: creator.profile_image_url
   };
 
