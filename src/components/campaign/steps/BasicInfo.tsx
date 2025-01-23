@@ -29,7 +29,9 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
   return (
     <div className="space-y-8 animate-fadeIn">
       <div className="space-y-4">
-        <Label htmlFor="title" className="text-sm font-medium text-gray-700">Project Title</Label>
+        <Label htmlFor="title" className="text-sm font-medium text-gray-700">
+          Project Title <span className="text-red-500">*</span>
+        </Label>
         <Input
           id="title"
           placeholder="Enter the title of your campaign"
@@ -42,7 +44,9 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
       </div>
 
       <div className="space-y-4">
-        <Label htmlFor="description" className="text-sm font-medium text-gray-700">Project Description</Label>
+        <Label htmlFor="description" className="text-sm font-medium text-gray-700">
+          Project Description <span className="text-red-500">*</span>
+        </Label>
         <Textarea
           id="description"
           placeholder="Describe your campaign in detail"

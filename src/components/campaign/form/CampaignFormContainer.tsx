@@ -9,6 +9,7 @@ import SuccessModal from "../SuccessModal";
 import ImageUpload from "../ImageUpload";
 import { useCampaignSubmit } from "@/hooks/useCampaignSubmit";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface FormData {
   title: string;
@@ -33,6 +34,7 @@ type StepKey = "basic" | "requirements" | "compensation";
 
 const CampaignFormContainer = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<StepKey>("basic");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -74,7 +76,41 @@ const CampaignFormContainer = () => {
     }
   };
 
+  const validateCurrentStep = () => {
+    if (currentStep === "basic") {
+      if (!formData.title.trim()) {
+        toast({
+          title: "Required Field",
+          description: "Please enter a project title",
+          variant: "destructive",
+        });
+        return false;
+      }
+      if (!formData.description.trim()) {
+        toast({
+          title: "Required Field",
+          description: "Please enter a project description",
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+
+    if (currentStep === "compensation" && !uploadedImage) {
+      toast({
+        title: "Required Field",
+        description: "Please upload a campaign image",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleNext = () => {
+    if (!validateCurrentStep()) return;
+
     const currentIndex = ["basic", "requirements", "compensation"].indexOf(currentStep);
     if (currentIndex < 2) {
       setCurrentStep(["basic", "requirements", "compensation"][currentIndex + 1] as StepKey);
@@ -91,6 +127,17 @@ const CampaignFormContainer = () => {
   };
 
   const handleSubmit = () => {
+    if (!validateCurrentStep()) return;
+    
+    if (!formData.title.trim() || !formData.description.trim() || !uploadedImage) {
+      toast({
+        title: "Required Fields Missing",
+        description: "Please fill in all required fields: Project Title, Project Description, and Campaign Image",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const submissionData = {
       ...formData,
       start_date: formData.startDate,
@@ -123,7 +170,7 @@ const CampaignFormContainer = () => {
               setFormData={setFormData}
             />
             <div className="pt-8 border-t border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Image</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Campaign Image <span className="text-red-500">*</span></h3>
               <ImageUpload
                 uploadedImage={uploadedImage}
                 isUploading={isUploading}
