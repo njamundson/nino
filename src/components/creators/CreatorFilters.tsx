@@ -85,7 +85,7 @@ const CreatorFilters = ({
   };
 
   const handleReset = () => {
-    // Reset creator type
+    // Reset creator type first
     onCreatorTypeChange(null);
     
     // Reset location filters
@@ -93,12 +93,10 @@ const CreatorFilters = ({
     setSelectedRegion("");
     onLocationChange("");
     
-    // Reset specialties - clear all selected specialties
-    if (selectedSpecialties.length > 0) {
-      selectedSpecialties.forEach(specialty => {
-        onSpecialtyChange(specialty);
-      });
-    }
+    // Clear all selected specialties one by one
+    [...selectedSpecialties].forEach(specialty => {
+      onSpecialtyChange(specialty);
+    });
 
     // Show feedback toast
     toast({
@@ -255,5 +253,3 @@ const CreatorFilters = ({
     </Collapsible>
   );
 };
-
-export default CreatorFilters;

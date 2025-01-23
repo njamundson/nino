@@ -46,6 +46,7 @@ const CreatorGrid = ({
         `)
         .eq('onboarding_completed', true);
 
+      // Only apply filters if they are not empty/null
       if (selectedSpecialties.length > 0) {
         query = query.contains('specialties', selectedSpecialties);
       }
@@ -54,7 +55,7 @@ const CreatorGrid = ({
         query = query.eq('creator_type', selectedCreatorType);
       }
 
-      if (selectedLocations.length > 0) {
+      if (selectedLocations.length > 0 && selectedLocations[0] !== "") {
         query = query.in('location', selectedLocations);
       }
 
