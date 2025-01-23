@@ -113,7 +113,6 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     }
   };
 
-  // Convert Creator to CreatorData with optional profile
   const creatorData: CreatorData = {
     id: creator.id,
     firstName: creator.profile?.first_name || '',
