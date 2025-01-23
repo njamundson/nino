@@ -21,18 +21,28 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
     const checkAccess = async () => {
       try {
+        setIsLoading(true);
+        
         // First, check if we have a valid session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-        if (sessionError || !session) {
-          console.error('Session error or no session:', sessionError);
-          await supabase.auth.signOut();
-          toast({
-            title: "Authentication Required",
-            description: "Please sign in to continue.",
-            variant: "destructive",
-          });
-          navigate('/', { replace: true });
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          await handleAuthError();
+          return;
+        }
+
+        if (!session) {
+          console.log('No active session');
+          await handleAuthError();
+          return;
+        }
+
+        // Verify the session is still valid
+        const { error: userError } = await supabase.auth.getUser();
+        if (userError) {
+          console.error('User verification error:', userError);
+          await handleAuthError();
           return;
         }
 
@@ -115,15 +125,27 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
         }
       } catch (error) {
         console.error('Error checking access:', error);
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive",
-        });
-        navigate('/', { replace: true });
+        await handleAuthError();
       } finally {
         if (mounted) setIsLoading(false);
       }
+    };
+
+    const handleAuthError = async () => {
+      // Clear any existing session
+      await supabase.auth.signOut();
+      
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to continue.",
+        variant: "destructive",
+      });
+      
+      // Redirect to login while preserving the intended destination
+      navigate('/', {
+        replace: true,
+        state: { from: location.pathname }
+      });
     };
 
     checkAccess();
