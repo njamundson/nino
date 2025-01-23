@@ -14,9 +14,10 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
+  // Access creator data including profile information
   const creator = application.creator;
-  const creatorName = creator?.first_name && creator?.last_name
-    ? `${creator.first_name} ${creator.last_name}`
+  const creatorName = creator?.profile?.first_name && creator?.profile?.last_name
+    ? `${creator.profile.first_name} ${creator.profile.last_name}`
     : 'Anonymous Creator';
 
   const specialties = creator?.specialties || [];
@@ -34,7 +35,10 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
               />
             ) : (
               <AvatarFallback className="bg-gray-100 text-gray-600 text-xl">
-                {getInitials(creator?.first_name || '', creator?.last_name || '')}
+                {getInitials(
+                  creator?.profile?.first_name || '',
+                  creator?.profile?.last_name || ''
+                )}
               </AvatarFallback>
             )}
           </Avatar>
