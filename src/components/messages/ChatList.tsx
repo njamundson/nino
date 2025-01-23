@@ -88,6 +88,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Fetch the most recent message for each unique conversation
       const { data: messageUsers, error } = await supabase
         .from('messages')
         .select(`
