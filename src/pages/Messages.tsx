@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { ChatList } from "@/components/messages/ChatList";
+import ChatList from "@/components/messages/ChatList";
 import { ChatContainer } from "@/components/messages/ChatContainer";
 import { useMessages } from "@/hooks/useMessages";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -7,7 +7,7 @@ import PageHeader from "@/components/shared/PageHeader";
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
-  const { isMobile } = useIsMobile();
+  const isMobile = useIsMobile();
   const selectedUserId = searchParams.get("userId");
   const {
     messages,
