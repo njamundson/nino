@@ -17,8 +17,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
   const handleSignUp = async (data: any) => {
     try {
       setLoading(true);
-      const { email, password, userType, firstName } = data;
-      console.log("Signup data:", data); // Debug log
+      const { email, password, userType, firstName, lastName } = data;
 
       // Check if user exists first
       const { data: existingUser } = await supabase.auth.signInWithPassword({
@@ -43,6 +42,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         options: {
           data: {
             first_name: firstName,
+            last_name: lastName,
           },
         },
       });
@@ -73,11 +73,13 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           
           navigate('/onboarding/brand');
         } else {
+          // For creators, ensure first_name is set
           const { error: creatorError } = await supabase
             .from('creators')
             .insert({
               user_id: authData.user.id,
-              first_name: firstName, // Ensure first_name is set
+              first_name: firstName || 'Anonymous', // Provide a default value
+              last_name: lastName,
             });
 
           if (creatorError) throw creatorError;

@@ -254,4 +254,5 @@ const CreatorFilters = ({
   );
 };
 
+// Export the component as default
 export default CreatorFilters;
