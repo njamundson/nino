@@ -28,15 +28,12 @@ export const ChatHeader = ({
           )}
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              Messages
+              {senderFirstName} {senderLastName}
             </h1>
           </div>
         </div>
         
         <div>
-          <h2 className="text-lg font-medium text-gray-900">
-            {senderFirstName} {senderLastName}
-          </h2>
           <p className="text-sm text-gray-500">Creator</p>
         </div>
       </div>

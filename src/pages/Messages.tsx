@@ -7,6 +7,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Message } from "@/types/message";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
@@ -15,8 +16,8 @@ const Messages = () => {
   );
   const [selectedFirstName, setSelectedFirstName] = useState<string | null>(null);
   const [selectedLastName, setSelectedLastName] = useState<string | null>(null);
-  const [selectedProfileImage, setSelectedProfileImage] = useState<string | null>(null);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const {
     data: messages,
@@ -39,7 +40,6 @@ const Messages = () => {
     setSelectedUserId(userId);
     setSelectedFirstName(firstName);
     setSelectedLastName(lastName);
-    setSelectedProfileImage(profileImage);
   };
 
   const handleSendMessage = async () => {
@@ -133,7 +133,6 @@ const Messages = () => {
             selectedChat={selectedUserId}
             selectedFirstName={selectedFirstName}
             selectedLastName={selectedLastName}
-            selectedProfileImage={selectedProfileImage}
             newMessage={newMessage}
             setNewMessage={setNewMessage}
             handleSendMessage={handleSendMessage}
@@ -142,6 +141,7 @@ const Messages = () => {
             editingMessage={editingMessage}
             setEditingMessage={setEditingMessage}
             messages={messages as Message[]}
+            onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
           />
         </div>
       </div>
