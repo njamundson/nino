@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import DashboardHeader from "./header/DashboardHeader";
 import BrandStatsCards from "./brand/stats/BrandStatsCards";
 import DashboardContent from "./brand/content/DashboardContent";
 import { Loader2 } from "lucide-react";
@@ -13,8 +12,6 @@ const LoadingSpinner = () => (
 const BrandDashboard = () => {
   return (
     <div className="space-y-6 md:space-y-8">
-      <DashboardHeader />
-      
       <Suspense fallback={<LoadingSpinner />}>
         <BrandStatsCards />
       </Suspense>
