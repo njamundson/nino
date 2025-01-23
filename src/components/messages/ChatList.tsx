@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChatSearch } from "./chat-list/ChatSearch";
 import { NewChatButton } from "./chat-list/NewChatButton";
 import { EmptyState } from "./chat-list/EmptyState";
