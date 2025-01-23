@@ -5,9 +5,10 @@ import { useEffect } from "react";
 interface SuccessModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  opportunityTitle?: string;
 }
 
-const SuccessModal = ({ isOpen, onOpenChange }: SuccessModalProps) => {
+const SuccessModal = ({ isOpen, onOpenChange, opportunityTitle }: SuccessModalProps) => {
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
@@ -31,7 +32,7 @@ const SuccessModal = ({ isOpen, onOpenChange }: SuccessModalProps) => {
               Application Submitted!
             </h2>
             <p className="text-gray-500 text-base leading-relaxed">
-              Your application has been sent successfully. You'll be notified when the brand reviews it.
+              Your application for "{opportunityTitle}" has been sent successfully. You'll be notified when the brand reviews it.
             </p>
           </div>
         </div>
