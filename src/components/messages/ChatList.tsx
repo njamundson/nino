@@ -22,10 +22,16 @@ interface MessageUser {
   sender: {
     first_name: string | null;
     last_name: string | null;
+    creator?: {
+      profile_image_url: string | null;
+    } | null;
   } | null;
   receiver: {
     first_name: string | null;
     last_name: string | null;
+    creator?: {
+      profile_image_url: string | null;
+    } | null;
   } | null;
 }
 
