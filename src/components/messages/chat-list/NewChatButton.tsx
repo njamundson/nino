@@ -15,9 +15,9 @@ interface Creator {
   profile_id: string;
   profile_image_url: string | null;
   profiles: {
-    first_name: string;
-    last_name: string;
-  };
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
 }
 
 interface NewChatButtonProps {
@@ -25,7 +25,21 @@ interface NewChatButtonProps {
   onStartChat: (profileId: string) => void;
 }
 
-export const NewChatButton = ({ creators, onStartChat }: NewChatButtonProps) => {
+export const NewChatButton = ({ creators = [], onStartChat }: NewChatButtonProps) => {
+  // Helper function to get initials safely
+  const getInitials = (creator: Creator) => {
+    const firstName = creator.profiles?.first_name || '';
+    const lastName = creator.profiles?.last_name || '';
+    return `${firstName[0] || ''}${lastName[0] || ''}`;
+  };
+
+  // Helper function to get full name safely
+  const getFullName = (creator: Creator) => {
+    const firstName = creator.profiles?.first_name || '';
+    const lastName = creator.profiles?.last_name || '';
+    return `${firstName} ${lastName}`.trim() || 'Unknown Creator';
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -48,15 +62,19 @@ export const NewChatButton = ({ creators, onStartChat }: NewChatButtonProps) => 
               >
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>
-                    {creator.profiles.first_name?.[0]}
-                    {creator.profiles.last_name?.[0]}
+                    {getInitials(creator)}
                   </AvatarFallback>
                 </Avatar>
                 <span>
-                  {creator.profiles.first_name} {creator.profiles.last_name}
+                  {getFullName(creator)}
                 </span>
               </Button>
             ))}
+            {creators.length === 0 && (
+              <div className="text-center py-4 text-sm text-muted-foreground">
+                No creators found
+              </div>
+            )}
           </div>
         </ScrollArea>
       </DialogContent>
