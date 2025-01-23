@@ -42,7 +42,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
         .from('brands')
         .select('company_name')
         .eq('id', opportunity.brand_id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -64,7 +64,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
         <div className="max-h-[85vh] overflow-y-auto">
           {showApplicationForm ? (
             <ApplicationForm
-              opportunityId={opportunity.id}
+              opportunity={opportunity}
               onBack={() => setShowApplicationForm(false)}
               onClose={onClose}
             />
@@ -72,7 +72,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
             <div className="space-y-8">
               <ProjectHeader
                 title={opportunity.title}
-                companyName={brandData?.company_name || ''}
+                companyName={brandData?.company_name || 'Loading...'}
                 location={opportunity.location}
                 startDate={opportunity.start_date}
                 endDate={opportunity.end_date}
