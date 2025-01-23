@@ -1,5 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import ProjectHeader from "./modal/ProjectHeader";
 import ProjectDescription from "./modal/ProjectDescription";
 import ProjectRequirements from "./modal/ProjectRequirements";
@@ -55,6 +56,13 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl p-0 overflow-hidden">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-50"
+          aria-label="Close modal"
+        >
+          <X className="h-4 w-4 text-gray-500" />
+        </button>
         <div className="max-h-[85vh] overflow-y-auto">
           {showApplicationForm ? (
             <ApplicationForm
