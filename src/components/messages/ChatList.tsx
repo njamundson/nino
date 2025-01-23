@@ -41,7 +41,7 @@ interface MessageUser {
     first_name: string | null;
     last_name: string | null;
   } | null;
-  creators?: {
+  receiver: {
     profile_image_url: string | null;
   } | null;
 }
@@ -73,7 +73,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             first_name,
             last_name
           ),
-          creators!sender_id (
+          receiver:creators!receiver_id (
             profile_image_url
           )
         `)
@@ -93,7 +93,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             id: otherUserId,
             first_name: msg.sender?.first_name || '',
             last_name: msg.sender?.last_name || '',
-            profile_image_url: msg.creators?.profile_image_url || null,
+            profile_image_url: msg.receiver?.profile_image_url || null,
             last_message: {
               content: msg.content,
               created_at: msg.created_at,
