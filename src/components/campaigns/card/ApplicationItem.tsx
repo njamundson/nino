@@ -16,8 +16,8 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
 
   // Access creator data including profile information
   const creator = application.creator;
-  const creatorName = creator?.profile?.first_name && creator?.profile?.last_name
-    ? `${creator.profile.first_name} ${creator.profile.last_name}`
+  const creatorName = creator?.first_name && creator?.last_name
+    ? `${creator.first_name} ${creator.last_name}`
     : 'Anonymous Creator';
 
   const specialties = creator?.specialties || [];
@@ -26,7 +26,7 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
     <div className="p-6 rounded-lg bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300">
       <div className="flex items-start justify-between gap-6">
         <div className="flex-1 flex items-start gap-6">
-          <Avatar className="h-20 w-20 rounded-2xl border-2 border-white shadow-sm overflow-hidden">
+          <Avatar className="h-20 w-20 rounded-full border-2 border-white shadow-sm overflow-hidden">
             {creator?.profile_image_url ? (
               <AvatarImage
                 src={creator.profile_image_url}
@@ -36,8 +36,8 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
             ) : (
               <AvatarFallback className="bg-gray-100 text-gray-600 text-xl">
                 {getInitials(
-                  creator?.profile?.first_name || '',
-                  creator?.profile?.last_name || ''
+                  creator?.first_name || '',
+                  creator?.last_name || ''
                 )}
               </AvatarFallback>
             )}
