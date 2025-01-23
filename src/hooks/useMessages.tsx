@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/message";
 import { useState } from "react";
@@ -21,8 +21,9 @@ export const useMessages = (userId: string): UseMessagesReturn => {
   const [newMessage, setNewMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [editingMessage, setEditingMessage] = useState<{ id: string; content: string; } | null>(null);
+  const queryClient = useQueryClient();
 
-  const { data = [], isLoading, error, setData: setMessages } = useQuery({
+  const { data = [], isLoading, error } = useQuery({
     queryKey: ['messages', userId],
     queryFn: async () => {
       if (!userId) {
@@ -39,7 +40,15 @@ export const useMessages = (userId: string): UseMessagesReturn => {
           receiver_id,
           read,
           message_type,
-          updated_at
+          updated_at,
+          media_url,
+          media_type,
+          sender_profile_id,
+          receiver_profile_id,
+          profiles (
+            first_name,
+            last_name
+          )
         `)
         .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
         .order('created_at', { ascending: true });
@@ -58,6 +67,10 @@ export const useMessages = (userId: string): UseMessagesReturn => {
     refetchOnWindowFocus: true,
     retry: 2
   });
+
+  const setMessages = (updater: Message[] | ((prev: Message[] | undefined) => Message[])) => {
+    queryClient.setQueryData(['messages', userId], updater);
+  };
 
   const handleSendMessage = () => {
     // Implementation will be handled by the component

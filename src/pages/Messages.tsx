@@ -20,7 +20,7 @@ const Messages = () => {
 
   const {
     data: messages,
-    setMessages, // Add this from the hook
+    setMessages,
     newMessage,
     setNewMessage,
     isRecording,
@@ -73,6 +73,14 @@ const Messages = () => {
         read: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        media_url: null,
+        media_type: null,
+        sender_profile_id: null,
+        receiver_profile_id: null,
+        profiles: {
+          first_name: '',
+          last_name: ''
+        }
       };
 
       // Add optimistic message to the UI immediately
