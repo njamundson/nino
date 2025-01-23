@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import CreatorSelectionModal from "../CreatorSelectionModal";
+import CreatorSelectionModal from "./chat-list/CreatorSelectionModal";
 
 interface ChatListProps {
   onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
@@ -61,7 +61,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get all unique users from messages table with their profiles, ordered by most recent message
       const { data: messageUsers, error } = await supabase
         .from('messages')
         .select(`
@@ -74,12 +73,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             first_name,
             last_name
           ),
-          receiver:creators!receiver_id (
+          receiver:profiles!receiver_profile_id (
             profile_image_url
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order('created_at', { ascending: true }); // Changed to ascending order
+        .order('created_at', { ascending: true });
 
       if (error) throw error;
 
