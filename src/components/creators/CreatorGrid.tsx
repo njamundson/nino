@@ -80,6 +80,7 @@ const CreatorGrid = ({
         instagram: creator.instagram || '',
         website: creator.website || '',
         profileImage: creator.profile_image_url || '',
+        profile_image_url: creator.profile_image_url || '',
         profile: {
           first_name: creator.first_name || '',
           last_name: creator.last_name || ''
