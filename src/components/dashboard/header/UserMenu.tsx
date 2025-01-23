@@ -20,7 +20,28 @@ export const UserMenu = () => {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
+
+      // If it's a brand dashboard, fetch brand profile
+      if (isBrandDashboard) {
+        const { data: brandData, error: brandError } = await supabase
+          .from('brands')
+          .select('profile_image_url, company_name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (brandError) {
+          console.error('Error fetching brand profile:', brandError);
+          return null;
+        }
+        
+        return {
+          ...brandData,
+          first_name: brandData?.company_name?.charAt(0) || '',
+          last_name: brandData?.company_name?.charAt(1) || '',
+        };
+      }
       
+      // Otherwise fetch regular profile
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -48,7 +69,10 @@ export const UserMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20 cursor-pointer hover:ring-nino-primary/40 transition-all duration-200">
-          <AvatarImage src="" alt="Profile" />
+          <AvatarImage 
+            src={profile?.profile_image_url || ""} 
+            alt="Profile" 
+          />
           <AvatarFallback className="bg-nino-primary text-nino-white">
             {profile?.first_name?.[0]}{profile?.last_name?.[0]}
           </AvatarFallback>
