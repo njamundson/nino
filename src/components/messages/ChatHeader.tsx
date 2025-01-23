@@ -13,7 +13,7 @@ export const ChatHeader = ({
   onBack 
 }: ChatHeaderProps) => {
   const isMobile = useIsMobile();
-  const hasSelectedChat = senderFirstName && senderLastName;
+  const hasSelectedChat = Boolean(senderFirstName && senderLastName);
 
   return (
     <div className="border-b border-gray-100 p-6 bg-white/50 backdrop-blur-xl">

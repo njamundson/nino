@@ -129,9 +129,18 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
       messageUsers?.forEach((msg: any) => {
         const otherUserId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
+        const otherUser = msg.sender_id === user.id ? msg.receiver : msg.sender;
         
         if (!uniqueUsers.has(otherUserId)) {
-          uniqueUsers.set(otherUserId, msg as MessageUser);
+          uniqueUsers.set(otherUserId, {
+            ...msg,
+            otherUser: {
+              id: otherUserId,
+              firstName: otherUser?.first_name || '',
+              lastName: otherUser?.last_name || '',
+              profileImage: otherUser?.creator?.profile_image_url || null
+            }
+          });
         }
       });
 
@@ -242,10 +251,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
               if (!currentUser) return null;
               const isCurrentUserSender = user.sender_id === currentUser.id;
               const otherUser = isCurrentUserSender ? user.receiver : user.sender;
-              const otherUserName = otherUser ? `${otherUser.first_name} ${otherUser.last_name}` : 'Unknown User';
-              const profileImage = isCurrentUserSender 
-                ? user.receiver?.creator?.profile_image_url 
-                : user.sender?.creator?.profile_image_url;
+              
+              if (!otherUser) return null;
 
               return (
                 <div
@@ -255,9 +262,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                   }`}
                   onClick={() => onSelectChat(
                     isCurrentUserSender ? user.receiver_id : user.sender_id,
-                    otherUser?.first_name || '',
-                    otherUser?.last_name || '',
-                    profileImage || null
+                    otherUser.first_name || '',
+                    otherUser.last_name || '',
+                    otherUser.creator?.profile_image_url || null
                   )}
                 >
                   <div className="flex items-start space-x-3">
@@ -265,7 +272,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                       <div className="flex justify-between items-start mb-1">
                         <div className="flex flex-col">
                           <h3 className="text-base font-semibold text-gray-900 truncate">
-                            {otherUserName}
+                            {`${otherUser.first_name || 'Unknown'} ${otherUser.last_name || ''}`}
                           </h3>
                           <p className="text-sm text-gray-500">Creator</p>
                         </div>
