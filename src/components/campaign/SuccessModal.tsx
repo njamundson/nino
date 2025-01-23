@@ -15,7 +15,7 @@ const SuccessModal = ({ isOpen, onOpenChange }: SuccessModalProps) => {
     if (isOpen) {
       const timer = setTimeout(() => {
         onOpenChange(false);
-        navigate("/brand/campaigns");
+        navigate("/brand/creators");
       }, 3000);
 
       return () => clearTimeout(timer);
@@ -35,7 +35,7 @@ const SuccessModal = ({ isOpen, onOpenChange }: SuccessModalProps) => {
               Campaign Created Successfully
             </h2>
             <p className="text-gray-500 text-base leading-relaxed">
-              Redirecting to your campaigns...
+              Ready to find the perfect creators for your campaign? Let's browse and invite creators to apply!
             </p>
           </div>
         </div>

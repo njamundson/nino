@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import FormProgress from "../FormProgress";
 import FormNavigation from "../FormNavigation";
 import BasicInfo from "../steps/BasicInfo";
@@ -33,7 +32,6 @@ const steps = [
 type StepKey = "basic" | "requirements" | "compensation";
 
 const CampaignFormContainer = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<StepKey>("basic");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -121,8 +119,6 @@ const CampaignFormContainer = () => {
     const currentIndex = ["basic", "requirements", "compensation"].indexOf(currentStep);
     if (currentIndex > 0) {
       setCurrentStep(["basic", "requirements", "compensation"][currentIndex - 1] as StepKey);
-    } else {
-      navigate(-1);
     }
   };
 
