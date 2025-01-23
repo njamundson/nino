@@ -1,9 +1,10 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface CreatorLayoutProps {
   children: ReactNode;
@@ -18,19 +19,26 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
       <Sidebar />
       <div className={`flex-1 ${isMobile ? 'w-full' : ''}`}>
         <div className="p-4 md:p-8">
-          <DashboardHeader />
-          <AnimatePresence mode="wait">
-            <motion.main
-              key={location.pathname}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="mt-8"
-            >
-              {children}
-            </motion.main>
-          </AnimatePresence>
+          <div className="mb-8">
+            <DashboardHeader />
+          </div>
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <LoadingSpinner size="lg" />
+            </div>
+          }>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
+          </Suspense>
         </div>
       </div>
     </div>
