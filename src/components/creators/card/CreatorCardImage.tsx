@@ -21,7 +21,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     ? creator.profile_image_url 
     : '/placeholder.svg';
 
-  const creatorName = `${creator.firstName} ${creator.lastName}`.trim() || 'Anonymous Creator';
+  const creatorName = creator.first_name || 'Anonymous Creator';
 
   return (
     <div className="relative aspect-[3/4] w-full overflow-hidden">
