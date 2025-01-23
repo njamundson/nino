@@ -18,10 +18,10 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
     <div className="flex min-h-screen bg-nino-bg">
       <Sidebar />
       <div className={`flex-1 ${isMobile ? 'w-full' : ''}`}>
-        <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 bg-nino-bg p-4 md:p-8">
+        <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 bg-nino-bg py-6 px-4 md:px-8">
           <DashboardHeader />
         </div>
-        <div className="p-4 pt-24 md:p-8 md:pt-28">
+        <div className="p-4 pt-28 md:p-8 md:pt-32">
           <Suspense fallback={
             <div className="flex items-center justify-center min-h-[60vh]">
               <LoadingSpinner size="lg" />
