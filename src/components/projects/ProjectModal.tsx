@@ -32,7 +32,6 @@ interface ProjectModalProps {
 
 const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: ProjectModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const navigate = useNavigate();
 
   // Fetch brand data
   const { data: brandData } = useQuery({
@@ -52,10 +51,6 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
   const handleApply = () => {
     if (!isOpen) return;
     setShowApplicationForm(true);
-  };
-
-  const handleViewDetails = () => {
-    navigate(`/creator/projects/${opportunity.id}`);
   };
 
   return (
@@ -89,13 +84,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
                 />
 
                 {!isCompleted && (
-                  <div className="flex justify-end gap-3 pt-6">
-                    <Button
-                      variant="outline"
-                      onClick={handleViewDetails}
-                    >
-                      View Details
-                    </Button>
+                  <div className="flex justify-end pt-6">
                     <Button
                       onClick={handleApply}
                       className="bg-nino-primary hover:bg-nino-primary/90"
