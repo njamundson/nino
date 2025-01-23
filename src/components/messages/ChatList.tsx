@@ -45,7 +45,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get all unique users from messages table
+      // Get all unique users from messages table with their profiles
       const { data: messageUsers, error } = await supabase
         .from('messages')
         .select(`
@@ -54,7 +54,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           content,
           created_at,
           read,
-          profiles!sender_id (
+          sender:profiles!sender_profile_id (
             first_name,
             last_name,
             profile_image_url
@@ -74,9 +74,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         if (!uniqueUsers.has(otherUserId)) {
           uniqueUsers.set(otherUserId, {
             id: otherUserId,
-            first_name: msg.profiles?.first_name || '',
-            last_name: msg.profiles?.last_name || '',
-            profile_image_url: msg.profiles?.profile_image_url,
+            first_name: msg.sender?.first_name || '',
+            last_name: msg.sender?.last_name || '',
+            profile_image_url: msg.sender?.profile_image_url,
             last_message: {
               content: msg.content,
               created_at: msg.created_at,
