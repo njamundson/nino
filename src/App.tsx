@@ -27,44 +27,42 @@ const App = () => {
       <BrowserRouter>
         <TooltipProvider>
           <div className="min-h-screen bg-nino-bg">
-            <div className="fixed inset-0 overflow-y-auto">
-              <Toaster />
-              <Sonner />
-              <Routes>
-                <Route index element={<Index />} />
-                {onboardingRoutes.map((route) => (
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route index element={<Index />} />
+              {onboardingRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              <Route path="/brand" element={<BrandLayout />}>
+                {brandRoutes.map((route) => (
                   <Route
                     key={route.path}
-                    path={route.path}
+                    path={route.path.replace('/brand/', '')}
                     element={route.element}
                   />
                 ))}
-                <Route path="/brand" element={<BrandLayout />}>
-                  {brandRoutes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path.replace('/brand/', '')}
-                      element={route.element}
-                    />
-                  ))}
-                </Route>
-                {creatorRoutes.map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={route.element}
-                  />
-                ))}
-                {adminRoutes.map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={route.element}
-                  />
-                ))}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </div>
+              </Route>
+              {creatorRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              {adminRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
           </div>
         </TooltipProvider>
       </BrowserRouter>
