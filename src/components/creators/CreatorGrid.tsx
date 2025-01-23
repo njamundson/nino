@@ -97,7 +97,11 @@ const CreatorGrid = ({
           location: creator.location || "",
           profileImage: creator.profile_image_url,
           creatorType: creator.creator_type as CreatorType || "solo",
-          profile_image_url: creator.profile_image_url
+          profile_image_url: creator.profile_image_url,
+          profile: {
+            first_name: creator.first_name,
+            last_name: creator.last_name
+          }
         }));
 
         console.log("Formatted creators:", formattedCreators);

@@ -6,6 +6,7 @@ import { useState } from "react";
 import CreatorModal from "@/components/creators/CreatorModal";
 import { useNavigate } from "react-router-dom";
 import BookingsList from "@/components/bookings/BookingsList";
+import { CreatorType } from "@/types/creator";
 
 interface Creator {
   id: string;
@@ -14,7 +15,7 @@ interface Creator {
   specialties: string[] | null;
   instagram: string | null;
   website: string | null;
-  creator_type: string | null;
+  creator_type: CreatorType | null;
   profile: {
     first_name: string | null;
     last_name: string | null;
