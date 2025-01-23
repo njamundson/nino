@@ -34,7 +34,9 @@ export const ChatHeader = ({
         </div>
         
         <div>
-          <p className="text-sm text-gray-500">Creator</p>
+          <h2 className="text-lg font-semibold text-gray-700">
+            {senderFirstName} {senderLastName}
+          </h2>
         </div>
       </div>
     </div>
