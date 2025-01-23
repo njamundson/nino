@@ -47,7 +47,16 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
 
       <main className="flex-1 overflow-x-hidden w-full">
         <div className="p-4 md:p-8">
-          {!isDashboard && <DashboardHeader />}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="min-h-[60px]"
+          >
+            {!isDashboard && <DashboardHeader />}
+          </motion.div>
+          
           <Suspense fallback={
             <div className="flex items-center justify-center min-h-[60vh]">
               <LoadingSpinner size="lg" />
@@ -56,11 +65,11 @@ const BrandLayout = ({ children }: BrandLayoutProps) => {
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
-                className="mt-16 lg:mt-0"
+                className="mt-8"
               >
                 {children}
               </motion.div>
