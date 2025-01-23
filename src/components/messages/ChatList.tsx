@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CreatorSelectionModal from "./chat-list/CreatorSelectionModal";
 
 interface MessageUser {
@@ -88,7 +89,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch the most recent message for each unique conversation
       const { data: messageUsers, error } = await supabase
         .from('messages')
         .select(`
@@ -125,23 +125,14 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         return;
       }
 
-      // Process users to remove duplicates and format data
+      // Process users to remove duplicates and keep latest message
       const uniqueUsers = new Map<string, MessageUser>();
 
       messageUsers?.forEach((msg: any) => {
         const otherUserId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
-        const otherUser = msg.sender_id === user.id ? msg.receiver : msg.sender;
         
-        if (!uniqueUsers.has(otherUserId)) {
-          uniqueUsers.set(otherUserId, {
-            ...msg,
-            otherUser: {
-              id: otherUserId,
-              firstName: otherUser?.first_name || '',
-              lastName: otherUser?.last_name || '',
-              profileImage: otherUser?.creator?.profile_image_url || null
-            }
-          });
+        if (!uniqueUsers.has(otherUserId) || new Date(msg.created_at) > new Date(uniqueUsers.get(otherUserId)!.created_at)) {
+          uniqueUsers.set(otherUserId, msg);
         }
       });
 
@@ -211,13 +202,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
-  const filteredUsers = users.filter(user => {
-    const senderName = `${user.sender?.first_name || ''} ${user.sender?.last_name || ''}`.toLowerCase();
-    const receiverName = `${user.receiver?.first_name || ''} ${user.receiver?.last_name || ''}`.toLowerCase();
-    const query = searchQuery.toLowerCase();
-    return senderName.includes(query) || receiverName.includes(query);
-  });
-
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -232,6 +216,13 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
   };
+
+  const filteredUsers = users.filter(user => {
+    if (!currentUser) return false;
+    const otherUser = user.sender_id === currentUser.id ? user.receiver : user.sender;
+    const fullName = `${otherUser?.first_name || ''} ${otherUser?.last_name || ''}`.toLowerCase();
+    return fullName.includes(searchQuery.toLowerCase());
+  });
 
   return (
     <div className="flex flex-col h-full">
@@ -255,6 +246,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
               
               if (!otherUser) return null;
 
+              const profileImage = otherUser.creator?.profile_image_url;
+              const initials = `${otherUser.first_name?.[0] || ''}${otherUser.last_name?.[0] || ''}`.toUpperCase();
+
               return (
                 <div
                   key={isCurrentUserSender ? user.receiver_id : user.sender_id}
@@ -265,31 +259,30 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                     isCurrentUserSender ? user.receiver_id : user.sender_id,
                     otherUser.first_name || '',
                     otherUser.last_name || '',
-                    otherUser.creator?.profile_image_url || null
+                    profileImage || null
                   )}
                 >
                   <div className="flex items-start space-x-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={profileImage || ''} />
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center mb-1.5">
-                        <div className="flex flex-col">
-                          <h3 className="text-[15px] font-semibold text-gray-900 truncate">
-                            {`${otherUser.first_name || 'Unknown'} ${otherUser.last_name || ''}`}
-                          </h3>
-                          <p className="text-sm text-gray-500 mt-0.5">{user.content || 'No messages yet'}</p>
-                        </div>
-                        <span className="text-xs text-gray-400">
+                      <div className="flex justify-between items-center mb-1">
+                        <h3 className="text-sm font-medium text-gray-900 truncate">
+                          {`${otherUser.first_name || 'Unknown'} ${otherUser.last_name || ''}`}
+                        </h3>
+                        <span className="text-xs text-gray-500">
                           {formatTime(user.created_at)}
                         </span>
                       </div>
-                      {user.content && (
-                        <p className={`text-sm truncate mt-1 ${
-                          user.read ? "text-gray-500" : "text-gray-900"
-                        }`}>
-                          {user.content}
-                        </p>
-                      )}
+                      <p className={`text-sm truncate ${
+                        !user.read && !isCurrentUserSender ? "font-medium text-gray-900" : "text-gray-500"
+                      }`}>
+                        {isCurrentUserSender ? `You: ${user.content}` : user.content}
+                      </p>
                     </div>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
