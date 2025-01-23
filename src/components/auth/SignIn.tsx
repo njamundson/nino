@@ -38,59 +38,45 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       }
 
       if (data.user) {
-        // Fetch user profile to determine type
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', data.user.id)
-          .single();
+        // First check if user has a brand profile
+        const { data: brand } = await supabase
+          .from('brands')
+          .select('id, onboarding_completed')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
 
-        if (profileError) {
-          console.error('Error fetching profile:', profileError);
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Failed to fetch user profile. Please try again.",
-          });
-          return;
-        }
-
-        if (profile) {
-          // Check if user is a brand or creator
-          const { data: brand } = await supabase
-            .from('brands')
-            .select('id, onboarding_completed')
-            .eq('user_id', profile.id)
-            .single();
-
+        // If no brand profile, check for creator profile
+        if (!brand) {
           const { data: creator } = await supabase
             .from('creators')
             .select('id, onboarding_completed')
-            .eq('user_id', profile.id)
-            .single();
+            .eq('user_id', data.user.id)
+            .maybeSingle();
 
-          if (brand) {
-            if (brand.onboarding_completed) {
-              navigate('/brand/dashboard', { replace: true });
-            } else {
-              navigate('/onboarding/brand', { replace: true });
-            }
-          } else if (creator) {
+          if (creator) {
+            // Creator exists, check onboarding status
             if (creator.onboarding_completed) {
               navigate('/creator/dashboard', { replace: true });
             } else {
               navigate('/onboarding/creator', { replace: true });
             }
           } else {
-            // If neither, they need to complete onboarding
+            // Neither brand nor creator profile exists, redirect to onboarding
             navigate('/onboarding', { replace: true });
           }
-
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully signed in.",
-          });
+        } else {
+          // Brand exists, check onboarding status
+          if (brand.onboarding_completed) {
+            navigate('/brand/dashboard', { replace: true });
+          } else {
+            navigate('/onboarding/brand', { replace: true });
+          }
         }
+
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
       }
     } catch (error) {
       console.error('Sign in error:', error);
