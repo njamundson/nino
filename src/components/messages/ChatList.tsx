@@ -134,17 +134,34 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   const startNewChat = async (profileId: string) => {
     try {
-      const { data: profile } = await supabase
+      if (!profileId) {
+        toast({
+          title: "Error",
+          description: "Invalid profile selected",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', profileId)
-        .single();
+        .maybeSingle();
+
+      if (error) throw error;
 
       if (profile) {
         onSelectChat(profile.id);
         toast({
           title: "Chat started",
           description: "You can now send messages to this creator",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Could not find the selected creator",
+          variant: "destructive",
         });
       }
     } catch (error) {
