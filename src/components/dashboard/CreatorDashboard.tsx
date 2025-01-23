@@ -18,6 +18,7 @@ const CreatorDashboard = () => {
     queryKey: ['creator-profile'],
     queryFn: async () => {
       try {
+        // First check if we have an authenticated user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
@@ -26,9 +27,11 @@ const CreatorDashboard = () => {
         }
         
         if (!user) {
-          throw new Error('No authenticated user found');
+          navigate('/auth');
+          return null;
         }
 
+        // Then fetch the creator profile
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select(`
@@ -46,21 +49,28 @@ const CreatorDashboard = () => {
             onboarding_completed
           `)
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (creatorError) {
           console.error("Error fetching creator:", creatorError);
+          toast({
+            title: "Error loading profile",
+            description: "There was a problem loading your profile. Please try refreshing the page.",
+            variant: "destructive",
+          });
           throw creatorError;
         }
 
-        // If no creator profile is found, redirect to onboarding
+        // Handle missing creator profile
         if (!creator) {
+          console.log("No creator profile found, redirecting to onboarding");
           navigate('/creator/welcome');
           return null;
         }
 
-        // If onboarding is not completed, redirect to welcome page
+        // Handle incomplete onboarding
         if (!creator.onboarding_completed) {
+          console.log("Onboarding not completed, redirecting to welcome page");
           navigate('/creator/welcome');
           return null;
         }
@@ -79,7 +89,7 @@ const CreatorDashboard = () => {
     retry: 1,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     refetchOnWindowFocus: false,
-    refetchOnMount: true
+    refetchOnMount: false // Changed to false since we handle navigation in the query
   });
 
   if (isLoading) {
