@@ -16,14 +16,15 @@ interface Creator {
   id: string;
   bio: string | null;
   location: string | null;
-  specialties: string[] | null;
   instagram: string | null;
   website: string | null;
+  specialties: string[] | null;
+  creator_type: string | null;
+  profile_image_url: string | null;
   profile?: {
     first_name: string | null;
     last_name: string | null;
   } | null;
-  profile_image_url: string | null;
 }
 
 interface CreatorModalProps {
@@ -124,7 +125,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     location: creator.location || '',
     profileImage: creator.profile_image_url,
     creatorType: 'solo',
-    profile: creator.profile,
+    profile: creator.profile || null,
     profile_image_url: creator.profile_image_url
   };
 
