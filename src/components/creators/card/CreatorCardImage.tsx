@@ -12,18 +12,14 @@ interface CreatorCardImageProps {
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
   const [imageError, setImageError] = useState(false);
   
-  const fullName = creator.firstName && creator.lastName 
-    ? `${creator.firstName} ${creator.lastName}`.trim()
-    : creator.firstName 
-    ? creator.firstName.trim()
-    : 'Anonymous Creator';
+  // Since we store the full name in firstName, we'll use that directly
+  const creatorName = creator.firstName?.trim() || 'Anonymous Creator';
 
   const handleImageError = () => {
     console.log(`Profile image failed to load for creator ${creator.id}`, creator.profile_image_url);
     setImageError(true);
   };
 
-  // Use profile_image_url directly from the creator object
   const imageUrl = !imageError && creator.profile_image_url 
     ? creator.profile_image_url 
     : '/placeholder.svg';
@@ -32,7 +28,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     <div className="relative aspect-[3/4] w-full overflow-hidden">
       <img
         src={imageUrl}
-        alt={fullName}
+        alt={creatorName}
         onError={handleImageError}
         className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
       />
@@ -44,7 +40,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
           </p>
         )}
         <h3 className="text-xl font-semibold">
-          {fullName}
+          {creatorName}
         </h3>
         {creator.specialties && creator.specialties.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
