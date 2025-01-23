@@ -21,12 +21,12 @@ interface MessageUser {
   created_at: string;
   read: boolean;
   sender: {
-    first_name: string;
-    last_name: string;
+    first_name: string | null;
+    last_name: string | null;
   };
   receiver: {
-    first_name: string;
-    last_name: string;
+    first_name: string | null;
+    last_name: string | null;
     profile_image_url: string | null;
   };
 }
@@ -63,38 +63,36 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             first_name,
             last_name
           ),
-          receiver:creators!receiver_id (
+          receiver:profiles!receiver_profile_id (
             first_name,
             last_name,
             profile_image_url
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
       // Process users to remove duplicates and format data
       const uniqueUsers = new Map<string, MessageUser>();
 
-      (messageUsers as MessageUser[])?.forEach((msg) => {
+      messageUsers?.forEach((msg) => {
         const otherUserId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
         
         if (!uniqueUsers.has(otherUserId)) {
-          uniqueUsers.set(otherUserId, {
-            ...msg,
-            last_message: {
-              content: msg.content,
-              created_at: msg.created_at,
-              read: msg.read,
-            },
-          });
+          uniqueUsers.set(otherUserId, msg as MessageUser);
         }
       });
 
       setUsers(Array.from(uniqueUsers.values()));
     } catch (error) {
       console.error('Error fetching chat users:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch chat users",
+        variant: "destructive",
+      });
     }
   };
 
@@ -115,7 +113,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         description: "The conversation has been removed",
       });
 
-      // Refresh the chat list
       fetchChatUsers();
     } catch (error) {
       console.error('Error deleting chat:', error);
@@ -145,7 +142,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         description: "The conversation has been marked as unread",
       });
 
-      // Refresh the chat list
       fetchChatUsers();
     } catch (error) {
       console.error('Error marking as unread:', error);
@@ -157,11 +153,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
-  const filteredUsers = users.filter(user => 
-    `${user.sender.first_name} ${user.sender.last_name}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+  const filteredUsers = users.filter(user => {
+    const senderName = `${user.sender.first_name} ${user.sender.last_name}`.toLowerCase();
+    const receiverName = `${user.receiver.first_name} ${user.receiver.last_name}`.toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return senderName.includes(query) || receiverName.includes(query);
+  });
 
   return (
     <div className="flex flex-col h-full">
@@ -186,8 +183,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                 }`}
                 onClick={() => onSelectChat(
                   user.receiver_id, 
-                  user.receiver.first_name, 
-                  user.receiver.last_name, 
+                  user.receiver.first_name || '', 
+                  user.receiver.last_name || '', 
                   user.receiver.profile_image_url
                 )}
               >
