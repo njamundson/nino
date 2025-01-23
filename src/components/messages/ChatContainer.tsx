@@ -36,7 +36,7 @@ export const ChatContainer = ({
   onMobileBack,
 }: ChatContainerProps) => {
   return (
-    <Card className="flex flex-col h-[calc(100vh-12rem)] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-2xl overflow-hidden">
+    <Card className="flex flex-col h-full bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-2xl overflow-hidden">
       {selectedChat ? (
         <>
           <ChatHeader
@@ -44,7 +44,7 @@ export const ChatContainer = ({
             senderLastName={selectedLastName}
             onBack={onMobileBack}
           />
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden min-h-0">
             <ChatMessages
               messages={messages}
               currentUserId={currentUserId}

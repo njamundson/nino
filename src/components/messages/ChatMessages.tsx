@@ -67,7 +67,7 @@ const ChatMessages = ({
   }, {});
 
   return (
-    <div className="h-full overflow-y-auto px-4 py-6 space-y-6">
+    <div className="h-full overflow-y-auto px-6 py-8 space-y-6">
       {Object.entries(messagesByDate).map(([date, dateMessages]) => (
         <div key={date} className="space-y-4">
           <DateDivider date={date} />

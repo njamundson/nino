@@ -114,13 +114,13 @@ const Messages = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 py-8">
       <PageHeader
         title="Messages"
         description="Connect and communicate with creators."
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-12rem)]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-16rem)]">
         <div className="md:col-span-1 bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
           <ChatList 
             onSelectChat={handleSelectChat}
