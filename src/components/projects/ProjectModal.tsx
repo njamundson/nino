@@ -88,7 +88,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
       <DialogContent className="max-w-4xl h-[85vh] p-0 gap-0 overflow-hidden bg-[#FAFAFA] rounded-2xl">
         <ProjectHeader
           title={opportunity.title}
-          companyName={opportunity.brand!.company_name!}
+          companyName={opportunity.brand?.company_name || "Unnamed Brand"}
           location={opportunity.location}
           startDate={opportunity.start_date}
           endDate={opportunity.end_date}
