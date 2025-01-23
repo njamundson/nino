@@ -12,6 +12,7 @@ export const useCreatorDashboard = () => {
     queryKey: ['creator-profile'],
     queryFn: async () => {
       try {
+        console.log("Starting creator profile fetch...");
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError) {
@@ -25,6 +26,7 @@ export const useCreatorDashboard = () => {
           return null;
         }
 
+        console.log("Fetching creator profile for user:", user.id);
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select(`
@@ -66,6 +68,7 @@ export const useCreatorDashboard = () => {
           return null;
         }
 
+        console.log("Successfully fetched creator profile:", creator);
         return creator as Creator;
       } catch (error) {
         console.error("Error in creator profile query:", error);
@@ -78,9 +81,8 @@ export const useCreatorDashboard = () => {
       }
     },
     retry: false,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
-    cacheTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    refetchOnMount: true
   });
 };
