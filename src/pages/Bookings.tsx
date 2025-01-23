@@ -6,21 +6,7 @@ import { useState } from "react";
 import CreatorModal from "@/components/creators/CreatorModal";
 import { useNavigate } from "react-router-dom";
 import BookingsList from "@/components/bookings/BookingsList";
-
-interface Creator {
-  id: string;
-  bio: string | null;
-  location: string | null;
-  specialties: string[] | null;
-  instagram: string | null;
-  website: string | null;
-  creator_type: string | null;
-  profile: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
-  profile_image_url: string | null;
-}
+import { Creator, CreatorType } from "@/types/creator";
 
 const Bookings = () => {
   const navigate = useNavigate();
@@ -72,7 +58,7 @@ const Bookings = () => {
       specialties: creator.specialties,
       instagram: creator.instagram,
       website: creator.website,
-      creator_type: creator.creator_type || 'solo',
+      creator_type: creator.creator_type as CreatorType,
       profile: creator.profile,
       profile_image_url: creator.profile_image_url,
     };

@@ -28,6 +28,21 @@ export const CREATOR_SPECIALTIES = [
   'Public Relations/Writer'
 ] as const;
 
+export interface Creator {
+  id: string;
+  bio: string | null;
+  location: string | null;
+  specialties: string[] | null;
+  instagram: string | null;
+  website: string | null;
+  creator_type: CreatorType;
+  profile?: {
+    first_name: string | null;
+    last_name: string | null;
+  } | null;
+  profile_image_url: string | null;
+}
+
 export const validateInstagramHandle = (handle: string): boolean => {
   const username = handle.startsWith('@') ? handle.slice(1) : handle;
   return /^[a-zA-Z0-9._]{1,30}$/.test(username);
