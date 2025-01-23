@@ -25,21 +25,9 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     setImageError(true);
   };
 
-  const placeholderImages = [
-    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
-    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
-    'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952',
-    'https://images.unsplash.com/photo-1527576539890-dfa815648363'
-  ];
-
-  const getRandomPlaceholder = () => {
-    const randomIndex = Math.floor(Math.random() * placeholderImages.length);
-    return placeholderImages[randomIndex];
-  };
-
   const imageUrl = !imageError && creator.profileImage 
     ? creator.profileImage 
-    : getRandomPlaceholder();
+    : '/placeholder.svg';
 
   return (
     <div className="relative aspect-[3/4] w-full overflow-hidden">
