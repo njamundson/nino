@@ -12,7 +12,6 @@ const BrandLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-nino-bg">
-      {/* Mobile Menu Button */}
       {isMobile && (
         <Button
           variant="ghost"
@@ -24,12 +23,10 @@ const BrandLayout = () => {
         </Button>
       )}
 
-      {/* Sidebar */}
       <div className="hidden lg:block">
         <Sidebar />
       </div>
 
-      {/* Mobile Sidebar */}
       {isMobile && isMobileMenuOpen && (
         <>
           <div 
@@ -42,7 +39,6 @@ const BrandLayout = () => {
         </>
       )}
 
-      {/* Main Content */}
       <div className="flex-1 overflow-x-hidden w-full">
         <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 px-4 md:px-8">
           <div className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/80 to-transparent" />
