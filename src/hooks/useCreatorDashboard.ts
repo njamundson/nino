@@ -84,6 +84,7 @@ export const useCreatorDashboard = () => {
     gcTime: 1000 * 60 * 10, // 10 minutes
     retry: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: true
+    refetchOnMount: true,
+    refetchInterval: false
   });
 };

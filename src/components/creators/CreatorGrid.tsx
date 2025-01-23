@@ -1,124 +1,93 @@
-import { useEffect, useState } from "react";
-import CreatorCard from "./CreatorCard";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CreatorData, CreatorType } from "@/types/creator";
+import CreatorCard from "./CreatorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CreatorData } from "@/types/creator";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
   selectedCreatorType: string | null;
   selectedLocations: string[];
-  onInvite: (creatorId: string) => void;
 }
 
-const CreatorGrid = ({ 
-  selectedSpecialties, 
-  selectedCreatorType, 
+const CreatorGrid = ({
+  selectedSpecialties,
+  selectedCreatorType,
   selectedLocations,
-  onInvite 
 }: CreatorGridProps) => {
   const [creators, setCreators] = useState<CreatorData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const fetchCreators = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        console.log("Fetching creators with filters:", { 
-          selectedSpecialties, 
-          selectedCreatorType,
-          selectedLocations 
-        });
-        
-        const { data: brandProfiles, error: brandError } = await supabase
-          .from('brands')
-          .select('user_id');
+  const fetchCreators = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log("Fetching creators with filters:", { 
+        selectedSpecialties, 
+        selectedCreatorType,
+        selectedLocations 
+      });
 
-        if (brandError) {
-          console.error("Error fetching brand profiles:", brandError);
-          throw brandError;
-        }
+      let query = supabase
+        .from('creators')
+        .select(`
+          id,
+          first_name,
+          last_name,
+          location,
+          specialties,
+          creator_type,
+          profile_image_url
+        `)
+        .eq('onboarding_completed', true);
 
-        const brandProfileIds = brandProfiles
-          ?.map(b => b.user_id)
-          .filter(id => id !== null && id !== undefined);
-          
-        console.log("Brand profile IDs to exclude:", brandProfileIds);
-
-        let query = supabase
-          .from('creators')
-          .select(`
-            id,
-            first_name,
-            last_name,
-            bio,
-            specialties,
-            instagram,
-            website,
-            location,
-            profile_image_url,
-            creator_type
-          `)
-          .not('user_id', 'is', null);
-
-        if (brandProfileIds && brandProfileIds.length > 0) {
-          query = query.not('user_id', 'in', `(${brandProfileIds.join(',')})`);
-        }
-
-        if (selectedCreatorType) {
-          query = query.eq('creator_type', selectedCreatorType);
-        }
-
-        if (selectedSpecialties.length > 0) {
-          query = query.overlaps('specialties', selectedSpecialties);
-        }
-
-        if (selectedLocations.length > 0 && selectedLocations[0] !== "") {
-          query = query.in('location', selectedLocations);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error("Error fetching creators:", error);
-          throw error;
-        }
-
-        console.log("Raw creator data from Supabase:", data);
-
-        const formattedCreators: CreatorData[] = data.map(creator => ({
-          id: creator.id,
-          firstName: creator.first_name || "",
-          lastName: creator.last_name || "",
-          bio: creator.bio || "",
-          specialties: creator.specialties || [],
-          instagram: creator.instagram || "",
-          website: creator.website || "",
-          location: creator.location || "",
-          profileImage: creator.profile_image_url,
-          creatorType: creator.creator_type as CreatorType || "solo",
-          profile_image_url: creator.profile_image_url,
-          profile: {
-            first_name: creator.first_name,
-            last_name: creator.last_name
-          }
-        }));
-
-        console.log("Formatted creators:", formattedCreators);
-        setCreators(formattedCreators);
-      } catch (error) {
-        console.error("Error in fetchCreators:", error);
-        setError(error instanceof Error ? error : new Error('An error occurred'));
-      } finally {
-        setLoading(false);
+      if (selectedSpecialties.length > 0) {
+        query = query.contains('specialties', selectedSpecialties);
       }
-    };
 
-    fetchCreators();
+      if (selectedCreatorType) {
+        query = query.eq('creator_type', selectedCreatorType);
+      }
+
+      if (selectedLocations.length > 0) {
+        query = query.in('location', selectedLocations);
+      }
+
+      const { data: creatorsData, error: fetchError } = await query;
+
+      if (fetchError) {
+        throw fetchError;
+      }
+
+      if (!creatorsData) {
+        setCreators([]);
+        return;
+      }
+
+      const formattedCreators = creatorsData.map(creator => ({
+        id: creator.id,
+        name: creator.first_name + (creator.last_name ? ` ${creator.last_name}` : ''),
+        location: creator.location || '',
+        specialties: creator.specialties || [],
+        creatorType: creator.creator_type || '',
+        profileImageUrl: creator.profile_image_url || '',
+      }));
+
+      console.log("Fetched creators:", formattedCreators);
+      setCreators(formattedCreators);
+    } catch (error) {
+      console.error("Error in fetchCreators:", error);
+      setError(error instanceof Error ? error : new Error('An error occurred'));
+    } finally {
+      setLoading(false);
+    }
   }, [selectedSpecialties, selectedCreatorType, selectedLocations]);
+
+  useEffect(() => {
+    fetchCreators();
+  }, [fetchCreators]);
 
   if (error) {
     return (
@@ -132,35 +101,22 @@ const CreatorGrid = ({
 
   if (loading) {
     return (
-      <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
-        {[1, 2, 3].map((n) => (
-          <div
-            key={n}
-            className="h-96 bg-gray-100 rounded-xl animate-pulse"
-          />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, index) => (
+          <div key={index} className="animate-pulse">
+            <div className="bg-gray-200 h-64 rounded-lg"></div>
+          </div>
         ))}
       </div>
     );
   }
 
-  if (!creators.length) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-lg text-gray-500">
-          No creators found matching your criteria.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
+    <div className={`grid grid-cols-1 ${
+      isMobile ? 'gap-4' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6'
+    }`}>
       {creators.map((creator) => (
-        <CreatorCard
-          key={creator.id}
-          creator={creator}
-          onInvite={() => onInvite(creator.id)}
-        />
+        <CreatorCard key={creator.id} creator={creator} />
       ))}
     </div>
   );
