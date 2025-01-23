@@ -45,7 +45,7 @@ export const useMessages = (userId: string): UseMessagesReturn => {
           media_type,
           sender_profile_id,
           receiver_profile_id,
-          profiles (
+          profiles:profiles!sender_profile_id (
             first_name,
             last_name
           )
@@ -58,7 +58,14 @@ export const useMessages = (userId: string): UseMessagesReturn => {
         throw error;
       }
 
-      return data as Message[];
+      // Transform the data to match the Message type
+      return (data || []).map(msg => ({
+        ...msg,
+        profiles: {
+          first_name: msg.profiles?.first_name || '',
+          last_name: msg.profiles?.last_name || ''
+        }
+      })) as Message[];
     },
     enabled: Boolean(userId),
     staleTime: 1000 * 30,
