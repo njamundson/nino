@@ -2,6 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import BookingCard from "./BookingCard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface BookingsListProps {
   bookings: any[];
@@ -9,15 +10,24 @@ interface BookingsListProps {
   onViewCreator: (creator: any) => void;
 }
 
-const BookingsList = ({ bookings, onChatClick, onViewCreator }: BookingsListProps) => {
+const BookingsList = ({ bookings = [], onChatClick, onViewCreator }: BookingsListProps) => {
   const isMobile = useIsMobile();
   
   // Filter to only show bookings from active campaigns
-  const activeBookings = bookings.filter(booking => 
-    booking.opportunity?.status === 'active' || booking.opportunity?.status === 'open'
-  );
+  const activeBookings = bookings?.filter(booking => 
+    booking?.opportunity?.status === 'active' || booking?.opportunity?.status === 'open'
+  ) || [];
 
-  if (!activeBookings || activeBookings.length === 0) {
+  if (!bookings) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-[400px] w-full" />
+        <Skeleton className="h-[400px] w-full" />
+      </div>
+    );
+  }
+
+  if (activeBookings.length === 0) {
     return (
       <Card className="p-8">
         <div className="text-center text-muted-foreground py-8">
