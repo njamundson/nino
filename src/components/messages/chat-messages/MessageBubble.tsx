@@ -22,12 +22,12 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
   return (
     <div className={cn(
       "group relative max-w-[80%] animate-fadeIn",
-      isCurrentUser ? "ml-auto" : "mr-auto"
+      !isCurrentUser ? "ml-auto" : "mr-auto"
     )}>
       <div
         className={cn(
           "px-4 py-2.5 shadow-sm transition-all duration-200",
-          isCurrentUser 
+          !isCurrentUser 
             ? "bg-[#0B84FE] text-white rounded-[20px] rounded-tr-[4px]" 
             : "bg-[#E9E9EB] text-[#1C1C1E] rounded-[20px] rounded-tl-[4px]"
         )}
@@ -55,7 +55,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
         
         <p className={cn(
           "text-[11px] mt-1 select-none",
-          isCurrentUser ? "text-white/70" : "text-[#8E8E93]"
+          !isCurrentUser ? "text-white/70" : "text-[#8E8E93]"
         )}>
           {new Date(message.created_at).toLocaleTimeString([], { 
             hour: '2-digit', 
@@ -76,7 +76,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
 
       <div className={cn(
         "absolute -bottom-8 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1",
-        isCurrentUser ? "-left-2" : "-right-2"
+        !isCurrentUser ? "-left-2" : "-right-2"
       )}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -88,7 +88,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
               <Smile className="h-4 w-4 text-gray-600" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={isCurrentUser ? "start" : "end"}>
+          <DropdownMenuContent align={!isCurrentUser ? "start" : "end"}>
             <div className="flex p-1 gap-1">
               {REACTION_EMOJIS.map((emoji) => (
                 <Button
