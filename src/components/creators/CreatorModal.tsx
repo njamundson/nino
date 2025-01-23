@@ -124,7 +124,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     website: creator.website || '',
     location: creator.location || '',
     profileImage: creator.profile_image_url,
-    creatorType: 'solo',
+    creatorType: creator.creator_type || 'solo',
     profile: creator.profile || null,
     profile_image_url: creator.profile_image_url
   };

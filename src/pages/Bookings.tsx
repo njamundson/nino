@@ -14,6 +14,7 @@ interface Creator {
   specialties: string[] | null;
   instagram: string | null;
   website: string | null;
+  creator_type: string | null;
   profile: {
     first_name: string | null;
     last_name: string | null;
@@ -71,6 +72,7 @@ const Bookings = () => {
       specialties: creator.specialties,
       instagram: creator.instagram,
       website: creator.website,
+      creator_type: creator.creator_type || 'solo',
       profile: creator.profile,
       profile_image_url: creator.profile_image_url,
     };
