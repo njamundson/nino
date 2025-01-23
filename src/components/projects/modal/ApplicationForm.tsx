@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useApplicationSubmit } from "@/hooks/useApplicationSubmit";
@@ -26,14 +26,12 @@ const ApplicationForm = ({ opportunity, onClose, onBack, onModalClose }: Applica
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Check if user has already applied
   const { data: existingApplication, isLoading } = useQuery({
     queryKey: ['existing-application', opportunity.id],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      // Get creator id
       const { data: creator } = await supabase
         .from('creators')
         .select('id')
@@ -42,7 +40,6 @@ const ApplicationForm = ({ opportunity, onClose, onBack, onModalClose }: Applica
 
       if (!creator) return null;
 
-      // Check for existing application
       const { data } = await supabase
         .from('applications')
         .select('*')
@@ -88,17 +85,21 @@ const ApplicationForm = ({ opportunity, onClose, onBack, onModalClose }: Applica
   };
 
   if (isLoading) {
-    return <div className="p-4 text-center">Checking application status...</div>;
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="h-6 w-6 border-2 border-nino-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   if (existingApplication && existingApplication.status !== 'rejected') {
     return (
-      <div className="p-6 text-center space-y-4">
-        <h3 className="text-lg font-medium">Application Already Submitted</h3>
+      <div className="p-8 text-center space-y-4">
+        <h3 className="text-lg font-medium text-gray-900">Application Already Submitted</h3>
         <p className="text-gray-600">
           You have already applied to this opportunity. You can only submit a new application if your previous one was rejected.
         </p>
-        <Button onClick={onModalClose} variant="outline">Close</Button>
+        <Button onClick={onModalClose} variant="outline" className="mt-4">Close</Button>
       </div>
     );
   }
@@ -110,36 +111,39 @@ const ApplicationForm = ({ opportunity, onClose, onBack, onModalClose }: Applica
         companyName={opportunity.brand?.company_name || "Unknown Company"}
       />
 
-      <div className="space-y-2">
-        <label htmlFor="coverLetter" className="text-sm font-medium text-gray-700">
-          Cover Letter
-        </label>
-        <Textarea
-          id="coverLetter"
-          value={coverLetter}
-          onChange={(e) => setCoverLetter(e.target.value)}
-          placeholder="Tell us why you're interested in this opportunity and what makes you a great fit..."
-          className="h-40 resize-none"
-          required
-        />
-      </div>
+      <div className="px-8 pb-8 space-y-6">
+        <div className="space-y-4">
+          <label htmlFor="coverLetter" className="block text-sm font-medium text-gray-700">
+            Cover Letter
+          </label>
+          <Textarea
+            id="coverLetter"
+            value={coverLetter}
+            onChange={(e) => setCoverLetter(e.target.value)}
+            placeholder="Tell us why you're interested in this opportunity and what makes you a great fit..."
+            className="min-h-[200px] resize-none border-gray-200 rounded-xl focus:ring-nino-primary focus:border-nino-primary"
+            required
+          />
+        </div>
 
-      <div className="flex justify-between pt-4">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={onBack}
-          disabled={isSubmitting}
-        >
-          Back
-        </Button>
-        <Button 
-          type="submit" 
-          disabled={isSubmitting}
-          className="bg-[#a55549] hover:bg-[#a55549]/90"
-        >
-          {isSubmitting ? "Submitting..." : "Submit Application"}
-        </Button>
+        <div className="flex justify-between pt-4 gap-4">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onBack}
+            disabled={isSubmitting}
+            className="flex-1 rounded-xl border-gray-200 hover:bg-gray-50 text-gray-700"
+          >
+            Back
+          </Button>
+          <Button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="flex-1 rounded-xl bg-nino-primary hover:bg-nino-primary/90 text-white"
+          >
+            {isSubmitting ? "Submitting..." : "Submit Application"}
+          </Button>
+        </div>
       </div>
     </form>
   );

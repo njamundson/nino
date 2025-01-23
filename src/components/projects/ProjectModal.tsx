@@ -1,6 +1,5 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
 import ProjectHeader from "./modal/ProjectHeader";
 import ProjectDescription from "./modal/ProjectDescription";
 import ProjectRequirements from "./modal/ProjectRequirements";
@@ -55,14 +54,11 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden rounded-2xl">
         <div className="max-h-[85vh] overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="h-6 w-6 border-2 border-nino-primary border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm text-gray-500">Loading project details...</p>
-              </div>
+              <div className="h-6 w-6 border-2 border-nino-primary border-t-transparent rounded-full animate-spin" />
             </div>
           ) : showApplicationForm ? (
             <ApplicationForm
@@ -94,7 +90,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
                   <div className="flex justify-end pt-6">
                     <Button
                       onClick={handleApply}
-                      className="bg-nino-primary hover:bg-nino-primary/90"
+                      className="px-8 py-2.5 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-xl transition-colors"
                     >
                       Apply Now
                     </Button>
