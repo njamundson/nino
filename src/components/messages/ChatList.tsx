@@ -31,6 +31,19 @@ interface ChatUser {
   };
 }
 
+interface MessageUser {
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  created_at: string;
+  read: boolean;
+  sender: {
+    first_name: string | null;
+    last_name: string | null;
+    profile_image_url: string | null;
+  } | null;
+}
+
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [users, setUsers] = useState<ChatUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,7 +81,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       // Process users to remove duplicates and format data
       const uniqueUsers = new Map<string, ChatUser>();
 
-      messageUsers?.forEach((msg) => {
+      (messageUsers as MessageUser[])?.forEach((msg) => {
         const otherUserId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
         
         if (!uniqueUsers.has(otherUserId)) {
