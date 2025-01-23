@@ -32,11 +32,8 @@ const ProjectsList = () => {
         throw error;
       }
 
-      // Filter out opportunities without brand data
-      const validOpportunities = data?.filter(opp => opp.brand !== null) || [];
-      
-      console.log("Fetched opportunities with brands:", validOpportunities);
-      return validOpportunities;
+      console.log("Raw opportunities data:", data);
+      return data || [];
     },
   });
 
