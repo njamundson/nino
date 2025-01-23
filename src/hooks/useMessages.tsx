@@ -1,9 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/message";
+import { useState } from "react";
 
-export const useMessages = (userId: string) => {
-  return useQuery({
+interface UseMessagesReturn {
+  data: Message[];
+  isLoading: boolean;
+  error: Error | null;
+  newMessage: string;
+  setNewMessage: (message: string) => void;
+  isRecording: boolean;
+  setIsRecording: (isRecording: boolean) => void;
+  editingMessage: { id: string; content: string; } | null;
+  setEditingMessage: (message: { id: string; content: string; } | null) => void;
+  handleSendMessage: () => void;
+}
+
+export const useMessages = (userId: string): UseMessagesReturn => {
+  const [newMessage, setNewMessage] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [editingMessage, setEditingMessage] = useState<{ id: string; content: string; } | null>(null);
+
+  const { data = [], isLoading, error } = useQuery({
     queryKey: ['messages', userId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -33,4 +51,21 @@ export const useMessages = (userId: string) => {
     refetchOnWindowFocus: true,
     retry: 2
   });
+
+  const handleSendMessage = () => {
+    // Implementation will be handled by the component
+  };
+
+  return {
+    data,
+    isLoading,
+    error,
+    newMessage,
+    setNewMessage,
+    isRecording,
+    setIsRecording,
+    editingMessage,
+    setEditingMessage,
+    handleSendMessage
+  };
 };

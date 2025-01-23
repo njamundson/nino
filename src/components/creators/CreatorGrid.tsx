@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import CreatorCard from "./CreatorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { CreatorData } from "@/types/creator";
+import { CreatorData, CreatorType } from "@/types/creator";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
@@ -76,7 +76,7 @@ const CreatorGrid = ({
         bio: creator.bio || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
-        creatorType: creator.creator_type || '',
+        creatorType: (creator.creator_type || 'solo') as CreatorType, // Cast to CreatorType with default
         instagram: creator.instagram || '',
         website: creator.website || '',
         profile_image_url: creator.profile_image_url,

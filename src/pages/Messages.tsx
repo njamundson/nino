@@ -26,7 +26,7 @@ const Messages = () => {
     editingMessage,
     setEditingMessage,
     handleSendMessage: sendMessage
-  } = useMessages(selectedUserId);
+  } = useMessages(selectedUserId || '');
 
   const handleSelectChat = (
     userId: string, 
