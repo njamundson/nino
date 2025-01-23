@@ -64,7 +64,7 @@ export const ChatContainer = ({
         </>
       ) : (
         <div className="flex-1 flex items-center justify-center text-gray-500">
-          <p>Select a conversation to start messaging</p>
+          <p className="text-sm">Select a conversation to start messaging</p>
         </div>
       )}
     </Card>

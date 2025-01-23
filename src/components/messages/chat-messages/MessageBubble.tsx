@@ -22,14 +22,14 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
   return (
     <div className={cn(
       "group relative max-w-[80%] animate-fadeIn",
-      isCurrentUser ? "items-end" : "items-start"
+      isCurrentUser ? "ml-auto" : "mr-auto"
     )}>
       <div
         className={cn(
-          "px-6 py-4 rounded-[20px] shadow-lg transition-all duration-200 hover:shadow-xl",
+          "px-4 py-2.5 rounded-2xl shadow-sm transition-all duration-200",
           isCurrentUser
-            ? "bg-nino-primary text-white rounded-br-sm"
-            : "bg-white text-gray-900 rounded-bl-sm"
+            ? "bg-blue-500 text-white"
+            : "bg-gray-100 text-gray-900"
         )}
       >
         {message.message_type === 'image' ? (
@@ -48,10 +48,10 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
             📎 {message.content}
           </a>
         ) : (
-          <p className="leading-relaxed text-[15px]">{message.content}</p>
+          <p className="text-[15px] leading-relaxed">{message.content}</p>
         )}
         
-        <p className="text-[10px] mt-2 opacity-70">
+        <p className="text-[10px] mt-1 opacity-70">
           {new Date(message.created_at).toLocaleTimeString([], { 
             hour: '2-digit', 
             minute: '2-digit'
@@ -61,7 +61,7 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
         {message.reactions?.length > 0 && (
           <div className="flex gap-1 mt-2">
             {message.reactions.map((reaction, index) => (
-              <span key={index} className="text-sm bg-white/10 px-2 py-1 rounded-full shadow-sm">
+              <span key={index} className="text-sm bg-white/10 px-2 py-1 rounded-full">
                 {reaction.emoji}
               </span>
             ))}
@@ -75,7 +75,7 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
       )}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full shadow-md">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full">
               <Smile className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -95,7 +95,7 @@ export const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: 
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full shadow-md"
+            className="h-8 w-8 p-0 hover:bg-gray-100 rounded-full"
             onClick={() => onDelete(message.id)}
           >
             <Trash2 className="h-4 w-4" />
