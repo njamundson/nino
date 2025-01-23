@@ -42,23 +42,38 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return [];
 
-        const { data: brand } = await supabase
+        const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (!brand) return [];
+        if (brandError) {
+          console.error('Error fetching brand:', brandError);
+          toast.error("Failed to load brand information");
+          return [];
+        }
 
-        const { data: opportunities } = await supabase
+        if (!brand) {
+          console.log('No brand found for user');
+          return [];
+        }
+
+        const { data: opportunities, error: oppsError } = await supabase
           .from('opportunities')
           .select('*')
           .eq('brand_id', brand.id)
           .eq('status', 'open');
 
+        if (oppsError) {
+          console.error('Error fetching opportunities:', oppsError);
+          toast.error("Failed to load campaigns");
+          return [];
+        }
+
         return opportunities || [];
       } catch (error) {
-        console.error('Error fetching campaigns:', error);
+        console.error('Error in campaign query:', error);
         toast.error("Failed to load campaigns");
         return [];
       }
