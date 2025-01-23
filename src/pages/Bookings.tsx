@@ -6,7 +6,7 @@ import { useState } from "react";
 import CreatorModal from "@/components/creators/CreatorModal";
 import { useNavigate } from "react-router-dom";
 import BookingsList from "@/components/bookings/BookingsList";
-import { Creator, CreatorType } from "@/types/creator";
+import { Creator } from "@/types/creator";
 
 const Bookings = () => {
   const navigate = useNavigate();

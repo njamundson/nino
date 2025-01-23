@@ -43,6 +43,11 @@ export interface Creator {
     first_name: string | null;
     last_name: string | null;
   } | null;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+  profile_id: string | null;
+  onboarding_completed?: boolean;
 }
 
 export const validateInstagramHandle = (handle: string): boolean => {
