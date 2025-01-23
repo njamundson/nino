@@ -21,17 +21,8 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          if (mounted) {
-            setIsAuthenticated(false);
-            setLoading(false);
-          }
-          return;
-        }
-
-        if (!session) {
-          console.log('No session found');
+        if (sessionError || !session) {
+          console.error('Session error or no session:', sessionError);
           if (mounted) {
             setIsAuthenticated(false);
             setLoading(false);
