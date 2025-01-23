@@ -8,7 +8,6 @@ interface ChatContainerProps {
   selectedChat: string | null;
   selectedFirstName?: string;
   selectedLastName?: string;
-  selectedProfileImage?: string | null;
   newMessage: string;
   setNewMessage: (message: string) => void;
   handleSendMessage: () => void;
@@ -25,7 +24,6 @@ export const ChatContainer = ({
   selectedChat,
   selectedFirstName,
   selectedLastName,
-  selectedProfileImage,
   newMessage,
   setNewMessage,
   handleSendMessage,
@@ -44,7 +42,6 @@ export const ChatContainer = ({
           <ChatHeader
             senderFirstName={selectedFirstName}
             senderLastName={selectedLastName}
-            profileImageUrl={selectedProfileImage}
             onBack={onMobileBack}
           />
           <div className="flex-1 overflow-hidden">
