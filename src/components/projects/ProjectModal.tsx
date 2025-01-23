@@ -54,7 +54,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden rounded-2xl">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden rounded-3xl">
         <div className="max-h-[85vh] overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
@@ -90,7 +90,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
                   <div className="flex justify-end pt-6">
                     <Button
                       onClick={handleApply}
-                      className="px-8 py-2.5 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-xl transition-colors"
+                      className="px-8 py-2.5 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-2xl transition-colors"
                     >
                       Apply Now
                     </Button>

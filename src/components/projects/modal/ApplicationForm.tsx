@@ -1,151 +1,145 @@
-import React, { useState } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useApplicationSubmit } from "@/hooks/useApplicationSubmit";
-import ApplicationFormHeader from "./ApplicationFormHeader";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft } from "lucide-react";
+import ApplicationFormHeader from "./ApplicationFormHeader";
+import { useState } from "react";
+import SuccessModal from "./SuccessModal";
 
-export interface ApplicationFormProps {
+const applicationSchema = z.object({
+  coverLetter: z
+    .string()
+    .min(50, "Cover letter must be at least 50 characters")
+    .max(500, "Cover letter must not exceed 500 characters"),
+});
+
+type ApplicationFormValues = z.infer<typeof applicationSchema>;
+
+interface ApplicationFormProps {
   opportunity: {
     id: string;
     title: string;
-    brand?: {
-      company_name: string;
-    } | null;
   };
-  onClose: () => void;
   onBack: () => void;
+  onClose: () => void;
   onModalClose: () => void;
 }
 
-const ApplicationForm = ({ opportunity, onClose, onBack, onModalClose }: ApplicationFormProps) => {
-  const [coverLetter, setCoverLetter] = useState("");
+const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: ApplicationFormProps) => {
+  const [showSuccess, setShowSuccess] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
-
-  const { data: existingApplication, isLoading } = useQuery({
-    queryKey: ['existing-application', opportunity.id],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const { data: creator } = await supabase
-        .from('creators')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!creator) return null;
-
-      const { data } = await supabase
-        .from('applications')
-        .select('*')
-        .eq('opportunity_id', opportunity.id)
-        .eq('creator_id', creator.id)
-        .maybeSingle();
-
-      return data;
-    }
-  });
-
-  const { isSubmitting, submitApplication } = useApplicationSubmit({
-    opportunityId: opportunity.id,
-    onClose: () => {
-      onClose();
-      onModalClose();
-      navigate("/creator/projects");
+  const form = useForm<ApplicationFormValues>({
+    resolver: zodResolver(applicationSchema),
+    defaultValues: {
+      coverLetter: "",
     },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!coverLetter.trim()) {
+  const onSubmit = async (data: ApplicationFormValues) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: creator } = await supabase
+        .from("creators")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!creator) throw new Error("Creator profile not found");
+
+      const { error } = await supabase.from("applications").insert({
+        opportunity_id: opportunity.id,
+        creator_id: creator.id,
+        cover_letter: data.coverLetter,
+      });
+
+      if (error) throw error;
+
+      setShowSuccess(true);
+    } catch (error) {
+      console.error("Error submitting application:", error);
       toast({
         title: "Error",
-        description: "Please write a cover letter before submitting.",
+        description: "Failed to submit application. Please try again.",
         variant: "destructive",
       });
-      return;
     }
-
-    if (existingApplication && existingApplication.status !== 'rejected') {
-      toast({
-        title: "Already Applied",
-        description: "You have already applied to this opportunity.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    await submitApplication(coverLetter);
   };
 
-  if (isLoading) {
+  if (showSuccess) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="h-6 w-6 border-2 border-nino-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (existingApplication && existingApplication.status !== 'rejected') {
-    return (
-      <div className="p-8 text-center space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Application Already Submitted</h3>
-        <p className="text-gray-600">
-          You have already applied to this opportunity. You can only submit a new application if your previous one was rejected.
-        </p>
-        <Button onClick={onModalClose} variant="outline" className="mt-4">Close</Button>
-      </div>
+      <SuccessModal
+        opportunityTitle={opportunity.title}
+        onClose={onModalClose}
+      />
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <ApplicationFormHeader 
-        title={opportunity.title}
-        companyName={opportunity.brand?.company_name || "Unknown Company"}
+    <div className="space-y-8">
+      <ApplicationFormHeader
+        title="Apply Now"
+        subtitle="Share why you're perfect for this opportunity"
       />
 
-      <div className="px-8 pb-8 space-y-6">
-        <div className="space-y-4">
-          <label htmlFor="coverLetter" className="block text-sm font-medium text-gray-700">
-            Cover Letter
-          </label>
-          <Textarea
-            id="coverLetter"
-            value={coverLetter}
-            onChange={(e) => setCoverLetter(e.target.value)}
-            placeholder="Tell us why you're interested in this opportunity and what makes you a great fit..."
-            className="min-h-[200px] resize-none border-gray-200 rounded-xl focus:ring-nino-primary focus:border-nino-primary"
-            required
-          />
-        </div>
+      <div className="px-8 pb-8">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="space-y-2">
+              <label
+                htmlFor="coverLetter"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Cover Letter
+              </label>
+              <Textarea
+                {...form.register("coverLetter")}
+                id="coverLetter"
+                placeholder="Tell us why you're interested in this opportunity..."
+                className="min-h-[200px] rounded-2xl bg-gray-50 border-gray-200 focus:border-nino-primary focus:ring-nino-primary"
+              />
+              {form.formState.errors.coverLetter && (
+                <p className="text-sm text-red-500">
+                  {form.formState.errors.coverLetter.message}
+                </p>
+              )}
+            </div>
 
-        <div className="flex justify-between pt-4 gap-4">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onBack}
-            disabled={isSubmitting}
-            className="flex-1 rounded-xl border-gray-200 hover:bg-gray-50 text-gray-700"
-          >
-            Back
-          </Button>
-          <Button 
-            type="submit" 
-            disabled={isSubmitting}
-            className="flex-1 rounded-xl bg-nino-primary hover:bg-nino-primary/90 text-white"
-          >
-            {isSubmitting ? "Submitting..." : "Submit Application"}
-          </Button>
-        </div>
+            <div className="flex justify-between items-center pt-4">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onBack}
+                className="rounded-2xl hover:bg-gray-100"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <Button
+                type="submit"
+                className="px-8 py-2.5 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-2xl transition-colors"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Submitting...</span>
+                  </div>
+                ) : (
+                  "Submit Application"
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
-    </form>
+    </div>
   );
 };
 
