@@ -27,7 +27,9 @@ interface MessageUser {
   receiver: {
     first_name: string | null;
     last_name: string | null;
-    profile_image_url: string | null;
+    creator: {
+      profile_image_url: string | null;
+    } | null;
   };
 }
 
@@ -58,7 +60,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           table: 'messages'
         },
         () => {
-          fetchChatUsers(); // Refresh the chat list when new messages arrive
+          fetchChatUsers();
         }
       )
       .subscribe();
@@ -88,7 +90,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           receiver:profiles!receiver_profile_id (
             first_name,
             last_name,
-            profile_image_url
+            creator:creators (
+              profile_image_url
+            )
           )
         `)
         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -230,12 +234,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                   user.receiver_id, 
                   user.receiver.first_name || '', 
                   user.receiver.last_name || '', 
-                  user.receiver.profile_image_url
+                  user.receiver.creator?.profile_image_url || null
                 )}
               >
                 <div className="flex items-start space-x-3">
                   <Avatar className="h-12 w-12 shrink-0">
-                    <AvatarImage src={user.receiver.profile_image_url || ""} />
+                    <AvatarImage src={user.receiver.creator?.profile_image_url || ""} />
                     <AvatarFallback className="bg-gray-200 text-gray-600 font-medium">
                       {user.receiver.first_name?.[0]}{user.receiver.last_name?.[0]}
                     </AvatarFallback>
