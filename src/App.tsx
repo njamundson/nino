@@ -1,4 +1,3 @@
-import { StrictMode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,52 +23,50 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <TooltipProvider>
-            <div className="min-h-screen bg-nino-bg">
-              <Toaster />
-              <Sonner />
-              <Routes>
-                <Route index element={<Index />} />
-                {onboardingRoutes.map((route) => (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <TooltipProvider>
+          <div className="min-h-screen bg-nino-bg">
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route index element={<Index />} />
+              {onboardingRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              <Route path="/brand" element={<BrandLayout />}>
+                {brandRoutes.map((route) => (
                   <Route
                     key={route.path}
-                    path={route.path}
+                    path={route.path.replace('/brand/', '')}
                     element={route.element}
                   />
                 ))}
-                <Route path="/brand" element={<BrandLayout />}>
-                  {brandRoutes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path.replace('/brand/', '')}
-                      element={route.element}
-                    />
-                  ))}
-                </Route>
-                {creatorRoutes.map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={route.element}
-                  />
-                ))}
-                {adminRoutes.map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={route.element}
-                  />
-                ))}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </div>
-          </TooltipProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </StrictMode>
+              </Route>
+              {creatorRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              {adminRoutes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+        </TooltipProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 
