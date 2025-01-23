@@ -67,6 +67,7 @@ const ProjectModal = ({ isOpen, onClose, opportunity, isCompleted = false }: Pro
               opportunity={opportunity}
               onBack={() => setShowApplicationForm(false)}
               onClose={onClose}
+              onModalClose={onClose}
             />
           ) : (
             <div className="space-y-8">
