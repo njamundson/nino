@@ -44,7 +44,29 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   useEffect(() => {
     fetchChatUsers();
+    subscribeToNewMessages();
   }, []);
+
+  const subscribeToNewMessages = () => {
+    const channel = supabase
+      .channel('new_messages')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          fetchChatUsers(); // Refresh the chat list when new messages arrive
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
 
   const fetchChatUsers = async () => {
     try {
