@@ -35,7 +35,8 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
           profile_image_url,
           first_name,
           last_name
-        `);
+        `)
+        .not('first_name', 'is', null);
 
       if (error) {
         console.error("Error fetching creators:", error);
@@ -76,7 +77,7 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
           <Input
             placeholder="Search creators..."
-            className="pl-9"
+            className="pl-9 rounded-full"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
