@@ -26,7 +26,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <TooltipProvider>
-          <div className="min-h-screen bg-nino-bg">
+          <div className="min-h-screen bg-nino-bg fixed inset-0 overflow-y-auto">
             <Toaster />
             <Sonner />
             <Routes>
