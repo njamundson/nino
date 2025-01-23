@@ -17,37 +17,22 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
   useEffect(() => {
     let mounted = true;
-    let subscription: { data: { subscription: any } };
 
     const checkAccess = async () => {
       try {
         setIsLoading(true);
         
-        // First, check if we have a valid session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          await handleAuthError();
-          return;
-        }
+        // Get the current session
+        const { data: { session } } = await supabase.auth.getSession();
 
         if (!session) {
-          console.log('No active session');
-          await handleAuthError();
-          return;
-        }
-
-        // Verify the session is still valid
-        const { error: userError } = await supabase.auth.getUser();
-        if (userError) {
-          console.error('User verification error:', userError);
+          console.log('No active session found');
           await handleAuthError();
           return;
         }
 
         // Set up auth state listener
-        subscription = supabase.auth.onAuthStateChange(async (event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
           console.log('Auth state changed:', event);
           
           if (event === 'SIGNED_OUT' || !session) {
@@ -123,11 +108,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
             if (mounted) setHasAccess(true);
           }
         }
+
+        if (mounted) setIsLoading(false);
       } catch (error) {
         console.error('Error checking access:', error);
         await handleAuthError();
-      } finally {
-        if (mounted) setIsLoading(false);
       }
     };
 
@@ -152,18 +137,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
     return () => {
       mounted = false;
-      if (subscription?.data?.subscription) {
-        subscription.data.subscription.unsubscribe();
-      }
     };
   }, [navigate, location.pathname, toast]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-nino-bg">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+    return null;
   }
 
   if (!hasAccess) {
