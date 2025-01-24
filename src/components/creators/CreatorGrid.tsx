@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import CreatorCard from "./CreatorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CreatorData, CreatorType } from "@/types/creator";
+import { motion } from "framer-motion";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
@@ -128,12 +129,22 @@ const CreatorGrid = ({
     <div className={`grid grid-cols-1 ${
       isMobile ? 'gap-4' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6'
     }`}>
-      {creators.map((creator) => (
-        <CreatorCard 
-          key={creator.id} 
-          creator={creator}
-          onInvite={() => {}} 
-        />
+      {creators.map((creator, index) => (
+        <motion.div
+          key={creator.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 0.4,
+            ease: "easeOut",
+            delay: index * 0.1 // Stagger the animations
+          }}
+        >
+          <CreatorCard 
+            creator={creator}
+            onInvite={() => {}} 
+          />
+        </motion.div>
       ))}
     </div>
   );
