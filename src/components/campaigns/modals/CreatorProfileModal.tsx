@@ -37,6 +37,7 @@ const CreatorProfileModal = ({
   isProcessing = false
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -82,10 +83,10 @@ const CreatorProfileModal = ({
   };
 
   const handleReject = async () => {
-    if (isProcessing) return;
+    if (isProcessing || isRejecting) return;
     
     try {
-      onUpdateStatus('rejected');
+      setIsRejecting(true);
       
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
@@ -99,14 +100,18 @@ const CreatorProfileModal = ({
 
       if (messageError) throw messageError;
 
+      onUpdateStatus('rejected');
+      onClose();
+
       await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
       await queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
       
       toast.success("Application rejected");
-      onClose();
     } catch (error) {
       console.error('Error rejecting application:', error);
       toast.error("Failed to reject application");
+    } finally {
+      setIsRejecting(false);
     }
   };
 
@@ -157,7 +162,7 @@ const CreatorProfileModal = ({
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   onClick={() => setShowAcceptDialog(true)}
-                  disabled={isProcessing}
+                  disabled={isProcessing || isRejecting}
                   className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
                 >
                   <CheckSquare className="w-5 h-5 mr-2" />
@@ -165,7 +170,7 @@ const CreatorProfileModal = ({
                 </Button>
                 <Button
                   onClick={handleReject}
-                  disabled={isProcessing}
+                  disabled={isProcessing || isRejecting}
                   variant="outline"
                   className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
                 >
