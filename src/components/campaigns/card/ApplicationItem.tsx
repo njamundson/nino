@@ -3,41 +3,55 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, MapPin, Globe, Instagram } from "lucide-react";
 import { useEffect } from "react";
+import { Creator } from "@/types/creator";
 
 interface ApplicationItemProps {
-  application: any;
+  application: {
+    id: string;
+    status: string;
+    cover_letter: string;
+    creator: Creator;
+  };
   onViewProfile: () => void;
   onMessageCreator: () => void;
 }
 
 const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) => {
-  // Debug logging to help us see the data structure
   useEffect(() => {
-    console.log('Full application data:', application);
+    console.log('Creator data:', application?.creator);
+    console.log('Creator profile:', application?.creator?.profile);
   }, [application]);
 
-  const getInitials = (name: string = '') => {
-    const parts = name.split(' ');
-    return parts.map(part => part[0] || '').join('').toUpperCase();
+  const creator = application?.creator;
+
+  const getCreatorName = () => {
+    // First try to get name from creator's direct properties
+    if (creator?.first_name) {
+      const fullName = `${creator.first_name} ${creator.last_name || ''}`.trim();
+      if (fullName) return fullName;
+    }
+
+    // Then try to get name from creator's profile
+    if (creator?.profile?.first_name) {
+      const profileName = `${creator.profile.first_name} ${creator.profile.last_name || ''}`.trim();
+      if (profileName) return profileName;
+    }
+
+    // If still no name found, check raw creator object
+    if (typeof creator?.first_name === 'string' || typeof creator?.last_name === 'string') {
+      return `${creator.first_name || ''} ${creator.last_name || ''}`.trim();
+    }
+
+    console.warn('No creator name found:', creator);
+    return 'Anonymous Creator';
   };
 
-  // Extract creator data
-  const creator = application?.creator;
-  
-  // Get the creator's name, checking all possible sources
-  const getCreatorName = () => {
-    // First check if we have a profile with first and last name
-    if (creator?.profile?.first_name && creator?.profile?.last_name) {
-      return `${creator.profile.first_name} ${creator.profile.last_name}`;
-    }
-    
-    // Then check if we have first and last name directly on creator
-    if (creator?.first_name && creator?.last_name) {
-      return `${creator.first_name} ${creator.last_name}`;
-    }
-    
-    // If no name is found, return Anonymous
-    return 'Anonymous Creator';
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase();
   };
 
   const creatorName = getCreatorName();
