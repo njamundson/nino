@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Settings, UserRound, Bell, Shield, Mail, Building2, MapPin, Link, Phone } from "lucide-react";
+import { Settings, UserRound, Bell, Shield, Mail, Building2, MapPin, Link, Phone, Users } from "lucide-react";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import ProfileImageSection from "@/components/settings/profile/ProfileImageSection";
+import BrandManagersSettings from "@/components/settings/brand/pages/BrandManagersSettings";
 import { useToast } from "@/hooks/use-toast";
 
 const BrandSettings = () => {
@@ -31,13 +32,6 @@ const BrandSettings = () => {
     });
     await handleSave(formData);
     setIsEditing(false);
-  };
-
-  const handleManageSubscription = () => {
-    toast({
-      title: "Coming Soon",
-      description: "Subscription management will be available soon.",
-    });
   };
 
   return (
@@ -100,6 +94,15 @@ const BrandSettings = () => {
                 className="bg-nino-bg border-0 focus:ring-2 focus:ring-nino-primary resize-none h-32"
               />
             </div>
+          </motion.div>
+
+          {/* Account Managers */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="col-span-1 md:col-span-2 lg:col-span-3"
+          >
+            <BrandManagersSettings />
           </motion.div>
 
           {/* Contact Information */}
