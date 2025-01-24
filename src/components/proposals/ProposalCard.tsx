@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useToast } from "@/hooks/use-toast";
 import { Application } from "@/integrations/supabase/types/opportunity";
+import { motion } from "framer-motion";
 
 interface ProposalCardProps {
   application: Application;
@@ -24,6 +25,7 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
     try {
       navigate(`/creator/projects/${application.opportunity_id}`);
     } catch (error) {
+      console.error('Error navigating to project:', error);
       toast({
         title: "Error",
         description: "Could not load project details. Please try again.",
@@ -42,10 +44,17 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
         className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
         onClick={() => setShowModal(true)}
       >
-        <img
+        <motion.img
           src={application.opportunity?.image_url || "/placeholder.svg"}
           alt={application.opportunity?.title}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = "/placeholder.svg";
+          }}
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

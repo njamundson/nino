@@ -4,10 +4,11 @@ import PageHeader from "@/components/shared/PageHeader";
 import ProposalsTabs from "@/components/proposals/ProposalsTabs";
 import { useApplications } from "@/hooks/useApplications";
 import { Application } from "@/integrations/supabase/types/opportunity";
+import { motion } from "framer-motion";
 
 const Proposals = () => {
   const { toast } = useToast();
-  const { data: applications, isLoading: isLoadingApplications } = useApplications();
+  const { data: applications, isLoading: isLoadingApplications, error } = useApplications();
 
   const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected') => {
     try {
@@ -23,6 +24,7 @@ const Proposals = () => {
         description: `The application has been ${newStatus} successfully.`,
       });
     } catch (error) {
+      console.error('Error updating application status:', error);
       toast({
         title: "Error",
         description: "Failed to update application status. Please try again.",
@@ -30,6 +32,14 @@ const Proposals = () => {
       });
     }
   };
+
+  if (error) {
+    toast({
+      title: "Error",
+      description: "Failed to load proposals. Please refresh the page.",
+      variant: "destructive",
+    });
+  }
 
   const pendingProposals = applications?.filter((app: Application) => 
     app.status === 'pending' && 
@@ -41,7 +51,12 @@ const Proposals = () => {
   ) || [];
 
   return (
-    <div className="min-h-screen">
+    <motion.div 
+      className="min-h-screen"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       <PageHeader 
         title="Proposals" 
         description="Track the status of your project applications and manage brand invitations"
@@ -55,7 +70,7 @@ const Proposals = () => {
           onUpdateStatus={handleUpdateApplicationStatus}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
