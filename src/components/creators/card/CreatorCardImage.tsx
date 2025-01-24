@@ -1,15 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { CreatorData } from "@/types/creator";
 import { useState } from "react";
 
 interface CreatorCardImageProps {
   creator: CreatorData;
   onInvite: (creatorId: string, opportunityId: string) => void;
+  isInviting: boolean;
 }
 
-const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
+const CreatorCardImage = ({ creator, onInvite, isInviting }: CreatorCardImageProps) => {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -59,11 +60,15 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
         className="absolute bottom-6 right-6 rounded-full transition-transform duration-300 group-hover:scale-110"
         onClick={(e) => {
           e.stopPropagation();
-          // Note: opportunityId will be selected in the modal
           onInvite(creator.id, '');
         }}
+        disabled={isInviting}
       >
-        <Plus className="h-4 w-4" />
+        {isInviting ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Plus className="h-4 w-4" />
+        )}
       </Button>
     </div>
   );

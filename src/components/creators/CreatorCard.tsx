@@ -12,7 +12,7 @@ interface CreatorCardProps {
 
 const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { handleInvite } = useCreatorInvite();
+  const { handleInvite, isInviting } = useCreatorInvite();
 
   const handleInviteClick = async (creatorId: string, opportunityId: string) => {
     const success = await handleInvite(creatorId, opportunityId);
@@ -44,6 +44,7 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
         <CreatorCardImage 
           creator={creator} 
           onInvite={handleInviteClick}
+          isInviting={isInviting}
         />
       </Card>
 
