@@ -27,7 +27,7 @@ const CreatorProfileForm = ({
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">First Name</Label>
+          <Label htmlFor="firstName" className="text-sm font-medium text-[#1A1F2C]">First Name</Label>
           <Input
             id="firstName"
             value={creatorData.firstName}
@@ -38,7 +38,7 @@ const CreatorProfileForm = ({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">Last Name</Label>
+          <Label htmlFor="lastName" className="text-sm font-medium text-[#1A1F2C]">Last Name</Label>
           <Input
             id="lastName"
             value={creatorData.lastName}
@@ -56,7 +56,7 @@ const CreatorProfileForm = ({
       />
 
       <div className="space-y-2">
-        <Label htmlFor="bio" className="text-sm font-medium text-gray-700">Bio</Label>
+        <Label htmlFor="bio" className="text-sm font-medium text-[#1A1F2C]">Bio</Label>
         <Textarea
           id="bio"
           value={creatorData.bio}
@@ -68,7 +68,7 @@ const CreatorProfileForm = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="location" className="text-sm font-medium text-gray-700">Location</Label>
+        <Label htmlFor="location" className="text-sm font-medium text-[#1A1F2C]">Location</Label>
         <Input
           id="location"
           value={creatorData.location}
@@ -80,7 +80,7 @@ const CreatorProfileForm = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="instagram" className="text-sm font-medium text-gray-700">Instagram Username</Label>
+        <Label htmlFor="instagram" className="text-sm font-medium text-[#1A1F2C]">Instagram Username</Label>
         <Input
           id="instagram"
           value={creatorData.instagram}
@@ -92,7 +92,7 @@ const CreatorProfileForm = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="website" className="text-sm font-medium text-gray-700">Website</Label>
+        <Label htmlFor="website" className="text-sm font-medium text-[#1A1F2C]">Website</Label>
         <Input
           id="website"
           value={creatorData.website}
