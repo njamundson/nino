@@ -12,14 +12,14 @@ interface ManagerListProps {
 const ManagerList = ({ managers, onRemoveManager }: ManagerListProps) => {
   if (!managers.length) {
     return (
-      <div className="text-center text-gray-500 py-4">
+      <div className="text-sm text-gray-500">
         No team members added yet
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 mt-4">
       {managers.map((manager) => (
         <motion.div
           key={manager.id}
