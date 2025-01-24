@@ -59,15 +59,15 @@ const BrandLayout = () => {
         </div>
         
         <div className="p-4 pt-28 md:p-8 md:pt-32">
-          <AnimatePresence mode="wait" initial={false}>
+          <AnimatePresence mode="sync" initial={false}>
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ 
-                duration: 0.15,
-                ease: "easeInOut"
+                duration: 0.08,
+                ease: "linear"
               }}
               className="w-full"
             >
