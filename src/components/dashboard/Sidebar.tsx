@@ -68,7 +68,7 @@ const Sidebar = () => {
           alt="NINO" 
           className="h-16"
           loading="eager"
-          fetchPriority="high"
+          fetchpriority="high"
           decoding="sync"
           style={{ imageRendering: 'crisp-edges' }}
         />
