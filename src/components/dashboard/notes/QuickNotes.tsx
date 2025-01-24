@@ -15,7 +15,6 @@ const QuickNotes = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const { toast } = useToast();
 
-  // Load notes from localStorage on component mount
   useEffect(() => {
     const savedNotes = localStorage.getItem('creator-notes');
     if (savedNotes) {
@@ -23,7 +22,6 @@ const QuickNotes = () => {
     }
   }, []);
 
-  // Save notes to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('creator-notes', JSON.stringify(notes));
   }, [notes]);
@@ -60,7 +58,7 @@ const QuickNotes = () => {
   };
 
   return (
-    <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
+    <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden">
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-nino-text">Quick Notes</h3>

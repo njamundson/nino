@@ -11,7 +11,7 @@ const DashboardContent = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
-        <Card className="bg-white shadow-sm rounded-3xl overflow-hidden p-6 hover:shadow-md transition-shadow duration-300">
+        <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden p-6 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300">
           <h3 className="text-xl font-semibold text-nino-text mb-6 px-8">New Campaign</h3>
           <CampaignFormContainer />
         </Card>

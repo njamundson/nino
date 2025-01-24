@@ -17,7 +17,7 @@ const StatsCard = ({ icon: Icon, title, value, className }: StatsCardProps) => {
       transition={{ duration: 0.2 }}
     >
       <Card className={cn(
-        "bg-white shadow-sm rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-md border-none",
+        "bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)]",
         className
       )}>
         <CardContent className="p-6">
