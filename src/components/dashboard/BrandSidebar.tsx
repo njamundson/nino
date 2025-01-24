@@ -31,24 +31,45 @@ const BrandSidebar = () => {
 
   const handleSignOut = async () => {
     try {
+      // First check if we have a session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no session, just clear local storage and redirect
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('brandData');
+        navigate('/');
+        return;
+      }
+
+      // If we have a session, attempt to sign out
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
       
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('brandData');
-      
-      navigate('/');
+      if (error) {
+        console.error("Error signing out:", error);
+        // Even if there's an error, clear local storage and redirect
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('brandData');
+        navigate('/');
+        return;
+      }
       
       toast({
         title: "Signed out successfully",
         description: "You have been logged out of your account.",
       });
+      
+      navigate('/');
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Error in handleSignOut:", error);
+      // If any error occurs, clear local storage and redirect
+      localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('brandData');
+      navigate('/');
+      
       toast({
-        title: "Error signing out",
-        description: "There was a problem signing out. Please try again.",
-        variant: "destructive",
+        title: "Sign out completed",
+        description: "You have been logged out of your account.",
       });
     }
   };
