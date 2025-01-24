@@ -1,20 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface Campaign {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
 }
 
 interface CampaignSelectionProps {
-  campaigns: Campaign[] | null;
+  campaigns: Campaign[] | undefined;
   onBack: () => void;
   onSelect: (campaignId: string) => void;
+  isLoading?: boolean;
 }
 
-const CampaignSelection = ({ campaigns, onBack, onSelect }: CampaignSelectionProps) => {
+const CampaignSelection = ({ campaigns, onBack, onSelect, isLoading = false }: CampaignSelectionProps) => {
   const navigate = useNavigate();
 
   const handleCreateCampaign = () => {
@@ -28,6 +30,7 @@ const CampaignSelection = ({ campaigns, onBack, onSelect }: CampaignSelectionPro
           variant="ghost"
           onClick={onBack}
           className="hover:bg-white/50"
+          disabled={isLoading}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Profile
@@ -42,8 +45,10 @@ const CampaignSelection = ({ campaigns, onBack, onSelect }: CampaignSelectionPro
             {campaigns.map((campaign) => (
               <div
                 key={campaign.id}
-                className="p-4 border-2 border-white bg-white/50 rounded-xl hover:bg-white transition-all duration-300 cursor-pointer group"
-                onClick={() => onSelect(campaign.id)}
+                className={`p-4 border-2 border-white bg-white/50 rounded-xl transition-all duration-300 ${
+                  !isLoading ? 'hover:bg-white cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                }`}
+                onClick={() => !isLoading && onSelect(campaign.id)}
               >
                 <h4 className="font-medium text-lg text-nino-text group-hover:text-nino-primary transition-colors">
                   {campaign.title}
@@ -60,10 +65,17 @@ const CampaignSelection = ({ campaigns, onBack, onSelect }: CampaignSelectionPro
             <Button
               onClick={handleCreateCampaign}
               className="gap-2 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-xl"
+              disabled={isLoading}
             >
               <Plus className="w-4 h-4" />
               Create New Campaign
             </Button>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="absolute inset-0 bg-black/5 flex items-center justify-center backdrop-blur-sm">
+            <LoadingSpinner />
           </div>
         )}
       </div>
