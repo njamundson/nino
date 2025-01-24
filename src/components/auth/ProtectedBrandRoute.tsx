@@ -17,13 +17,20 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
   useEffect(() => {
     let mounted = true;
+    let authListener: any = null;
 
     const checkAccess = async () => {
       try {
         setIsLoading(true);
         
         // Get the current session
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          await handleAuthError();
+          return;
+        }
 
         if (!session) {
           console.log('No active session found');
@@ -48,6 +55,8 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
             console.log('Token refreshed successfully');
           }
         });
+
+        authListener = subscription;
 
         // Check if user has a brand profile
         const { data: brand, error: brandError } = await supabase
@@ -91,6 +100,10 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
             return;
           }
 
+          if (mounted) {
+            setHasAccess(true);
+            setIsLoading(false);
+          }
           navigate('/onboarding/brand', { replace: true });
           return;
         }
@@ -117,6 +130,11 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
     };
 
     const handleAuthError = async () => {
+      if (mounted) {
+        setHasAccess(false);
+        setIsLoading(false);
+      }
+      
       // Clear any existing session
       await supabase.auth.signOut();
       
@@ -137,11 +155,18 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
 
     return () => {
       mounted = false;
+      if (authListener) {
+        authListener.unsubscribe();
+      }
     };
   }, [navigate, location.pathname, toast]);
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (!hasAccess) {
