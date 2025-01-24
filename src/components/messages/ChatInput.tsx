@@ -104,7 +104,7 @@ const ChatInput = ({
             handleTyping();
           }}
           placeholder="Type a message..."
-          className="min-h-[44px] max-h-32"
+          className="min-h-[44px] rounded-2xl border-gray-200 focus:border-nino-primary focus:ring-1 focus:ring-nino-primary resize-none overflow-hidden"
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
