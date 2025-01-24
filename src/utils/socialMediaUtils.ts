@@ -29,5 +29,7 @@ export const formatWebsiteUrl = (url: string | null): string | null => {
   if (!url) return null;
   
   const trimmedUrl = url.trim();
+  if (!trimmedUrl) return null;
+  
   return trimmedUrl.startsWith('http') ? trimmedUrl : `https://${trimmedUrl}`;
 };

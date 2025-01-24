@@ -10,11 +10,13 @@ interface SocialLinksProps {
 
 const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) => {
   const handleInstagramClick = () => {
+    if (!instagram) return;
     const url = formatInstagramUrl(instagram);
     if (url) window.open(url, '_blank');
   };
 
   const handleWebsiteClick = () => {
+    if (!website) return;
     const url = formatWebsiteUrl(website);
     if (url) window.open(url, '_blank');
   };
@@ -35,12 +37,14 @@ const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) =
         isActive={!!website}
       />
       
-      <SocialIconButton
-        icon={MessageSquare}
-        onClick={onMessageClick}
-        tooltipText={onMessageClick ? 'Send message' : 'Messaging not available'}
-        isActive={!!onMessageClick}
-      />
+      {onMessageClick && (
+        <SocialIconButton
+          icon={MessageSquare}
+          onClick={onMessageClick}
+          tooltipText="Send message"
+          isActive={true}
+        />
+      )}
     </div>
   );
 };
