@@ -16,6 +16,8 @@ interface UseMessagesReturn {
   editingMessage: { id: string; content: string; } | null;
   setEditingMessage: (message: { id: string; content: string; } | null) => void;
   handleSendMessage: () => void;
+  handleDeleteMessage: (messageId: string) => void;
+  handleReaction: (messageId: string, emoji: string) => void;
 }
 
 export const useMessages = (userId: string): UseMessagesReturn => {
@@ -32,8 +34,6 @@ export const useMessages = (userId: string): UseMessagesReturn => {
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
-
-      console.log('Fetching messages for conversation between:', user.id, 'and', userId);
 
       const { data, error } = await supabase
         .from('messages')
@@ -58,77 +58,33 @@ export const useMessages = (userId: string): UseMessagesReturn => {
         .or(`and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id})`)
         .order('created_at', { ascending: true });
 
-      if (error) {
-        console.error("Error fetching messages:", error);
-        throw error;
-      }
-
+      if (error) throw error;
       return data as Message[];
     },
-    enabled: Boolean(userId),
-    staleTime: 1000,
-    refetchInterval: false
+    enabled: Boolean(userId)
   });
 
   useEffect(() => {
     if (!userId) return;
 
-    const setupSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    const channel = supabase
+      .channel(`messages:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ['messages', userId] });
+        }
+      )
+      .subscribe();
 
-      console.log('Setting up real-time message subscription...');
-      
-      const channel = supabase
-        .channel(`messages:${userId}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'messages',
-            filter: `or(and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id}))`
-          },
-          async (payload) => {
-            console.log('Real-time message update:', payload);
-            
-            // For inserts, add the message to the existing messages
-            if (payload.eventType === 'INSERT') {
-              const newMessage = payload.new as Message;
-              queryClient.setQueryData(['messages', userId], (old: Message[] = []) => {
-                if (!old.some(msg => msg.id === newMessage.id)) {
-                  return [...old, newMessage];
-                }
-                return old;
-              });
-            }
-            
-            // For updates, update the existing message
-            if (payload.eventType === 'UPDATE') {
-              queryClient.setQueryData(['messages', userId], (old: Message[] = []) => {
-                return old.map(msg => 
-                  msg.id === payload.new.id ? { ...msg, ...payload.new } : msg
-                );
-              });
-            }
-            
-            // For deletes, remove the message
-            if (payload.eventType === 'DELETE') {
-              queryClient.setQueryData(['messages', userId], (old: Message[] = []) => {
-                return old.filter(msg => msg.id !== payload.old.id);
-              });
-            }
-          }
-        )
-        .subscribe();
-
-      return () => {
-        console.log('Cleaning up message subscription');
-        supabase.removeChannel(channel);
-      };
+    return () => {
+      supabase.removeChannel(channel);
     };
-
-    setupSubscription();
   }, [userId, queryClient]);
 
   const handleSendMessage = async () => {
@@ -152,7 +108,6 @@ export const useMessages = (userId: string): UseMessagesReturn => {
         return;
       }
 
-      // Get the profile IDs for sender and receiver
       const { data: senderProfile } = await supabase
         .from('profiles')
         .select('id')
@@ -189,7 +144,6 @@ export const useMessages = (userId: string): UseMessagesReturn => {
 
       if (error) throw error;
 
-      // Clear input
       setNewMessage('');
       
     } catch (error) {
@@ -197,6 +151,60 @@ export const useMessages = (userId: string): UseMessagesReturn => {
       toast({
         title: "Error",
         description: "Failed to send message",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .delete()
+        .eq('id', messageId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Message deleted successfully",
+      });
+
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete message",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleReaction = async (messageId: string, emoji: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('message_reactions')
+        .insert({
+          message_id: messageId,
+          user_id: user.id,
+          emoji: emoji
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Reaction added",
+      });
+
+    } catch (error) {
+      console.error('Error adding reaction:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add reaction",
         variant: "destructive",
       });
     }
@@ -217,6 +225,8 @@ export const useMessages = (userId: string): UseMessagesReturn => {
     setIsRecording,
     editingMessage,
     setEditingMessage,
-    handleSendMessage
+    handleSendMessage,
+    handleDeleteMessage,
+    handleReaction
   };
 };

@@ -4,6 +4,8 @@ import { DateDivider } from "./chat-messages/DateDivider";
 import { TypingIndicator } from "./chat-messages/TypingIndicator";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 export interface ChatMessagesProps {
   messages: Message[];
@@ -25,12 +27,12 @@ const ChatMessages = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     messagesEndRef.current?.scrollIntoView({ behavior });
   };
 
-  // Check if user is near bottom of scroll
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (container) {
@@ -47,14 +49,12 @@ const ChatMessages = ({
   }, [messages, isNearBottom]);
 
   useEffect(() => {
-    // Initial scroll to bottom
     scrollToBottom('auto');
   }, []);
 
   useEffect(() => {
     if (!selectedChat || !currentUserId) return;
 
-    // Mark messages as read when viewed
     const markMessagesAsRead = async () => {
       try {
         const { error } = await supabase
@@ -67,12 +67,16 @@ const ChatMessages = ({
         if (error) throw error;
       } catch (error) {
         console.error('Error marking messages as read:', error);
+        toast({
+          title: "Error",
+          description: "Failed to mark messages as read",
+          variant: "destructive",
+        });
       }
     };
 
     markMessagesAsRead();
     
-    // Subscribe to new messages
     const channel = supabase
       .channel(`chat:${selectedChat}`)
       .on(
@@ -96,7 +100,7 @@ const ChatMessages = ({
       console.log('Cleaning up message subscription');
       supabase.removeChannel(channel);
     };
-  }, [selectedChat, currentUserId, isNearBottom]);
+  }, [selectedChat, currentUserId, isNearBottom, toast]);
 
   const messagesByDate = messages.reduce((groups: { [key: string]: Message[] }, message) => {
     const date = new Date(message.created_at).toLocaleDateString();
@@ -113,20 +117,36 @@ const ChatMessages = ({
       className="h-full overflow-y-auto px-6 py-8 space-y-6"
       onScroll={handleScroll}
     >
-      {Object.entries(messagesByDate).map(([date, dateMessages]) => (
-        <div key={date} className="space-y-4">
-          <DateDivider date={date} />
-          {dateMessages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              message={message}
-              isCurrentUser={message.sender_id === currentUserId}
-              onReaction={onReaction}
-              onDelete={onDelete}
-            />
-          ))}
-        </div>
-      ))}
+      <AnimatePresence mode="popLayout">
+        {Object.entries(messagesByDate).map(([date, dateMessages]) => (
+          <motion.div
+            key={date}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-4"
+          >
+            <DateDivider date={date} />
+            {dateMessages.map((message) => (
+              <motion.div
+                key={message.id}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <MessageBubble
+                  message={message}
+                  isCurrentUser={message.sender_id === currentUserId}
+                  onReaction={onReaction}
+                  onDelete={onDelete}
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+        ))}
+      </AnimatePresence>
       {isTyping && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>

@@ -2,13 +2,25 @@ import { cn } from "@/lib/utils";
 import { Message } from "@/types/message";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Smile, MoreHorizontal } from "lucide-react";
+import { Smile, MoreHorizontal, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
@@ -20,6 +32,8 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: MessageBubbleProps) => {
+  const [showReactions, setShowReactions] = useState(false);
+
   return (
     <div className={cn(
       "group relative max-w-[80%] animate-fadeIn",
@@ -78,25 +92,34 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
         </DropdownMenu>
 
         {isCurrentUser && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
               <Button
                 variant="secondary"
                 size="icon"
                 className="h-8 w-8 rounded-full bg-white shadow-md hover:bg-gray-50"
               >
-                <MoreHorizontal className="h-4 w-4 text-gray-600" />
+                <Trash2 className="h-4 w-4 text-gray-600" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={() => onDelete?.(message.id)}
-              >
-                Delete message
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Message</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete this message? This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDelete?.(message.id)}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
     </div>
