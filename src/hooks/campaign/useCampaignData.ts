@@ -25,12 +25,10 @@ export const useCampaignData = () => {
         },
         (payload: OpportunityPayload) => {
           console.log('Campaign data changed:', payload);
-          // Only invalidate the specific campaign that changed
-          if (payload.new && 'id' in payload.new) {
-            queryClient.invalidateQueries({ 
-              queryKey: ['my-campaigns', payload.new.id] 
-            });
-          }
+          // Invalidate queries when data changes
+          queryClient.invalidateQueries({ 
+            queryKey: ['my-campaigns']
+          });
         }
       )
       .subscribe();
@@ -58,7 +56,7 @@ export const useCampaignData = () => {
         return [];
       }
 
-      // First get the brand ID in a separate query
+      // First get the brand ID
       const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
@@ -75,7 +73,7 @@ export const useCampaignData = () => {
         return [];
       }
 
-      // Then use the brand ID to fetch campaigns with optimized select
+      // Fetch campaigns with all related data
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
@@ -128,5 +126,6 @@ export const useCampaignData = () => {
     staleTime: 0, // Consider data immediately stale
     retry: 2, // Retry failed requests twice
     refetchOnMount: true, // Always refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window regains focus
   });
 };

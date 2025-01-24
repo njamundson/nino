@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageHeader from "@/components/shared/PageHeader";
 import EditCampaignModal from "@/components/campaigns/EditCampaignModal";
 import CampaignCard from "@/components/campaigns/CampaignCard";
@@ -7,21 +7,40 @@ import EmptyCampaigns from "@/components/campaigns/EmptyCampaigns";
 import { useCampaignData } from "@/hooks/campaign/useCampaignData";
 import { useCampaignActions } from "@/hooks/campaign/useCampaignActions";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const MyCampaigns = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
-  const { data: campaigns, isLoading, error, refetch } = useCampaignData();
+  const queryClient = useQueryClient();
+  const { 
+    data: campaigns, 
+    isLoading, 
+    error, 
+    refetch 
+  } = useCampaignData();
+  
   const { handleDelete, handleUpdateApplicationStatus } = useCampaignActions();
 
-  // Attempt to refetch on mount and if there's an error
+  // Initialize data on mount and handle errors
   useEffect(() => {
-    if (error) {
-      console.error('Error loading campaigns:', error);
-      refetch();
-    }
-  }, [error, refetch]);
+    const initializeData = async () => {
+      try {
+        // Force an immediate refetch on mount
+        await refetch();
+        
+        // Prefetch the data again after a short delay to ensure we have fresh data
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+        }, 1000);
+      } catch (err) {
+        console.error('Error initializing campaigns:', err);
+      }
+    };
 
+    initializeData();
+  }, [refetch, queryClient]);
+
+  // Animation variants
   const container = {
     hidden: { opacity: 0 },
     show: {
