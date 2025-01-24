@@ -2,7 +2,7 @@ import { Message } from "@/types/message";
 import MessageBubble from "./chat-messages/MessageBubble";
 import { DateDivider } from "./chat-messages/DateDivider";
 import { TypingIndicator } from "./chat-messages/TypingIndicator";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface ChatMessagesProps {
@@ -23,14 +23,33 @@ const ChatMessages = ({
   selectedChat
 }: ChatMessagesProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isNearBottom, setIsNearBottom] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior });
+  };
+
+  // Check if user is near bottom of scroll
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const scrollPosition = scrollHeight - scrollTop - clientHeight;
+      setIsNearBottom(scrollPosition < 100);
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (isNearBottom) {
+      scrollToBottom();
+    }
+  }, [messages, isNearBottom]);
+
+  useEffect(() => {
+    // Initial scroll to bottom
+    scrollToBottom('auto');
+  }, []);
 
   useEffect(() => {
     if (!selectedChat || !currentUserId) return;
@@ -55,7 +74,7 @@ const ChatMessages = ({
     
     // Subscribe to new messages
     const channel = supabase
-      .channel('messages')
+      .channel(`chat:${selectedChat}`)
       .on(
         'postgres_changes',
         {
@@ -66,20 +85,9 @@ const ChatMessages = ({
         },
         (payload) => {
           console.log('Received message update:', payload);
-          scrollToBottom();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'messages',
-          filter: `sender_id=eq.${currentUserId},receiver_id=eq.${selectedChat}`
-        },
-        (payload) => {
-          console.log('Received message update:', payload);
-          scrollToBottom();
+          if (isNearBottom) {
+            scrollToBottom();
+          }
         }
       )
       .subscribe();
@@ -88,7 +96,7 @@ const ChatMessages = ({
       console.log('Cleaning up message subscription');
       supabase.removeChannel(channel);
     };
-  }, [selectedChat, currentUserId]);
+  }, [selectedChat, currentUserId, isNearBottom]);
 
   const messagesByDate = messages.reduce((groups: { [key: string]: Message[] }, message) => {
     const date = new Date(message.created_at).toLocaleDateString();
@@ -100,7 +108,11 @@ const ChatMessages = ({
   }, {});
 
   return (
-    <div className="h-full overflow-y-auto px-6 py-8 space-y-6">
+    <div 
+      ref={scrollContainerRef}
+      className="h-full overflow-y-auto px-6 py-8 space-y-6"
+      onScroll={handleScroll}
+    >
       {Object.entries(messagesByDate).map(([date, dateMessages]) => (
         <div key={date} className="space-y-4">
           <DateDivider date={date} />
