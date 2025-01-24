@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, MapPin, Globe, Instagram } from "lucide-react";
+import { useEffect } from "react";
 
 interface ApplicationItemProps {
   application: any;
@@ -10,19 +11,36 @@ interface ApplicationItemProps {
 }
 
 const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) => {
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+  // Debug logging to help us see the data structure
+  useEffect(() => {
+    console.log('Full application data:', application);
+  }, [application]);
+
+  const getInitials = (name: string = '') => {
+    const parts = name.split(' ');
+    return parts.map(part => part[0] || '').join('').toUpperCase();
   };
 
-  const creator = application.creator;
-  const profile = creator?.profile;
+  // Extract creator data
+  const creator = application?.creator;
   
-  // Get creator name from profile or creator directly
-  const creatorName = profile ? 
-    `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : 
-    creator?.first_name && creator?.last_name ? 
-      `${creator.first_name} ${creator.last_name}`.trim() : 
-      'Anonymous Creator';
+  // Get the creator's name, checking all possible sources
+  const getCreatorName = () => {
+    // First check if we have a profile with first and last name
+    if (creator?.profile?.first_name && creator?.profile?.last_name) {
+      return `${creator.profile.first_name} ${creator.profile.last_name}`;
+    }
+    
+    // Then check if we have first and last name directly on creator
+    if (creator?.first_name && creator?.last_name) {
+      return `${creator.first_name} ${creator.last_name}`;
+    }
+    
+    // If no name is found, return Anonymous
+    return 'Anonymous Creator';
+  };
+
+  const creatorName = getCreatorName();
 
   return (
     <div className="p-6 rounded-lg bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300">
@@ -37,10 +55,7 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
               />
             ) : (
               <AvatarFallback className="bg-gray-100 text-gray-600 text-xl">
-                {getInitials(
-                  profile?.first_name || creator?.first_name || '',
-                  profile?.last_name || creator?.last_name || ''
-                )}
+                {getInitials(creatorName)}
               </AvatarFallback>
             )}
           </Avatar>
