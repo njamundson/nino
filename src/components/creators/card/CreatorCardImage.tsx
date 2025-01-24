@@ -22,15 +22,15 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
     : '/placeholder.svg';
 
   return (
-    <div className="relative aspect-[3/4] w-full overflow-hidden">
+    <div className="relative aspect-[3/4] w-full overflow-hidden group">
       <img
         src={imageUrl}
         alt={creator.firstName}
         onError={handleImageError}
-        className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+        className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform transition-transform duration-300 group-hover:translate-y-[-4px]">
         {creator.location && (
           <p className="mb-2 text-sm font-medium opacity-90">
             {creator.location}
@@ -56,7 +56,7 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
       <Button
         size="icon"
         variant="secondary"
-        className="absolute bottom-6 right-6 rounded-full"
+        className="absolute bottom-6 right-6 rounded-full transition-transform duration-300 group-hover:scale-110"
         onClick={(e) => {
           e.stopPropagation();
           onInvite(creator.id);
