@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
-interface BrandManager {
+type BrandInvitation = {
   id: string;
   brand_id: string;
   role: string;
@@ -21,19 +21,26 @@ const InvitationAcceptance = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [invitation, setInvitation] = useState<BrandManager | null>(null);
+  const [invitation, setInvitation] = useState<BrandInvitation | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const verifyInvitation = async () => {
       try {
+        if (!token) {
+          setError("Invalid invitation link");
+          setLoading(false);
+          return;
+        }
+
         const { data: inviteData, error: inviteError } = await supabase
           .from("brand_managers")
-          .select("*, brands(company_name)")
+          .select("id, brand_id, role, invitation_status, brands(company_name)")
           .eq("invitation_token", token)
           .single();
 
         if (inviteError || !inviteData) {
+          console.error("Invitation error:", inviteError);
           setError("Invalid or expired invitation");
           return;
         }
@@ -52,18 +59,22 @@ const InvitationAcceptance = () => {
       }
     };
 
-    if (token) {
-      verifyInvitation();
-    }
+    verifyInvitation();
   }, [token]);
 
   const handleAcceptInvitation = async () => {
     try {
       setLoading(true);
       
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        throw sessionError;
+      }
       
       if (!session) {
+        // Store token and redirect to sign in
         localStorage.setItem("pendingInvitation", token!);
         navigate("/");
         return;
