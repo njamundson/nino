@@ -4,6 +4,7 @@ import CreatorCard from "./CreatorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CreatorData, CreatorType } from "@/types/creator";
 import { motion } from "framer-motion";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
@@ -11,24 +12,23 @@ interface CreatorGridProps {
   selectedLocations: string[];
 }
 
+const CREATORS_PER_PAGE = 9;
+
 const CreatorGrid = ({
   selectedSpecialties,
   selectedCreatorType,
   selectedLocations,
 }: CreatorGridProps) => {
-  const [creators, setCreators] = useState<CreatorData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const isMobile = useIsMobile();
+  const [error, setError] = useState<Error | null>(null);
 
-  const fetchCreators = useCallback(async () => {
+  const fetchCreators = async ({ pageParam = 0 }) => {
     try {
-      setLoading(true);
-      setError(null);
       console.log("Fetching creators with filters:", { 
         selectedSpecialties, 
         selectedCreatorType,
-        selectedLocations 
+        selectedLocations,
+        page: pageParam
       });
 
       let query = supabase
@@ -45,7 +45,8 @@ const CreatorGrid = ({
           website,
           profile_image_url
         `)
-        .eq('onboarding_completed', true);
+        .eq('onboarding_completed', true)
+        .range(pageParam * CREATORS_PER_PAGE, (pageParam + 1) * CREATORS_PER_PAGE - 1);
 
       // Only apply filters if they are not empty/null
       if (selectedSpecialties.length > 0) {
@@ -67,8 +68,7 @@ const CreatorGrid = ({
       }
 
       if (!creatorsData) {
-        setCreators([]);
-        return;
+        return { creators: [], nextPage: null };
       }
 
       const formattedCreators: CreatorData[] = creatorsData.map(creator => ({
@@ -90,18 +90,31 @@ const CreatorGrid = ({
       }));
 
       console.log("Fetched creators:", formattedCreators);
-      setCreators(formattedCreators);
+      
+      const hasMore = formattedCreators.length === CREATORS_PER_PAGE;
+      return {
+        creators: formattedCreators,
+        nextPage: hasMore ? pageParam + 1 : null
+      };
     } catch (error) {
       console.error("Error in fetchCreators:", error);
       setError(error instanceof Error ? error : new Error('An error occurred'));
-    } finally {
-      setLoading(false);
+      throw error;
     }
-  }, [selectedSpecialties, selectedCreatorType, selectedLocations]);
+  };
 
-  useEffect(() => {
-    fetchCreators();
-  }, [fetchCreators]);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteQuery({
+    queryKey: ['creators', selectedSpecialties, selectedCreatorType, selectedLocations],
+    queryFn: fetchCreators,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0,
+  });
 
   if (error) {
     return (
@@ -113,7 +126,7 @@ const CreatorGrid = ({
     );
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, index) => (
@@ -125,27 +138,43 @@ const CreatorGrid = ({
     );
   }
 
+  const allCreators = data?.pages.flatMap(page => page.creators) || [];
+
   return (
-    <div className={`grid grid-cols-1 ${
-      isMobile ? 'gap-4' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6'
-    }`}>
-      {creators.map((creator, index) => (
-        <motion.div
-          key={creator.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 0.4,
-            ease: "easeOut",
-            delay: index * 0.1 // Stagger the animations
-          }}
-        >
-          <CreatorCard 
-            creator={creator}
-            onInvite={() => {}} 
-          />
-        </motion.div>
-      ))}
+    <div className="space-y-8">
+      <div className={`grid grid-cols-1 ${
+        isMobile ? 'gap-4' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6'
+      }`}>
+        {allCreators.map((creator, index) => (
+          <motion.div
+            key={creator.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.4,
+              ease: "easeOut",
+              delay: index * 0.1
+            }}
+          >
+            <CreatorCard 
+              creator={creator}
+              onInvite={() => {}} 
+            />
+          </motion.div>
+        ))}
+      </div>
+
+      {hasNextPage && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="px-4 py-2 bg-nino-primary text-white rounded-lg hover:bg-nino-primary/90 transition-colors disabled:opacity-50"
+          >
+            {isFetchingNextPage ? 'Loading more...' : 'Load More'}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
