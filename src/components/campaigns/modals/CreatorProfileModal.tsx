@@ -33,6 +33,7 @@ const CreatorProfileModal = ({
   creator,
   coverLetter,
   onUpdateStatus,
+  onMessageCreator,
   opportunityId,
   isProcessing = false
 }: CreatorProfileModalProps) => {
@@ -139,7 +140,7 @@ const CreatorProfileModal = ({
 
                 {/* Creator Info */}
                 <div className="flex flex-col space-y-6">
-                  <CreatorSocials creator={creator} />
+                  <CreatorSocials creator={creator} onMessageClick={onMessageCreator} />
 
                   {/* About Section */}
                   <div className="space-y-4">

@@ -1,12 +1,13 @@
-import { Globe, Instagram } from "lucide-react";
+import { Globe, Instagram, MessageSquare } from "lucide-react";
 import { Creator } from "@/types/creator";
 
 interface CreatorSocialsProps {
   creator: Creator;
+  onMessageClick?: () => void;
 }
 
-export const CreatorSocials = ({ creator }: CreatorSocialsProps) => {
-  if (!creator?.instagram && !creator?.website) return null;
+export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps) => {
+  if (!creator?.instagram && !creator?.website && !onMessageClick) return null;
 
   return (
     <div className="flex gap-3">
@@ -31,6 +32,15 @@ export const CreatorSocials = ({ creator }: CreatorSocialsProps) => {
           <Globe className="w-3.5 h-3.5" />
           Website
         </a>
+      )}
+      {onMessageClick && (
+        <button
+          onClick={onMessageClick}
+          className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
+        >
+          <MessageSquare className="w-3.5 h-3.5" />
+          Message
+        </button>
       )}
     </div>
   );
