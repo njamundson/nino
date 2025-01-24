@@ -34,7 +34,7 @@ const CreatorBio = ({
         <div className="space-y-3">
           <h3 className="text-2xl font-semibold text-nino-text">Application Message</h3>
           <div className="bg-gray-50/80 backdrop-blur-sm p-4 rounded-xl border border-gray-100">
-            <p className="text-nino-text/90 leading-relaxed whitespace-pre-wrap">
+            <p className="text-nino-text/90 leading-relaxed whitespace-pre-wrap break-words">
               {coverLetter}
             </p>
           </div>
