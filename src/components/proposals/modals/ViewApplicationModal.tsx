@@ -6,6 +6,7 @@ import { Application } from "@/integrations/supabase/types/opportunity";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import ApplicationForm from "@/components/projects/modal/ApplicationForm";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ViewApplicationModalProps {
   isOpen: boolean;
@@ -17,11 +18,18 @@ interface ViewApplicationModalProps {
 
 const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStatus }: ViewApplicationModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const queryClient = useQueryClient();
   
   // Add null checks and default values
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
   const brandLocation = application.opportunity?.brand?.location;
   const title = application.opportunity?.title || "Untitled Opportunity";
+
+  const handleApplicationSubmit = () => {
+    onClose();
+    // Invalidate the applications query to refresh the list
+    queryClient.invalidateQueries({ queryKey: ['applications'] });
+  };
 
   if (showApplicationForm && application.opportunity) {
     return (
@@ -30,8 +38,8 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
           <ApplicationForm
             opportunity={application.opportunity}
             onBack={() => setShowApplicationForm(false)}
-            onClose={onClose}
-            onModalClose={onClose}
+            onClose={handleApplicationSubmit}
+            onModalClose={handleApplicationSubmit}
           />
         </DialogContent>
       </Dialog>
