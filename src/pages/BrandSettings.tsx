@@ -63,6 +63,10 @@ const BrandSettings = () => {
               setProfileImage={setProfileImage}
             />
           </div>
+
+          <div className="md:col-span-2">
+            <BrandManagersSettings />
+          </div>
           
           <ContactSection
             brandData={brandData}
@@ -81,10 +85,6 @@ const BrandSettings = () => {
             isEditing={isEditing}
             handleUpdateField={handleUpdateField}
           />
-
-          <div className="md:col-span-2">
-            <BrandManagersSettings />
-          </div>
         </div>
 
         {isEditing && (
