@@ -14,8 +14,8 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { handleInvite } = useCreatorInvite();
 
-  const handleInviteClick = async (creatorId: string) => {
-    const success = await handleInvite(creatorId);
+  const handleInviteClick = async (creatorId: string, opportunityId: string) => {
+    const success = await handleInvite(creatorId, opportunityId);
     if (success) {
       setIsModalOpen(false);
       onInvite(creatorId);
