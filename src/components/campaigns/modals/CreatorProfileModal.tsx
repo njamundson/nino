@@ -115,19 +115,21 @@ const CreatorProfileModal = ({
     }
   };
 
+  const getDisplayName = () => {
+    if (creator.first_name) {
+      return `${creator.first_name} ${creator.last_name || ''}`.trim();
+    }
+    if (creator.profile?.first_name) {
+      return `${creator.profile.first_name} ${creator.profile.last_name || ''}`.trim();
+    }
+    return 'Anonymous Creator';
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-[800px] p-6 overflow-hidden bg-white rounded-3xl">
           <div className="flex flex-col h-full max-h-[80vh]">
-            {/* Header Section */}
-            <div className="mb-6">
-              <CreatorInfo creator={creator} />
-              <div className="mt-4">
-                <CreatorSocials creator={creator} onMessageClick={onMessageCreator} />
-              </div>
-            </div>
-
             {/* Main Content */}
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -136,7 +138,7 @@ const CreatorProfileModal = ({
                   <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
                     <img
                       src={creator?.profile_image_url}
-                      alt={creator?.first_name}
+                      alt={getDisplayName()}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -144,21 +146,30 @@ const CreatorProfileModal = ({
 
                 {/* Creator Info */}
                 <div className="flex flex-col space-y-6">
+                  {/* Location */}
+                  <p className="text-nino-gray flex items-center gap-2">
+                    <span className="text-lg">📍</span> {creator?.location || "Location not specified"}
+                  </p>
+
+                  {/* Social Links */}
+                  <CreatorSocials 
+                    creator={creator} 
+                    onMessageClick={onMessageCreator}
+                  />
+
                   {/* About Section */}
                   <div className="space-y-3">
-                    <h3 className="text-xl font-semibold text-gray-900">About</h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <h3 className="text-2xl font-semibold text-nino-text">About</h3>
+                    <p className="text-nino-text/90 leading-relaxed">
                       {creator?.bio || "No bio available"}
                     </p>
                   </div>
 
                   {/* Specialties */}
-                  {creator?.specialties?.length > 0 && (
-                    <div className="space-y-3">
-                      <h3 className="text-xl font-semibold text-gray-900">Specialties</h3>
-                      <CreatorSpecialties specialties={creator.specialties} />
-                    </div>
-                  )}
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-semibold text-nino-text">Specialties</h3>
+                    <CreatorSpecialties specialties={creator?.specialties} />
+                  </div>
 
                   {/* Application Message */}
                   {coverLetter && (
@@ -201,7 +212,7 @@ const CreatorProfileModal = ({
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
         onConfirm={handleAcceptConfirm}
-        creatorName={creator?.first_name || 'Creator'}
+        creatorName={getDisplayName()}
         isProcessing={isProcessing}
       />
     </>
