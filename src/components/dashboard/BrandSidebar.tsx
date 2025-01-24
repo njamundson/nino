@@ -9,6 +9,7 @@ import {
   MessageSquare,
   LogOut,
   FileCheck,
+  Settings,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -27,27 +28,24 @@ const BrandSidebar = () => {
     { icon: Calendar, label: "Bookings", path: "/brand/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/brand/messages" },
     { icon: FileCheck, label: "Completed Projects", path: "/brand/completed-projects" },
+    { icon: Settings, label: "Settings", path: "/brand/settings" },
   ];
 
   const handleSignOut = async () => {
     try {
-      // First check if we have a session
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        // If no session, just clear local storage and redirect
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('brandData');
         navigate('/');
         return;
       }
 
-      // If we have a session, attempt to sign out
       const { error } = await supabase.auth.signOut();
       
       if (error) {
         console.error("Error signing out:", error);
-        // Even if there's an error, clear local storage and redirect
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('brandData');
         navigate('/');
@@ -62,7 +60,6 @@ const BrandSidebar = () => {
       navigate('/');
     } catch (error) {
       console.error("Error in handleSignOut:", error);
-      // If any error occurs, clear local storage and redirect
       localStorage.removeItem('isAuthenticated');
       localStorage.removeItem('brandData');
       navigate('/');
@@ -79,21 +76,21 @@ const BrandSidebar = () => {
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="h-full bg-white rounded-xl shadow-sm flex flex-col"
+        className="h-full bg-white/50 backdrop-blur-xl rounded-xl shadow-sm flex flex-col border border-gray-100"
       >
-        <div className="px-3 pt-8 pb-6">
+        <div className="px-3 pt-8 pb-6 border-b border-gray-100">
           <Link to="/brand/dashboard" className="flex items-center px-4">
             <motion.img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
-              className="h-16"
+              className="h-12"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             />
           </Link>
         </div>
         
-        <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
@@ -107,8 +104,8 @@ const BrandSidebar = () => {
                   className={cn(
                     "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                     isActive
-                      ? "bg-nino-bg text-nino-primary shadow-sm"
-                      : "text-gray-600 hover:text-nino-primary hover:bg-nino-bg/50"
+                      ? "bg-nino-primary/10 text-nino-primary"
+                      : "text-gray-600 hover:text-nino-primary hover:bg-nino-primary/5"
                   )}
                 >
                   <item.icon className={cn(
@@ -129,7 +126,7 @@ const BrandSidebar = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-nino-primary hover:bg-nino-bg/50 transition-all duration-200"
+            className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-nino-primary hover:bg-nino-primary/5 transition-all duration-200"
           >
             <LogOut className="w-[18px] h-[18px]" />
             <span>Sign Out</span>
