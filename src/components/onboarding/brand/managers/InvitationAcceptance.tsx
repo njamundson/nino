@@ -35,7 +35,15 @@ const InvitationAcceptance = () => {
 
         const { data, error: inviteError } = await supabase
           .from("brand_managers")
-          .select("id, brand_id, role, invitation_status, brands(company_name)")
+          .select(`
+            id,
+            brand_id,
+            role,
+            invitation_status,
+            brands (
+              company_name
+            )
+          `)
           .eq("invitation_token", token)
           .single();
 
