@@ -32,9 +32,56 @@ const ChatMessages = ({
     scrollToBottom();
   }, [messages]);
 
+  // Subscribe to new messages
+  useEffect(() => {
+    if (!selectedChat || !currentUserId) return;
+
+    console.log('Setting up real-time subscription for messages...');
+    
+    const channel = supabase
+      .channel('messages')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+          filter: `sender_id=eq.${selectedChat},receiver_id=eq.${currentUserId}`
+        },
+        (payload) => {
+          console.log('Received message update:', payload);
+          scrollToBottom();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+          filter: `sender_id=eq.${currentUserId},receiver_id=eq.${selectedChat}`
+        },
+        (payload) => {
+          console.log('Received message update:', payload);
+          scrollToBottom();
+        }
+      )
+      .subscribe(status => {
+        console.log('Subscription status:', status);
+      });
+
+    return () => {
+      console.log('Cleaning up message subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [selectedChat, currentUserId]);
+
+  // Subscribe to typing status
   useEffect(() => {
     if (!selectedChat) return;
 
+    console.log('Setting up typing status subscription...');
+    
     const channel = supabase
       .channel('typing_channel')
       .on(
@@ -53,6 +100,7 @@ const ChatMessages = ({
       .subscribe();
 
     return () => {
+      console.log('Cleaning up typing subscription');
       supabase.removeChannel(channel);
     };
   }, [selectedChat]);

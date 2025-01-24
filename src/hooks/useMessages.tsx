@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/message";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface UseMessagesReturn {
   data: Message[];
@@ -30,6 +30,9 @@ export const useMessages = (userId: string): UseMessagesReturn => {
         return [];
       }
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
       const { data, error } = await supabase
         .from('messages')
         .select(`
@@ -50,7 +53,7 @@ export const useMessages = (userId: string): UseMessagesReturn => {
             last_name
           )
         `)
-        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id})`)
         .order('created_at', { ascending: true });
 
       if (error) {
@@ -58,7 +61,6 @@ export const useMessages = (userId: string): UseMessagesReturn => {
         throw error;
       }
 
-      // Transform the data to match the Message type
       return (data || []).map(msg => ({
         ...msg,
         profiles: {
@@ -74,6 +76,38 @@ export const useMessages = (userId: string): UseMessagesReturn => {
     refetchOnWindowFocus: true,
     retry: 2
   });
+
+  // Subscribe to real-time updates
+  useEffect(() => {
+    if (!userId) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    console.log('Setting up real-time message subscription in hook...');
+    
+    const channel = supabase
+      .channel('messages_hook')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+          filter: `or(and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id}))`
+        },
+        (payload) => {
+          console.log('Message update in hook:', payload);
+          queryClient.invalidateQueries({ queryKey: ['messages', userId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('Cleaning up message subscription in hook');
+      supabase.removeChannel(channel);
+    };
+  }, [userId, queryClient]);
 
   const setMessages = (updater: Message[] | ((prev: Message[] | undefined) => Message[])) => {
     queryClient.setQueryData(['messages', userId], updater);

@@ -28,7 +28,6 @@ const Messages = () => {
     setIsRecording,
     editingMessage,
     setEditingMessage,
-    handleSendMessage: sendMessage
   } = useMessages(selectedUserId || '');
 
   const handleSelectChat = (
@@ -114,7 +113,7 @@ const Messages = () => {
   };
 
   return (
-    <div className="px-4">
+    <div>
       <PageHeader
         title="Messages"
         description="Connect and communicate with creators."
@@ -141,6 +140,7 @@ const Messages = () => {
             editingMessage={editingMessage}
             setEditingMessage={setEditingMessage}
             messages={messages as Message[]}
+            currentUserId={user?.id}
             onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
           />
         </div>
