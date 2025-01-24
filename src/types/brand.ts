@@ -11,6 +11,7 @@ export interface BrandData {
   support_email: string | null;
   profile_image_url: string | null;
   sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
   email_notifications_enabled?: boolean;
   push_notifications_enabled?: boolean;
   application_notifications_enabled?: boolean;
