@@ -10,55 +10,40 @@ interface CreatorProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   creator: Creator;
-  onAccept?: () => Promise<void>;
-  onReject?: () => Promise<void>;
   coverLetter?: string;
   onMessageCreator?: () => void;
+  onUpdateStatus?: (status: 'accepted' | 'rejected') => void;
+  opportunityId?: string;
+  isProcessing?: boolean;
 }
 
 const CreatorProfileModal = ({
   isOpen,
   onClose,
   creator,
-  onAccept,
-  onReject,
   coverLetter,
   onMessageCreator,
+  onUpdateStatus,
+  opportunityId,
+  isProcessing
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleAccept = () => {
     setShowAcceptDialog(true);
   };
 
   const handleAcceptConfirm = async () => {
-    if (!onAccept) return;
-    
-    setIsProcessing(true);
-    try {
-      await onAccept();
-      setShowAcceptDialog(false);
-      onClose();
-    } catch (error) {
-      console.error('Error accepting application:', error);
-    } finally {
-      setIsProcessing(false);
-    }
+    if (!onUpdateStatus) return;
+    onUpdateStatus('accepted');
+    setShowAcceptDialog(false);
+    onClose();
   };
 
   const handleReject = async () => {
-    if (!onReject) return;
-    
-    setIsProcessing(true);
-    try {
-      await onReject();
-      onClose();
-    } catch (error) {
-      console.error('Error rejecting application:', error);
-    } finally {
-      setIsProcessing(false);
-    }
+    if (!onUpdateStatus) return;
+    onUpdateStatus('rejected');
+    onClose();
   };
 
   const getDisplayName = () => {
@@ -128,27 +113,23 @@ const CreatorProfileModal = ({
                   )}
 
                   {/* Action Buttons */}
-                  {(onAccept || onReject) && (
+                  {onUpdateStatus && (
                     <div className="flex gap-4 mt-6">
-                      {onAccept && (
-                        <Button
-                          onClick={handleAccept}
-                          disabled={isProcessing}
-                          className="flex-1 bg-nino-primary hover:bg-nino-primary/90"
-                        >
-                          Accept
-                        </Button>
-                      )}
-                      {onReject && (
-                        <Button
-                          onClick={handleReject}
-                          disabled={isProcessing}
-                          variant="outline"
-                          className="flex-1"
-                        >
-                          Reject
-                        </Button>
-                      )}
+                      <Button
+                        onClick={handleAccept}
+                        disabled={isProcessing}
+                        className="flex-1 bg-nino-primary hover:bg-nino-primary/90"
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        onClick={handleReject}
+                        disabled={isProcessing}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        Reject
+                      </Button>
                     </div>
                   )}
                 </div>
