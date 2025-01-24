@@ -1,4 +1,4 @@
-import SocialLinks from "./social/SocialLinks";
+import { Button } from "@/components/ui/button";
 import CreatorSpecialties from "./bio/CreatorSpecialties";
 
 interface CreatorBioProps {
@@ -29,11 +29,13 @@ const CreatorBio = ({
       )}
       
       <div className="space-y-2">
-        <SocialLinks 
-          instagram={instagram}
-          website={website}
-          onMessageClick={onMessageClick}
-        />
+        <Button
+          variant="outline"
+          onClick={onMessageClick}
+          className="w-full"
+        >
+          View Profile
+        </Button>
       </div>
 
       <CreatorSpecialties specialties={specialties} />
