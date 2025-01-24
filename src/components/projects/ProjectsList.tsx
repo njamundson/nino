@@ -4,6 +4,7 @@ import ProjectCard from "@/components/projects/ProjectCard";
 import { Loader2, AlertCircle } from "lucide-react";
 import EmptyProjects from "@/components/projects/EmptyProjects";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { motion } from "framer-motion";
 
 const ProjectsList = () => {
   const { data: opportunities, isLoading, error } = useQuery({
@@ -65,11 +66,21 @@ const ProjectsList = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {opportunities.map((opportunity) => (
-        <ProjectCard 
-          key={opportunity.id} 
-          opportunity={opportunity}
-        />
+      {opportunities.map((opportunity, index) => (
+        <motion.div
+          key={opportunity.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 0.4, 
+            ease: "easeOut",
+            delay: index * 0.1 // Stagger the animations
+          }}
+        >
+          <ProjectCard 
+            opportunity={opportunity}
+          />
+        </motion.div>
       ))}
     </div>
   );
