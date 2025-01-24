@@ -8,6 +8,7 @@ import BrandProfileSection from "@/components/settings/brand/sections/BrandProfi
 import ContactSection from "@/components/settings/brand/sections/ContactSection";
 import SocialSection from "@/components/settings/brand/sections/SocialSection";
 import NotificationsSection from "@/components/settings/brand/sections/NotificationsSection";
+import BrandManagersSettings from "@/components/settings/brand/pages/BrandManagersSettings";
 
 const BrandSettings = () => {
   const {
@@ -80,6 +81,10 @@ const BrandSettings = () => {
             isEditing={isEditing}
             handleUpdateField={handleUpdateField}
           />
+
+          <div className="md:col-span-2">
+            <BrandManagersSettings />
+          </div>
         </div>
 
         {isEditing && (
