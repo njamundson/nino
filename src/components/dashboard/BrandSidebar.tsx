@@ -28,7 +28,6 @@ const BrandSidebar = () => {
     { icon: Calendar, label: "Bookings", path: "/brand/bookings" },
     { icon: MessageSquare, label: "Messages", path: "/brand/messages" },
     { icon: FileCheck, label: "Completed Projects", path: "/brand/completed-projects" },
-    { icon: Settings, label: "Settings", path: "/brand/settings" },
   ];
 
   const handleSignOut = async () => {
