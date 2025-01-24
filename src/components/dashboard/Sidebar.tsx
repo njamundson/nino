@@ -62,11 +62,11 @@ const Sidebar = () => {
 
   const SidebarContent = () => (
     <div className="h-full bg-white flex flex-col rounded-3xl shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] border border-gray-100/50">
-      <div className="p-8 flex justify-center border-b border-gray-100/50">
+      <div className="p-6 flex justify-start border-b border-gray-100/50">
         <img 
           src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
           alt="NINO" 
-          className="h-14"
+          className="h-16"
           loading="eager"
           fetchPriority="high"
           decoding="sync"
