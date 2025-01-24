@@ -1,115 +1,129 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-interface BrandInvitation {
+// Define explicit interfaces to prevent deep type recursion
+interface Brand {
+  id: string;
+  company_name: string;
+  user_id: string;
+}
+
+interface BrandManager {
   id: string;
   brand_id: string;
+  user_id: string;
   role: string;
   invitation_status: string;
-  brands: {
-    company_name: string;
-  };
+  name: string | null;
+  email: string | null;
+}
+
+interface BrandInvitation {
+  brand: Brand;
+  manager: BrandManager;
 }
 
 const InvitationAcceptance = () => {
-  const { token } = useParams();
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [invitation, setInvitation] = useState<BrandInvitation | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const verifyInvitation = async () => {
+    const loadInvitation = async () => {
       try {
-        if (!token) {
-          setError("Invalid invitation link");
-          setLoading(false);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          navigate("/signin");
           return;
         }
 
-        const { data, error: inviteError } = await supabase
+        const { data: managerData, error: managerError } = await supabase
           .from("brand_managers")
           .select(`
             id,
             brand_id,
+            user_id,
             role,
             invitation_status,
-            brands (
-              company_name
+            name,
+            email,
+            brands:brand_id (
+              id,
+              company_name,
+              user_id
             )
           `)
-          .eq("invitation_token", token)
+          .eq("user_id", user.id)
+          .eq("invitation_status", "pending")
           .single();
 
-        if (inviteError || !data) {
-          console.error("Invitation error:", inviteError);
-          setError("Invalid or expired invitation");
+        if (managerError) {
+          console.error("Error loading invitation:", managerError);
+          toast({
+            title: "Error",
+            description: "Failed to load invitation details",
+            variant: "destructive",
+          });
           return;
         }
 
-        if (data.invitation_status !== "pending") {
-          setError("This invitation has already been used");
-          return;
+        if (managerData) {
+          setInvitation({
+            brand: managerData.brands,
+            manager: {
+              id: managerData.id,
+              brand_id: managerData.brand_id,
+              user_id: managerData.user_id,
+              role: managerData.role,
+              invitation_status: managerData.invitation_status,
+              name: managerData.name,
+              email: managerData.email,
+            }
+          });
         }
-
-        setInvitation(data as BrandInvitation);
-      } catch (err) {
-        console.error("Error verifying invitation:", err);
-        setError("Failed to verify invitation");
+      } catch (error) {
+        console.error("Error:", error);
+        toast({
+          title: "Error",
+          description: "Something went wrong",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    verifyInvitation();
-  }, [token]);
+    loadInvitation();
+  }, [navigate, toast]);
 
   const handleAcceptInvitation = async () => {
+    if (!invitation) return;
+
     try {
       setLoading(true);
-      
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        throw sessionError;
-      }
-      
-      if (!session) {
-        localStorage.setItem("pendingInvitation", token!);
-        navigate("/");
-        return;
-      }
-
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from("brand_managers")
-        .update({
-          invitation_status: "accepted",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("invitation_token", token);
+        .update({ invitation_status: "accepted" })
+        .eq("id", invitation.manager.id);
 
-      if (updateError) {
-        throw updateError;
-      }
+      if (error) throw error;
 
       toast({
-        title: "Success!",
-        description: "You have successfully accepted the invitation.",
+        title: "Success",
+        description: "Invitation accepted successfully",
       });
-
       navigate("/brand/dashboard");
-    } catch (err) {
-      console.error("Error accepting invitation:", err);
+    } catch (error) {
+      console.error("Error accepting invitation:", error);
       toast({
         title: "Error",
-        description: "Failed to accept invitation. Please try again.",
+        description: "Failed to accept invitation",
         variant: "destructive",
       });
     } finally {
@@ -119,50 +133,59 @@ const InvitationAcceptance = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-nino-primary" />
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin" />
       </div>
     );
   }
 
-  if (error) {
+  if (!invitation) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="p-6 max-w-md w-full space-y-4">
-          <h1 className="text-xl font-semibold text-center text-red-600">
-            {error}
-          </h1>
-          <Button
-            className="w-full"
-            onClick={() => navigate("/")}
-          >
-            Return to Home
-          </Button>
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="p-6 max-w-md w-full text-center">
+          <h2 className="text-xl font-semibold mb-2">No Pending Invitation</h2>
+          <p className="text-nino-gray mb-4">
+            There are no pending invitations for your account.
+          </p>
+          <Button onClick={() => navigate("/")}>Go Home</Button>
         </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="p-6 max-w-md w-full space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-semibold">Team Invitation</h1>
-          <p className="text-nino-gray">
-            You've been invited to join {invitation?.brands?.company_name} as a {invitation?.role}
-          </p>
+    <div className="flex items-center justify-center min-h-screen">
+      <Card className="p-6 max-w-md w-full">
+        <h2 className="text-xl font-semibold mb-4">Brand Invitation</h2>
+        <p className="mb-6">
+          You have been invited to join{" "}
+          <span className="font-semibold">{invitation.brand.company_name}</span> as
+          a brand manager.
+        </p>
+        <div className="space-y-4">
+          <Button
+            onClick={handleAcceptInvitation}
+            disabled={loading}
+            className="w-full"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Accepting...
+              </>
+            ) : (
+              "Accept Invitation"
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/")}
+            disabled={loading}
+            className="w-full"
+          >
+            Decline
+          </Button>
         </div>
-
-        <Button
-          className="w-full bg-nino-primary hover:bg-nino-primary/90"
-          onClick={handleAcceptInvitation}
-          disabled={loading}
-        >
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-          ) : null}
-          Accept Invitation
-        </Button>
       </Card>
     </div>
   );
