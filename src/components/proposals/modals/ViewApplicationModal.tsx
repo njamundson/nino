@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import ApplicationForm from "@/components/projects/modal/ApplicationForm";
 import { useQueryClient } from "@tanstack/react-query";
+import { DialogTitle } from "@/components/ui/dialog";
 
 interface ViewApplicationModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogTitle className="sr-only">Submit Application</DialogTitle>
           <ApplicationForm
             opportunity={application.opportunity}
             onBack={() => setShowApplicationForm(false)}
@@ -49,11 +51,9 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">
-            {type === 'proposal' ? "You've been invited to apply!" : "Application Details"}
-          </DialogTitle>
-        </DialogHeader>
+        <DialogTitle className="text-2xl font-semibold">
+          {type === 'proposal' ? "You've been invited to apply!" : "Application Details"}
+        </DialogTitle>
 
         <div className="space-y-6 py-4">
           {/* Project Overview */}

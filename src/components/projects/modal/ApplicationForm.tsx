@@ -8,8 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft } from "lucide-react";
 import ApplicationFormHeader from "./ApplicationFormHeader";
-import { useState } from "react";
-import SuccessModal from "./SuccessModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 const applicationSchema = z.object({
   coverLetter: z
@@ -31,8 +30,8 @@ interface ApplicationFormProps {
 }
 
 const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: ApplicationFormProps) => {
-  const [showSuccess, setShowSuccess] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const form = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
     defaultValues: {
@@ -63,12 +62,16 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
 
       if (error) throw error;
 
+      // Show success message
       toast({
-        title: "Success",
+        title: "Application Submitted",
         description: "Your application has been submitted successfully!",
       });
 
-      // Close the form and refresh the data
+      // Refresh the applications data
+      await queryClient.invalidateQueries({ queryKey: ['applications'] });
+
+      // Close the modal
       onModalClose();
     } catch (error) {
       console.error("Error submitting application:", error);
@@ -79,15 +82,6 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
       });
     }
   };
-
-  if (showSuccess) {
-    return (
-      <SuccessModal
-        opportunityTitle={opportunity.title}
-        onClose={onModalClose}
-      />
-    );
-  }
 
   return (
     <div className="space-y-8">
