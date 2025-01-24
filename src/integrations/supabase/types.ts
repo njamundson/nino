@@ -248,6 +248,7 @@ export type Database = {
           instagram: string | null
           last_name: string | null
           location: string | null
+          notifications_enabled: boolean | null
           onboarding_completed: boolean | null
           profile_id: string | null
           profile_image_url: string | null
@@ -265,6 +266,7 @@ export type Database = {
           instagram?: string | null
           last_name?: string | null
           location?: string | null
+          notifications_enabled?: boolean | null
           onboarding_completed?: boolean | null
           profile_id?: string | null
           profile_image_url?: string | null
@@ -282,6 +284,7 @@ export type Database = {
           instagram?: string | null
           last_name?: string | null
           location?: string | null
+          notifications_enabled?: boolean | null
           onboarding_completed?: boolean | null
           profile_id?: string | null
           profile_image_url?: string | null

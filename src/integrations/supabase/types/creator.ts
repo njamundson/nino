@@ -13,6 +13,7 @@ export interface Creator {
   created_at: string;
   updated_at: string;
   profile_id: string | null;
+  notifications_enabled: boolean | null;
 }
 
 export interface CreatorProfile extends Creator {
