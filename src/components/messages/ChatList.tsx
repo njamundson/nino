@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ChatSearch } from "./chat-list/ChatSearch";
 import { EmptyState } from "./chat-list/EmptyState";
-import { MoreHorizontal, Trash2, Mail } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +40,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     };
 
     fetchCurrentUser();
-    subscribeToNewMessages();
+    const channel = subscribeToNewMessages();
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
 
   const subscribeToNewMessages = () => {
@@ -62,14 +67,11 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return channel;
   };
 
   const fetchChatUsers = async (userId: string) => {
     try {
-      // Fetch latest messages for each unique conversation
       const { data: messages, error } = await supabase
         .from('messages')
         .select(`
@@ -179,6 +181,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   };
 
   const filteredUsers = users.filter(user => {
+    if (!user?.otherUser) return false;
     const fullName = `${user.otherUser.firstName} ${user.otherUser.lastName}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase());
   });
@@ -215,7 +218,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={chat.otherUser.profileImage || ''} />
                     <AvatarFallback>
-                      {`${chat.otherUser.firstName[0]}${chat.otherUser.lastName[0] || ''}`}
+                      {`${chat.otherUser.firstName?.[0] || ''}${chat.otherUser.lastName?.[0] || ''}`}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
