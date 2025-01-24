@@ -9,11 +9,9 @@ export interface SkillsSelectionProps {
 
 const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
   const toggleSkill = (skill: string) => {
-    console.log('Toggling skill:', skill, 'Current skills:', skills);
     const updatedSkills = skills.includes(skill)
       ? skills.filter((s) => s !== skill)
       : [...skills, skill];
-    console.log('Updated skills:', updatedSkills);
     onUpdateSkills(updatedSkills);
   };
 
@@ -28,8 +26,8 @@ const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
             rounded-full px-6 py-3 h-auto text-base transition-all duration-200
             ${
               skills.includes(skill)
-                ? "bg-nino-primary text-white hover:bg-nino-primary/90 border-transparent"
-                : "bg-nino-bg border-transparent hover:border-nino-primary text-nino-text"
+                ? "bg-[#A55549] text-[#FFFFFF] hover:bg-[#A55549]/90 border-transparent"
+                : "bg-[#F9F6F2] border-transparent hover:border-[#A55549] text-[#282828]"
             }
           `}
         >
