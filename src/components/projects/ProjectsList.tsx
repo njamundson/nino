@@ -32,9 +32,12 @@ const ProjectsList = () => {
         throw error;
       }
 
-      console.log("Fetched opportunities with brands:", data);
-      return data;
+      console.log("Fetched opportunities:", data?.length || 0);
+      return data || [];
     },
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    gcTime: 1000 * 60 * 10, // Keep unused data in cache for 10 minutes
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
   });
 
   if (isLoading) {
@@ -63,7 +66,10 @@ const ProjectsList = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {opportunities.map((opportunity) => (
-        <ProjectCard key={opportunity.id} opportunity={opportunity} />
+        <ProjectCard 
+          key={opportunity.id} 
+          opportunity={opportunity}
+        />
       ))}
     </div>
   );

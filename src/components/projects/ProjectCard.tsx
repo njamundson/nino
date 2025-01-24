@@ -46,6 +46,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const handleViewDetails = () => {
     setIsLoading(true);
@@ -68,10 +69,17 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
         className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
         onClick={() => setShowModal(true)}
       >
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+        )}
         <img
           src={opportunity.image_url || "/placeholder.svg"}
           alt={opportunity.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setImageLoaded(true)}
+          loading="lazy"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
