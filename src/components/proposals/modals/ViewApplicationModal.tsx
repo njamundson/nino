@@ -23,13 +23,6 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
   const brandLocation = application.opportunity?.brand?.location;
   const title = application.opportunity?.title || "Untitled Opportunity";
 
-  const handleApply = () => {
-    if (onUpdateStatus) {
-      onUpdateStatus(application.id, 'accepted');
-      setShowApplicationForm(true);
-    }
-  };
-
   if (showApplicationForm && application.opportunity) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -139,10 +132,10 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
           </div>
 
           {/* Apply Now Button for Proposals */}
-          {type === 'proposal' && onUpdateStatus && (
+          {type === 'proposal' && (
             <div className="flex justify-end pt-4">
               <Button 
-                onClick={handleApply}
+                onClick={() => setShowApplicationForm(true)}
                 className="bg-[#A55549] hover:bg-[#A55549]/90 text-white"
               >
                 Apply Now
