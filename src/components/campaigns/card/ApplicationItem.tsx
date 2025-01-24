@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, MapPin, Globe, Instagram } from "lucide-react";
-import { useEffect } from "react";
 
 interface ApplicationItemProps {
   application: any;
@@ -15,16 +14,15 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
-  // Debug log to see the actual data structure
-  useEffect(() => {
-    console.log('Application data:', application);
-    console.log('Creator data:', application.creator);
-  }, [application]);
-
   const creator = application.creator;
-  const creatorName = creator?.first_name && creator?.last_name
-    ? `${creator.first_name} ${creator.last_name}`
-    : 'Anonymous Creator';
+  const profile = creator?.profile;
+  
+  // Get creator name from profile or creator directly
+  const creatorName = profile ? 
+    `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : 
+    creator?.first_name && creator?.last_name ? 
+      `${creator.first_name} ${creator.last_name}`.trim() : 
+      'Anonymous Creator';
 
   return (
     <div className="p-6 rounded-lg bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300">
@@ -40,8 +38,8 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
             ) : (
               <AvatarFallback className="bg-gray-100 text-gray-600 text-xl">
                 {getInitials(
-                  creator?.first_name || '',
-                  creator?.last_name || ''
+                  profile?.first_name || creator?.first_name || '',
+                  profile?.last_name || creator?.last_name || ''
                 )}
               </AvatarFallback>
             )}
