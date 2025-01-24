@@ -1,143 +1,170 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import PageHeader from "@/components/shared/PageHeader";
-import EditCampaignModal from "@/components/campaigns/EditCampaignModal";
 import CampaignCard from "@/components/campaigns/CampaignCard";
 import CampaignSkeleton from "@/components/campaigns/CampaignSkeleton";
 import EmptyCampaigns from "@/components/campaigns/EmptyCampaigns";
-import { useCampaignData } from "@/hooks/campaign/useCampaignData";
-import { useCampaignActions } from "@/hooks/campaign/useCampaignActions";
-import { motion, AnimatePresence } from "framer-motion";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import EditCampaignModal from "@/components/campaigns/EditCampaignModal";
+import { motion } from "framer-motion";
 
 const MyCampaigns = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const queryClient = useQueryClient();
-  
-  const { 
-    data: campaigns, 
-    isLoading, 
-    error,
-    refetch 
-  } = useCampaignData();
-  
-  const { handleDelete, handleUpdateApplicationStatus } = useCampaignActions();
 
-  // Initialize data and handle first load
-  useEffect(() => {
-    const initializeData = async () => {
-      try {
-        console.log('Initializing campaigns data');
-        // Force immediate refetch on mount
-        await refetch();
-        
-        // Invalidate after a delay to ensure fresh data
-        const timer = setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
-        }, 500);
+  // Fetch campaigns data
+  const { data: campaigns, isLoading, error } = useQuery({
+    queryKey: ['my-campaigns'],
+    queryFn: async () => {
+      console.log('Fetching campaigns data...');
+      
+      // Get current user's brand ID
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
 
-        return () => clearTimeout(timer);
-      } catch (err) {
-        console.error('Error initializing campaigns:', err);
-        toast.error('Error loading campaigns. Please try again.');
-      } finally {
-        setIsInitialLoad(false);
-      }
-    };
+      const { data: brand, error: brandError } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', user?.id)
+        .single();
+      
+      if (brandError) throw brandError;
 
-    if (isInitialLoad) {
-      initializeData();
-    }
-  }, [refetch, queryClient, isInitialLoad]);
+      // Fetch campaigns with related data
+      const { data, error: campaignsError } = await supabase
+        .from('opportunities')
+        .select(`
+          id,
+          title,
+          description,
+          start_date,
+          end_date,
+          status,
+          requirements,
+          perks,
+          location,
+          payment_details,
+          compensation_details,
+          deliverables,
+          image_url,
+          created_at,
+          applications (
+            id,
+            status,
+            cover_letter,
+            creator:creators (
+              id,
+              profile_image_url,
+              user_id,
+              profile:profiles (
+                first_name,
+                last_name
+              )
+            )
+          )
+        `)
+        .eq('brand_id', brand.id)
+        .order('created_at', { ascending: false });
 
-  // Animation variants
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        duration: 0.2
-      }
+      if (campaignsError) throw campaignsError;
+      
+      console.log('Campaigns fetched:', data?.length);
+      return data || [];
+    },
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+  // Handle campaign deletion
+  const handleDelete = async (campaignId: string) => {
+    try {
+      const { error } = await supabase
+        .from('opportunities')
+        .delete()
+        .eq('id', campaignId);
+
+      if (error) throw error;
+
+      toast.success('Campaign deleted successfully');
+    } catch (error) {
+      console.error('Error deleting campaign:', error);
+      toast.error('Failed to delete campaign');
     }
   };
 
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.3
-      }
+  // Handle application status updates
+  const handleUpdateApplicationStatus = async (applicationId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: newStatus })
+        .eq('id', applicationId);
+
+      if (error) throw error;
+
+      toast.success('Application status updated');
+    } catch (error) {
+      console.error('Error updating application status:', error);
+      toast.error('Failed to update application status');
     }
   };
+
+  if (error) {
+    return (
+      <div className="p-8">
+        <PageHeader
+          title="My Campaigns"
+          description="Manage and track all your creator campaigns."
+        />
+        <div className="mt-8 text-center py-12 bg-red-50 rounded-lg">
+          <p className="text-red-600">
+            Error loading campaigns. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="p-4 md:p-8 space-y-8">
       <PageHeader
         title="My Campaigns"
         description="Manage and track all your creator campaigns."
       />
 
-      <AnimatePresence mode="wait">
-        {isLoading || isInitialLoad ? (
-          <motion.div 
-            className="space-y-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {[1, 2, 3].map((i) => (
-              <CampaignSkeleton key={i} />
-            ))}
-          </motion.div>
-        ) : error ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-8"
-          >
-            <p className="text-gray-500">
-              There was an error loading your campaigns. Please try again.
-            </p>
-          </motion.div>
-        ) : campaigns && campaigns.length > 0 ? (
-          <motion.div
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="grid gap-6"
-          >
-            {campaigns.map((campaign) => (
-              <motion.div
-                key={campaign.id}
-                variants={item}
-                layout
-              >
-                <CampaignCard
-                  campaign={campaign}
-                  applications={campaign.applications}
-                  onEdit={setEditingCampaign}
-                  onDelete={handleDelete}
-                  onUpdateApplicationStatus={handleUpdateApplicationStatus}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <EmptyCampaigns />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isLoading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <CampaignSkeleton key={i} />
+          ))}
+        </div>
+      ) : campaigns && campaigns.length > 0 ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="grid gap-6"
+        >
+          {campaigns.map((campaign) => (
+            <motion.div
+              key={campaign.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CampaignCard
+                campaign={campaign}
+                applications={campaign.applications}
+                onEdit={setEditingCampaign}
+                onDelete={handleDelete}
+                onUpdateApplicationStatus={handleUpdateApplicationStatus}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      ) : (
+        <EmptyCampaigns />
+      )}
 
       {editingCampaign && (
         <EditCampaignModal
