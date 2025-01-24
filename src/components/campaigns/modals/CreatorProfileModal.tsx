@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Creator } from "@/types/creator";
 import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
-import { CreatorSpecialties } from "@/components/campaigns/card/creator/CreatorSpecialties";
-import { CreatorSocials } from "@/components/campaigns/card/creator/CreatorSocials";
+import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
+import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -63,47 +63,20 @@ const CreatorProfileModal = ({
           <div className="flex flex-col h-full max-h-[80vh]">
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Creator Image */}
-                <div className="relative w-full">
-                  <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
-                    <img
-                      src={creator?.profile_image_url}
-                      alt={getDisplayName()}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
+                <CreatorImage 
+                  profileImageUrl={creator.profile_image_url} 
+                  fullName={getDisplayName()} 
+                />
 
-                {/* Creator Info */}
                 <div className="flex flex-col space-y-6">
-                  <h2 className="text-3xl font-semibold text-nino-text">
-                    {getDisplayName()}
-                  </h2>
-
-                  {/* Location */}
-                  <p className="text-nino-gray flex items-center gap-2">
-                    <span className="text-lg">📍</span> {creator?.location || "Location not specified"}
-                  </p>
-
-                  {/* Social Links */}
-                  <CreatorSocials 
-                    creator={creator} 
+                  <CreatorBio
+                    bio={creator.bio}
+                    specialties={creator.specialties}
+                    location={creator.location}
+                    instagram={creator.instagram}
+                    website={creator.website}
                     onMessageClick={onMessageCreator}
                   />
-
-                  {/* About Section */}
-                  <div className="space-y-3">
-                    <h3 className="text-2xl font-semibold text-nino-text">About</h3>
-                    <p className="text-nino-text/90 leading-relaxed">
-                      {creator?.bio || "No bio available"}
-                    </p>
-                  </div>
-
-                  {/* Specialties */}
-                  <div className="space-y-3">
-                    <h3 className="text-2xl font-semibold text-nino-text">Specialties</h3>
-                    <CreatorSpecialties specialties={creator?.specialties} />
-                  </div>
 
                   {/* Application Message */}
                   {coverLetter && (
