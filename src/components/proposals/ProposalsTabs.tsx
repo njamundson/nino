@@ -18,16 +18,20 @@ const ProposalsTabs = ({
 }: ProposalsTabsProps) => {
   const isMobile = useIsMobile();
 
+  // Filter applications to separate user-initiated applications from brand invitations
+  const userApplications = myApplications.filter(app => !app.is_invitation);
+  const pendingInvitations = myApplications.filter(app => app.is_invitation);
+
   return (
     <Tabs defaultValue="pending" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 p-1 rounded-full bg-nino-bg">
+      <TabsList className="grid w-full grid-cols-3 p-1 rounded-full bg-nino-bg">
         <TabsTrigger 
           value="pending" 
           className="rounded-full data-[state=active]:bg-white flex items-center justify-center gap-2 transition-all duration-300 px-3 py-2"
         >
           <Inbox className="w-4 h-4 shrink-0" />
           <span className={`${isMobile ? 'text-xs' : 'text-sm'} whitespace-nowrap`}>
-            Pending ({pendingProposals.length})
+            Pending Invitations ({pendingInvitations.length})
           </span>
         </TabsTrigger>
         <TabsTrigger 
@@ -36,14 +40,14 @@ const ProposalsTabs = ({
         >
           <Send className="w-4 h-4 shrink-0" />
           <span className={`${isMobile ? 'text-xs' : 'text-sm'} whitespace-nowrap`}>
-            Applied ({myApplications.length})
+            Applied ({userApplications.length})
           </span>
         </TabsTrigger>
       </TabsList>
       
       <TabsContent value="pending" className="mt-4">
         <ProposalsList
-          applications={pendingProposals}
+          applications={pendingInvitations}
           isLoading={isLoading}
           onUpdateStatus={onUpdateStatus}
           type="proposal"
@@ -52,7 +56,7 @@ const ProposalsTabs = ({
       
       <TabsContent value="applications" className="mt-4">
         <ProposalsList
-          applications={myApplications}
+          applications={userApplications}
           isLoading={isLoading}
           onUpdateStatus={onUpdateStatus}
           type="application"

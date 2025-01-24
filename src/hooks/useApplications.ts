@@ -16,37 +16,9 @@ export const useApplications = (brandId?: string) => {
             *,
             opportunity:opportunities!inner (
               *,
-              brand:brands (
-                id,
-                user_id,
-                company_name,
-                brand_type,
-                description,
-                website,
-                instagram,
-                location,
-                phone_number,
-                support_email,
-                profile_image_url,
-                sms_notifications_enabled,
-                two_factor_enabled,
-                created_at,
-                updated_at,
-                onboarding_completed
-              )
+              brand:brands (*)
             ),
-            creator:creators!inner (
-              id,
-              first_name,
-              last_name,
-              profile_image_url,
-              location,
-              instagram,
-              website,
-              creator_type,
-              specialties,
-              user_id
-            )
+            creator:creators!inner (*)
           `)
           .eq('status', 'pending')
           .eq('opportunities.brand_id', brandId);
@@ -75,47 +47,26 @@ export const useApplications = (brandId?: string) => {
           *,
           opportunity:opportunities (
             *,
-            brand:brands (
-              id,
-              user_id,
-              company_name,
-              brand_type,
-              description,
-              website,
-              instagram,
-              location,
-              phone_number,
-              support_email,
-              profile_image_url,
-              sms_notifications_enabled,
-              two_factor_enabled,
-              created_at,
-              updated_at,
-              onboarding_completed
-            )
+            brand:brands (*)
           ),
-          creator:creators (
-            id,
-            first_name,
-            last_name,
-            profile_image_url,
-            location,
-            instagram,
-            website,
-            creator_type,
-            specialties,
-            user_id
-          )
+          creator:creators (*)
         `)
-        .eq('creator_id', creator.id);
+        .eq('creator_id', creator.id)
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching applications:', error);
         throw error;
       }
 
-      console.log('Fetched applications data:', data);
-      return data || [];
+      // Add is_invitation flag based on who initiated the application
+      const applicationsWithFlag = data?.map(app => ({
+        ...app,
+        is_invitation: app.initiated_by === 'brand'
+      })) || [];
+
+      console.log('Fetched applications data:', applicationsWithFlag);
+      return applicationsWithFlag;
     },
     enabled: true
   });
