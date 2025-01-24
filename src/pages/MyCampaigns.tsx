@@ -7,11 +7,20 @@ import EmptyCampaigns from "@/components/campaigns/EmptyCampaigns";
 import { useCampaignData } from "@/hooks/campaign/useCampaignData";
 import { useCampaignActions } from "@/hooks/campaign/useCampaignActions";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 
 const MyCampaigns = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
-  const { data: campaigns, isLoading } = useCampaignData();
+  const { data: campaigns, isLoading, error, refetch } = useCampaignData();
   const { handleDelete, handleUpdateApplicationStatus } = useCampaignActions();
+
+  // Attempt to refetch on mount and if there's an error
+  useEffect(() => {
+    if (error) {
+      console.error('Error loading campaigns:', error);
+      refetch();
+    }
+  }, [error, refetch]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -54,6 +63,16 @@ const MyCampaigns = () => {
             {[1, 2, 3].map((i) => (
               <CampaignSkeleton key={i} />
             ))}
+          </motion.div>
+        ) : error ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-8"
+          >
+            <p className="text-gray-500">
+              There was an error loading your campaigns. Please try again.
+            </p>
           </motion.div>
         ) : campaigns && campaigns.length > 0 ? (
           <motion.div
