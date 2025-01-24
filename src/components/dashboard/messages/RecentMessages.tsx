@@ -3,9 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@supabase/auth-helpers-react";
 
 const RecentMessages = () => {
-  const { data: messages, isLoading } = useMessages();
+  const auth = useAuth();
+  const { data: messages, isLoading } = useMessages(auth?.user?.id || "");
 
   return (
     <motion.div
@@ -42,7 +44,7 @@ const RecentMessages = () => {
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="font-medium text-gray-900">
-                          {message.sender_first_name} {message.sender_last_name}
+                          {message.profiles.first_name} {message.profiles.last_name}
                         </p>
                         <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                           {message.content}
