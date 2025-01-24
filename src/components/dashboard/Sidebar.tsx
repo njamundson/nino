@@ -70,7 +70,10 @@ const Sidebar = () => {
           loading="eager"
           fetchPriority="high"
           decoding="sync"
-          style={{ imageRendering: 'crisp-edges' }}
+          style={{ 
+            imageRendering: 'crisp-edges',
+            willChange: 'transform' // Optimize for GPU acceleration
+          }}
         />
       </div>
 
