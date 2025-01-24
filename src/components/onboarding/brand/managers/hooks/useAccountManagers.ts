@@ -33,8 +33,12 @@ export const useAccountManagers = () => {
 
       if (!brandData) throw new Error("Brand not found");
 
+      // Generate a temporary UUID for the user_id that will be updated when the invitation is accepted
+      const tempUserId = crypto.randomUUID();
+
       const newManager = {
         brand_id: brandData.id,
+        user_id: tempUserId, // Add temporary user_id
         name: formData.get("managerName") as string,
         email: formData.get("managerEmail") as string,
         role: formData.get("managerRole") as string,
