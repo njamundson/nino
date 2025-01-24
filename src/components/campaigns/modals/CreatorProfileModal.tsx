@@ -161,21 +161,21 @@ const CreatorProfileModal = ({
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-4">
                 <Button
-                  onClick={() => setShowAcceptDialog(true)}
-                  disabled={isProcessing || isRejecting}
-                  className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
-                >
-                  <CheckSquare className="w-5 h-5 mr-2" />
-                  Accept
-                </Button>
-                <Button
                   onClick={handleReject}
                   disabled={isProcessing || isRejecting}
                   variant="outline"
-                  className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                  className="border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 py-6 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200 font-medium"
                 >
                   <XSquare className="w-5 h-5 mr-2" />
                   Reject
+                </Button>
+                <Button
+                  onClick={() => setShowAcceptDialog(true)}
+                  disabled={isProcessing || isRejecting}
+                  className="bg-black hover:bg-black/90 text-white py-6 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200 font-medium"
+                >
+                  <CheckSquare className="w-5 h-5 mr-2" />
+                  Accept
                 </Button>
               </div>
             </div>
