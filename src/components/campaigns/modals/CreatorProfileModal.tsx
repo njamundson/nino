@@ -7,12 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
-import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
-import CreatorSocialLinks from "@/components/creators/modal/profile/CreatorSocialLinks";
-import ActionButtons from "./profile/ActionButtons";
+import CreatorProfile from "@/components/creators/modal/CreatorProfile";
 import ApplicationMessage from "./profile/ApplicationMessage";
 import AcceptDialog from "./profile/AcceptDialog";
+import { Button } from "@/components/ui/button";
+import { CheckSquare, XSquare } from "lucide-react";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -121,42 +120,42 @@ const CreatorProfileModal = ({
     }
   };
 
-  // Use first_name and last_name directly from the creator object
-  const fullName = `${creator?.first_name || ''} ${creator?.last_name || ''}`.trim();
-
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-3xl">
-          <div className="w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-              <CreatorImage 
-                profileImageUrl={creator?.profile_image_url} 
-                fullName={fullName}
-              />
+          <div className="flex flex-col space-y-6">
+            <CreatorProfile
+              creator={creator}
+              onInviteClick={() => {}}
+              onMessageClick={onMessageCreator}
+            />
+            
+            <div className="px-6 pb-6 space-y-6">
+              <ApplicationMessage coverLetter={coverLetter} />
               
-              <div className="flex flex-col h-full space-y-6">
-                <CreatorBio 
-                  bio={creator?.bio}
-                  location={creator?.location}
-                  specialties={creator?.specialties}
-                  instagram={creator?.instagram}
-                  website={creator?.website}
-                  onMessageClick={onMessageCreator}
-                />
-
-                <CreatorSocialLinks 
-                  instagram={creator?.instagram}
-                  website={creator?.website}
-                />
-
-                <ApplicationMessage coverLetter={coverLetter} />
-
-                <ActionButtons
-                  onAccept={() => setShowAcceptDialog(true)}
-                  onReject={handleReject}
-                  isProcessing={isProcessing}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <Button
+                  onClick={() => setShowAcceptDialog(true)}
+                  disabled={isProcessing}
+                  className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  {isProcessing ? (
+                    <div className="animate-spin">⌛</div>
+                  ) : (
+                    <CheckSquare className="w-5 h-5 mr-2" />
+                  )}
+                  Accept
+                </Button>
+                <Button
+                  onClick={handleReject}
+                  disabled={isProcessing}
+                  variant="outline"
+                  className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
+                >
+                  <XSquare className="w-5 h-5 mr-2" />
+                  Reject
+                </Button>
               </div>
             </div>
           </div>
@@ -167,7 +166,7 @@ const CreatorProfileModal = ({
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
         onConfirm={handleAcceptConfirm}
-        creatorName={fullName}
+        creatorName={`${creator?.first_name || ''} ${creator?.last_name || ''}`.trim()}
         isProcessing={isProcessing}
       />
     </>
