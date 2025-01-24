@@ -60,12 +60,12 @@ const BrandSidebar = () => {
         animate={{ opacity: 1, x: 0 }}
         className="h-full bg-white rounded-xl shadow-sm flex flex-col"
       >
-        <div className="px-3 pt-6 pb-4">
+        <div className="px-3 pt-8 pb-6">
           <Link to="/brand/dashboard" className="flex items-center px-4">
             <motion.img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
-              className="h-12"
+              className="h-16"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             />
