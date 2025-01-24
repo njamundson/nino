@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import AccountSettings from "@/components/settings/AccountSettings";
-import NotificationSettings from "@/components/settings/NotificationSettings";
-import ProfileSettings from "@/components/settings/ProfileSettings";
+import BrandProfileSettings from "@/components/settings/brand/pages/BrandProfileSettings";
+import BrandNotificationSettings from "@/components/settings/brand/pages/BrandNotificationSettings";
+import BrandAccountSettings from "@/components/settings/brand/pages/BrandAccountSettings";
 
 type SettingsPage = "profile" | "notifications" | "account" | "menu";
 
@@ -15,9 +15,9 @@ const BrandSettings = () => {
   };
 
   const pages: Record<SettingsPage, React.ReactNode> = {
-    profile: <ProfileSettings onBack={handleBackToMenu} />,
-    notifications: <NotificationSettings onBack={handleBackToMenu} />,
-    account: <AccountSettings onBack={handleBackToMenu} />,
+    profile: <BrandProfileSettings onBack={handleBackToMenu} />,
+    notifications: <BrandNotificationSettings onBack={handleBackToMenu} />,
+    account: <BrandAccountSettings onBack={handleBackToMenu} />,
     menu: null
   };
 
@@ -35,7 +35,7 @@ const BrandSettings = () => {
             <h1 className="text-3xl font-semibold text-nino-text mb-8">Settings</h1>
             <div className="space-y-3">
               <SettingsButton
-                label="Profile Settings"
+                label="Brand Profile"
                 onClick={() => setCurrentPage("profile")}
               />
               <SettingsButton
