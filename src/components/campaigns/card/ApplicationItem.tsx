@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, MessageSquare, MapPin, Globe, Instagram } from "lucide-react";
+import { Eye, MapPin, Globe, Instagram } from "lucide-react";
 import { useEffect } from "react";
 
 interface ApplicationItemProps {
@@ -10,7 +10,7 @@ interface ApplicationItemProps {
   onMessageCreator: () => void;
 }
 
-const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: ApplicationItemProps) => {
+const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) => {
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
@@ -117,7 +117,7 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
             </div>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div>
           <Button
             size="sm"
             variant="outline"
@@ -126,15 +126,6 @@ const ApplicationItem = ({ application, onViewProfile, onMessageCreator }: Appli
           >
             <Eye className="h-4 w-4 mr-1.5" />
             View Profile
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onMessageCreator}
-            className="text-gray-600 hover:text-gray-900 rounded-full"
-          >
-            <MessageSquare className="h-4 w-4 mr-1.5" />
-            Message
           </Button>
         </div>
       </div>
