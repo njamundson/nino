@@ -112,7 +112,21 @@ const CreatorProfileModal = ({
     }
   };
 
-  const displayName = creator?.first_name || 'Anonymous Creator';
+  const getDisplayName = () => {
+    console.log("Creator data in display name:", creator);
+    
+    if (creator?.first_name) {
+      return creator.first_name;
+    }
+    
+    if (creator?.profile?.first_name) {
+      return creator.profile.first_name;
+    }
+    
+    return 'Anonymous Creator';
+  };
+
+  const displayName = getDisplayName();
 
   return (
     <>
