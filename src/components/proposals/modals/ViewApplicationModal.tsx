@@ -4,6 +4,8 @@ import { Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Application } from "@/integrations/supabase/types/opportunity";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import ApplicationForm from "@/components/projects/modal/ApplicationForm";
 
 interface ViewApplicationModalProps {
   isOpen: boolean;
@@ -14,10 +16,34 @@ interface ViewApplicationModalProps {
 }
 
 const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStatus }: ViewApplicationModalProps) => {
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  
   // Add null checks and default values
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
   const brandLocation = application.opportunity?.brand?.location;
   const title = application.opportunity?.title || "Untitled Opportunity";
+
+  const handleApply = () => {
+    if (onUpdateStatus) {
+      onUpdateStatus(application.id, 'accepted');
+      setShowApplicationForm(true);
+    }
+  };
+
+  if (showApplicationForm && application.opportunity) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ApplicationForm
+            opportunity={application.opportunity}
+            onBack={() => setShowApplicationForm(false)}
+            onClose={onClose}
+            onModalClose={onClose}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -53,16 +79,6 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
               </div>
             )}
           </div>
-
-          {/* Your Application */}
-          {application.cover_letter && (
-            <div className="space-y-2">
-              <h4 className="text-lg font-medium">Your Application</h4>
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <p className="text-muted-foreground whitespace-pre-line">{application.cover_letter}</p>
-              </div>
-            </div>
-          )}
 
           {/* Project Details */}
           <div className="space-y-4">
@@ -126,8 +142,8 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
           {type === 'proposal' && onUpdateStatus && (
             <div className="flex justify-end pt-4">
               <Button 
-                onClick={() => onUpdateStatus(application.id, 'accepted')}
-                variant="default"
+                onClick={handleApply}
+                className="bg-[#A55549] hover:bg-[#A55549]/90 text-white"
               >
                 Apply Now
               </Button>
