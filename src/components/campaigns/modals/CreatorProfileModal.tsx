@@ -11,7 +11,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import AcceptDialog from "./profile/AcceptDialog";
-import ApplicationMessage from "./profile/ApplicationMessage";
 import { CreatorInfo } from "../card/creator/CreatorInfo";
 import { CreatorSocials } from "../card/creator/CreatorSocials";
 import { CreatorSpecialties } from "../card/creator/CreatorSpecialties";
@@ -119,13 +118,18 @@ const CreatorProfileModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-white rounded-3xl">
-          <DialogTitle className="text-2xl font-semibold p-6 pb-2">
-            <CreatorInfo creator={creator} />
-          </DialogTitle>
-          
+        <DialogContent className="max-w-[800px] p-6 overflow-hidden bg-white rounded-3xl">
           <div className="flex flex-col h-full max-h-[80vh]">
-            <div className="flex-1 overflow-y-auto p-6 pt-2">
+            {/* Header Section */}
+            <div className="mb-6">
+              <CreatorInfo creator={creator} />
+              <div className="mt-4">
+                <CreatorSocials creator={creator} onMessageClick={onMessageCreator} />
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Creator Image */}
                 <div className="relative w-full">
@@ -140,12 +144,10 @@ const CreatorProfileModal = ({
 
                 {/* Creator Info */}
                 <div className="flex flex-col space-y-6">
-                  <CreatorSocials creator={creator} onMessageClick={onMessageCreator} />
-
                   {/* About Section */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-nino-text">About</h3>
-                    <p className="text-base leading-relaxed text-nino-text/90">
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-semibold text-gray-900">About</h3>
+                    <p className="text-gray-600 leading-relaxed">
                       {creator?.bio || "No bio available"}
                     </p>
                   </div>
@@ -153,38 +155,43 @@ const CreatorProfileModal = ({
                   {/* Specialties */}
                   {creator?.specialties?.length > 0 && (
                     <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
+                      <h3 className="text-xl font-semibold text-gray-900">Specialties</h3>
                       <CreatorSpecialties specialties={creator.specialties} />
                     </div>
                   )}
 
                   {/* Application Message */}
-                  <ApplicationMessage coverLetter={coverLetter} />
+                  {coverLetter && (
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                      <h3 className="font-medium text-gray-900 mb-2">Application Message</h3>
+                      <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                        {coverLetter}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons - Fixed at bottom */}
-            <div className="p-6 border-t border-gray-100 mt-auto">
-              <div className="grid grid-cols-2 gap-4">
-                <Button
-                  onClick={handleReject}
-                  disabled={isProcessing || isRejecting}
-                  variant="outline"
-                  className="border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 py-6 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200 font-medium"
-                >
-                  <XSquare className="w-5 h-5 mr-2" />
-                  Reject
-                </Button>
-                <Button
-                  onClick={() => setShowAcceptDialog(true)}
-                  disabled={isProcessing || isRejecting}
-                  className="bg-black hover:bg-black/90 text-white py-6 rounded-2xl shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.08)] transition-all duration-200 font-medium"
-                >
-                  <CheckSquare className="w-5 h-5 mr-2" />
-                  Accept
-                </Button>
-              </div>
+            {/* Action Buttons */}
+            <div className="mt-6 grid grid-cols-2 gap-4">
+              <Button
+                onClick={handleReject}
+                disabled={isProcessing || isRejecting}
+                variant="outline"
+                className="py-6 rounded-2xl"
+              >
+                <XSquare className="w-5 h-5 mr-2" />
+                Reject
+              </Button>
+              <Button
+                onClick={() => setShowAcceptDialog(true)}
+                disabled={isProcessing || isRejecting}
+                className="bg-black hover:bg-black/90 text-white py-6 rounded-2xl"
+              >
+                <CheckSquare className="w-5 h-5 mr-2" />
+                Accept
+              </Button>
             </div>
           </div>
         </DialogContent>

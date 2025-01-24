@@ -26,22 +26,24 @@ export const CreatorInfo = ({ creator }: CreatorInfoProps) => {
   const displayName = getDisplayName();
 
   return (
-    <div>
+    <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <h4 className="text-2xl font-semibold text-gray-900">
+        <h2 className="text-3xl font-semibold text-gray-900">
           {displayName}
-        </h4>
-        {creator?.creator_type && (
+        </h2>
+      </div>
+      {creator?.location && (
+        <p className="text-gray-600 flex items-center gap-1.5">
+          <MapPin className="w-4 h-4" />
+          {creator.location}
+        </p>
+      )}
+      {creator?.creator_type && (
+        <div className="flex flex-wrap gap-2 mt-2">
           <Badge variant="secondary" className="capitalize">
             {creator.creator_type}
           </Badge>
-        )}
-      </div>
-      {creator?.location && (
-        <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-1">
-          <MapPin className="w-3.5 h-3.5" />
-          {creator.location}
-        </p>
+        </div>
       )}
     </div>
   );
