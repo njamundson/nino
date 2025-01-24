@@ -35,8 +35,25 @@ const ChatMessages = ({
   useEffect(() => {
     if (!selectedChat || !currentUserId) return;
 
-    console.log('Setting up real-time subscription for messages...');
+    // Mark messages as read when viewed
+    const markMessagesAsRead = async () => {
+      try {
+        const { error } = await supabase
+          .from('messages')
+          .update({ read: true })
+          .eq('sender_id', selectedChat)
+          .eq('receiver_id', currentUserId)
+          .eq('read', false);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error marking messages as read:', error);
+      }
+    };
+
+    markMessagesAsRead();
     
+    // Subscribe to new messages
     const channel = supabase
       .channel('messages')
       .on(
@@ -65,43 +82,13 @@ const ChatMessages = ({
           scrollToBottom();
         }
       )
-      .subscribe(status => {
-        console.log('Subscription status:', status);
-      });
+      .subscribe();
 
     return () => {
       console.log('Cleaning up message subscription');
       supabase.removeChannel(channel);
     };
   }, [selectedChat, currentUserId]);
-
-  useEffect(() => {
-    if (!selectedChat) return;
-
-    console.log('Setting up typing status subscription...');
-    
-    const channel = supabase
-      .channel('typing_channel')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'typing_status',
-          filter: `chat_with=eq.${selectedChat}`
-        },
-        (payload) => {
-          console.log('Typing status changed:', payload);
-          scrollToBottom();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      console.log('Cleaning up typing subscription');
-      supabase.removeChannel(channel);
-    };
-  }, [selectedChat]);
 
   const messagesByDate = messages.reduce((groups: { [key: string]: Message[] }, message) => {
     const date = new Date(message.created_at).toLocaleDateString();

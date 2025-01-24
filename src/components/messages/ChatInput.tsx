@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Send } from "lucide-react";
+import { Mic, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ChatInputProps {
@@ -13,24 +12,29 @@ interface ChatInputProps {
   selectedChat: string | null;
   editingMessage: { id: string; content: string; } | null;
   setEditingMessage: (message: { id: string; content: string; } | null) => void;
-  isLoading?: boolean;
 }
 
-const ChatInput = ({ 
-  newMessage, 
-  setNewMessage, 
-  handleSendMessage, 
-  isRecording, 
-  setIsRecording, 
+const ChatInput = ({
+  newMessage,
+  setNewMessage,
+  handleSendMessage,
+  isRecording,
+  setIsRecording,
   selectedChat,
   editingMessage,
   setEditingMessage,
-  isLoading 
 }: ChatInputProps) => {
-  const [isTyping, setIsTyping] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const updateTypingStatus = async (typing: boolean) => {
+  useEffect(() => {
+    return () => {
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+    };
+  }, [typingTimeout]);
+
+  const updateTypingStatus = async (isTyping: boolean) => {
     if (!selectedChat) return;
 
     try {
@@ -39,88 +43,87 @@ const ChatInput = ({
 
       const { error } = await supabase
         .from('typing_status')
-        .upsert(
-          {
-            user_id: user.id,
-            chat_with: selectedChat,
-            is_typing: typing
-          },
-          {
-            onConflict: 'user_id,chat_with'
-          }
-        );
+        .upsert({
+          user_id: user.id,
+          chat_with: selectedChat,
+          is_typing: isTyping
+        }, {
+          onConflict: 'user_id,chat_with'
+        });
 
-      if (error) {
-        console.error('Error updating typing status:', error);
-      }
+      if (error) throw error;
     } catch (error) {
-      console.error('Error in updateTypingStatus:', error);
+      console.error('Error updating typing status:', error);
     }
   };
 
-  useEffect(() => {
-    return () => {
-      if (typingTimeout) {
-        clearTimeout(typingTimeout);
-      }
-      updateTypingStatus(false);
-    };
-  }, [selectedChat]);
-
-  const handleTyping = () => {
-    if (!isTyping) {
-      setIsTyping(true);
-      updateTypingStatus(true);
-    }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
 
     if (typingTimeout) {
       clearTimeout(typingTimeout);
     }
 
+    updateTypingStatus(true);
+
     const timeout = setTimeout(() => {
-      setIsTyping(false);
       updateTypingStatus(false);
     }, 2000);
 
     setTypingTimeout(timeout);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !selectedChat) return;
-
-    handleSendMessage();
-    setIsTyping(false);
-    updateTypingStatus(false);
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border-t bg-background">
-      <div className="flex gap-2">
-        <Textarea
+    <div className="p-4 border-t border-gray-100 bg-white">
+      <div className="flex items-center gap-2">
+        {editingMessage && (
+          <div className="absolute -top-8 left-0 right-0 bg-gray-50 p-2 text-sm text-gray-600 flex items-center justify-between">
+            <span>Editing message</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setEditingMessage(null)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        <input
+          type="text"
           value={newMessage}
-          onChange={(e) => {
-            setNewMessage(e.target.value);
-            handleTyping();
-          }}
+          onChange={handleInputChange}
+          onKeyPress={handleKeyPress}
           placeholder="Type a message..."
-          className="min-h-[44px] rounded-2xl border-gray-200 focus:border-nino-primary focus:ring-1 focus:ring-nino-primary resize-none overflow-hidden"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit(e);
-            }
-          }}
+          className="flex-1 bg-gray-50 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors"
         />
-        <Button 
-          type="submit" 
-          size="icon"
-          disabled={isLoading || !newMessage.trim()}
-        >
-          <Send className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          {!isRecording && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsRecording(true)}
+              className="rounded-full"
+            >
+              <Mic className="h-5 w-5 text-gray-500" />
+            </Button>
+          )}
+          <Button
+            onClick={handleSendMessage}
+            disabled={!newMessage.trim() && !isRecording}
+            className="rounded-full"
+          >
+            <Send className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
-    </form>
+    </div>
   );
 };
 

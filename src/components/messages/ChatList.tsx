@@ -23,19 +23,29 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [users, setUsers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        
+        setCurrentUser(user);
+        if (user) {
+          await fetchChatUsers(user.id);
+        }
+      } catch (error) {
         console.error('Error fetching current user:', error);
-        return;
-      }
-      setCurrentUser(user);
-      if (user) {
-        fetchChatUsers(user.id);
+        toast({
+          title: "Error",
+          description: "Failed to load user data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -185,6 +195,14 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     const fullName = `${user.otherUser.firstName} ${user.otherUser.lastName}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase());
   });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">
