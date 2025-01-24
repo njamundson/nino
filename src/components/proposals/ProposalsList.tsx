@@ -2,8 +2,7 @@ import { Card } from "@/components/ui/card";
 import ProposalCard from "./ProposalCard";
 import { FileSpreadsheet, Send } from "lucide-react";
 import { Application } from "@/integrations/supabase/types/opportunity";
-import { motion, AnimatePresence } from "framer-motion";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { motion } from "framer-motion";
 
 interface ProposalsListProps {
   applications: Application[];
@@ -17,18 +16,7 @@ const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: Propos
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3].map((i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: i * 0.1 }}
-          >
-            <Card className="h-[400px] relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <LoadingSpinner />
-              </div>
-            </Card>
-          </motion.div>
+          <Card key={i} className="h-[400px] animate-pulse bg-gray-100" />
         ))}
       </div>
     );
@@ -70,27 +58,24 @@ const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: Propos
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <AnimatePresence>
-        {applications.map((application, index) => (
-          <motion.div
-            key={application.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ 
-              duration: 0.4, 
-              ease: "easeOut",
-              delay: index * 0.1
-            }}
-          >
-            <ProposalCard
-              application={application}
-              type={type}
-              onUpdateStatus={onUpdateStatus}
-            />
-          </motion.div>
-        ))}
-      </AnimatePresence>
+      {applications.map((application, index) => (
+        <motion.div
+          key={application.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 0.4, 
+            ease: "easeOut",
+            delay: index * 0.1 // Stagger the animations
+          }}
+        >
+          <ProposalCard
+            application={application}
+            type={type}
+            onUpdateStatus={onUpdateStatus}
+          />
+        </motion.div>
+      ))}
     </div>
   );
 };

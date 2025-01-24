@@ -5,30 +5,10 @@ import ProposalsTabs from "@/components/proposals/ProposalsTabs";
 import { useApplications } from "@/hooks/useApplications";
 import { Application } from "@/integrations/supabase/types/opportunity";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
 
 const Proposals = () => {
   const { toast } = useToast();
-  const { 
-    data: applications, 
-    isLoading: isLoadingApplications, 
-    error,
-    refetch 
-  } = useApplications();
-
-  // Refetch on mount and when auth state changes
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        console.log('Auth state changed, refetching applications...');
-        await refetch();
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [refetch]);
+  const { data: applications, isLoading: isLoadingApplications, error } = useApplications();
 
   const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected') => {
     try {
@@ -43,9 +23,6 @@ const Proposals = () => {
         title: `Application ${newStatus}`,
         description: `The application has been ${newStatus} successfully.`,
       });
-
-      // Refetch applications after status update
-      await refetch();
     } catch (error) {
       console.error('Error updating application status:', error);
       toast({
@@ -57,7 +34,6 @@ const Proposals = () => {
   };
 
   if (error) {
-    console.error('Error loading proposals:', error);
     toast({
       title: "Error",
       description: "Failed to load proposals. Please refresh the page.",
