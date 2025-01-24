@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../dashboard/BrandSidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { AnimatePresence, motion } from "framer-motion";
+import { LoadingSpinner } from "../ui/loading-spinner";
+import { Suspense } from "react";
 
 const BrandLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const location = useLocation();
 
   return (
     <div className="flex min-h-screen bg-nino-bg">
@@ -29,13 +33,22 @@ const BrandLayout = () => {
 
       {isMobile && isMobileMenuOpen && (
         <>
-          <div 
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          <div className="fixed inset-y-0 left-0 z-40 w-64">
+          <motion.div 
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -100, opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-y-0 left-0 z-40 w-64"
+          >
             <Sidebar />
-          </div>
+          </motion.div>
         </>
       )}
 
@@ -48,7 +61,28 @@ const BrandLayout = () => {
         </div>
         
         <div className="p-4 pt-28 md:p-8 md:pt-32">
-          <Outlet />
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <LoadingSpinner size="lg" />
+            </div>
+          }>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ 
+                  duration: 0.3,
+                  type: "spring",
+                  damping: 25,
+                  stiffness: 200
+                }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
+          </Suspense>
         </div>
       </div>
     </div>
