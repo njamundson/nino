@@ -5,7 +5,7 @@ import { MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 
 const RecentMessages = () => {
-  const { messages, isLoading } = useMessages();
+  const { data: messages, isLoading } = useMessages();
 
   return (
     <motion.div
@@ -13,7 +13,7 @@ const RecentMessages = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.2 }}
     >
-      <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden">
+      <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-shadow duration-200">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -37,18 +37,18 @@ const RecentMessages = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="p-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors duration-200"
+                    className="p-4 rounded-lg border border-gray-200"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-medium text-nino-text">
+                        <p className="font-medium text-gray-900">
                           {message.sender_first_name} {message.sender_last_name}
                         </p>
-                        <p className="text-sm text-nino-gray mt-1 line-clamp-2">
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                           {message.content}
                         </p>
                       </div>
-                      <span className="text-xs text-nino-gray">
+                      <span className="text-xs text-gray-500">
                         {new Date(message.created_at).toLocaleDateString()}
                       </span>
                     </div>
@@ -58,8 +58,8 @@ const RecentMessages = () => {
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <MessageSquare className="h-12 w-12 text-gray-300 mb-4" />
-                <p className="text-nino-gray">No messages yet</p>
-                <p className="text-sm text-nino-gray/70 mt-1">
+                <p className="text-gray-600">No messages yet</p>
+                <p className="text-sm text-gray-500 mt-1">
                   Your recent messages will appear here
                 </p>
               </div>

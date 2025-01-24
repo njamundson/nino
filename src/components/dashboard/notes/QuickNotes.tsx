@@ -62,7 +62,7 @@ const QuickNotes = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.3 }}
     >
-      <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden">
+      <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-shadow duration-200">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -78,12 +78,12 @@ const QuickNotes = () => {
               value={newNote}
               onChange={(e) => setNewNote(e.target.value)}
               placeholder="Add a new note..."
-              className="h-12 bg-gray-50/50 border-0 rounded-xl focus-visible:ring-1 focus-visible:ring-nino-primary/20"
+              className="rounded-lg border-gray-200"
             />
             <Button 
               type="submit" 
               size="icon"
-              className="h-12 w-12 rounded-xl bg-nino-primary hover:bg-nino-primary/90"
+              className="bg-nino-primary hover:bg-nino-primary/90 rounded-lg"
             >
               <Plus className="h-5 w-5" />
             </Button>
@@ -99,18 +99,18 @@ const QuickNotes = () => {
                       initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="group p-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50 transition-colors duration-200"
+                      className="p-4 rounded-lg border border-gray-200"
                     >
                       <div className="flex items-start justify-between">
-                        <p className="text-nino-text pr-6">{note.content}</p>
+                        <p className="text-gray-700 pr-6">{note.content}</p>
                         <button
                           onClick={() => handleDeleteNote(note.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-200 rounded-full"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded-full"
                         >
-                          <X className="h-4 w-4 text-nino-gray" />
+                          <X className="h-4 w-4 text-gray-500" />
                         </button>
                       </div>
-                      <p className="text-xs text-nino-gray mt-2">
+                      <p className="text-xs text-gray-500 mt-2">
                         {new Date(note.createdAt).toLocaleDateString()}
                       </p>
                     </motion.div>
@@ -119,8 +119,8 @@ const QuickNotes = () => {
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <StickyNote className="h-12 w-12 text-gray-300 mb-4" />
-                  <p className="text-nino-gray">No notes yet</p>
-                  <p className="text-sm text-nino-gray/70 mt-1">
+                  <p className="text-gray-600">No notes yet</p>
+                  <p className="text-sm text-gray-500 mt-1">
                     Add your first note above
                   </p>
                 </div>
