@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
-type BrandInvitation = {
+interface BrandInvitation {
   id: string;
   brand_id: string;
   role: string;
@@ -33,24 +33,24 @@ const InvitationAcceptance = () => {
           return;
         }
 
-        const { data: inviteData, error: inviteError } = await supabase
+        const { data, error: inviteError } = await supabase
           .from("brand_managers")
           .select("id, brand_id, role, invitation_status, brands(company_name)")
           .eq("invitation_token", token)
           .single();
 
-        if (inviteError || !inviteData) {
+        if (inviteError || !data) {
           console.error("Invitation error:", inviteError);
           setError("Invalid or expired invitation");
           return;
         }
 
-        if (inviteData.invitation_status !== "pending") {
+        if (data.invitation_status !== "pending") {
           setError("This invitation has already been used");
           return;
         }
 
-        setInvitation(inviteData);
+        setInvitation(data as BrandInvitation);
       } catch (err) {
         console.error("Error verifying invitation:", err);
         setError("Failed to verify invitation");
@@ -74,7 +74,6 @@ const InvitationAcceptance = () => {
       }
       
       if (!session) {
-        // Store token and redirect to sign in
         localStorage.setItem("pendingInvitation", token!);
         navigate("/");
         return;
