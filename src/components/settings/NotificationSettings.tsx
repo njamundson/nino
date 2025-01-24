@@ -34,7 +34,7 @@ const NotificationSettings = ({ onBack }: NotificationSettingsProps) => {
               <p className="text-sm text-nino-gray">Receive updates via email</p>
             </div>
             <Switch
-              checked={brandData?.email_notifications_enabled || false}
+              checked={brandData?.email_notifications_enabled ?? true}
               onCheckedChange={(checked) => handleUpdateField("email_notifications_enabled", checked)}
               disabled={loading}
             />
@@ -46,7 +46,7 @@ const NotificationSettings = ({ onBack }: NotificationSettingsProps) => {
               <p className="text-sm text-nino-gray">Receive updates via text message</p>
             </div>
             <Switch
-              checked={brandData?.sms_notifications_enabled || false}
+              checked={brandData?.sms_notifications_enabled ?? true}
               onCheckedChange={(checked) => handleUpdateField("sms_notifications_enabled", checked)}
               disabled={loading}
             />
@@ -58,7 +58,7 @@ const NotificationSettings = ({ onBack }: NotificationSettingsProps) => {
               <p className="text-sm text-nino-gray">Receive push notifications on your devices</p>
             </div>
             <Switch
-              checked={brandData?.push_notifications_enabled || false}
+              checked={brandData?.push_notifications_enabled ?? true}
               onCheckedChange={(checked) => handleUpdateField("push_notifications_enabled", checked)}
               disabled={loading}
             />
@@ -74,7 +74,7 @@ const NotificationSettings = ({ onBack }: NotificationSettingsProps) => {
                 <p className="text-sm text-nino-gray">When creators apply to your campaigns</p>
               </div>
               <Switch
-                checked={brandData?.application_notifications_enabled || false}
+                checked={brandData?.application_notifications_enabled ?? true}
                 onCheckedChange={(checked) => handleUpdateField("application_notifications_enabled", checked)}
                 disabled={loading}
               />
@@ -86,7 +86,7 @@ const NotificationSettings = ({ onBack }: NotificationSettingsProps) => {
                 <p className="text-sm text-nino-gray">When you receive new messages</p>
               </div>
               <Switch
-                checked={brandData?.message_notifications_enabled || false}
+                checked={brandData?.message_notifications_enabled ?? true}
                 onCheckedChange={(checked) => handleUpdateField("message_notifications_enabled", checked)}
                 disabled={loading}
               />
@@ -98,7 +98,7 @@ const NotificationSettings = ({ onBack }: NotificationSettingsProps) => {
                 <p className="text-sm text-nino-gray">News and updates about our platform</p>
               </div>
               <Switch
-                checked={brandData?.marketing_notifications_enabled || false}
+                checked={brandData?.marketing_notifications_enabled ?? false}
                 onCheckedChange={(checked) => handleUpdateField("marketing_notifications_enabled", checked)}
                 disabled={loading}
               />
