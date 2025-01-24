@@ -6,8 +6,6 @@ import { Menu } from "lucide-react";
 import { Button } from "../ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
-import { LoadingSpinner } from "../ui/loading-spinner";
-import { Suspense } from "react";
 
 const BrandLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -61,28 +59,21 @@ const BrandLayout = () => {
         </div>
         
         <div className="p-4 pt-28 md:p-8 md:pt-32">
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <LoadingSpinner size="lg" />
-            </div>
-          }>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ 
-                  duration: 0.3,
-                  type: "spring",
-                  damping: 25,
-                  stiffness: 200
-                }}
-              >
-                <Outlet />
-              </motion.div>
-            </AnimatePresence>
-          </Suspense>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ 
+                duration: 0.15,
+                ease: "easeInOut"
+              }}
+              className="w-full"
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
