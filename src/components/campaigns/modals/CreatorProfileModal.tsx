@@ -123,42 +123,48 @@ const CreatorProfileModal = ({
             <CreatorInfo creator={creator} />
           </DialogTitle>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-            {/* Creator Image */}
-            <div className="relative w-full">
-              <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
-                <img
-                  src={creator?.profile_image_url}
-                  alt={creator?.first_name}
-                  className="w-full h-full object-cover"
-                />
+          <div className="flex flex-col h-full max-h-[80vh]">
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Creator Image */}
+                <div className="relative w-full">
+                  <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
+                    <img
+                      src={creator?.profile_image_url}
+                      alt={creator?.first_name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+
+                {/* Creator Info */}
+                <div className="flex flex-col space-y-6">
+                  <CreatorSocials creator={creator} />
+
+                  {/* About Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-nino-text">About</h3>
+                    <p className="text-base leading-relaxed text-nino-text/90">
+                      {creator?.bio || "No bio available"}
+                    </p>
+                  </div>
+
+                  {/* Specialties */}
+                  {creator?.specialties?.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
+                      <CreatorSpecialties specialties={creator.specialties} />
+                    </div>
+                  )}
+
+                  {/* Application Message */}
+                  <ApplicationMessage coverLetter={coverLetter} />
+                </div>
               </div>
             </div>
 
-            {/* Creator Info */}
-            <div className="flex flex-col space-y-6">
-              <CreatorSocials creator={creator} />
-
-              {/* About Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-nino-text">About</h3>
-                <p className="text-base leading-relaxed text-nino-text/90">
-                  {creator?.bio || "No bio available"}
-                </p>
-              </div>
-
-              {/* Specialties */}
-              {creator?.specialties?.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
-                  <CreatorSpecialties specialties={creator.specialties} />
-                </div>
-              )}
-
-              {/* Application Message */}
-              <ApplicationMessage coverLetter={coverLetter} />
-
-              {/* Action Buttons */}
+            {/* Action Buttons - Fixed at bottom */}
+            <div className="p-6 border-t border-gray-100 mt-auto">
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   onClick={handleReject}
