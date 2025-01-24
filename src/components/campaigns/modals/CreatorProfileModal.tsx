@@ -61,7 +61,6 @@ const CreatorProfileModal = ({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-[800px] p-6 overflow-hidden bg-white rounded-3xl">
           <div className="flex flex-col h-full max-h-[80vh]">
-            {/* Main Content */}
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Creator Image */}
@@ -77,6 +76,10 @@ const CreatorProfileModal = ({
 
                 {/* Creator Info */}
                 <div className="flex flex-col space-y-6">
+                  <h2 className="text-3xl font-semibold text-nino-text">
+                    {getDisplayName()}
+                  </h2>
+
                   {/* Location */}
                   <p className="text-nino-gray flex items-center gap-2">
                     <span className="text-lg">📍</span> {creator?.location || "Location not specified"}
@@ -106,9 +109,11 @@ const CreatorProfileModal = ({
                   {coverLetter && (
                     <div className="space-y-3">
                       <h3 className="text-2xl font-semibold text-nino-text">Application Message</h3>
-                      <p className="text-nino-text/90 leading-relaxed">
-                        {coverLetter}
-                      </p>
+                      <div className="bg-gray-50/80 backdrop-blur-sm p-4 rounded-xl border border-gray-100">
+                        <p className="text-nino-text/90 leading-relaxed">
+                          {coverLetter}
+                        </p>
+                      </div>
                     </div>
                   )}
 
@@ -118,7 +123,7 @@ const CreatorProfileModal = ({
                       <Button
                         onClick={handleAccept}
                         disabled={isProcessing}
-                        className="flex-1 bg-nino-primary hover:bg-nino-primary/90"
+                        className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
                       >
                         Accept
                       </Button>
@@ -126,7 +131,7 @@ const CreatorProfileModal = ({
                         onClick={handleReject}
                         disabled={isProcessing}
                         variant="outline"
-                        className="flex-1"
+                        className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
                       >
                         Reject
                       </Button>
