@@ -114,7 +114,7 @@ const Messages = () => {
   };
 
   return (
-    <div className="space-y-8 px-4 py-8">
+    <div className="px-4">
       <PageHeader
         title="Messages"
         description="Connect and communicate with creators."
