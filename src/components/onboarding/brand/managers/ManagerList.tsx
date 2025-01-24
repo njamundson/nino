@@ -12,7 +12,7 @@ interface ManagerListProps {
 const ManagerList = ({ managers, onRemoveManager }: ManagerListProps) => {
   if (!managers.length) {
     return (
-      <div className="text-center text-gray-500">
+      <div className="text-center text-gray-500 py-4">
         No team members added yet
       </div>
     );
