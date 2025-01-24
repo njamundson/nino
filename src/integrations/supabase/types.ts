@@ -15,6 +15,7 @@ export type Database = {
           created_at: string | null
           creator_id: string
           id: string
+          initiated_by: string | null
           opportunity_id: string
           status: string | null
           updated_at: string | null
@@ -24,6 +25,7 @@ export type Database = {
           created_at?: string | null
           creator_id: string
           id?: string
+          initiated_by?: string | null
           opportunity_id: string
           status?: string | null
           updated_at?: string | null
@@ -33,6 +35,7 @@ export type Database = {
           created_at?: string | null
           creator_id?: string
           id?: string
+          initiated_by?: string | null
           opportunity_id?: string
           status?: string | null
           updated_at?: string | null

@@ -59,13 +59,15 @@ export const useApplications = (brandId?: string) => {
         throw error;
       }
 
+      console.log('Raw applications data:', data);
+
       // Add is_invitation flag based on who initiated the application
       const applicationsWithFlag = data?.map(app => ({
         ...app,
         is_invitation: app.initiated_by === 'brand'
       })) || [];
 
-      console.log('Fetched applications data:', applicationsWithFlag);
+      console.log('Processed applications with flags:', applicationsWithFlag);
       return applicationsWithFlag;
     },
     enabled: true

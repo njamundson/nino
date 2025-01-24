@@ -22,9 +22,12 @@ const ProposalsTabs = ({
   const userApplications = myApplications.filter(app => !app.is_invitation);
   const pendingInvitations = myApplications.filter(app => app.is_invitation);
 
+  console.log('Pending invitations:', pendingInvitations);
+  console.log('User applications:', userApplications);
+
   return (
     <Tabs defaultValue="pending" className="w-full">
-      <TabsList className="grid w-full grid-cols-3 p-1 rounded-full bg-nino-bg">
+      <TabsList className="grid w-full grid-cols-2 p-1 rounded-full bg-nino-bg">
         <TabsTrigger 
           value="pending" 
           className="rounded-full data-[state=active]:bg-white flex items-center justify-center gap-2 transition-all duration-300 px-3 py-2"
