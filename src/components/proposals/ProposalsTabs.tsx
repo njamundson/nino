@@ -21,12 +21,12 @@ const ProposalsTabs = ({
   // Filter applications to separate user-initiated applications from brand invitations
   // Only show pending invitations in the Pending tab
   const pendingInvitations = myApplications.filter(app => 
-    app.is_invitation && app.status === 'pending'
+    app.initiated_by === 'brand' && app.status === 'pending'
   );
   
-  // Show all submitted applications including accepted invitations
+  // Show all submitted applications including those that were initiated by brands
   const userApplications = myApplications.filter(app => 
-    !app.is_invitation || app.status !== 'pending'
+    app.initiated_by === 'creator' || app.status !== 'pending'
   );
 
   console.log('Pending invitations:', pendingInvitations);
