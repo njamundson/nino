@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, XSquare, MapPin } from "lucide-react";
+import { CheckSquare, XSquare, MapPin, Instagram, Globe } from "lucide-react";
 import AcceptDialog from "./profile/AcceptDialog";
 import ApplicationMessage from "./profile/ApplicationMessage";
 
@@ -115,12 +115,14 @@ const CreatorProfileModal = ({
   const getDisplayName = () => {
     console.log("Creator data in display name:", creator);
     
-    if (creator?.first_name) {
-      return creator.first_name;
+    // Direct properties check
+    if (creator.first_name) {
+      return `${creator.first_name} ${creator.last_name || ''}`.trim();
     }
     
-    if (creator?.profile?.first_name) {
-      return creator.profile.first_name;
+    // Profile check
+    if (creator.profile?.first_name) {
+      return `${creator.profile.first_name} ${creator.profile.last_name || ''}`.trim();
     }
     
     return 'Anonymous Creator';
@@ -155,6 +157,29 @@ const CreatorProfileModal = ({
                     {creator.location}
                   </p>
                 )}
+
+                <div className="flex gap-4">
+                  {creator?.instagram && (
+                    <a
+                      href={`https://instagram.com/${creator.instagram.replace('@', '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 shadow-sm hover:shadow-md"
+                    >
+                      <Instagram className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary" strokeWidth={1.25} />
+                    </a>
+                  )}
+                  {creator?.website && (
+                    <a
+                      href={creator.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 shadow-sm hover:shadow-md"
+                    >
+                      <Globe className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary" strokeWidth={1.25} />
+                    </a>
+                  )}
+                </div>
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-nino-text">About</h3>
