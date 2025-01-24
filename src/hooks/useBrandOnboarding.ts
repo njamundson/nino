@@ -22,6 +22,7 @@ export const useBrandOnboarding = () => {
     support_email: null,
     profile_image_url: null,
     sms_notifications_enabled: false,
+    two_factor_enabled: false,
     email_notifications_enabled: true,
     push_notifications_enabled: true,
     application_notifications_enabled: true,
