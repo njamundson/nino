@@ -127,7 +127,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
             <div className="flex justify-end pt-4">
               <Button 
                 onClick={() => onUpdateStatus(application.id, 'accepted')}
-                className="bg-green-600 hover:bg-green-700"
+                variant="default"
               >
                 Apply Now
               </Button>
