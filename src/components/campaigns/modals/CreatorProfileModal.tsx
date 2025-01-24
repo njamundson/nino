@@ -4,7 +4,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, XSquare, MapPin, Instagram, Globe } from "lucide-react";
+import { CheckSquare, XSquare } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,9 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import AcceptDialog from "./profile/AcceptDialog";
 import ApplicationMessage from "./profile/ApplicationMessage";
+import { CreatorInfo } from "../card/creator/CreatorInfo";
+import { CreatorSocials } from "../card/creator/CreatorSocials";
+import { CreatorSpecialties } from "../card/creator/CreatorSpecialties";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -30,7 +33,6 @@ const CreatorProfileModal = ({
   creator,
   coverLetter,
   onUpdateStatus,
-  onMessageCreator,
   opportunityId,
   isProcessing = false
 }: CreatorProfileModalProps) => {
@@ -108,16 +110,12 @@ const CreatorProfileModal = ({
     }
   };
 
-  const displayName = creator?.first_name 
-    ? `${creator.first_name} ${creator.last_name || ''}`.trim()
-    : 'Anonymous Creator';
-
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-white rounded-3xl">
           <DialogTitle className="text-2xl font-semibold p-6 pb-0">
-            {displayName}
+            <CreatorInfo creator={creator} />
           </DialogTitle>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
@@ -126,7 +124,7 @@ const CreatorProfileModal = ({
               <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-white">
                 <img
                   src={creator?.profile_image_url}
-                  alt={displayName}
+                  alt={creator?.first_name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -134,37 +132,7 @@ const CreatorProfileModal = ({
 
             {/* Creator Info */}
             <div className="flex flex-col space-y-6">
-              {/* Location */}
-              {creator?.location && (
-                <p className="text-nino-gray flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  {creator.location}
-                </p>
-              )}
-
-              {/* Social Links */}
-              <div className="flex gap-4">
-                {creator?.instagram && (
-                  <a
-                    href={`https://instagram.com/${creator.instagram.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 shadow-sm hover:shadow-md"
-                  >
-                    <Instagram className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary" strokeWidth={1.25} />
-                  </a>
-                )}
-                {creator?.website && (
-                  <a
-                    href={creator.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 rounded-2xl bg-white/40 hover:bg-white/90 transition-all duration-300 shadow-sm hover:shadow-md"
-                  >
-                    <Globe className="w-[18px] h-[18px] text-nino-primary/80 group-hover:text-nino-primary" strokeWidth={1.25} />
-                  </a>
-                )}
-              </div>
+              <CreatorSocials creator={creator} />
 
               {/* About Section */}
               <div className="space-y-4">
@@ -178,16 +146,7 @@ const CreatorProfileModal = ({
               {creator?.specialties?.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {creator.specialties.map((specialty: string, index: number) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 rounded-full border-[1.5px] border-nino-primary/20 text-nino-primary/90 text-sm bg-white/50"
-                      >
-                        {specialty}
-                      </span>
-                    ))}
-                  </div>
+                  <CreatorSpecialties specialties={creator.specialties} />
                 </div>
               )}
 
@@ -223,7 +182,7 @@ const CreatorProfileModal = ({
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
         onConfirm={handleAcceptConfirm}
-        creatorName={displayName}
+        creatorName={creator?.first_name || 'Creator'}
         isProcessing={isProcessing}
       />
     </>
