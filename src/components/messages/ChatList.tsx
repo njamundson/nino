@@ -99,9 +99,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       // Process messages to get unique conversations with latest message
       const conversationsMap = new Map();
@@ -201,67 +199,71 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           <EmptyState />
         ) : (
           <div className="divide-y divide-gray-50">
-            {filteredUsers.map((chat) => (
-              <div
-                key={chat.otherUser.id}
-                className={`group relative px-6 py-4 cursor-pointer hover:bg-gray-50/50 transition-colors ${
-                  selectedUserId === chat.otherUser.id ? "bg-gray-50/50" : ""
-                }`}
-                onClick={() => onSelectChat(
-                  chat.otherUser.id,
-                  chat.otherUser.firstName,
-                  chat.otherUser.lastName,
-                  chat.otherUser.profileImage
-                )}
-              >
-                <div className="flex items-start space-x-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={chat.otherUser.profileImage || ''} />
-                    <AvatarFallback>
-                      {`${chat.otherUser.firstName?.[0] || ''}${chat.otherUser.lastName?.[0] || ''}`}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-1">
-                      <h3 className="text-sm font-medium text-gray-900 truncate">
-                        {chat.otherUser.firstName && chat.otherUser.lastName 
-                          ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
-                          : 'Unnamed User'}
-                      </h3>
-                      <span className="text-xs text-gray-500">
-                        {formatTime(chat.created_at)}
-                      </span>
+            {filteredUsers.map((chat) => {
+              const fullName = chat.otherUser.firstName && chat.otherUser.lastName 
+                ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
+                : 'Unnamed User';
+                
+              return (
+                <div
+                  key={chat.otherUser.id}
+                  className={`group relative px-6 py-4 cursor-pointer hover:bg-gray-50/50 transition-colors ${
+                    selectedUserId === chat.otherUser.id ? "bg-gray-50/50" : ""
+                  }`}
+                  onClick={() => onSelectChat(
+                    chat.otherUser.id,
+                    chat.otherUser.firstName,
+                    chat.otherUser.lastName,
+                    chat.otherUser.profileImage
+                  )}
+                >
+                  <div className="flex items-start space-x-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={chat.otherUser.profileImage || ''} />
+                      <AvatarFallback>
+                        {`${chat.otherUser.firstName?.[0] || ''}${chat.otherUser.lastName?.[0] || ''}`}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-1">
+                        <h3 className="text-sm font-medium text-gray-900 truncate">
+                          {fullName}
+                        </h3>
+                        <span className="text-xs text-gray-500">
+                          {formatTime(chat.created_at)}
+                        </span>
+                      </div>
+                      <p className={`text-sm truncate ${
+                        !chat.read && chat.sender_id !== currentUser?.id ? "font-medium text-gray-900" : "text-gray-500"
+                      }`}>
+                        {chat.sender_id === currentUser?.id ? `You: ${chat.content}` : chat.content}
+                      </p>
                     </div>
-                    <p className={`text-sm truncate ${
-                      !chat.read && chat.sender_id !== currentUser?.id ? "font-medium text-gray-900" : "text-gray-500"
-                    }`}>
-                      {chat.sender_id === currentUser?.id ? `You: ${chat.content}` : chat.content}
-                    </p>
-                  </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteChat(chat.otherUser.id);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete conversation
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteChat(chat.otherUser.id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete conversation
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
