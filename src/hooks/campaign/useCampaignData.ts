@@ -46,7 +46,12 @@ export const useCampaignData = () => {
     queryFn: async () => {
       console.log('Fetching campaigns data');
       
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error('Error fetching user:', userError);
+        throw userError;
+      }
       
       if (!user) {
         console.log('No user found');
@@ -54,11 +59,16 @@ export const useCampaignData = () => {
       }
 
       // First get the brand ID in a separate query
-      const { data: brand } = await supabase
+      const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
         .single();
+
+      if (brandError) {
+        console.error('Error fetching brand:', brandError);
+        throw brandError;
+      }
 
       if (!brand) {
         console.log('No brand found for user');
@@ -115,9 +125,8 @@ export const useCampaignData = () => {
       console.log('Campaigns data fetched:', data?.length || 0);
       return data || [];
     },
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    gcTime: 1000 * 60 * 15, // Keep unused data in cache for 15 minutes
-    refetchOnWindowFocus: false, // Don't refetch when window regains focus
-    retry: 1, // Only retry once on failure
+    staleTime: 0, // Consider data immediately stale
+    retry: 2, // Retry failed requests twice
+    refetchOnMount: true, // Always refetch when component mounts
   });
 };
