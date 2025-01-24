@@ -7,11 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import CreatorProfile from "@/components/creators/modal/CreatorProfile";
-import ApplicationMessage from "./profile/ApplicationMessage";
-import AcceptDialog from "./profile/AcceptDialog";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, XSquare } from "lucide-react";
+import { CheckSquare, XSquare, MapPin, Globe, Instagram } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import AcceptDialog from "./profile/AcceptDialog";
+import ApplicationMessage from "./profile/ApplicationMessage";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -120,21 +120,84 @@ const CreatorProfileModal = ({
     }
   };
 
+  const displayName = `${creator?.first_name || ''} ${creator?.last_name || ''}`.trim() || 'Anonymous Creator';
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-3xl">
-          <div className="flex flex-col space-y-6">
-            <CreatorProfile
-              creator={creator}
-              onInviteClick={() => {}}
-              onMessageClick={onMessageCreator}
-            />
-            
-            <div className="px-6 pb-6 space-y-6">
+        <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white rounded-3xl">
+          <div className="flex flex-col">
+            {/* Header with close button */}
+            <div className="p-6 space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-900">{displayName}</h2>
+                  {creator?.location && (
+                    <div className="flex items-center gap-2 text-gray-500 mt-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{creator.location}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Social Links */}
+              <div className="flex gap-4">
+                {creator?.instagram && (
+                  <a
+                    href={`https://instagram.com/${creator.instagram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-gray-500 hover:text-gray-700"
+                  >
+                    <Instagram className="w-4 h-4" />
+                    <span>{creator.instagram}</span>
+                  </a>
+                )}
+                {creator?.website && (
+                  <a
+                    href={creator.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-gray-500 hover:text-gray-700"
+                  >
+                    <Globe className="w-4 h-4" />
+                    <span>Website</span>
+                  </a>
+                )}
+              </div>
+
+              {/* About Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">About</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {creator?.bio || 'No bio available'}
+                </p>
+              </div>
+
+              {/* Specialties */}
+              {creator?.specialties && creator.specialties.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Specialties</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {creator.specialties.map((specialty: string, index: number) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="px-3 py-1 rounded-full border-[1.5px] border-nino-primary/20 text-nino-primary/90 bg-white/50"
+                      >
+                        {specialty}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Application Message */}
               <ApplicationMessage coverLetter={coverLetter} />
-              
-              <div className="grid grid-cols-2 gap-4">
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-4 mt-6">
                 <Button
                   onClick={() => setShowAcceptDialog(true)}
                   disabled={isProcessing}
@@ -166,7 +229,7 @@ const CreatorProfileModal = ({
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
         onConfirm={handleAcceptConfirm}
-        creatorName={`${creator?.first_name || ''} ${creator?.last_name || ''}`.trim()}
+        creatorName={displayName}
         isProcessing={isProcessing}
       />
     </>
