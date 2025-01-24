@@ -1,117 +1,63 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, XSquare } from "lucide-react";
+import { Creator } from "@/types/creator";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import AcceptDialog from "./profile/AcceptDialog";
-import { CreatorInfo } from "../card/creator/CreatorInfo";
-import { CreatorSocials } from "../card/creator/CreatorSocials";
-import { CreatorSpecialties } from "../card/creator/CreatorSpecialties";
+import { CreatorSpecialties } from "@/components/campaigns/card/creator/CreatorSpecialties";
+import { CreatorSocials } from "@/components/campaigns/card/creator/CreatorSocials";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  creator: any;
-  coverLetter: string;
-  onUpdateStatus: (status: 'accepted' | 'rejected') => void;
-  onMessageCreator: () => void;
-  opportunityId?: string;
-  isProcessing?: boolean;
+  creator: Creator;
+  onAccept?: () => Promise<void>;
+  onReject?: () => Promise<void>;
+  coverLetter?: string;
+  onMessageCreator?: () => void;
 }
 
 const CreatorProfileModal = ({
   isOpen,
   onClose,
   creator,
+  onAccept,
+  onReject,
   coverLetter,
-  onUpdateStatus,
   onMessageCreator,
-  opportunityId,
-  isProcessing = false
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
-  const [isRejecting, setIsRejecting] = useState(false);
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleAccept = () => {
+    setShowAcceptDialog(true);
+  };
 
   const handleAcceptConfirm = async () => {
-    if (isProcessing) return;
+    if (!onAccept) return;
     
+    setIsProcessing(true);
     try {
-      onUpdateStatus('accepted');
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const { error: messageError } = await supabase.from('messages').insert({
-        sender_id: user.id,
-        receiver_id: creator.user_id,
-        content: `Hi! I've accepted your application. Let's discuss the next steps!`,
-        message_type: 'text'
-      });
-
-      if (messageError) throw messageError;
-
-      if (opportunityId) {
-        const { error: opportunityError } = await supabase
-          .from('opportunities')
-          .update({ status: 'active' })
-          .eq('id', opportunityId);
-
-        if (opportunityError) throw opportunityError;
-      }
-
-      toast.success("Application accepted successfully");
+      await onAccept();
       setShowAcceptDialog(false);
       onClose();
-      
-      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
-      await queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
-      
-      navigate('/brand/bookings');
     } catch (error) {
       console.error('Error accepting application:', error);
-      toast.error("Failed to accept application");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const handleReject = async () => {
-    if (isProcessing || isRejecting) return;
+    if (!onReject) return;
     
+    setIsProcessing(true);
     try {
-      setIsRejecting(true);
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const { error: messageError } = await supabase.from('messages').insert({
-        sender_id: user.id,
-        receiver_id: creator.user_id,
-        content: `I've reviewed your application but unfortunately, we won't be moving forward at this time. Thank you for your interest!`,
-        message_type: 'text'
-      });
-
-      if (messageError) throw messageError;
-
-      onUpdateStatus('rejected');
+      await onReject();
       onClose();
-
-      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
-      await queryClient.invalidateQueries({ queryKey: ['new-proposals'] });
-      
-      toast.success("Application rejected");
     } catch (error) {
       console.error('Error rejecting application:', error);
-      toast.error("Failed to reject application");
     } finally {
-      setIsRejecting(false);
+      setIsProcessing(false);
     }
   };
 
@@ -173,36 +119,40 @@ const CreatorProfileModal = ({
 
                   {/* Application Message */}
                   {coverLetter && (
-                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                      <h3 className="font-medium text-gray-900 mb-2">Application Message</h3>
-                      <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                    <div className="space-y-3">
+                      <h3 className="text-2xl font-semibold text-nino-text">Application Message</h3>
+                      <p className="text-nino-text/90 leading-relaxed">
                         {coverLetter}
                       </p>
                     </div>
                   )}
+
+                  {/* Action Buttons */}
+                  {(onAccept || onReject) && (
+                    <div className="flex gap-4 mt-6">
+                      {onAccept && (
+                        <Button
+                          onClick={handleAccept}
+                          disabled={isProcessing}
+                          className="flex-1 bg-nino-primary hover:bg-nino-primary/90"
+                        >
+                          Accept
+                        </Button>
+                      )}
+                      {onReject && (
+                        <Button
+                          onClick={handleReject}
+                          disabled={isProcessing}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Reject
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              <Button
-                onClick={handleReject}
-                disabled={isProcessing || isRejecting}
-                variant="outline"
-                className="py-6 rounded-2xl"
-              >
-                <XSquare className="w-5 h-5 mr-2" />
-                Reject
-              </Button>
-              <Button
-                onClick={() => setShowAcceptDialog(true)}
-                disabled={isProcessing || isRejecting}
-                className="bg-black hover:bg-black/90 text-white py-6 rounded-2xl"
-              >
-                <CheckSquare className="w-5 h-5 mr-2" />
-                Accept
-              </Button>
             </div>
           </div>
         </DialogContent>
