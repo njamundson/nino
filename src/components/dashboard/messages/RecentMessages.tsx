@@ -72,7 +72,7 @@ const RecentMessages = () => {
   };
 
   return (
-    <Card className="bg-white shadow-sm rounded-3xl overflow-hidden">
+    <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-shadow">
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-semibold text-nino-text">Recent Messages</h3>

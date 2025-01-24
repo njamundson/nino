@@ -13,14 +13,14 @@ const StatsCard = ({
   value: number; 
   icon: React.ElementType;
 }) => (
-  <Card className="p-6">
+  <Card className="p-6 bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-shadow">
     <div className="flex items-center gap-4">
       <div className="rounded-full bg-nino-primary/10 p-4">
         <Icon className="h-6 w-6 text-nino-primary" />
       </div>
       <div>
-        <p className="text-sm text-muted-foreground">{title}</p>
-        <h4 className="text-2xl font-semibold">{value}</h4>
+        <p className="text-sm text-nino-gray">{title}</p>
+        <h4 className="text-2xl font-semibold text-nino-text">{value}</h4>
       </div>
     </div>
   </Card>
