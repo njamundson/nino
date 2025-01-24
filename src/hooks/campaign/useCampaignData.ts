@@ -2,6 +2,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { Database } from "@/integrations/supabase/types";
+
+type OpportunityPayload = RealtimePostgresChangesPayload<{
+  [key: string]: any;
+  id: string;
+}>;
 
 export const useCampaignData = () => {
   const queryClient = useQueryClient();
@@ -17,12 +24,14 @@ export const useCampaignData = () => {
           schema: 'public',
           table: 'opportunities'
         },
-        (payload) => {
+        (payload: OpportunityPayload) => {
           console.log('Campaign data changed:', payload);
           // Only invalidate the specific campaign that changed
-          queryClient.invalidateQueries({ 
-            queryKey: ['my-campaigns', payload.new?.id] 
-          });
+          if (payload.new?.id) {
+            queryClient.invalidateQueries({ 
+              queryKey: ['my-campaigns', payload.new.id] 
+            });
+          }
         }
       )
       .subscribe();
