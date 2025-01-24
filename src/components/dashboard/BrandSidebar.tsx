@@ -60,8 +60,8 @@ const BrandSidebar = () => {
         animate={{ opacity: 1, x: 0 }}
         className="h-full bg-white rounded-xl shadow-sm flex flex-col"
       >
-        <div className="p-6 border-b border-gray-100">
-          <Link to="/brand/dashboard" className="flex items-center justify-center">
+        <div className="px-3 pt-6 pb-4">
+          <Link to="/brand/dashboard" className="flex items-center px-4">
             <motion.img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
@@ -72,7 +72,7 @@ const BrandSidebar = () => {
           </Link>
         </div>
         
-        <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
+        <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
