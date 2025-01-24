@@ -1,21 +1,18 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { Plus } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
-import { StickyNote, Plus, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 interface Note {
-  id: string;
-  content: string;
-  createdAt: string;
+  id: number;
+  text: string;
+  completed: boolean;
 }
 
 const QuickNotes = () => {
+  const [newNote, setNewNote] = useState('');
   const [notes, setNotes] = useState<Note[]>([]);
-  const [newNote, setNewNote] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,104 +29,103 @@ const QuickNotes = () => {
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newNote.trim()) return;
-
+    
     const note = {
-      id: crypto.randomUUID(),
-      content: newNote.trim(),
-      createdAt: new Date().toISOString(),
+      id: Date.now(),
+      text: newNote,
+      completed: false
     };
-
-    setNotes(prev => [note, ...prev]);
-    setNewNote("");
+    
+    setNotes([...notes, note]);
+    setNewNote('');
     
     toast({
-      title: "Note added",
-      description: "Your note has been saved successfully.",
+      description: "Note added successfully",
     });
   };
 
-  const handleDeleteNote = (id: string) => {
-    setNotes(prev => prev.filter(note => note.id !== id));
+  const toggleNote = (id: number) => {
+    setNotes(notes.map(note => 
+      note.id === id ? { ...note, completed: !note.completed } : note
+    ));
+  };
+
+  const deleteNote = (id: number) => {
+    setNotes(notes.filter(note => note.id !== id));
     toast({
-      title: "Note deleted",
-      description: "Your note has been removed.",
+      description: "Note deleted successfully",
     });
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: 0.3 }}
-    >
-      <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-shadow duration-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-nino-primary/5 p-2">
-                <StickyNote className="h-5 w-5 text-nino-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-nino-text">Quick Notes</h3>
-            </div>
-          </div>
+    <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden">
+      <CardContent className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-semibold text-nino-text">Quick Notes</h3>
+          <button 
+            className="p-2 hover:bg-nino-bg rounded-full transition-colors"
+            onClick={() => {
+              setNewNote('');
+              document.querySelector<HTMLInputElement>('input[placeholder="Add a note..."]')?.focus();
+            }}
+          >
+            <Plus className="w-5 h-5 text-nino-primary" />
+          </button>
+        </div>
+        
+        <form onSubmit={handleAddNote} className="mb-6">
+          <input
+            type="text"
+            placeholder="Add a note..."
+            className="w-full px-4 py-3 rounded-2xl bg-nino-bg border-0 text-nino-text placeholder:text-nino-gray/60 focus:ring-2 focus:ring-nino-primary/20 focus:outline-none"
+            value={newNote}
+            onChange={(e) => setNewNote(e.target.value)}
+          />
+        </form>
 
-          <form onSubmit={handleAddNote} className="flex gap-2 mb-6">
-            <Input
-              value={newNote}
-              onChange={(e) => setNewNote(e.target.value)}
-              placeholder="Add a new note..."
-              className="rounded-lg border-gray-200"
-            />
-            <Button 
-              type="submit" 
-              size="icon"
-              className="bg-nino-primary hover:bg-nino-primary/90 rounded-lg"
+        <div className="space-y-3">
+          {notes.map((note) => (
+            <div
+              key={note.id}
+              className="flex items-center gap-3 p-3 rounded-2xl bg-nino-bg/50 hover:bg-nino-bg transition-colors group"
             >
-              <Plus className="h-5 w-5" />
-            </Button>
-          </form>
+              <button
+                onClick={() => toggleNote(note.id)}
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors
+                  ${note.completed 
+                    ? 'bg-nino-primary border-nino-primary text-white' 
+                    : 'border-nino-gray/30 group-hover:border-nino-primary'
+                  }`}
+              >
+                {note.completed && (
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </button>
+              <span className={`flex-1 text-sm ${note.completed ? 'text-nino-gray line-through' : 'text-nino-text'}`}>
+                {note.text}
+              </span>
+              <button
+                onClick={() => deleteNote(note.id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-nino-primary/10 rounded-full"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-nino-primary">
+                  <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          ))}
 
-          <ScrollArea className="h-[240px] pr-4">
-            <AnimatePresence mode="popLayout">
-              {notes.length > 0 ? (
-                <div className="space-y-3">
-                  {notes.map((note) => (
-                    <motion.div
-                      key={note.id}
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="p-4 rounded-lg border border-gray-200"
-                    >
-                      <div className="flex items-start justify-between">
-                        <p className="text-gray-700 pr-6">{note.content}</p>
-                        <button
-                          onClick={() => handleDeleteNote(note.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded-full"
-                        >
-                          <X className="h-4 w-4 text-gray-500" />
-                        </button>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2">
-                        {new Date(note.createdAt).toLocaleDateString()}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center">
-                  <StickyNote className="h-12 w-12 text-gray-300 mb-4" />
-                  <p className="text-gray-600">No notes yet</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Add your first note above
-                  </p>
-                </div>
-              )}
-            </AnimatePresence>
-          </ScrollArea>
-        </CardContent>
-      </Card>
-    </motion.div>
+          {notes.length === 0 && (
+            <div className="text-center py-4">
+              <p className="text-sm text-nino-gray">No notes yet. Add one to get started!</p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
