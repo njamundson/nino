@@ -6,12 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
+interface BrandManager {
+  id: string;
+  brand_id: string;
+  role: string;
+  invitation_status: string;
+  brands: {
+    company_name: string;
+  };
+}
+
 const InvitationAcceptance = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [invitation, setInvitation] = useState<any>(null);
+  const [invitation, setInvitation] = useState<BrandManager | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,7 +64,6 @@ const InvitationAcceptance = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        // Store invitation token in localStorage and redirect to sign up
         localStorage.setItem("pendingInvitation", token!);
         navigate("/");
         return;
