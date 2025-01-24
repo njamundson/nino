@@ -15,6 +15,7 @@ interface CreatorProfileFormProps {
     website: string;
     specialties: string[];
     creatorType: string;
+    notifications_enabled?: boolean;
   };
   onUpdateField: (field: string, value: any) => void;
 }
