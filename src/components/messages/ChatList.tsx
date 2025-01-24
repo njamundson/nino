@@ -122,7 +122,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         }
       });
 
-      setUsers(Array.from(conversationsMap.values()));
+      const conversationsList = Array.from(conversationsMap.values());
+      console.log('Processed conversations:', conversationsList);
+      setUsers(conversationsList);
 
     } catch (error) {
       console.error('Error fetching chat users:', error);
