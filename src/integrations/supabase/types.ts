@@ -104,6 +104,7 @@ export type Database = {
           id: string
           invitation_status: string | null
           name: string | null
+          permissions: string[] | null
           role: string
           updated_at: string | null
           user_id: string
@@ -115,6 +116,7 @@ export type Database = {
           id?: string
           invitation_status?: string | null
           name?: string | null
+          permissions?: string[] | null
           role: string
           updated_at?: string | null
           user_id: string
@@ -126,6 +128,7 @@ export type Database = {
           id?: string
           invitation_status?: string | null
           name?: string | null
+          permissions?: string[] | null
           role?: string
           updated_at?: string | null
           user_id?: string

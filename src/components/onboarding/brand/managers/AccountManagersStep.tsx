@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import AccountManagersHeader from "./AccountManagersHeader";
 import AddManagerButton from "./AddManagerButton";
 import ManagerForm from "./ManagerForm";
@@ -12,7 +13,12 @@ const AccountManagersStep = () => {
     accountManagers,
     addAccountManager,
     removeManager,
+    loadManagers,
   } = useAccountManagers();
+
+  useEffect(() => {
+    loadManagers();
+  }, []);
 
   return (
     <motion.div
