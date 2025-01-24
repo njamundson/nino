@@ -44,18 +44,31 @@ export const useCampaignData = () => {
     queryFn: async () => {
       console.log('Executing campaign data fetch');
       
-      const { data: session } = await supabase.auth.getSession();
+      // Get current session and refresh if needed
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (!session?.session) {
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw sessionError;
+      }
+
+      if (!session) {
         console.log('No active session found');
-        return [];
+        throw new Error('No active session');
+      }
+
+      // Refresh session to ensure token is valid
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        console.error('Error refreshing session:', refreshError);
+        throw refreshError;
       }
 
       // Get the brand ID first
       const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
-        .eq('user_id', session.session.user.id)
+        .eq('user_id', session.user.id)
         .maybeSingle();
 
       if (brandError) {
