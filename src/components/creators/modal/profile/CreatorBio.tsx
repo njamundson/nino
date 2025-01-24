@@ -8,7 +8,7 @@ interface CreatorBioProps {
   instagram: string | null;
   website: string | null;
   onMessageClick?: () => void;
-  coverLetter?: string | null; // Add cover letter prop
+  coverLetter?: string | null;
 }
 
 const CreatorBio = ({ 
@@ -18,7 +18,7 @@ const CreatorBio = ({
   instagram,
   website,
   onMessageClick,
-  coverLetter // Add cover letter to destructuring
+  coverLetter
 }: CreatorBioProps) => {
   return (
     <div className="flex-grow space-y-6">
@@ -34,16 +34,10 @@ const CreatorBio = ({
           website={website}
           onMessageClick={onMessageClick}
         />
-
-        <h3 className="text-lg font-semibold text-nino-text">About</h3>
-        <p className="text-base leading-relaxed text-nino-text/90">
-          {bio || "No bio available"}
-        </p>
       </div>
 
       <CreatorSpecialties specialties={specialties} />
 
-      {/* Add Application Message section */}
       {coverLetter && (
         <div className="space-y-3">
           <h3 className="text-2xl font-semibold text-nino-text">Application Message</h3>
