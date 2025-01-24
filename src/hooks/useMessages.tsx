@@ -61,13 +61,7 @@ export const useMessages = (userId: string): UseMessagesReturn => {
         throw error;
       }
 
-      return (data || []).map(msg => ({
-        ...msg,
-        profiles: {
-          first_name: msg.profiles?.first_name || '',
-          last_name: msg.profiles?.last_name || ''
-        }
-      })) as Message[];
+      return data as Message[];
     },
     enabled: Boolean(userId),
     staleTime: 1000 * 30,
@@ -77,7 +71,6 @@ export const useMessages = (userId: string): UseMessagesReturn => {
     retry: 2
   });
 
-  // Subscribe to real-time updates
   useEffect(() => {
     if (!userId) return;
 

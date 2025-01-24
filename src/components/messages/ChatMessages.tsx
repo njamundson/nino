@@ -32,7 +32,6 @@ const ChatMessages = ({
     scrollToBottom();
   }, [messages]);
 
-  // Subscribe to new messages
   useEffect(() => {
     if (!selectedChat || !currentUserId) return;
 
@@ -76,7 +75,6 @@ const ChatMessages = ({
     };
   }, [selectedChat, currentUserId]);
 
-  // Subscribe to typing status
   useEffect(() => {
     if (!selectedChat) return;
 
