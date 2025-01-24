@@ -3,9 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { useEffect } from "react";
 import { Creator } from "@/types/creator";
-import { CreatorInfo } from "./creator/CreatorInfo";
-import { CreatorSocials } from "./creator/CreatorSocials";
-import { CreatorSpecialties } from "./creator/CreatorSpecialties";
 
 interface ApplicationItemProps {
   application: {
@@ -57,10 +54,6 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
           </Avatar>
           
           <div className="space-y-4 flex-1">
-            <CreatorInfo creator={creator} />
-            <CreatorSocials creator={creator} />
-            <CreatorSpecialties specialties={creator?.specialties} />
-
             <div className="space-y-2">
               <h5 className="font-medium text-gray-700">Application Message:</h5>
               <p className="text-gray-600 leading-relaxed">
