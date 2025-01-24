@@ -119,12 +119,12 @@ const CreatorProfileModal = ({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-white rounded-3xl">
-          <DialogTitle className="text-2xl font-semibold p-6 pb-0">
+          <DialogTitle className="text-2xl font-semibold p-6 pb-2">
             <CreatorInfo creator={creator} />
           </DialogTitle>
           
           <div className="flex flex-col h-full max-h-[80vh]">
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-6 pt-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Creator Image */}
                 <div className="relative w-full">
