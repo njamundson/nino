@@ -5,8 +5,11 @@ import { Loader2, AlertCircle } from "lucide-react";
 import EmptyProjects from "@/components/projects/EmptyProjects";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 const ProjectsList = () => {
+  const { toast } = useToast();
+
   const { data: opportunities, isLoading, error } = useQuery({
     queryKey: ['opportunities'],
     queryFn: async () => {
@@ -30,6 +33,11 @@ const ProjectsList = () => {
 
       if (error) {
         console.error("Error fetching opportunities:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load projects. Please try again.",
+          variant: "destructive",
+        });
         throw error;
       }
 
@@ -39,19 +47,20 @@ const ProjectsList = () => {
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
     gcTime: 1000 * 60 * 10, // Keep unused data in cache for 10 minutes
     refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    retry: 2, // Retry failed requests up to 2 times
   });
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <Loader2 className="w-8 h-8 animate-spin text-nino-primary" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="mt-4">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
           There was an error loading the projects. Please try again later.
