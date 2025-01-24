@@ -16,6 +16,7 @@ const Messages = () => {
   );
   const [selectedFirstName, setSelectedFirstName] = useState<string | null>(null);
   const [selectedLastName, setSelectedLastName] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -29,6 +30,14 @@ const Messages = () => {
     editingMessage,
     setEditingMessage,
   } = useMessages(selectedUserId || '');
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+    getUser();
+  }, []);
 
   const handleSelectChat = (
     userId: string, 
@@ -140,7 +149,7 @@ const Messages = () => {
             editingMessage={editingMessage}
             setEditingMessage={setEditingMessage}
             messages={messages as Message[]}
-            currentUserId={user?.id}
+            currentUserId={currentUser?.id}
             onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
           />
         </div>

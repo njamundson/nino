@@ -81,32 +81,36 @@ export const useMessages = (userId: string): UseMessagesReturn => {
   useEffect(() => {
     if (!userId) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const setupSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    console.log('Setting up real-time message subscription in hook...');
-    
-    const channel = supabase
-      .channel('messages_hook')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'messages',
-          filter: `or(and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id}))`
-        },
-        (payload) => {
-          console.log('Message update in hook:', payload);
-          queryClient.invalidateQueries({ queryKey: ['messages', userId] });
-        }
-      )
-      .subscribe();
+      console.log('Setting up real-time message subscription in hook...');
+      
+      const channel = supabase
+        .channel('messages_hook')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'messages',
+            filter: `or(and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id}))`
+          },
+          (payload) => {
+            console.log('Message update in hook:', payload);
+            queryClient.invalidateQueries({ queryKey: ['messages', userId] });
+          }
+        )
+        .subscribe();
 
-    return () => {
-      console.log('Cleaning up message subscription in hook');
-      supabase.removeChannel(channel);
+      return () => {
+        console.log('Cleaning up message subscription in hook');
+        supabase.removeChannel(channel);
+      };
     };
+
+    setupSubscription();
   }, [userId, queryClient]);
 
   const setMessages = (updater: Message[] | ((prev: Message[] | undefined) => Message[])) => {
