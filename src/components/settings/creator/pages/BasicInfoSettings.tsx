@@ -40,8 +40,8 @@ const BasicInfoSettings = ({ onBack }: BasicInfoSettingsProps) => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-nino-bg overflow-y-auto">
-      <div className="max-w-2xl mx-auto py-12 px-6">
+    <div className="min-h-screen bg-nino-bg relative pb-24">
+      <div className="max-w-2xl mx-auto px-6 pt-12">
         <div className="flex items-center mb-8">
           <Button
             variant="ghost"
@@ -93,7 +93,11 @@ const BasicInfoSettings = ({ onBack }: BasicInfoSettingsProps) => {
               />
             </div>
           </div>
+        </div>
+      </div>
 
+      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-gray-200 p-4 z-50">
+        <div className="max-w-2xl mx-auto">
           <Button
             onClick={handleSave}
             disabled={loading}
