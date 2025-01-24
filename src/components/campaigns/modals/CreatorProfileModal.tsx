@@ -85,7 +85,7 @@ const CreatorProfileModal = ({
                       <Button
                         onClick={onMessageCreator}
                         variant="outline"
-                        className="w-full bg-white hover:bg-nino-bg text-nino-text py-6 rounded-2xl"
+                        className="w-full bg-nino-white hover:bg-nino-bg text-nino-text border-2 border-nino-primary/20 py-6 rounded-2xl transition-all duration-300"
                       >
                         View Profile
                       </Button>
@@ -93,7 +93,7 @@ const CreatorProfileModal = ({
                         <Button
                           onClick={handleAccept}
                           disabled={isProcessing}
-                          className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
+                          className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-nino-white py-6 rounded-2xl transition-all duration-300"
                         >
                           Accept
                         </Button>
@@ -101,7 +101,7 @@ const CreatorProfileModal = ({
                           onClick={handleReject}
                           disabled={isProcessing}
                           variant="outline"
-                          className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
+                          className="flex-1 bg-nino-white hover:bg-nino-bg text-nino-text border-2 border-nino-primary py-6 rounded-2xl transition-all duration-300"
                         >
                           Reject
                         </Button>
