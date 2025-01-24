@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronLeft } from "lucide-react";
+import LocationField from "../../../onboarding/creator/basic-info/fields/LocationField";
 
 interface BasicInfoSettingsProps {
   onBack: () => void;
@@ -67,26 +68,22 @@ const BasicInfoSettings = ({ onBack }: BasicInfoSettingsProps) => {
             <Input
               value={`${creatorData.firstName}${creatorData.lastName ? ' ' + creatorData.lastName : ''}`}
               onChange={handleFullNameChange}
-              className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-black rounded-xl"
+              className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-[#0EA5E9] rounded-xl"
               placeholder="Enter your full name"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">Location</Label>
-            <Input
-              value={creatorData.location}
-              onChange={(e) => handleUpdateField("location", e.target.value)}
-              className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-black rounded-xl"
-            />
-          </div>
+          <LocationField
+            location={creatorData.location}
+            onUpdateField={handleUpdateField}
+          />
 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-700">Bio</Label>
             <Textarea
               value={creatorData.bio}
               onChange={(e) => handleUpdateField("bio", e.target.value)}
-              className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-black rounded-xl resize-none h-32"
+              className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-[#0EA5E9] rounded-xl resize-none h-32"
             />
           </div>
         </div>
@@ -94,7 +91,7 @@ const BasicInfoSettings = ({ onBack }: BasicInfoSettingsProps) => {
         <Button
           onClick={handleSave}
           disabled={loading}
-          className="w-full bg-black hover:bg-black/90 text-white h-12"
+          className="w-full bg-[#0EA5E9] hover:bg-[#0EA5E9]/90 text-white h-12"
         >
           {loading ? (
             <>
