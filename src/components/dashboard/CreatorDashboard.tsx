@@ -8,6 +8,7 @@ import DashboardLoading from "./states/DashboardLoading";
 import DashboardError from "./states/DashboardError";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 
 const CreatorDashboard = () => {
   const isMobile = useIsMobile();
@@ -34,7 +35,11 @@ const CreatorDashboard = () => {
   }
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       <PageHeader 
         title="Dashboard" 
         description={`Welcome back${creator.first_name ? `, ${creator.first_name}` : ''}! Here's an overview of your activity`}
@@ -46,7 +51,7 @@ const CreatorDashboard = () => {
           <QuickNotes />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
