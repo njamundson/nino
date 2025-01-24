@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import ApplicationItem from "./ApplicationItem";
 import CreatorProfileModal from "../modals/CreatorProfileModal";
+import { toast } from "sonner";
 
 interface ApplicationsListProps {
   applications: any[];
@@ -10,17 +11,35 @@ interface ApplicationsListProps {
   onMessageCreator: (userId: string) => void;
 }
 
-const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: ApplicationsListProps) => {
+const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }: ApplicationsListProps) => {
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
 
+  // Add error handling for applications data
+  if (!Array.isArray(applications)) {
+    console.error('Invalid applications data:', applications);
+    toast.error("Error loading applications");
+    return null;
+  }
+
   // Filter out rejected applications
-  const activeApplications = applications.filter(app => app.status !== 'rejected');
+  const activeApplications = applications.filter(app => {
+    if (!app || typeof app !== 'object') {
+      console.error('Invalid application object:', app);
+      return false;
+    }
+    return app.status !== 'rejected';
+  });
 
   // If there are no active applications, don't render anything
   if (!activeApplications.length) return null;
 
   const handleViewProfile = (application: any) => {
+    if (!application || !application.creator) {
+      console.error('Invalid application data for profile view:', application);
+      toast.error("Error loading creator profile");
+      return;
+    }
     setSelectedApplication(application);
   };
 
@@ -29,6 +48,10 @@ const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: App
   };
 
   const handleUpdateStatus = (status: 'accepted' | 'rejected') => {
+    if (!selectedApplication) {
+      console.error('No application selected for status update');
+      return;
+    }
     onViewProfile(selectedApplication);
     handleCloseModal();
   };
@@ -57,7 +80,14 @@ const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: App
               key={application.id}
               application={application}
               onViewProfile={() => handleViewProfile(application)}
-              onMessageCreator={() => onMessageCreator(application.creator?.user_id)}
+              onMessageCreator={() => {
+                if (application.creator?.user_id) {
+                  onMessageCreator(application.creator.user_id);
+                } else {
+                  console.error('No creator user_id found:', application);
+                  toast.error("Unable to message creator");
+                }
+              }}
             />
           ))}
         </div>
@@ -70,7 +100,11 @@ const ApplicationsList = ({ applications, onViewProfile, onMessageCreator }: App
           creator={selectedApplication.creator}
           coverLetter={selectedApplication.cover_letter}
           onUpdateStatus={handleUpdateStatus}
-          onMessageCreator={() => onMessageCreator(selectedApplication.creator?.user_id)}
+          onMessageCreator={() => {
+            if (selectedApplication.creator?.user_id) {
+              onMessageCreator(selectedApplication.creator.user_id);
+            }
+          }}
         />
       )}
     </div>
