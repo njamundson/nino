@@ -6,7 +6,7 @@ import { useState } from "react";
 
 interface CreatorCardImageProps {
   creator: CreatorData;
-  onInvite: (creatorId: string) => void;
+  onInvite: (creatorId: string, opportunityId: string) => void;
 }
 
 const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
@@ -59,7 +59,8 @@ const CreatorCardImage = ({ creator, onInvite }: CreatorCardImageProps) => {
         className="absolute bottom-6 right-6 rounded-full transition-transform duration-300 group-hover:scale-110"
         onClick={(e) => {
           e.stopPropagation();
-          onInvite(creator.id);
+          // Note: opportunityId will be selected in the modal
+          onInvite(creator.id, '');
         }}
       >
         <Plus className="h-4 w-4" />

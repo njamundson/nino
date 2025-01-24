@@ -43,7 +43,7 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
       >
         <CreatorCardImage 
           creator={creator} 
-          onInvite={(creatorId: string, opportunityId: string) => handleInviteClick(creatorId, opportunityId)} 
+          onInvite={handleInviteClick}
         />
       </Card>
 

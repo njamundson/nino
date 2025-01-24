@@ -1,22 +1,17 @@
-import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const useCreatorInvite = () => {
-  const { toast } = useToast();
+  const [isInviting, setIsInviting] = useState(false);
 
   const handleInvite = async (creatorId: string, opportunityId: string) => {
+    if (isInviting) return false;
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to invite creators",
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      // First verify this creator hasn't already been invited
+      setIsInviting(true);
+      
+      // Check if invitation already exists
       const { data: existingInvite, error: checkError } = await supabase
         .from('applications')
         .select('id, status')
@@ -26,26 +21,16 @@ export const useCreatorInvite = () => {
 
       if (checkError) {
         console.error("Error checking existing invitation:", checkError);
-        toast({
-          title: "Error",
-          description: "Failed to check existing invitations",
-          variant: "destructive",
-        });
+        toast.error("Failed to check existing invitations");
         return false;
       }
 
       if (existingInvite) {
         if (existingInvite.status === 'invited') {
-          toast({
-            title: "Already invited",
-            description: "This creator has already been invited to this campaign",
-          });
+          toast.error("Creator has already been invited to this campaign");
           return false;
         } else if (existingInvite.status === 'accepted') {
-          toast({
-            title: "Already participating",
-            description: "This creator is already part of this campaign",
-          });
+          toast.error("Creator is already part of this campaign");
           return false;
         }
       }
@@ -60,29 +45,20 @@ export const useCreatorInvite = () => {
 
       if (error) {
         console.error("Error inviting creator:", error);
-        toast({
-          title: "Error",
-          description: "Failed to invite creator. Please try again.",
-          variant: "destructive",
-        });
+        toast.error("Failed to invite creator");
         return false;
       }
 
-      toast({
-        title: "Success",
-        description: "Creator invited successfully!",
-      });
+      toast.success("Creator invited successfully!");
       return true;
     } catch (error) {
       console.error("Error in handleInvite:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred");
       return false;
+    } finally {
+      setIsInviting(false);
     }
   };
 
-  return { handleInvite };
+  return { handleInvite, isInviting };
 };
