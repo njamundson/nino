@@ -76,27 +76,36 @@ const CreatorProfileModal = ({
                     instagram={creator.instagram}
                     website={creator.website}
                     onMessageClick={onMessageCreator}
-                    coverLetter={coverLetter} // Pass the cover letter
+                    coverLetter={coverLetter}
                   />
 
                   {/* Action Buttons */}
                   {onUpdateStatus && (
-                    <div className="flex gap-4 mt-6">
+                    <div className="flex flex-col gap-4 mt-6">
                       <Button
-                        onClick={handleAccept}
-                        disabled={isProcessing}
-                        className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
-                      >
-                        Accept
-                      </Button>
-                      <Button
-                        onClick={handleReject}
-                        disabled={isProcessing}
+                        onClick={onMessageCreator}
                         variant="outline"
-                        className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
+                        className="w-full bg-white hover:bg-nino-bg text-nino-text py-6 rounded-2xl"
                       >
-                        Reject
+                        View Profile
                       </Button>
+                      <div className="flex gap-4">
+                        <Button
+                          onClick={handleAccept}
+                          disabled={isProcessing}
+                          className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          onClick={handleReject}
+                          disabled={isProcessing}
+                          variant="outline"
+                          className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
+                        >
+                          Reject
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>

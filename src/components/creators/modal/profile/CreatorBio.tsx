@@ -40,16 +40,6 @@ const CreatorBio = ({
           </div>
         </div>
       )}
-
-      <div className="space-y-2">
-        <Button
-          variant="outline"
-          onClick={onMessageClick}
-          className="w-full"
-        >
-          View Profile
-        </Button>
-      </div>
     </div>
   );
 };
