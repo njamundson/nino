@@ -76,16 +76,16 @@ const CreatorProfileModal = ({
                     instagram={creator.instagram}
                     website={creator.website}
                     onMessageClick={onMessageCreator}
-                    coverLetter={coverLetter} // Pass the cover letter
+                    coverLetter={coverLetter}
                   />
 
                   {/* Action Buttons */}
                   {onUpdateStatus && (
-                    <div className="flex gap-4 mt-6">
+                    <div className="flex gap-4">
                       <Button
                         onClick={handleAccept}
                         disabled={isProcessing}
-                        className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
+                        className="flex-1 bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white py-6 rounded-[24px] shadow-md transition-all duration-300 hover:shadow-lg"
                       >
                         Accept
                       </Button>
@@ -93,7 +93,7 @@ const CreatorProfileModal = ({
                         onClick={handleReject}
                         disabled={isProcessing}
                         variant="outline"
-                        className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
+                        className="flex-1 border-2 border-[#7E69AB] text-[#7E69AB] hover:bg-[#7E69AB]/10 py-6 rounded-[24px] shadow-md transition-all duration-300 hover:shadow-lg"
                       >
                         Reject
                       </Button>

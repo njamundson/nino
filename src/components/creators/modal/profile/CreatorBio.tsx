@@ -27,16 +27,6 @@ const CreatorBio = ({
           <span className="text-lg">📍</span> {location}
         </p>
       )}
-      
-      <div className="space-y-2">
-        <Button
-          variant="outline"
-          onClick={onMessageClick}
-          className="w-full"
-        >
-          View Profile
-        </Button>
-      </div>
 
       <CreatorSpecialties specialties={specialties} />
 
@@ -50,6 +40,16 @@ const CreatorBio = ({
           </div>
         </div>
       )}
+
+      <div className="space-y-4 mt-auto">
+        <Button
+          variant="outline"
+          onClick={onMessageClick}
+          className="w-full bg-[#D6BCFA] hover:bg-[#D6BCFA]/90 text-gray-700 py-6 rounded-[24px] shadow-sm hover:shadow-md transition-all duration-300"
+        >
+          View Profile
+        </Button>
+      </div>
     </div>
   );
 };
