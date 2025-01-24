@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Application } from "@/integrations/supabase/types/opportunity";
+import { Button } from "@/components/ui/button";
 
 interface ViewApplicationModalProps {
   isOpen: boolean;
@@ -22,7 +23,9 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">Application Details</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold">
+            {type === 'proposal' ? "You've been invited to apply!" : "Application Details"}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
@@ -118,6 +121,18 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
               </Badge>
             )}
           </div>
+
+          {/* Apply Now Button for Proposals */}
+          {type === 'proposal' && onUpdateStatus && (
+            <div className="flex justify-end pt-4">
+              <Button 
+                onClick={() => onUpdateStatus(application.id, 'accepted')}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Apply Now
+              </Button>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
