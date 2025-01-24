@@ -67,7 +67,7 @@ const CampaignCard = ({
 
       <ApplicationsList
         applications={applications}
-        onUpdateStatus={onUpdateApplicationStatus}
+        onUpdateApplicationStatus={onUpdateApplicationStatus}
       />
     </Card>
   );

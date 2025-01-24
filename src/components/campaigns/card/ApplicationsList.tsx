@@ -2,18 +2,16 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import ApplicationItem from "./ApplicationItem";
-import CreatorProfileModal from "../modals/CreatorProfileModal";
 import { toast } from "sonner";
+import { Application } from "@/types/application";
 
 interface ApplicationsListProps {
-  applications: any[];
-  onViewProfile: (application: any) => void;
-  onMessageCreator: (userId: string) => void;
+  applications: Application[];
+  onUpdateApplicationStatus: (applicationId: string, status: string) => void;
 }
 
-const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }: ApplicationsListProps) => {
+const ApplicationsList = ({ applications = [], onUpdateApplicationStatus }: ApplicationsListProps) => {
   const [showApplications, setShowApplications] = useState(false);
-  const [selectedApplication, setSelectedApplication] = useState<any>(null);
 
   // Add error handling for applications data
   if (!Array.isArray(applications)) {
@@ -33,28 +31,6 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
 
   // If there are no active applications, don't render anything
   if (!activeApplications.length) return null;
-
-  const handleViewProfile = (application: any) => {
-    if (!application || !application.creator) {
-      console.error('Invalid application data for profile view:', application);
-      toast.error("Error loading creator profile");
-      return;
-    }
-    setSelectedApplication(application);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedApplication(null);
-  };
-
-  const handleUpdateStatus = (status: 'accepted' | 'rejected') => {
-    if (!selectedApplication) {
-      console.error('No application selected for status update');
-      return;
-    }
-    onViewProfile(selectedApplication);
-    handleCloseModal();
-  };
 
   return (
     <div className="mt-6 pt-6 border-t border-gray-100">
@@ -79,33 +55,17 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
             <ApplicationItem
               key={application.id}
               application={application}
-              onViewProfile={() => handleViewProfile(application)}
+              onViewProfile={() => {
+                // Implement view profile logic if needed
+                console.log('View profile clicked:', application.creator);
+              }}
               onMessageCreator={() => {
-                if (application.creator?.user_id) {
-                  onMessageCreator(application.creator.user_id);
-                } else {
-                  console.error('No creator user_id found:', application);
-                  toast.error("Unable to message creator");
-                }
+                // Implement message creator logic if needed
+                console.log('Message creator clicked:', application.creator?.user_id);
               }}
             />
           ))}
         </div>
-      )}
-
-      {selectedApplication && (
-        <CreatorProfileModal
-          isOpen={!!selectedApplication}
-          onClose={handleCloseModal}
-          creator={selectedApplication.creator}
-          coverLetter={selectedApplication.cover_letter}
-          onUpdateStatus={handleUpdateStatus}
-          onMessageCreator={() => {
-            if (selectedApplication.creator?.user_id) {
-              onMessageCreator(selectedApplication.creator.user_id);
-            }
-          }}
-        />
       )}
     </div>
   );
