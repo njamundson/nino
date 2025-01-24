@@ -15,6 +15,7 @@ export const useCreatorSettings = () => {
     website: "",
     specialties: [] as string[],
     creatorType: "solo",
+    notifications_enabled: false,
   });
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export const useCreatorSettings = () => {
             website: creator.website || "",
             specialties: creator.specialties || [],
             creatorType: creator.creator_type || "solo",
+            notifications_enabled: creator.notifications_enabled || false,
           });
           setProfileImage(creator.profile_image_url);
         }
@@ -122,6 +124,7 @@ export const useCreatorSettings = () => {
           specialties: creatorData.specialties,
           creator_type: creatorData.creatorType,
           profile_image_url: profileImage,
+          notifications_enabled: creatorData.notifications_enabled,
           updated_at: new Date().toISOString(),
         })
         .eq('id', creator.id);

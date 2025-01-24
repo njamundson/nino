@@ -10,6 +10,7 @@ export interface CreatorData {
   profileImage: string | null;
   creatorType: CreatorType;
   profile_image_url: string | null;
+  notifications_enabled?: boolean;
   profile: {
     first_name: string | null;
     last_name: string | null;
