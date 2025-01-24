@@ -57,11 +57,19 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
         opportunity_id: opportunity.id,
         creator_id: creator.id,
         cover_letter: data.coverLetter,
+        initiated_by: 'creator',
+        status: 'pending'
       });
 
       if (error) throw error;
 
-      setShowSuccess(true);
+      toast({
+        title: "Success",
+        description: "Your application has been submitted successfully!",
+      });
+
+      // Close the form and refresh the data
+      onModalClose();
     } catch (error) {
       console.error("Error submitting application:", error);
       toast({

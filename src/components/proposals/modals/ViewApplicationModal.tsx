@@ -20,14 +20,14 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const queryClient = useQueryClient();
   
-  // Add null checks and default values
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
   const brandLocation = application.opportunity?.brand?.location;
   const title = application.opportunity?.title || "Untitled Opportunity";
 
   const handleApplicationSubmit = () => {
+    // Close the modal
     onClose();
-    // Invalidate the applications query to refresh the list
+    // Refresh the applications data
     queryClient.invalidateQueries({ queryKey: ['applications'] });
   };
 
