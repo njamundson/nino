@@ -6,6 +6,7 @@ import { toast } from "sonner";
 export const useCampaignData = () => {
   const queryClient = useQueryClient();
 
+  // Set up real-time subscription for campaign updates
   useEffect(() => {
     const channel = supabase
       .channel('schema-db-changes')
@@ -16,9 +17,12 @@ export const useCampaignData = () => {
           schema: 'public',
           table: 'opportunities'
         },
-        () => {
-          console.log('Campaign data changed, invalidating query cache');
-          queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+        (payload) => {
+          console.log('Campaign data changed:', payload);
+          // Only invalidate the specific campaign that changed
+          queryClient.invalidateQueries({ 
+            queryKey: ['my-campaigns', payload.new?.id] 
+          });
         }
       )
       .subscribe();
@@ -29,45 +33,48 @@ export const useCampaignData = () => {
     };
   }, [queryClient]);
 
-  const query = useQuery({
+  return useQuery({
     queryKey: ['my-campaigns'],
     queryFn: async () => {
       console.log('Fetching campaigns data');
       
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (userError) {
-        console.error('Error fetching user:', userError);
-        toast.error('Error loading campaigns. Please try again.');
-        throw userError;
-      }
-
       if (!user) {
         console.log('No user found');
         return [];
       }
 
-      const { data: brand, error: brandError } = await supabase
+      // First get the brand ID in a separate query
+      const { data: brand } = await supabase
         .from('brands')
         .select('id')
         .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (brandError) {
-        console.error('Error fetching brand:', brandError);
-        toast.error('Error loading brand information. Please try again.');
-        throw brandError;
-      }
+        .single();
 
       if (!brand) {
         console.log('No brand found for user');
         return [];
       }
 
-      const { data, error: campaignsError } = await supabase
+      // Then use the brand ID to fetch campaigns with optimized select
+      const { data, error } = await supabase
         .from('opportunities')
         .select(`
-          *,
+          id,
+          title,
+          description,
+          start_date,
+          end_date,
+          status,
+          requirements,
+          perks,
+          location,
+          payment_details,
+          compensation_details,
+          deliverables,
+          image_url,
+          created_at,
           brand:brands (
             company_name,
             brand_type,
@@ -91,20 +98,18 @@ export const useCampaignData = () => {
         .eq('brand_id', brand.id)
         .order('created_at', { ascending: false });
 
-      if (campaignsError) {
-        console.error('Error fetching campaigns:', campaignsError);
+      if (error) {
+        console.error('Error fetching campaigns:', error);
         toast.error('Error loading campaigns. Please try again.');
-        throw campaignsError;
+        throw error;
       }
 
-      console.log('Campaigns data fetched:', data);
+      console.log('Campaigns data fetched:', data?.length || 0);
       return data || [];
     },
-    retry: 2,
-    staleTime: 1000 * 60, // Consider data fresh for 1 minute
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    gcTime: 1000 * 60 * 15, // Keep unused data in cache for 15 minutes
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
+    retry: 1, // Only retry once on failure
   });
-
-  return query;
 };
