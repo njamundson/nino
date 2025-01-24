@@ -112,7 +112,7 @@ const CreatorProfileModal = ({
     }
   };
 
-  const displayName = `${creator?.first_name || ''} ${creator?.last_name || ''}`.trim();
+  const displayName = creator?.first_name || 'Anonymous Creator';
 
   return (
     <>
