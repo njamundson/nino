@@ -14,6 +14,7 @@ export const useCampaignData = () => {
 
   // Set up real-time subscription for campaign updates
   useEffect(() => {
+    console.log('Setting up real-time subscription');
     const channel = supabase
       .channel('schema-db-changes')
       .on(
@@ -25,7 +26,6 @@ export const useCampaignData = () => {
         },
         (payload: OpportunityPayload) => {
           console.log('Campaign data changed:', payload);
-          // Invalidate queries when data changes
           queryClient.invalidateQueries({ 
             queryKey: ['my-campaigns']
           });
@@ -42,29 +42,25 @@ export const useCampaignData = () => {
   return useQuery({
     queryKey: ['my-campaigns'],
     queryFn: async () => {
-      console.log('Fetching campaigns data');
+      console.log('Executing campaign data fetch');
       
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const { data: session } = await supabase.auth.getSession();
       
-      if (userError) {
-        console.error('Error fetching user:', userError);
-        throw userError;
-      }
-      
-      if (!user) {
-        console.log('No user found');
+      if (!session?.session) {
+        console.log('No active session found');
         return [];
       }
 
-      // First get the brand ID
+      // Get the brand ID first
       const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', session.session.user.id)
+        .maybeSingle();
 
       if (brandError) {
         console.error('Error fetching brand:', brandError);
+        toast.error('Error loading brand data');
         throw brandError;
       }
 
@@ -73,7 +69,7 @@ export const useCampaignData = () => {
         return [];
       }
 
-      // Fetch campaigns with all related data
+      // Fetch campaigns with related data
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
@@ -116,16 +112,18 @@ export const useCampaignData = () => {
 
       if (error) {
         console.error('Error fetching campaigns:', error);
-        toast.error('Error loading campaigns. Please try again.');
+        toast.error('Error loading campaigns');
         throw error;
       }
 
-      console.log('Campaigns data fetched:', data?.length || 0);
+      console.log(`Successfully fetched ${data?.length || 0} campaigns`);
       return data || [];
     },
-    staleTime: 0, // Consider data immediately stale
-    retry: 2, // Retry failed requests twice
-    refetchOnMount: true, // Always refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window regains focus
+    staleTime: 0,
+    gcTime: 0,
+    retry: 2,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true
   });
 };

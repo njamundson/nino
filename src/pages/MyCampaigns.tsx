@@ -8,37 +8,48 @@ import { useCampaignData } from "@/hooks/campaign/useCampaignData";
 import { useCampaignActions } from "@/hooks/campaign/useCampaignActions";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const MyCampaigns = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const queryClient = useQueryClient();
+  
   const { 
     data: campaigns, 
     isLoading, 
-    error, 
+    error,
     refetch 
   } = useCampaignData();
   
   const { handleDelete, handleUpdateApplicationStatus } = useCampaignActions();
 
-  // Initialize data on mount and handle errors
+  // Initialize data and handle first load
   useEffect(() => {
     const initializeData = async () => {
       try {
-        // Force an immediate refetch on mount
+        console.log('Initializing campaigns data');
+        // Force immediate refetch on mount
         await refetch();
         
-        // Prefetch the data again after a short delay to ensure we have fresh data
-        setTimeout(() => {
+        // Invalidate after a delay to ensure fresh data
+        const timer = setTimeout(() => {
           queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
-        }, 1000);
+        }, 500);
+
+        return () => clearTimeout(timer);
       } catch (err) {
         console.error('Error initializing campaigns:', err);
+        toast.error('Error loading campaigns. Please try again.');
+      } finally {
+        setIsInitialLoad(false);
       }
     };
 
-    initializeData();
-  }, [refetch, queryClient]);
+    if (isInitialLoad) {
+      initializeData();
+    }
+  }, [refetch, queryClient, isInitialLoad]);
 
   // Animation variants
   const container = {
@@ -71,7 +82,7 @@ const MyCampaigns = () => {
       />
 
       <AnimatePresence mode="wait">
-        {isLoading ? (
+        {isLoading || isInitialLoad ? (
           <motion.div 
             className="space-y-4"
             initial={{ opacity: 0 }}
