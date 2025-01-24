@@ -53,9 +53,9 @@ const Settings = () => {
         </div>
 
         {/* Tabs */}
-        <div className="relative bg-[#F1F0FB] p-1 rounded-full flex w-fit mb-6">
+        <div className="relative bg-[#F9F6F2] p-1 rounded-full flex w-fit mb-6">
           <div
-            className="absolute inset-y-1 transition-all duration-200 ease-in-out rounded-full bg-white shadow-sm"
+            className="absolute inset-y-1 transition-all duration-200 ease-in-out rounded-full bg-[#A55549] shadow-sm"
             style={{
               width: "calc(50% - 8px)",
               left: activeTab === 'profile' ? '4px' : '50%',
@@ -65,7 +65,7 @@ const Settings = () => {
             onClick={() => setActiveTab('profile')}
             className={`relative px-6 py-2 text-sm font-medium transition-colors rounded-full ${
               activeTab === 'profile'
-                ? 'text-[#282828]'
+                ? 'text-[#FFFFFF]'
                 : 'text-[#8E9196] hover:text-[#282828]'
             }`}
           >
@@ -75,7 +75,7 @@ const Settings = () => {
             onClick={() => setActiveTab('account')}
             className={`relative px-6 py-2 text-sm font-medium transition-colors rounded-full ${
               activeTab === 'account'
-                ? 'text-[#282828]'
+                ? 'text-[#FFFFFF]'
                 : 'text-[#8E9196] hover:text-[#282828]'
             }`}
           >
