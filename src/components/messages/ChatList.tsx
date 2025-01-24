@@ -116,7 +116,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             ...msg,
             otherUser: {
               id: otherUserId,
-              firstName: otherUser?.first_name || 'Unknown',
+              firstName: otherUser?.first_name || '',
               lastName: otherUser?.last_name || '',
               profileImage: otherUser?.creator?.profile_image_url || null
             }
@@ -224,7 +224,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
                       <h3 className="text-sm font-medium text-gray-900 truncate">
-                        {`${chat.otherUser.firstName} ${chat.otherUser.lastName}`}
+                        {chat.otherUser.firstName && chat.otherUser.lastName 
+                          ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
+                          : 'Unnamed User'}
                       </h3>
                       <span className="text-xs text-gray-500">
                         {formatTime(chat.created_at)}
