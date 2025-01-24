@@ -107,7 +107,7 @@ export type Database = {
           permissions: string[] | null
           role: string
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           brand_id: string
@@ -119,7 +119,7 @@ export type Database = {
           permissions?: string[] | null
           role: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           brand_id?: string
@@ -131,7 +131,7 @@ export type Database = {
           permissions?: string[] | null
           role?: string
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
