@@ -5,6 +5,7 @@ import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
 import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
 import { X } from "lucide-react";
+import { CreatorSocials } from "../card/creator/CreatorSocials";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -81,6 +82,9 @@ const CreatorProfileModal = ({
                     <span>{creator.location}</span>
                   </div>
                 )}
+                <div className="mt-4">
+                  <CreatorSocials creator={creator} onMessageClick={onMessageCreator} />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-grow">
