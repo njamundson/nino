@@ -63,10 +63,15 @@ const CreatorProfileModal = ({
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-              <CreatorImage 
-                profileImageUrl={creator.profile_image_url} 
-                fullName={fullName}
-              />
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold text-nino-text">
+                  {fullName}
+                </h2>
+                <CreatorImage 
+                  profileImageUrl={creator.profile_image_url} 
+                  fullName={fullName}
+                />
+              </div>
 
               <div className="flex flex-col h-full space-y-6">
                 <CreatorBio
@@ -79,7 +84,6 @@ const CreatorProfileModal = ({
                   coverLetter={coverLetter}
                 />
 
-                {/* Action Buttons */}
                 {onUpdateStatus && (
                   <div className="flex gap-4 mt-auto">
                     <Button
