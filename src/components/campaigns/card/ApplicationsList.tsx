@@ -50,11 +50,8 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
       return;
     }
     
-    // Call onViewProfile with the application and status
+    // First update the application status
     onViewProfile({ ...selectedApplication, status });
-    
-    // Close the modal
-    handleCloseModal();
   };
 
   return (

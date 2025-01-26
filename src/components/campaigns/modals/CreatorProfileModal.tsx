@@ -32,7 +32,7 @@ const CreatorProfileModal = ({
     setShowAcceptDialog(true);
   };
 
-  const handleAcceptConfirm = async () => {
+  const handleAcceptConfirm = () => {
     if (!onUpdateStatus) return;
     onUpdateStatus('accepted');
     setShowAcceptDialog(false);
@@ -42,7 +42,6 @@ const CreatorProfileModal = ({
   const handleReject = () => {
     if (!onUpdateStatus) return;
     onUpdateStatus('rejected');
-    onClose();
   };
 
   const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.trim() || 
