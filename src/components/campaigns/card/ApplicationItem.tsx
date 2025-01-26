@@ -35,15 +35,10 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
     ? `${creator.first_name} ${creator.last_name || ''}`
     : 'Anonymous Creator';
 
-  // Truncate cover letter to first 150 characters
-  const truncatedMessage = application.cover_letter?.length > 150 
-    ? `${application.cover_letter.substring(0, 150)}...` 
-    : application.cover_letter;
-
   return (
-    <div className="group p-5 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
-      <div className="flex items-start gap-4">
-        <Avatar className="h-12 w-12 rounded-full ring-2 ring-white shadow-sm">
+    <div className="group p-4 rounded-lg bg-white border border-gray-100 hover:shadow-sm transition-all duration-200">
+      <div className="flex items-start gap-3">
+        <Avatar className="h-10 w-10 rounded-full ring-2 ring-white">
           {creator?.profile_image_url ? (
             <AvatarImage
               src={creator.profile_image_url}
@@ -51,30 +46,29 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
               className="object-cover"
             />
           ) : (
-            <AvatarFallback className="bg-gray-100 text-gray-600">
+            <AvatarFallback className="bg-gray-50 text-gray-600 text-sm">
               {getInitials(displayName)}
             </AvatarFallback>
           )}
         </Avatar>
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-medium text-gray-900 truncate">
+          <div className="flex items-center justify-between mb-1.5">
+            <h3 className="font-medium text-gray-900">
               {displayName}
             </h3>
             <Button
               size="sm"
               variant="ghost"
               onClick={onViewProfile}
-              className="text-gray-600 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              className="text-gray-500 hover:text-gray-900"
             >
-              <Eye className="h-4 w-4 mr-1.5" />
-              View Profile
+              <Eye className="h-4 w-4" />
             </Button>
           </div>
           
           <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-            {truncatedMessage}
+            {application.cover_letter}
           </p>
         </div>
       </div>
