@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Eye, MapPin } from "lucide-react";
 import { useEffect } from "react";
 import { Creator } from "@/types/creator";
 
@@ -54,9 +54,17 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1.5">
-            <h3 className="font-medium text-gray-900">
-              {displayName}
-            </h3>
+            <div>
+              <h3 className="font-medium text-gray-900">
+                {displayName}
+              </h3>
+              {creator?.location && (
+                <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-0.5">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {creator.location}
+                </p>
+              )}
+            </div>
             <Button
               size="sm"
               variant="ghost"
@@ -67,9 +75,11 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
             </Button>
           </div>
           
-          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-            {application.cover_letter}
-          </p>
+          <div className="mt-3 bg-gray-50/80 backdrop-blur-sm p-3 rounded-lg border border-gray-100">
+            <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+              {application.cover_letter}
+            </p>
+          </div>
         </div>
       </div>
     </div>
