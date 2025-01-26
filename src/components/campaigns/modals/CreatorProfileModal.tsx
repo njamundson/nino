@@ -103,7 +103,7 @@ const CreatorProfileModal = ({
                     <div className="space-y-4">
                       <h3 className="text-xl font-semibold text-gray-900">Application Message</h3>
                       <div className="bg-gray-50/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100">
-                        <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-wrap break-words">
                           {coverLetter}
                         </p>
                       </div>
