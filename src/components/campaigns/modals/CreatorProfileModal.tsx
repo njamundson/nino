@@ -4,6 +4,7 @@ import { Creator } from "@/types/creator";
 import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
 import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
+import { X } from "lucide-react";
 import { CreatorSocials } from "../card/creator/CreatorSocials";
 import { CreatorSpecialties } from "../card/creator/CreatorSpecialties";
 
