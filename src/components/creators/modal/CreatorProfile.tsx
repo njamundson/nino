@@ -9,7 +9,7 @@ interface Creator {
   specialties: string[] | null;
   instagram: string | null;
   website: string | null;
-  profile?: {
+  profile: {
     first_name: string | null;
     last_name: string | null;
   } | null;
