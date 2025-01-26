@@ -52,8 +52,8 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
           )}
         </Avatar>
         
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1.5">
+        <div className="flex-grow space-y-6">
+          <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-gray-900">
                 {displayName}
@@ -75,8 +75,9 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
             </Button>
           </div>
           
-          <div className="mt-3 bg-gray-50/80 backdrop-blur-sm p-3 rounded-lg border border-gray-100">
-            <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+          <div className="bg-gray-50/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100">
+            <h3 className="font-medium text-gray-900 mb-3">Application Message</h3>
+            <p className="text-gray-600 leading-relaxed break-words whitespace-pre-wrap">
               {application.cover_letter}
             </p>
           </div>
