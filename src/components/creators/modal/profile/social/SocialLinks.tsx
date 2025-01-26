@@ -1,6 +1,6 @@
-import { Instagram, Globe, MessageCircle } from "lucide-react";
+import { Instagram, Globe, MessageSquare } from "lucide-react";
+import { formatInstagramUrl, formatWebsiteUrl } from "@/utils/socialMediaUtils";
 import SocialIconButton from "./SocialIconButton";
-import { validateInstagramHandle, validateWebsiteUrl } from "@/types/creator";
 
 interface SocialLinksProps {
   instagram: string | null;
@@ -9,38 +9,40 @@ interface SocialLinksProps {
 }
 
 const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) => {
-  const getInstagramUrl = (handle: string) => {
-    const username = handle.startsWith('@') ? handle.slice(1) : handle;
-    return `https://instagram.com/${username}`;
+  const handleInstagramClick = () => {
+    if (!instagram) return;
+    const url = formatInstagramUrl(instagram);
+    if (url) window.open(url, '_blank');
+  };
+
+  const handleWebsiteClick = () => {
+    if (!website) return;
+    const url = formatWebsiteUrl(website);
+    if (url) window.open(url, '_blank');
   };
 
   return (
     <div className="flex items-center gap-3">
-      {instagram && validateInstagramHandle(instagram) && (
-        <SocialIconButton
-          icon={<Instagram className="w-5 h-5" />}
-          href={getInstagramUrl(instagram)}
-          label="Instagram"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-      )}
+      <SocialIconButton
+        icon={Instagram}
+        onClick={instagram ? handleInstagramClick : undefined}
+        tooltipText={instagram ? `@${instagram.replace(/^@/, '').trim()}` : 'No Instagram profile'}
+        isActive={!!instagram}
+      />
       
-      {website && validateWebsiteUrl(website) && (
-        <SocialIconButton
-          icon={<Globe className="w-5 h-5" />}
-          href={website}
-          label="Website"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-      )}
-
+      <SocialIconButton
+        icon={Globe}
+        onClick={website ? handleWebsiteClick : undefined}
+        tooltipText={website || 'No website available'}
+        isActive={!!website}
+      />
+      
       {onMessageClick && (
         <SocialIconButton
-          icon={<MessageCircle className="w-5 h-5" />}
+          icon={MessageSquare}
           onClick={onMessageClick}
-          label="Message"
+          tooltipText="Send message"
+          isActive={true}
         />
       )}
     </div>

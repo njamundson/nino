@@ -1,46 +1,38 @@
-import { ReactNode } from "react";
+import { LucideIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SocialIconButtonProps {
-  icon: ReactNode;
-  href?: string;
+  icon: LucideIcon;
   onClick?: () => void;
-  label: string;
-  target?: string;
-  rel?: string;
+  tooltipText: string;
+  isActive: boolean;
 }
 
 const SocialIconButton = ({ 
-  icon, 
-  href, 
-  onClick,
-  label,
-  target,
-  rel
+  icon: Icon, 
+  onClick, 
+  tooltipText, 
+  isActive 
 }: SocialIconButtonProps) => {
-  const buttonClasses = "p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200";
-
-  if (href) {
-    return (
-      <a
-        href={href}
-        className={buttonClasses}
-        target={target}
-        rel={rel}
-        aria-label={label}
-      >
-        {icon}
-      </a>
-    );
-  }
-
   return (
-    <button
-      onClick={onClick}
-      className={buttonClasses}
-      aria-label={label}
-    >
-      {icon}
-    </button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div 
+            className={`p-3 rounded-2xl ${isActive ? 'bg-white/40 hover:bg-white/90 cursor-pointer' : 'bg-white/20 cursor-not-allowed'} transition-all duration-300 shadow-sm hover:shadow-md backdrop-blur-sm group`}
+            onClick={onClick}
+          >
+            <Icon 
+              className={`w-[18px] h-[18px] ${isActive ? 'text-nino-primary/80 group-hover:text-nino-primary' : 'text-nino-gray/50'} transition-colors`}
+              strokeWidth={1.25} 
+            />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          {tooltipText}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
