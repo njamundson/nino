@@ -4,7 +4,6 @@ import { Creator } from "@/types/creator";
 import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
 import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
-import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
 import { X } from "lucide-react";
 
 interface CreatorProfileModalProps {
@@ -73,11 +72,11 @@ const CreatorProfileModal = ({
             <div className="p-8">
               {/* Header */}
               <div className="mb-8">
-                <h2 className="text-3xl font-semibold text-gray-900 mb-2">
+                <h2 className="text-3xl font-semibold text-gray-900">
                   {getDisplayName()}
                 </h2>
                 {creator.location && (
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-gray-600 mt-2">
                     <span className="text-xl">📍</span>
                     <span>{creator.location}</span>
                   </div>
@@ -91,19 +90,29 @@ const CreatorProfileModal = ({
                 />
 
                 <div className="flex flex-col space-y-6">
-                  <CreatorBio
-                    bio={creator.bio}
-                    specialties={creator.specialties}
-                    location={creator.location}
-                    instagram={creator.instagram}
-                    website={creator.website}
-                    onMessageClick={onMessageCreator}
-                    coverLetter={coverLetter}
-                  />
+                  {/* About Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-900">About</h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      {creator.bio || "No bio available"}
+                    </p>
+                  </div>
+
+                  {/* Application Message Section */}
+                  {coverLetter && (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-semibold text-gray-900">Application Message</h3>
+                      <div className="bg-gray-50/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100">
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                          {coverLetter}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Action Buttons */}
                   {onUpdateStatus && (
-                    <div className="flex gap-4 mt-6">
+                    <div className="flex gap-4 mt-auto">
                       <Button
                         onClick={handleAccept}
                         disabled={isProcessing}
