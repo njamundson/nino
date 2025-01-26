@@ -4,8 +4,8 @@ import { Creator } from "@/types/creator";
 import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
 import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
-import { X } from "lucide-react";
 import { CreatorSocials } from "../card/creator/CreatorSocials";
+import { CreatorSpecialties } from "../card/creator/CreatorSpecialties";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -101,6 +101,14 @@ const CreatorProfileModal = ({
                 />
 
                 <div className="flex flex-col space-y-6">
+                  {/* Specialties Section */}
+                  {creator.specialties && creator.specialties.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-2xl font-semibold text-gray-900">Specialties</h3>
+                      <CreatorSpecialties specialties={creator.specialties} />
+                    </div>
+                  )}
+
                   {/* About Section */}
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">About</h3>
