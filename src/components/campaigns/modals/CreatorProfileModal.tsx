@@ -116,19 +116,19 @@ const CreatorProfileModal = ({
               {onUpdateStatus && (
                 <div className="flex gap-4 mt-8">
                   <Button
-                    onClick={handleAccept}
-                    disabled={isProcessing}
-                    className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
-                  >
-                    Accept
-                  </Button>
-                  <Button
                     onClick={handleReject}
                     disabled={isProcessing}
                     variant="outline"
-                    className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
+                    className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-3xl"
                   >
                     Reject
+                  </Button>
+                  <Button
+                    onClick={handleAccept}
+                    disabled={isProcessing}
+                    className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-3xl"
+                  >
+                    Accept
                   </Button>
                 </div>
               )}
