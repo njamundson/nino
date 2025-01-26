@@ -3,10 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Creator } from "@/types/creator";
 import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
-import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
 import { X } from "lucide-react";
-import { CreatorSocials } from "../card/creator/CreatorSocials";
-import { CreatorSpecialties } from "../card/creator/CreatorSpecialties";
+import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
+import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -26,7 +25,6 @@ const CreatorProfileModal = ({
   coverLetter,
   onMessageCreator,
   onUpdateStatus,
-  opportunityId,
   isProcessing
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
@@ -48,21 +46,15 @@ const CreatorProfileModal = ({
     onClose();
   };
 
-  const getDisplayName = () => {
-    if (creator.first_name) {
-      return `${creator.first_name} ${creator.last_name || ''}`.trim();
-    }
-    if (creator.profile?.first_name) {
-      return `${creator.profile.first_name} ${creator.profile.last_name || ''}`.trim();
-    }
-    return 'Anonymous Creator';
-  };
+  const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.trim() || 
+    `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim() ||
+    'Anonymous Creator';
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-white rounded-3xl">
-          <div className="relative flex flex-col h-full min-h-[600px]">
+        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-3xl">
+          <div className="relative w-full">
             <button
               onClick={onClose}
               className="absolute right-6 top-6 text-gray-500 hover:text-gray-700 z-10"
@@ -70,87 +62,43 @@ const CreatorProfileModal = ({
               <X className="w-5 h-5" />
             </button>
 
-            <div className="p-8 flex flex-col flex-grow">
-              {/* Header */}
-              <div className="mb-8">
-                <h2 className="text-3xl font-semibold text-gray-900">
-                  {getDisplayName()}
-                </h2>
-                {onMessageCreator && (
-                  <button
-                    onClick={onMessageCreator}
-                    className="text-gray-500 hover:text-gray-700 mt-2"
-                  >
-                    Message
-                  </button>
-                )}
-                {creator.location && (
-                  <div className="flex items-center gap-2 text-gray-600 mt-2">
-                    <span className="text-xl">📍</span>
-                    <span>{creator.location}</span>
-                  </div>
-                )}
-                <div className="mt-4">
-                  <CreatorSocials creator={creator} />
-                </div>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+              <CreatorImage 
+                profileImageUrl={creator.profile_image_url} 
+                fullName={fullName}
+              />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-grow">
-                <CreatorImage 
-                  profileImageUrl={creator.profile_image_url} 
-                  fullName={getDisplayName()} 
+              <div className="flex flex-col h-full space-y-6">
+                <CreatorBio
+                  bio={creator.bio}
+                  location={creator.location}
+                  specialties={creator.specialties}
+                  instagram={creator.instagram}
+                  website={creator.website}
+                  onMessageClick={onMessageCreator}
+                  coverLetter={coverLetter}
                 />
 
-                <div className="flex flex-col space-y-6">
-                  {/* Specialties Section */}
-                  {creator.specialties && creator.specialties.length > 0 && (
-                    <div className="space-y-4">
-                      <h3 className="text-2xl font-semibold text-gray-900">Specialties</h3>
-                      <CreatorSpecialties specialties={creator.specialties} />
-                    </div>
-                  )}
-
-                  {/* About Section */}
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-gray-900">About</h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {creator.bio || "No bio available"}
-                    </p>
+                {/* Action Buttons */}
+                {onUpdateStatus && (
+                  <div className="flex gap-4 mt-auto">
+                    <Button
+                      onClick={handleReject}
+                      disabled={isProcessing}
+                      className="flex-1 bg-[#F1F1F1] text-gray-600 hover:bg-gray-100 py-6 rounded-[32px]"
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      onClick={handleAccept}
+                      disabled={isProcessing}
+                      className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-[32px]"
+                    >
+                      Accept
+                    </Button>
                   </div>
-
-                  {/* Application Message Section */}
-                  {coverLetter && (
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-semibold text-gray-900">Application Message</h3>
-                      <div className="bg-gray-50/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100">
-                        <p className="text-gray-600 leading-relaxed whitespace-pre-wrap break-words">
-                          {coverLetter}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-
-              {/* Action Buttons */}
-              {onUpdateStatus && (
-                <div className="flex gap-4 mt-8">
-                  <Button
-                    onClick={handleReject}
-                    disabled={isProcessing}
-                    className="flex-1 bg-[#F1F1F1] text-gray-600 hover:bg-gray-100 py-6 rounded-[32px] transition-all duration-300"
-                  >
-                    Reject
-                  </Button>
-                  <Button
-                    onClick={handleAccept}
-                    disabled={isProcessing}
-                    className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-[32px]"
-                  >
-                    Accept
-                  </Button>
-                </div>
-              )}
             </div>
           </div>
         </DialogContent>
@@ -160,7 +108,7 @@ const CreatorProfileModal = ({
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
         onConfirm={handleAcceptConfirm}
-        creatorName={getDisplayName()}
+        creatorName={fullName}
         isProcessing={isProcessing}
       />
     </>
