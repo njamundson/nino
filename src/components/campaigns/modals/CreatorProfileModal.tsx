@@ -118,7 +118,7 @@ const CreatorProfileModal = ({
                   <Button
                     onClick={handleAccept}
                     disabled={isProcessing}
-                    className="flex-1 bg-[#9b87f5] hover:bg-[#7E69AB] text-white py-6 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-md hover:translate-y-[-1px]"
+                    className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
                   >
                     Accept
                   </Button>
@@ -126,7 +126,7 @@ const CreatorProfileModal = ({
                     onClick={handleReject}
                     disabled={isProcessing}
                     variant="outline"
-                    className="flex-1 border-2 border-[#D6BCFA] text-[#6E59A5] hover:bg-[#F1F0FB] py-6 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-md hover:translate-y-[-1px] hover:border-[#8B5CF6]"
+                    className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
                   >
                     Reject
                   </Button>
