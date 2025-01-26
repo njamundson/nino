@@ -39,7 +39,7 @@ const CreatorProfileModal = ({
     onClose();
   };
 
-  const handleReject = async () => {
+  const handleReject = () => {
     if (!onUpdateStatus) return;
     onUpdateStatus('rejected');
     onClose();
@@ -82,6 +82,7 @@ const CreatorProfileModal = ({
                       onClick={handleReject}
                       disabled={isProcessing}
                       className="flex-1 bg-[#F1F1F1] text-gray-600 hover:bg-gray-100 py-6 rounded-[32px]"
+                      type="button"
                     >
                       Reject
                     </Button>
@@ -89,6 +90,7 @@ const CreatorProfileModal = ({
                       onClick={handleAccept}
                       disabled={isProcessing}
                       className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-[32px]"
+                      type="button"
                     >
                       Accept
                     </Button>

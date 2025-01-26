@@ -15,14 +15,12 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
 
-  // Add error handling for applications data
   if (!Array.isArray(applications)) {
     console.error('Invalid applications data:', applications);
     toast.error("Error loading applications");
     return null;
   }
 
-  // Filter out rejected applications
   const activeApplications = applications.filter(app => {
     if (!app || typeof app !== 'object') {
       console.error('Invalid application object:', app);
@@ -31,7 +29,6 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
     return app.status !== 'rejected';
   });
 
-  // If there are no active applications, don't render anything
   if (!activeApplications.length) return null;
 
   const handleViewProfile = (application: any) => {
@@ -52,7 +49,11 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
       console.error('No application selected for status update');
       return;
     }
-    onViewProfile(selectedApplication);
+    
+    // Call onViewProfile with the application and status
+    onViewProfile({ ...selectedApplication, status });
+    
+    // Close the modal
     handleCloseModal();
   };
 
