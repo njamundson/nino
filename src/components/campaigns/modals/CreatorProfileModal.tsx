@@ -62,7 +62,6 @@ const CreatorProfileModal = ({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-white rounded-3xl">
           <div className="relative flex flex-col h-full min-h-[600px]">
-            {/* Close Button */}
             <button
               onClick={onClose}
               className="absolute right-6 top-6 text-gray-500 hover:text-gray-700 z-10"
@@ -76,6 +75,14 @@ const CreatorProfileModal = ({
                 <h2 className="text-3xl font-semibold text-gray-900">
                   {getDisplayName()}
                 </h2>
+                {onMessageCreator && (
+                  <button
+                    onClick={onMessageCreator}
+                    className="text-gray-500 hover:text-gray-700 mt-2"
+                  >
+                    Message
+                  </button>
+                )}
                 {creator.location && (
                   <div className="flex items-center gap-2 text-gray-600 mt-2">
                     <span className="text-xl">📍</span>
@@ -83,7 +90,7 @@ const CreatorProfileModal = ({
                   </div>
                 )}
                 <div className="mt-4">
-                  <CreatorSocials creator={creator} onMessageClick={onMessageCreator} />
+                  <CreatorSocials creator={creator} />
                 </div>
               </div>
 
@@ -122,7 +129,6 @@ const CreatorProfileModal = ({
                   <Button
                     onClick={handleReject}
                     disabled={isProcessing}
-                    variant="outline"
                     className="flex-1 bg-[#F1F1F1] text-gray-600 hover:bg-gray-100 py-6 rounded-[32px] transition-all duration-300"
                   >
                     Reject
