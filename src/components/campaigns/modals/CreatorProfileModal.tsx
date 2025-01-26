@@ -5,6 +5,7 @@ import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
 import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
 import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
+import { X } from "lucide-react";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -59,9 +60,30 @@ const CreatorProfileModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-[800px] p-6 overflow-hidden bg-white rounded-3xl">
-          <div className="flex flex-col h-full max-h-[80vh]">
-            <div className="flex-1 overflow-y-auto">
+        <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-white rounded-3xl">
+          <div className="relative">
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute right-6 top-6 text-gray-500 hover:text-gray-700 z-10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="p-8">
+              {/* Header */}
+              <div className="mb-8">
+                <h2 className="text-3xl font-semibold text-gray-900 mb-2">
+                  {getDisplayName()}
+                </h2>
+                {creator.location && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <span className="text-xl">📍</span>
+                    <span>{creator.location}</span>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <CreatorImage 
                   profileImageUrl={creator.profile_image_url} 
@@ -76,7 +98,7 @@ const CreatorProfileModal = ({
                     instagram={creator.instagram}
                     website={creator.website}
                     onMessageClick={onMessageCreator}
-                    coverLetter={coverLetter} // Pass the cover letter
+                    coverLetter={coverLetter}
                   />
 
                   {/* Action Buttons */}
