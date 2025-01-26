@@ -60,7 +60,7 @@ const CreatorProfileModal = ({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-white rounded-3xl">
-          <div className="relative">
+          <div className="relative flex flex-col h-full min-h-[600px]">
             {/* Close Button */}
             <button
               onClick={onClose}
@@ -69,7 +69,7 @@ const CreatorProfileModal = ({
               <X className="w-5 h-5" />
             </button>
 
-            <div className="p-8">
+            <div className="p-8 flex flex-col flex-grow">
               {/* Header */}
               <div className="mb-8">
                 <h2 className="text-3xl font-semibold text-gray-900">
@@ -83,7 +83,7 @@ const CreatorProfileModal = ({
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-grow">
                 <CreatorImage 
                   profileImageUrl={creator.profile_image_url} 
                   fullName={getDisplayName()} 
@@ -109,29 +109,29 @@ const CreatorProfileModal = ({
                       </div>
                     </div>
                   )}
-
-                  {/* Action Buttons */}
-                  {onUpdateStatus && (
-                    <div className="flex gap-4 mt-auto">
-                      <Button
-                        onClick={handleAccept}
-                        disabled={isProcessing}
-                        className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
-                      >
-                        Accept
-                      </Button>
-                      <Button
-                        onClick={handleReject}
-                        disabled={isProcessing}
-                        variant="outline"
-                        className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
-                      >
-                        Reject
-                      </Button>
-                    </div>
-                  )}
                 </div>
               </div>
+
+              {/* Action Buttons */}
+              {onUpdateStatus && (
+                <div className="flex gap-4 mt-8">
+                  <Button
+                    onClick={handleAccept}
+                    disabled={isProcessing}
+                    className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-2xl"
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    onClick={handleReject}
+                    disabled={isProcessing}
+                    variant="outline"
+                    className="flex-1 border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl"
+                  >
+                    Reject
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </DialogContent>
