@@ -35,44 +35,47 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
     ? `${creator.first_name} ${creator.last_name || ''}`
     : 'Anonymous Creator';
 
+  // Truncate cover letter to first 150 characters
+  const truncatedMessage = application.cover_letter?.length > 150 
+    ? `${application.cover_letter.substring(0, 150)}...` 
+    : application.cover_letter;
+
   return (
-    <div className="p-6 rounded-lg bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300">
-      <div className="flex items-start justify-between gap-6">
-        <div className="flex-1 flex items-start gap-6">
-          <Avatar className="h-20 w-20 rounded-full border-2 border-white shadow-sm overflow-hidden">
-            {creator?.profile_image_url ? (
-              <AvatarImage
-                src={creator.profile_image_url}
-                alt={displayName}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <AvatarFallback className="bg-gray-100 text-gray-600 text-xl">
-                {getInitials(displayName)}
-              </AvatarFallback>
-            )}
-          </Avatar>
-          
-          <div className="space-y-4 flex-1">
-            <div className="space-y-2">
-              <h5 className="font-medium text-gray-700">Application Message:</h5>
-              <p className="text-gray-600 leading-relaxed">
-                {application.cover_letter}
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="group p-5 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="flex items-start gap-4">
+        <Avatar className="h-12 w-12 rounded-full ring-2 ring-white shadow-sm">
+          {creator?.profile_image_url ? (
+            <AvatarImage
+              src={creator.profile_image_url}
+              alt={displayName}
+              className="object-cover"
+            />
+          ) : (
+            <AvatarFallback className="bg-gray-100 text-gray-600">
+              {getInitials(displayName)}
+            </AvatarFallback>
+          )}
+        </Avatar>
         
-        <div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onViewProfile}
-            className="text-gray-600 hover:text-gray-900 rounded-full"
-          >
-            <Eye className="h-4 w-4 mr-1.5" />
-            View Profile
-          </Button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-medium text-gray-900 truncate">
+              {displayName}
+            </h3>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={onViewProfile}
+              className="text-gray-600 hover:text-gray-900 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            >
+              <Eye className="h-4 w-4 mr-1.5" />
+              View Profile
+            </Button>
+          </div>
+          
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+            {truncatedMessage}
+          </p>
         </div>
       </div>
     </div>
