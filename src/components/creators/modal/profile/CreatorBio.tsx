@@ -1,5 +1,6 @@
 import SocialLinks from "./social/SocialLinks";
 import CreatorSpecialties from "./bio/CreatorSpecialties";
+import { MapPin } from "lucide-react";
 
 interface CreatorBioProps {
   bio: string | null;
@@ -8,7 +9,7 @@ interface CreatorBioProps {
   instagram: string | null;
   website: string | null;
   onMessageClick?: () => void;
-  coverLetter?: string | null; // Add cover letter prop
+  coverLetter?: string | null;
 }
 
 const CreatorBio = ({ 
@@ -18,14 +19,15 @@ const CreatorBio = ({
   instagram,
   website,
   onMessageClick,
-  coverLetter // Add cover letter to destructuring
+  coverLetter
 }: CreatorBioProps) => {
   return (
     <div className="flex-grow space-y-6">
       {location && (
-        <p className="text-nino-gray flex items-center gap-2">
-          <span className="text-lg">📍</span> {location}
-        </p>
+        <div className="flex items-center gap-2 text-nino-gray">
+          <MapPin className="w-5 h-5" />
+          <span className="text-base">{location}</span>
+        </div>
       )}
       
       <div className="space-y-2">
@@ -43,7 +45,6 @@ const CreatorBio = ({
 
       <CreatorSpecialties specialties={specialties} />
 
-      {/* Add Application Message section */}
       {coverLetter && (
         <div className="space-y-3">
           <h3 className="text-2xl font-semibold text-nino-text">Application Message</h3>
