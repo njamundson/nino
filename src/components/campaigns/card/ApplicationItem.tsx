@@ -37,9 +37,6 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
 
   return (
     <div className="group p-4 rounded-lg bg-white border border-gray-100 hover:shadow-sm transition-all duration-200">
-      <h2 className="font-semibold text-lg text-gray-900 mb-3 px-1">
-        {displayName}
-      </h2>
       <div className="flex items-start gap-3">
         <Avatar className="h-10 w-10 rounded-full ring-2 ring-white">
           {creator?.profile_image_url ? (
@@ -57,18 +54,22 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1.5">
-            <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed flex-1 mr-3">
-              {application.cover_letter}
-            </p>
+            <h3 className="font-medium text-gray-900">
+              {displayName}
+            </h3>
             <Button
               size="sm"
               variant="ghost"
               onClick={onViewProfile}
-              className="text-gray-500 hover:text-gray-900 shrink-0"
+              className="text-gray-500 hover:text-gray-900"
             >
               <Eye className="h-4 w-4" />
             </Button>
           </div>
+          
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+            {application.cover_letter}
+          </p>
         </div>
       </div>
     </div>
