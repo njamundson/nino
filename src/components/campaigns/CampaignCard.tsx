@@ -7,8 +7,6 @@ import CreatorProfileModal from "./modals/CreatorProfileModal";
 import CampaignDetails from "./card/CampaignDetails";
 import ApplicationsList from "./card/ApplicationsList";
 import { useApplicationActions } from "@/hooks/useApplicationActions";
-import { toast } from "sonner";
-import SuccessModal from "@/components/campaign/SuccessModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,9 +34,10 @@ const CampaignCard = ({
 }: CampaignCardProps) => {
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
-  const { isProcessing, handleAcceptApplication } = useApplicationActions({ opportunityId: campaign.id });
+  const { isProcessing, handleAcceptApplication } = useApplicationActions({ 
+    opportunityId: campaign.id 
+  });
 
   const handleMessageCreator = (userId: string) => {
     navigate(`/brand/messages?userId=${userId}`);
@@ -49,38 +48,16 @@ const CampaignCard = ({
     setSelectedApplication(application);
   };
 
-  const handleAcceptConfirm = async (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => {
-    if (selectedApplication) {
-      const success = await handleAcceptApplication(selectedApplication.id);
-      if (success) {
-        setShowSuccessModal(true);
-      }
-      return success;
-    }
-    return false;
-  };
-
-  const handleKeepActive = async () => {
-    if (selectedApplication) {
-      const success = await handleAcceptApplication(selectedApplication.id);
-      if (success) {
-        setShowSuccessModal(false);
-        setSelectedCreator(null);
-        setSelectedApplication(null);
-        handleMessageCreator(selectedApplication.creator.user_id);
-      }
-    }
-  };
-
-  const handleCloseProject = async () => {
-    if (selectedApplication) {
-      const success = await handleAcceptApplication(selectedApplication.id);
-      if (success) {
-        setShowSuccessModal(false);
-        setSelectedCreator(null);
-        setSelectedApplication(null);
-        handleMessageCreator(selectedApplication.creator.user_id);
-      }
+  const handleAcceptConfirm = async () => {
+    if (!selectedApplication || isProcessing) return;
+    
+    console.log('Accepting application:', selectedApplication.id);
+    const success = await handleAcceptApplication(selectedApplication.id);
+    
+    if (success) {
+      setSelectedCreator(null);
+      setSelectedApplication(null);
+      handleMessageCreator(selectedApplication.creator.user_id);
     }
   };
 
@@ -165,13 +142,6 @@ const CampaignCard = ({
           isProcessing={isProcessing}
         />
       )}
-
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onOpenChange={setShowSuccessModal}
-        onKeepActive={handleKeepActive}
-        onClose={handleCloseProject}
-      />
     </>
   );
 };

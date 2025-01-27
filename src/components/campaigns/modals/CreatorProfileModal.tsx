@@ -5,8 +5,6 @@ import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
 import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
 import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
-import SuccessModal from "@/components/campaign/SuccessModal";
-import { toast } from "sonner";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -14,8 +12,7 @@ interface CreatorProfileModalProps {
   creator: Creator;
   coverLetter?: string;
   onMessageCreator?: () => void;
-  onUpdateStatus?: (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => Promise<boolean>;
-  opportunityId?: string;
+  onUpdateStatus?: () => Promise<boolean>;
   isProcessing?: boolean;
 }
 
@@ -29,7 +26,6 @@ const CreatorProfileModal = ({
   isProcessing
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleAccept = () => {
     if (isProcessing) return;
@@ -39,47 +35,17 @@ const CreatorProfileModal = ({
   const handleAcceptConfirm = async () => {
     if (!onUpdateStatus || isProcessing) return;
     
-    setShowAcceptDialog(false);
-    const success = await onUpdateStatus('accepted');
+    console.log('Confirming application acceptance');
+    const success = await onUpdateStatus();
     
     if (success) {
-      setShowSuccessModal(true);
+      setShowAcceptDialog(false);
+      onClose();
     }
   };
 
-  const handleKeepActive = async () => {
-    if (!onUpdateStatus || isProcessing) return;
-    
-    const success = await onUpdateStatus('accepted', true);
-    if (success) {
-      setShowSuccessModal(false);
-      onClose();
-      if (onMessageCreator) {
-        onMessageCreator();
-      }
-    }
-  };
-
-  const handleCloseProject = async () => {
-    if (!onUpdateStatus || isProcessing) return;
-    
-    const success = await onUpdateStatus('accepted', false);
-    if (success) {
-      setShowSuccessModal(false);
-      onClose();
-      if (onMessageCreator) {
-        onMessageCreator();
-      }
-    }
-  };
-
-  const handleReject = async () => {
-    if (!onUpdateStatus || isProcessing) return;
-    
-    const success = await onUpdateStatus('rejected');
-    if (success) {
-      onClose();
-    }
+  const handleReject = () => {
+    onClose();
   };
 
   const fullName = creator.first_name ? 
@@ -146,13 +112,6 @@ const CreatorProfileModal = ({
         onConfirm={handleAcceptConfirm}
         creatorName={fullName}
         isProcessing={isProcessing}
-      />
-
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onOpenChange={setShowSuccessModal}
-        onKeepActive={handleKeepActive}
-        onClose={handleCloseProject}
       />
     </>
   );

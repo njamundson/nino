@@ -9,29 +9,37 @@ interface UseApplicationActionsProps {
 export const useApplicationActions = ({ opportunityId }: UseApplicationActionsProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleAcceptApplication = async (applicationId: string, keepCampaignActive: boolean = true) => {
+  const handleAcceptApplication = async (applicationId: string) => {
     setIsProcessing(true);
     try {
+      console.log('Processing application acceptance:', applicationId);
+      
       // Update application status to accepted
       const { error: applicationError } = await supabase
         .from('applications')
         .update({ status: 'accepted' })
         .eq('id', applicationId);
 
-      if (applicationError) throw applicationError;
+      if (applicationError) {
+        console.error('Error updating application:', applicationError);
+        throw applicationError;
+      }
 
-      // Update opportunity status based on keepCampaignActive flag
-      const newStatus = keepCampaignActive ? 'active' : 'completed';
+      // Update opportunity status to active
       const { error: opportunityError } = await supabase
         .from('opportunities')
-        .update({ status: newStatus })
+        .update({ status: 'active' })
         .eq('id', opportunityId);
 
-      if (opportunityError) throw opportunityError;
+      if (opportunityError) {
+        console.error('Error updating opportunity:', opportunityError);
+        throw opportunityError;
+      }
 
+      console.log('Application accepted successfully');
       return true;
     } catch (error) {
-      console.error('Error accepting application:', error);
+      console.error('Error in handleAcceptApplication:', error);
       toast.error("Failed to accept application. Please try again.");
       return false;
     } finally {
@@ -42,12 +50,16 @@ export const useApplicationActions = ({ opportunityId }: UseApplicationActionsPr
   const handleRejectApplication = async (applicationId: string) => {
     setIsProcessing(true);
     try {
+      console.log('Processing application rejection:', applicationId);
+      
       const { error } = await supabase
         .from('applications')
         .update({ status: 'rejected' })
         .eq('id', applicationId);
 
       if (error) throw error;
+
+      console.log('Application rejected successfully');
       return true;
     } catch (error) {
       console.error('Error rejecting application:', error);
