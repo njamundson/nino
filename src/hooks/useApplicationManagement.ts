@@ -66,7 +66,7 @@ export const useApplicationManagement = () => {
       return true;
     } catch (error) {
       console.error('Error in handleUpdateStatus:', error);
-      toast.error("An error occurred. Please try again.");
+      toast.error("An unexpected error occurred");
       return false;
     } finally {
       setIsProcessing(false);
