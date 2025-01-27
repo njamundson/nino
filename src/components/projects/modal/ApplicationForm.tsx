@@ -41,27 +41,70 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
 
   const onSubmit = async (data: ApplicationFormValues) => {
     try {
+      console.log('Starting application submission...');
+      
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        console.error('No authenticated user found');
+        toast({
+          title: "Authentication Error",
+          description: "Please sign in to submit an application.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      const { data: creator } = await supabase
+      console.log('Fetching creator profile...');
+      const { data: creator, error: creatorError } = await supabase
         .from("creators")
         .select("id")
         .eq("user_id", user.id)
         .single();
 
-      if (!creator) throw new Error("Creator profile not found");
+      if (creatorError || !creator) {
+        console.error('Error fetching creator:', creatorError);
+        toast({
+          title: "Error",
+          description: "Could not find your creator profile. Please ensure you've completed onboarding.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      const { error } = await supabase.from("applications").insert({
-        opportunity_id: opportunity.id,
-        creator_id: creator.id,
-        cover_letter: data.coverLetter,
-        initiated_by: 'creator',
-        status: 'pending'
-      });
+      console.log('Submitting application...');
+      const { error: applicationError } = await supabase
+        .from("applications")
+        .insert({
+          opportunity_id: opportunity.id,
+          creator_id: creator.id,
+          cover_letter: data.coverLetter,
+          initiated_by: 'creator',
+          status: 'pending'
+        });
 
-      if (error) throw error;
+      if (applicationError) {
+        console.error('Error submitting application:', applicationError);
+        
+        // Check if it's a duplicate application
+        if (applicationError.code === '23505') {
+          toast({
+            title: "Already Applied",
+            description: "You have already submitted an application for this opportunity.",
+            variant: "destructive",
+          });
+          return;
+        }
 
+        toast({
+          title: "Error",
+          description: "Failed to submit application. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log('Application submitted successfully');
+      
       // Show success message
       toast({
         title: "Application Submitted",
@@ -74,10 +117,10 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
       // Close the modal
       onModalClose();
     } catch (error) {
-      console.error("Error submitting application:", error);
+      console.error("Error in application submission:", error);
       toast({
         title: "Error",
-        description: "Failed to submit application. Please try again.",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     }
