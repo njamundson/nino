@@ -4,6 +4,8 @@ import { useState } from "react";
 import ApplicationItem from "./ApplicationItem";
 import CreatorProfileModal from "../modals/CreatorProfileModal";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ApplicationsListProps {
   applications: any[];
@@ -14,6 +16,8 @@ interface ApplicationsListProps {
 const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }: ApplicationsListProps) => {
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const queryClient = useQueryClient();
 
   if (!Array.isArray(applications)) {
     console.error('Invalid applications data:', applications);
@@ -44,11 +48,42 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
     setSelectedApplication(null);
   };
 
-  const handleUpdateStatus = (status: 'accepted' | 'rejected') => {
+  const handleUpdateStatus = async (status: 'accepted' | 'rejected') => {
     if (!selectedApplication) return;
     
-    onViewProfile({ ...selectedApplication, status });
-    setSelectedApplication(null);
+    setIsProcessing(true);
+    try {
+      if (status === 'rejected') {
+        // Delete the application instead of updating status
+        const { error } = await supabase
+          .from('applications')
+          .delete()
+          .eq('id', selectedApplication.id);
+
+        if (error) throw error;
+        
+        toast.success("Application rejected and removed");
+      } else {
+        // For acceptance, update the status
+        const { error } = await supabase
+          .from('applications')
+          .update({ status })
+          .eq('id', selectedApplication.id);
+
+        if (error) throw error;
+        
+        toast.success("Application accepted");
+      }
+
+      // Invalidate and refetch the applications query
+      queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+      setSelectedApplication(null);
+    } catch (error) {
+      console.error('Error updating application:', error);
+      toast.error("Failed to update application");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -95,6 +130,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
           creator={selectedApplication.creator}
           coverLetter={selectedApplication.cover_letter}
           onUpdateStatus={handleUpdateStatus}
+          isProcessing={isProcessing}
           onMessageCreator={() => {
             if (selectedApplication.creator?.user_id) {
               onMessageCreator(selectedApplication.creator.user_id);
