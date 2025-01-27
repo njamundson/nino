@@ -78,11 +78,11 @@ const BrandSidebar = () => {
         className="h-full bg-white/50 backdrop-blur-xl rounded-xl shadow-sm flex flex-col border border-gray-100"
       >
         <div className="px-3 pt-8 pb-6 border-b border-gray-100">
-          <Link to="/brand/dashboard" className="flex items-center px-4">
+          <Link to="/brand/dashboard" className="flex items-center justify-center px-4">
             <motion.img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
-              className="h-12"
+              className="h-16" // Increased from h-12 to h-16
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             />
