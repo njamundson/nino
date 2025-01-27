@@ -13,6 +13,7 @@ export const useApplicationManagement = () => {
     status: 'accepted' | 'rejected',
     keepCampaignActive?: boolean
   ) => {
+    if (isProcessing) return false;
     setIsProcessing(true);
     
     try {
