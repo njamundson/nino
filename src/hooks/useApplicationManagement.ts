@@ -27,43 +27,28 @@ export const useApplicationManagement = () => {
         return false;
       }
 
-      // Update application status
-      const { error: applicationError } = await supabase
-        .from('applications')
-        .update({ status })
-        .eq('id', applicationId);
+      // For now, we'll just reject applications
+      if (status === 'rejected') {
+        const { error: applicationError } = await supabase
+          .from('applications')
+          .update({ status })
+          .eq('id', applicationId);
 
-      if (applicationError) {
-        console.error('Error updating application:', applicationError);
-        toast.error("Failed to update application");
-        return false;
-      }
-
-      // If accepting and not keeping campaign active, update opportunity status
-      if (status === 'accepted' && !keepCampaignActive) {
-        const { error: opportunityError } = await supabase
-          .from('opportunities')
-          .update({ status: 'closed' })
-          .eq('id', opportunityId);
-
-        if (opportunityError) {
-          console.error('Error updating opportunity:', opportunityError);
-          toast.error("Failed to update campaign status");
+        if (applicationError) {
+          console.error('Error updating application:', applicationError);
+          toast.error("Failed to update application");
           return false;
         }
+
+        await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+        toast.success("Application rejected successfully");
+        return true;
       }
 
-      // Invalidate relevant queries
-      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
-      await queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
-
-      toast.success(
-        status === 'accepted' 
-          ? "Creator accepted successfully! You can now message them."
-          : "Application rejected successfully"
-      );
-
-      return true;
+      // Acceptance flow removed - to be rebuilt
+      toast.error("Application acceptance is currently unavailable");
+      return false;
+      
     } catch (error) {
       console.error('Error in handleUpdateStatus:', error);
       toast.error("An unexpected error occurred");
