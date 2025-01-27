@@ -54,7 +54,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
 
   return (
     <div className={cn(
-      "group relative max-w-[80%] animate-fadeIn",
+      "group relative max-w-[80%] animate-fadeIn mb-8",
       isCurrentUser ? "ml-auto" : "mr-auto"
     )}>
       <div
@@ -79,8 +79,8 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
       </div>
 
       <div className={cn(
-        "absolute -bottom-8 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1",
-        isCurrentUser ? "-left-2" : "-right-2"
+        "absolute bottom-0 translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-1 pt-2",
+        isCurrentUser ? "left-0" : "right-0"
       )}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -92,20 +92,21 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
               <Smile className="h-4 w-4 text-gray-600" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={isCurrentUser ? "start" : "end"}>
-            <div className="flex p-1 gap-1">
-              {REACTION_EMOJIS.map((emoji) => (
-                <Button
-                  key={emoji}
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 hover:bg-gray-100 rounded-full"
-                  onClick={() => handleReaction(emoji)}
-                >
-                  {emoji}
-                </Button>
-              ))}
-            </div>
+          <DropdownMenuContent 
+            align={isCurrentUser ? "start" : "end"}
+            className="p-1 flex gap-1 min-w-0"
+          >
+            {REACTION_EMOJIS.map((emoji) => (
+              <Button
+                key={emoji}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-gray-100 rounded-full"
+                onClick={() => handleReaction(emoji)}
+              >
+                {emoji}
+              </Button>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
 
