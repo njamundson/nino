@@ -8,6 +8,7 @@ import CampaignDetails from "./card/CampaignDetails";
 import ApplicationsList from "./card/ApplicationsList";
 import { useApplicationActions } from "@/hooks/useApplicationActions";
 import { toast } from "sonner";
+import SuccessModal from "@/components/campaign/SuccessModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,8 +36,9 @@ const CampaignCard = ({
 }: CampaignCardProps) => {
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
-  const { isProcessing } = useApplicationActions({ opportunityId: campaign.id });
+  const { isProcessing, handleAcceptApplication } = useApplicationActions({ opportunityId: campaign.id });
 
   const handleMessageCreator = (userId: string) => {
     navigate(`/brand/messages?userId=${userId}`);
@@ -45,6 +47,37 @@ const CampaignCard = ({
   const handleViewProfile = (application: any) => {
     setSelectedCreator(application.creator);
     setSelectedApplication(application);
+  };
+
+  const handleAcceptConfirm = async (applicationId: string) => {
+    const success = await handleAcceptApplication(applicationId);
+    if (success) {
+      setShowSuccessModal(true);
+    }
+  };
+
+  const handleKeepActive = async () => {
+    if (selectedApplication) {
+      const success = await handleAcceptApplication(selectedApplication.id, true);
+      if (success) {
+        setShowSuccessModal(false);
+        setSelectedCreator(null);
+        setSelectedApplication(null);
+        handleMessageCreator(selectedApplication.creator.user_id);
+      }
+    }
+  };
+
+  const handleCloseProject = async () => {
+    if (selectedApplication) {
+      const success = await handleAcceptApplication(selectedApplication.id, false);
+      if (success) {
+        setShowSuccessModal(false);
+        setSelectedCreator(null);
+        setSelectedApplication(null);
+        handleMessageCreator(selectedApplication.creator.user_id);
+      }
+    }
   };
 
   return (
@@ -123,14 +156,18 @@ const CampaignCard = ({
           }}
           creator={selectedCreator}
           coverLetter={selectedApplication.cover_letter}
-          onUpdateStatus={() => {
-            toast.error("Application management is currently unavailable");
-            return Promise.resolve(false);
-          }}
+          onUpdateStatus={handleAcceptConfirm}
           onMessageCreator={() => handleMessageCreator(selectedCreator.user_id)}
           isProcessing={isProcessing}
         />
       )}
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        onKeepActive={handleKeepActive}
+        onClose={handleCloseProject}
+      />
     </>
   );
 };
