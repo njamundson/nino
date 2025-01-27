@@ -114,7 +114,7 @@ const ChatMessages = ({
   return (
     <div 
       ref={scrollContainerRef}
-      className="h-full overflow-y-auto px-4 py-6"
+      className="h-full overflow-y-auto px-4 py-6 flex flex-col space-y-6"
       onScroll={handleScroll}
     >
       <AnimatePresence mode="popLayout">
@@ -124,7 +124,7 @@ const ChatMessages = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="space-y-4 mb-6"
+            className="space-y-4"
           >
             <DateDivider date={date} />
             <div className="space-y-4">
