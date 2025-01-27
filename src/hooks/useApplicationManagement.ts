@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useApplicationManagement = () => {
@@ -15,46 +14,33 @@ export const useApplicationManagement = () => {
   ) => {
     setIsProcessing(true);
     try {
-      if (status === 'accepted') {
-        // Update application status
-        const { error: applicationError } = await supabase
-          .from('applications')
-          .update({ status: 'accepted' })
-          .eq('id', applicationId);
+      // Update application status
+      const { error: applicationError } = await supabase
+        .from('applications')
+        .update({ status })
+        .eq('id', applicationId);
 
-        if (applicationError) throw applicationError;
+      if (applicationError) throw applicationError;
 
-        // If not keeping campaign active, update opportunity status
-        if (!keepCampaignActive) {
-          const { error: opportunityError } = await supabase
-            .from('opportunities')
-            .update({ status: 'active' })
-            .eq('id', opportunityId);
+      // If accepting and not keeping campaign active, update opportunity status
+      if (status === 'accepted' && !keepCampaignActive) {
+        const { error: opportunityError } = await supabase
+          .from('opportunities')
+          .update({ status: 'active' })
+          .eq('id', opportunityId);
 
-          if (opportunityError) throw opportunityError;
-        }
-
-        // Invalidate and refetch relevant queries
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
-          queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] })
-        ]);
-
-      } else {
-        // Delete the application instead of updating status
-        const { error } = await supabase
-          .from('applications')
-          .delete()
-          .eq('id', applicationId);
-
-        if (error) throw error;
-        
-        await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+        if (opportunityError) throw opportunityError;
       }
+
+      // Invalidate and refetch relevant queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
+        queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] })
+      ]);
 
     } catch (error) {
       console.error('Error updating application status:', error);
-      throw error; // Re-throw to handle in component
+      throw error;
     } finally {
       setIsProcessing(false);
     }

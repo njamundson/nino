@@ -10,25 +10,13 @@ export interface SuccessModalProps {
 }
 
 const SuccessModal = ({ isOpen, onOpenChange, onKeepActive, onClose }: SuccessModalProps) => {
-  const handleKeepActive = () => {
-    if (onKeepActive) {
-      onKeepActive();
-    }
-  };
-
-  const handleClose = () => {
-    if (onClose) {
-      onClose();
-    }
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[400px] p-0 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg animate-fade-in">
+      <DialogContent className="sm:max-w-[400px] p-0 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg">
         <div className="flex flex-col items-center justify-center space-y-6 p-10">
           <div className="relative">
             <div className="absolute inset-0 bg-green-100 rounded-full blur-sm opacity-50"></div>
-            <CheckCircle2 className="h-16 w-16 text-green-500 relative animate-scale-in" />
+            <CheckCircle2 className="h-16 w-16 text-green-500 relative animate-bounce" />
           </div>
           <div className="space-y-2 text-center">
             <h2 className="text-2xl font-medium tracking-tight text-gray-900">
@@ -42,13 +30,13 @@ const SuccessModal = ({ isOpen, onOpenChange, onKeepActive, onClose }: SuccessMo
             <Button
               variant="outline"
               className="flex-1"
-              onClick={handleKeepActive}
+              onClick={onKeepActive}
             >
               Keep Active
             </Button>
             <Button
               className="flex-1"
-              onClick={handleClose}
+              onClick={onClose}
             >
               Close Project
             </Button>
