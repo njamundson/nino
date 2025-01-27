@@ -23,7 +23,6 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
   const handleUpdateStatus = async (status: 'accepted' | 'rejected') => {
     try {
       if (status === 'rejected') {
-        // Delete the application instead of updating status
         const { error } = await supabase
           .from('applications')
           .delete()
@@ -31,7 +30,6 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
 
         if (error) throw error;
 
-        // Invalidate queries to refresh the UI
         queryClient.invalidateQueries({ queryKey: ['applications'] });
         queryClient.invalidateQueries({ queryKey: ['my-applications'] });
         
@@ -61,44 +59,55 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
 
   return (
     <>
-      <Card className="overflow-hidden">
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-1">
-                {application.opportunity?.title || "Untitled Opportunity"}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {application.opportunity?.brand?.company_name || "Unknown Brand"}
-              </p>
+      <Card className="group relative overflow-hidden rounded-3xl border-0 cursor-pointer h-[400px]">
+        <div className="relative h-full w-full">
+          <img
+            src={application.opportunity?.image_url || "/placeholder.svg"}
+            alt={application.opportunity?.title || "Project image"}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent" />
+          
+          <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex-1">
+                <p className="text-sm text-white/90 mb-1">
+                  {application.opportunity?.brand?.company_name || "Unknown Brand"}
+                </p>
+                <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                  {application.opportunity?.title || "Untitled Opportunity"}
+                </h3>
+              </div>
+              <ProposalStatusBadge status={application.status} />
             </div>
-            <ProposalStatusBadge status={application.status} />
-          </div>
 
-          <div className="space-y-4">
-            {application.cover_letter && (
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {application.cover_letter}
-              </p>
-            )}
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleViewDetails}
-              >
-                View Details
-              </Button>
-              {application.status === 'accepted' && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleMessageBrand}
-                >
-                  Message Brand
-                </Button>
+            <div className="space-y-4">
+              {application.cover_letter && (
+                <p className="text-sm text-white/80 line-clamp-2">
+                  {application.cover_letter}
+                </p>
               )}
+
+              <div className="flex gap-3">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleViewDetails}
+                  className="bg-white/90 hover:bg-white text-gray-900"
+                >
+                  View Details
+                </Button>
+                {application.status === 'accepted' && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleMessageBrand}
+                    className="border-white/30 text-white hover:bg-white/20"
+                  >
+                    Message Brand
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
