@@ -70,7 +70,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
           prev.filter(app => app.id !== selectedApplication.id)
         );
         
-        toast.success("Application rejected and removed");
+        toast.success("Application rejected");
       } else {
         // For acceptance, update the status
         const { error } = await supabase
@@ -89,6 +89,11 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
           )
         );
         
+        // Only send a message when accepting the application
+        if (selectedApplication.creator?.user_id) {
+          onMessageCreator(selectedApplication.creator.user_id);
+        }
+        
         toast.success("Application accepted");
       }
 
@@ -96,7 +101,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
       queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
       setSelectedApplication(null);
     } catch (error) {
-      console.error('Error updating application:', error);
+      console.error('Error updating application status:', error);
       toast.error("Failed to update application status");
     } finally {
       setIsProcessing(false);
