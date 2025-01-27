@@ -1,6 +1,6 @@
+import { MapPin } from "lucide-react";
 import SocialLinks from "./social/SocialLinks";
 import CreatorSpecialties from "./bio/CreatorSpecialties";
-import { MapPin } from "lucide-react";
 
 interface CreatorBioProps {
   bio: string | null;
@@ -25,11 +25,11 @@ const CreatorBio = ({
     <div className="flex-grow space-y-6">
       {location && (
         <div className="flex items-center gap-2 text-nino-gray">
-          <MapPin className="w-5 h-5" />
+          <MapPin className="h-5 w-5" />
           <span className="text-base">{location}</span>
         </div>
       )}
-      
+
       <div className="space-y-2">
         <SocialLinks 
           instagram={instagram}
