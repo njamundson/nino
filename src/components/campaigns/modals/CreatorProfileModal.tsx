@@ -5,6 +5,7 @@ import { useState } from "react";
 import AcceptDialog from "./profile/AcceptDialog";
 import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
 import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
+import SuccessModal from "@/components/campaign/SuccessModal";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -27,15 +28,31 @@ const CreatorProfileModal = ({
   isProcessing
 }: CreatorProfileModalProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleAccept = () => {
     setShowAcceptDialog(true);
   };
 
-  const handleAcceptConfirm = (keepCampaignActive: boolean) => {
-    if (!onUpdateStatus) return;
-    onUpdateStatus('accepted', keepCampaignActive);
+  const handleAcceptConfirm = () => {
     setShowAcceptDialog(false);
+    if (!onUpdateStatus) return;
+    onUpdateStatus('accepted');
+    setShowSuccessModal(true);
+  };
+
+  const handleKeepActive = () => {
+    if (!onUpdateStatus) return;
+    onUpdateStatus('accepted', true);
+    setShowSuccessModal(false);
+    onClose();
+  };
+
+  const handleCloseProject = () => {
+    if (!onUpdateStatus) return;
+    onUpdateStatus('accepted', false);
+    setShowSuccessModal(false);
+    onClose();
   };
 
   const handleReject = () => {
@@ -107,6 +124,13 @@ const CreatorProfileModal = ({
         onConfirm={handleAcceptConfirm}
         creatorName={fullName}
         isProcessing={isProcessing}
+      />
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onOpenChange={setShowSuccessModal}
+        onKeepActive={handleKeepActive}
+        onClose={handleCloseProject}
       />
     </>
   );

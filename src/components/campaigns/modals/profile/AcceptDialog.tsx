@@ -35,32 +35,18 @@ const AcceptDialog = ({
             Are you sure you want to accept {creatorName}'s proposal? This will create a new booking and open a messaging thread with the creator.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex-col space-y-2">
+        <AlertDialogFooter>
           <AlertDialogCancel disabled={isProcessing}>Cancel</AlertDialogCancel>
-          <div className="flex gap-2 w-full">
-            <Button
-              onClick={() => onConfirm(false)}
-              disabled={isProcessing}
-              className="flex-1 relative"
-              variant="default"
-            >
-              {isProcessing && (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin absolute left-4" />
-              )}
-              Close Campaign
-            </Button>
-            <Button
-              onClick={() => onConfirm(true)}
-              disabled={isProcessing}
-              className="flex-1 relative"
-              variant="outline"
-            >
-              {isProcessing && (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin absolute left-4" />
-              )}
-              Keep Campaign Active
-            </Button>
-          </div>
+          <AlertDialogAction
+            onClick={() => onConfirm(false)}
+            disabled={isProcessing}
+            className="relative"
+          >
+            {isProcessing && (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin absolute left-4" />
+            )}
+            Accept
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
