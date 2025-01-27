@@ -128,8 +128,8 @@ const Messages = () => {
         description="Connect and communicate with creators."
       />
       
-      <div className="flex-1 min-h-0 container px-0 pb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+      <div className="flex-1 container px-0 pb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-14rem)]">
           <div className="md:col-span-1 bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100 h-full">
             <ChatList 
               onSelectChat={handleSelectChat}
