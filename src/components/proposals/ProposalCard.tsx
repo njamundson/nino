@@ -1,99 +1,118 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import ViewApplicationModal from "./modals/ViewApplicationModal";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/integrations/supabase/types/opportunity";
-import { motion } from "framer-motion";
+import ViewApplicationModal from "./modals/ViewApplicationModal";
+import { useState } from "react";
+import { ProposalStatusBadge } from "./ProposalStatusBadge";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ProposalCardProps {
   application: Application;
   type: 'proposal' | 'application';
-  onUpdateStatus?: (applicationId: string, status: 'accepted' | 'rejected') => void;
+  onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
 }
 
 const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const handleViewDetails = () => {
-    setIsLoading(true);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const handleUpdateStatus = async (status: 'accepted' | 'rejected') => {
     try {
-      navigate(`/creator/projects/${application.opportunity_id}`);
+      if (status === 'rejected') {
+        // Delete the application instead of updating status
+        const { error } = await supabase
+          .from('applications')
+          .delete()
+          .eq('id', application.id);
+
+        if (error) throw error;
+
+        // Invalidate queries to refresh the UI
+        queryClient.invalidateQueries({ queryKey: ['applications'] });
+        queryClient.invalidateQueries({ queryKey: ['my-applications'] });
+        
+        toast.success("Application rejected");
+      } else {
+        await onUpdateStatus(application.id, status);
+      }
+      
+      setShowModal(false);
     } catch (error) {
-      console.error('Error navigating to project:', error);
-      toast({
-        title: "Error",
-        description: "Could not load project details. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      console.error('Error updating application status:', error);
+      toast.error("Failed to update application status");
     }
   };
-  
-  const brandName = application.opportunity?.brand?.company_name || "Unnamed Brand";
-  
+
+  const handleViewDetails = () => {
+    setShowModal(true);
+  };
+
+  const handleMessageBrand = () => {
+    if (application.opportunity?.brand?.user_id) {
+      navigate(`/creator/messages?userId=${application.opportunity.brand.user_id}`);
+    } else {
+      toast.error("Unable to message brand at this time");
+    }
+  };
+
   return (
     <>
-      <Card 
-        className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
-        onClick={() => setShowModal(true)}
-      >
-        <motion.img
-          src={application.opportunity?.image_url || "/placeholder.svg"}
-          alt={application.opportunity?.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
-          }}
-        />
+      <Card className="overflow-hidden">
+        <div className="p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-1">
+                {application.opportunity?.title || "Untitled Opportunity"}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {application.opportunity?.brand?.company_name || "Unknown Brand"}
+              </p>
+            </div>
+            <ProposalStatusBadge status={application.status} />
+          </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        
-        <div className="absolute bottom-20 left-6 right-6 text-white">
-          <p className="text-sm font-medium text-white/90 mb-1">
-            {brandName}
-          </p>
-          <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
-            {application.opportunity?.title}
-          </h3>
-          {application.opportunity?.location && (
-            <p className="text-sm text-white/80 mt-2">
-              📍 {application.opportunity.location}
-            </p>
-          )}
+          <div className="space-y-4">
+            {application.cover_letter && (
+              <p className="text-sm text-muted-foreground line-clamp-3">
+                {application.cover_letter}
+              </p>
+            )}
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleViewDetails}
+              >
+                View Details
+              </Button>
+              {application.status === 'accepted' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleMessageBrand}
+                >
+                  Message Brand
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-
-        <Button
-          size="icon"
-          variant="secondary"
-          className="absolute bottom-6 right-6 rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="h-4 w-4 text-gray-900" />
-          )}
-        </Button>
       </Card>
 
-      <ViewApplicationModal 
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        application={application}
-        type={type}
-        onUpdateStatus={onUpdateStatus}
-      />
+      {showModal && (
+        <ViewApplicationModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          application={application}
+          type={type}
+          onUpdateStatus={handleUpdateStatus}
+        />
+      )}
     </>
   );
 };
