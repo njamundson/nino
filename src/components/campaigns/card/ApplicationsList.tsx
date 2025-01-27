@@ -25,12 +25,14 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
     return null;
   }
 
+  // Filter out rejected and invalid applications
   const activeApplications = applications.filter(app => {
     if (!app || typeof app !== 'object') {
       console.error('Invalid application object:', app);
       return false;
     }
-    return app.status !== 'rejected';
+    // Only show pending and accepted applications
+    return ['pending', 'accepted'].includes(app.status);
   });
 
   if (!activeApplications.length) return null;
