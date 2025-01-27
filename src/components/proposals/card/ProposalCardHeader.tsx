@@ -1,6 +1,6 @@
 import { Application } from "@/integrations/supabase/types/opportunity";
 import { formatDistanceToNow } from "date-fns";
-import ProposalStatusBadge from "../ProposalStatusBadge";
+import { ProposalStatusBadge } from "../ProposalStatusBadge";
 
 interface ProposalCardHeaderProps {
   application: Application;
