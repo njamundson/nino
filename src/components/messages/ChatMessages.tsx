@@ -12,7 +12,6 @@ export interface ChatMessagesProps {
   isTyping?: boolean;
   currentUserId?: string;
   onReaction?: (messageId: string, emoji: string) => void;
-  onDelete?: (messageId: string) => void;
   selectedChat?: string | null;
 }
 
@@ -21,7 +20,6 @@ const ChatMessages = ({
   isTyping,
   currentUserId,
   onReaction = () => {},
-  onDelete = () => {},
   selectedChat
 }: ChatMessagesProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -141,7 +139,6 @@ const ChatMessages = ({
                     message={message}
                     isCurrentUser={message.sender_id === currentUserId}
                     onReaction={onReaction}
-                    onDelete={onDelete}
                   />
                 </motion.div>
               ))}
