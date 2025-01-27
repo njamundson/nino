@@ -64,6 +64,27 @@ export type Database = {
           },
         ]
       }
+      brand_invitations: {
+        Row: {
+          "Column Name": string | null
+          Constraints: string | null
+          "Data Type": string | null
+          "Default Value": string | null
+        }
+        Insert: {
+          "Column Name"?: string | null
+          Constraints?: string | null
+          "Data Type"?: string | null
+          "Default Value"?: string | null
+        }
+        Update: {
+          "Column Name"?: string | null
+          Constraints?: string | null
+          "Data Type"?: string | null
+          "Default Value"?: string | null
+        }
+        Relationships: []
+      }
       brand_login_history: {
         Row: {
           brand_id: string
