@@ -5,6 +5,7 @@ import ApplicationItem from "./ApplicationItem";
 import CreatorModal from "@/components/creators/CreatorModal";
 import ApplicationsHeader from "./applications/ApplicationsHeader";
 import { useApplicationManagement } from "@/hooks/useApplicationManagement";
+import ApplicationMessage from "../modals/profile/ApplicationMessage";
 
 interface ApplicationsListProps {
   applications: any[];
@@ -112,6 +113,14 @@ const ApplicationsList = ({
           creator={selectedApplication.creator}
           isOpen={!!selectedApplication}
           onClose={handleCloseModal}
+          coverLetter={selectedApplication.cover_letter}
+          onUpdateStatus={handleStatusUpdate}
+          isProcessing={isProcessing}
+          onMessageCreator={() => {
+            if (selectedApplication.creator?.user_id) {
+              onMessageCreator(selectedApplication.creator.user_id);
+            }
+          }}
         />
       )}
     </div>
