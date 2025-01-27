@@ -12,7 +12,7 @@ interface CreatorProfileModalProps {
   creator: Creator;
   coverLetter?: string;
   onMessageCreator?: () => void;
-  onUpdateStatus?: (status: 'accepted' | 'rejected') => void;
+  onUpdateStatus?: (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => void;
   opportunityId?: string;
   isProcessing?: boolean;
 }
@@ -32,9 +32,9 @@ const CreatorProfileModal = ({
     setShowAcceptDialog(true);
   };
 
-  const handleAcceptConfirm = () => {
+  const handleAcceptConfirm = (keepCampaignActive: boolean) => {
     if (!onUpdateStatus) return;
-    onUpdateStatus('accepted');
+    onUpdateStatus('accepted', keepCampaignActive);
     setShowAcceptDialog(false);
   };
 

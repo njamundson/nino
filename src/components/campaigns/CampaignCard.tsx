@@ -7,6 +7,7 @@ import CreatorProfileModal from "./modals/CreatorProfileModal";
 import CampaignDetails from "./card/CampaignDetails";
 import ApplicationsList from "./card/ApplicationsList";
 import { useApplicationActions } from "@/hooks/useApplicationActions";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,16 +55,32 @@ const CampaignCard = ({
     setSelectedApplication(application);
   };
 
-  const handleUpdateStatus = (applicationId: string) => async (newStatus: 'accepted' | 'rejected') => {
+  const handleUpdateStatus = (applicationId: string) => async (newStatus: 'accepted' | 'rejected', keepCampaignActive?: boolean) => {
     if (onUpdateApplicationStatus) {
       try {
         if (newStatus === 'accepted') {
           await handleAcceptApplication(applicationId, selectedCreator.user_id);
+          
+          // Update local state
+          if (!keepCampaignActive) {
+            setLocalApplications([]);
+          } else {
+            setLocalApplications(prevApps => 
+              prevApps.map(app => 
+                app.id === applicationId 
+                  ? { ...app, status: 'accepted' }
+                  : app
+              )
+            );
+          }
+          
+          toast.success("Proposal accepted successfully! The creator has been added to your bookings.");
         } else {
           await handleRejectApplication(applicationId);
           setLocalApplications(prevApps => 
             prevApps.filter(app => app.id !== applicationId)
           );
+          toast.success("Proposal rejected successfully");
         }
         
         // Close the modal
@@ -71,6 +88,7 @@ const CampaignCard = ({
         setSelectedApplication(null);
       } catch (error) {
         console.error('Error updating application status:', error);
+        toast.error("Failed to update proposal status. Please try again.");
       }
     }
   };
