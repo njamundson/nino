@@ -15,12 +15,15 @@ const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
   }
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" initial={false}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ 
+          duration: 0.15,
+          ease: "easeInOut"
+        }}
       >
         {children}
       </motion.div>
