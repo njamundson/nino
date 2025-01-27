@@ -66,24 +66,44 @@ export type Database = {
       }
       brand_invitations: {
         Row: {
-          "Column Name": string | null
-          Constraints: string | null
-          "Data Type": string | null
-          "Default Value": string | null
+          brand_id: string | null
+          created_at: string | null
+          email: string
+          expires_at: string
+          id: string
+          invitation_token: string
+          status: string | null
+          updated_at: string | null
         }
         Insert: {
-          "Column Name"?: string | null
-          Constraints?: string | null
-          "Data Type"?: string | null
-          "Default Value"?: string | null
+          brand_id?: string | null
+          created_at?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          invitation_token: string
+          status?: string | null
+          updated_at?: string | null
         }
         Update: {
-          "Column Name"?: string | null
-          Constraints?: string | null
-          "Data Type"?: string | null
-          "Default Value"?: string | null
+          brand_id?: string | null
+          created_at?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          invitation_token?: string
+          status?: string | null
+          updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "brand_invitations_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       brand_login_history: {
         Row: {
