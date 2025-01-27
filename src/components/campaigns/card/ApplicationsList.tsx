@@ -17,6 +17,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [localApplications, setLocalApplications] = useState(applications);
   const queryClient = useQueryClient();
 
   if (!Array.isArray(applications)) {
@@ -26,7 +27,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   }
 
   // Filter out rejected and invalid applications
-  const activeApplications = applications.filter(app => {
+  const activeApplications = localApplications.filter(app => {
     if (!app || typeof app !== 'object') {
       console.error('Invalid application object:', app);
       return false;
@@ -64,6 +65,11 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
 
         if (error) throw error;
         
+        // Immediately update local state to remove the rejected application
+        setLocalApplications(prev => 
+          prev.filter(app => app.id !== selectedApplication.id)
+        );
+        
         toast.success("Application rejected and removed");
       } else {
         // For acceptance, update the status
@@ -73,6 +79,15 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
           .eq('id', selectedApplication.id);
 
         if (error) throw error;
+        
+        // Update local state to reflect the acceptance
+        setLocalApplications(prev => 
+          prev.map(app => 
+            app.id === selectedApplication.id 
+              ? { ...app, status: 'accepted' } 
+              : app
+          )
+        );
         
         toast.success("Application accepted");
       }
