@@ -2,10 +2,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import ApplicationItem from "./ApplicationItem";
-import CreatorModal from "@/components/creators/CreatorModal";
+import CreatorProfileModal from "../modals/CreatorProfileModal";
 import ApplicationsHeader from "./applications/ApplicationsHeader";
 import { useApplicationManagement } from "@/hooks/useApplicationManagement";
-import ApplicationMessage from "../modals/profile/ApplicationMessage";
 
 interface ApplicationsListProps {
   applications: any[];
@@ -109,7 +108,7 @@ const ApplicationsList = ({
       )}
 
       {selectedApplication && (
-        <CreatorModal
+        <CreatorProfileModal
           creator={selectedApplication.creator}
           isOpen={!!selectedApplication}
           onClose={handleCloseModal}
