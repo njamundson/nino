@@ -82,7 +82,7 @@ const BrandSidebar = () => {
             <motion.img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
-              className="h-16" // Increased from h-12 to h-16
+              className="h-16"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             />

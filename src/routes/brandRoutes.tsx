@@ -8,6 +8,7 @@ import Messages from "@/pages/Messages";
 import Settings from "@/pages/Settings";
 import BrandBookings from "@/pages/BrandBookings";
 import NewCampaign from "@/pages/NewCampaign";
+import CompletedProjects from "@/pages/CompletedProjects";
 
 export const brandRoutes = [
   {
@@ -55,6 +56,14 @@ export const brandRoutes = [
     element: (
       <ProtectedBrandRoute>
         <Messages />
+      </ProtectedBrandRoute>
+    ),
+  },
+  {
+    path: "/brand/completed-projects",
+    element: (
+      <ProtectedBrandRoute>
+        <CompletedProjects />
       </ProtectedBrandRoute>
     ),
   },
