@@ -12,8 +12,6 @@ import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
 import { CreatorData, CreatorType } from "@/types/creator";
 import { LoadingSpinner } from "../ui/loading-spinner";
-import ApplicationMessage from "../campaigns/modals/profile/ApplicationMessage";
-import { Button } from "../ui/button";
 
 interface Creator {
   id: string;
@@ -32,21 +30,9 @@ interface CreatorModalProps {
   creator: Creator | null;
   isOpen: boolean;
   onClose: () => void;
-  coverLetter?: string;
-  onUpdateStatus?: (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => Promise<boolean>;
-  isProcessing?: boolean;
-  onMessageCreator?: () => void;
 }
 
-const CreatorModal = ({ 
-  creator, 
-  isOpen, 
-  onClose,
-  coverLetter,
-  onUpdateStatus,
-  isProcessing,
-  onMessageCreator 
-}: CreatorModalProps) => {
+const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
@@ -101,6 +87,7 @@ const CreatorModal = ({
     try {
       setIsInviting(true);
 
+      // Check if invitation already exists
       const { data: existingInvite, error: checkError } = await supabase
         .from('applications')
         .select('id, status')
@@ -169,31 +156,6 @@ const CreatorModal = ({
     }
   };
 
-  const renderActionButtons = () => {
-    if (onUpdateStatus) {
-      return (
-        <div className="flex gap-3 mt-6">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={() => onUpdateStatus('rejected')}
-            disabled={isProcessing}
-          >
-            Decline
-          </Button>
-          <Button
-            className="flex-1 bg-nino-primary hover:bg-nino-primary/90"
-            onClick={() => onUpdateStatus('accepted')}
-            disabled={isProcessing}
-          >
-            Accept
-          </Button>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-nino-bg">
@@ -212,11 +174,7 @@ const CreatorModal = ({
             <CreatorProfile 
               creator={creatorData}
               onInviteClick={() => setShowCampaigns(true)}
-              onMessageClick={onMessageCreator}
-              coverLetter={coverLetter}
             />
-
-            {renderActionButtons()}
           </div>
         ) : (
           <CampaignSelection
