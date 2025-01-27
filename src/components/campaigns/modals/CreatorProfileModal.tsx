@@ -35,9 +35,9 @@ const CreatorProfileModal = ({
   };
 
   const handleAcceptConfirm = () => {
-    setShowAcceptDialog(false);
     if (!onUpdateStatus) return;
     onUpdateStatus('accepted');
+    setShowAcceptDialog(false);
     setShowSuccessModal(true);
   };
 
