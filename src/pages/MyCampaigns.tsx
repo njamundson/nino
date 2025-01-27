@@ -93,7 +93,7 @@ const MyCampaigns = () => {
   };
 
   // Handle application status updates
-  const handleUpdateApplicationStatus = async (applicationId: string, newStatus: string) => {
+  const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected'): Promise<boolean> => {
     try {
       const { error } = await supabase
         .from('applications')
@@ -102,10 +102,12 @@ const MyCampaigns = () => {
 
       if (error) throw error;
 
-      toast.success('Application status updated');
+      toast.success(`Application ${newStatus} successfully`);
+      return true;
     } catch (error) {
       console.error('Error updating application status:', error);
       toast.error('Failed to update application status');
+      return false;
     }
   };
 
