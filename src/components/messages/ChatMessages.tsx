@@ -114,36 +114,38 @@ const ChatMessages = ({
   return (
     <div 
       ref={scrollContainerRef}
-      className="h-full overflow-y-auto px-4 py-6 space-y-6"
+      className="h-full overflow-y-auto px-4 py-6"
       onScroll={handleScroll}
     >
       <AnimatePresence mode="popLayout">
-        {Object.entries(messagesByDate).map(([date, dateMessages]) => (
+        {Object.entries(messagesByDate).map(([date, dateMessages], index) => (
           <motion.div
             key={date}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="space-y-4"
+            className="space-y-4 mb-6"
           >
             <DateDivider date={date} />
-            {dateMessages.map((message) => (
-              <motion.div
-                key={message.id}
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.2 }}
-              >
-                <MessageBubble
-                  message={message}
-                  isCurrentUser={message.sender_id === currentUserId}
-                  onReaction={onReaction}
-                  onDelete={onDelete}
-                />
-              </motion.div>
-            ))}
+            <div className="space-y-4">
+              {dateMessages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <MessageBubble
+                    message={message}
+                    isCurrentUser={message.sender_id === currentUserId}
+                    onReaction={onReaction}
+                    onDelete={onDelete}
+                  />
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         ))}
       </AnimatePresence>
