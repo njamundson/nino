@@ -3,10 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import PageHeader from "@/components/shared/PageHeader";
 import ChatContainer from "@/components/messages/ChatContainer";
 import ChatList from "@/components/messages/ChatList";
-import { useMessages } from "@/hooks/useMessages";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Message } from "@/types/message";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const Messages = () => {
@@ -20,17 +18,6 @@ const Messages = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  const {
-    data: messages,
-    setMessages,
-    newMessage,
-    setNewMessage,
-    isRecording,
-    setIsRecording,
-    editingMessage,
-    setEditingMessage,
-  } = useMessages(selectedUserId || '');
-
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -39,93 +26,21 @@ const Messages = () => {
     getUser();
   }, []);
 
-  const handleSelectChat = (
+  const handleSelectChat = async (
     userId: string, 
     firstName: string, 
-    lastName: string, 
-    profileImage: string | null
+    lastName: string
   ) => {
     setSelectedUserId(userId);
     setSelectedFirstName(firstName);
     setSelectedLastName(lastName);
   };
 
-  const handleSendMessage = async () => {
-    if (!selectedUserId || !newMessage.trim()) {
-      toast({
-        title: "Error",
-        description: "Please select a recipient and enter a message",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to send messages",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create optimistic message
-      const optimisticMessage: Message = {
-        id: crypto.randomUUID(),
-        sender_id: user.id,
-        receiver_id: selectedUserId,
-        content: newMessage,
-        message_type: 'text',
-        read: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        media_url: null,
-        media_type: null,
-        sender_profile_id: null,
-        receiver_profile_id: null,
-        profiles: {
-          first_name: '',
-          last_name: ''
-        }
-      };
-
-      // Add optimistic message to the UI immediately
-      setMessages(prev => [...(prev || []), optimisticMessage]);
-      
-      // Clear input
-      setNewMessage('');
-
-      // Send to server
-      const { error } = await supabase.from('messages').insert({
-        sender_id: user.id,
-        receiver_id: selectedUserId,
-        content: newMessage,
-        message_type: 'text'
-      });
-
-      if (error) {
-        // Remove optimistic message if there was an error
-        setMessages(prev => prev?.filter(msg => msg.id !== optimisticMessage.id));
-        throw error;
-      }
-
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send message",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="h-[calc(100vh-6rem)] flex flex-col bg-nino-bg">
       <PageHeader
         title="Messages"
-        description="Connect and communicate with creators."
+        description="Connect and communicate with brands."
       />
       
       <div className="flex-1 container px-0 pb-6">
@@ -142,14 +57,6 @@ const Messages = () => {
               selectedChat={selectedUserId}
               selectedFirstName={selectedFirstName}
               selectedLastName={selectedLastName}
-              newMessage={newMessage}
-              setNewMessage={setNewMessage}
-              handleSendMessage={handleSendMessage}
-              isRecording={isRecording}
-              setIsRecording={setIsRecording}
-              editingMessage={editingMessage}
-              setEditingMessage={setEditingMessage}
-              messages={messages as Message[]}
               currentUserId={currentUser?.id}
               onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
             />
