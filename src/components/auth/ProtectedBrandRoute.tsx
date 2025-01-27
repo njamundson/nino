@@ -6,7 +6,7 @@ interface ProtectedBrandRouteProps {
   children: ReactNode;
 }
 
-const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
+const ProtectedBrandRoute: React.FC<ProtectedBrandRouteProps> = ({ children }) => {
   const { isLoading, hasAccess } = useAuthCheck();
 
   if (isLoading) {
