@@ -7,18 +7,14 @@ interface ProtectedBrandRouteProps {
 }
 
 const ProtectedBrandRoute = ({ children }: ProtectedBrandRouteProps) => {
-  const { isAuthenticated, isLoading, isBrand } = useAuthCheck();
+  const { isLoading, hasAccess } = useAuthCheck();
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (!isAuthenticated) {
+  if (!hasAccess) {
     return <Navigate to="/signin" />;
-  }
-
-  if (!isBrand) {
-    return <Navigate to="/creator/dashboard" />;
   }
 
   return <>{children}</>;
