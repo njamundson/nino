@@ -1,17 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ChatSearch } from "./chat-list/ChatSearch";
 import { EmptyState } from "./chat-list/EmptyState";
-import { MoreHorizontal, Trash2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ChatListHeader } from "./chat-list/ChatListHeader";
+import { ChatListItem } from "./chat-list/ChatListItem";
 import CreatorSelectionModal from "./CreatorSelectionModal";
 
 interface ChatListProps {
@@ -170,10 +162,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
       if (error) throw error;
 
-      // Remove the deleted chat from the users state
       setUsers(prevUsers => prevUsers.filter(user => user.otherUser.id !== userId));
       
-      // If the deleted chat was selected, clear the selection
       if (selectedUserId === userId) {
         onSelectChat('', '', '', null);
       }
@@ -209,84 +199,33 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-gray-100">
-        <ChatSearch 
-          value={searchQuery} 
-          onChange={setSearchQuery}
-          onNewChat={() => setIsModalOpen(true)}
-        />
-      </div>
+      <ChatListHeader 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onNewChat={() => setIsModalOpen(true)}
+      />
 
       <div className="flex-1 overflow-y-auto bg-white">
         {filteredUsers.length === 0 ? (
           <EmptyState />
         ) : (
           <div className="divide-y divide-gray-50">
-            {filteredUsers.map((chat) => {
-              const fullName = chat.otherUser.firstName && chat.otherUser.lastName 
-                ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
-                : 'Unnamed User';
-                
-              return (
-                <div
-                  key={chat.otherUser.id}
-                  className={`group relative px-6 py-4 cursor-pointer hover:bg-gray-50/50 transition-colors ${
-                    selectedUserId === chat.otherUser.id ? "bg-gray-50/50" : ""
-                  }`}
-                  onClick={() => onSelectChat(
-                    chat.otherUser.id,
-                    chat.otherUser.firstName,
-                    chat.otherUser.lastName,
-                    chat.otherUser.profileImage
-                  )}
-                >
-                  <div className="flex items-start space-x-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={chat.otherUser.profileImage || ''} />
-                      <AvatarFallback>
-                        {`${chat.otherUser.firstName?.[0] || ''}${chat.otherUser.lastName?.[0] || ''}`}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center mb-1">
-                        <h3 className="text-sm font-medium text-gray-900 truncate">
-                          {fullName}
-                        </h3>
-                        <span className="text-xs text-gray-500">
-                          {formatTime(chat.created_at)}
-                        </span>
-                      </div>
-                      <p className={`text-sm truncate ${
-                        !chat.read && chat.sender_id !== currentUser?.id ? "font-medium text-gray-900" : "text-gray-500"
-                      }`}>
-                        {chat.sender_id === currentUser?.id ? `You: ${chat.content}` : chat.content}
-                      </p>
-                    </div>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            className="text-red-600"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteChat(chat.otherUser.id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete conversation
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {filteredUsers.map((chat) => (
+              <ChatListItem
+                key={chat.otherUser.id}
+                chat={chat}
+                isSelected={selectedUserId === chat.otherUser.id}
+                currentUserId={currentUser?.id}
+                formatTime={formatTime}
+                onSelect={() => onSelectChat(
+                  chat.otherUser.id,
+                  chat.otherUser.firstName,
+                  chat.otherUser.lastName,
+                  chat.otherUser.profileImage
+                )}
+                onDelete={() => handleDeleteChat(chat.otherUser.id)}
+              />
+            ))}
           </div>
         )}
       </div>
