@@ -24,6 +24,8 @@ interface Creator {
   profile_image_url: string | null;
   first_name: string | null;
   last_name: string | null;
+  user_id: string;
+  cover_letter?: string;
 }
 
 interface CreatorModalProps {
@@ -87,7 +89,6 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     try {
       setIsInviting(true);
 
-      // Check if invitation already exists
       const { data: existingInvite, error: checkError } = await supabase
         .from('applications')
         .select('id, status')
@@ -167,13 +168,14 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {creator.first_name}
+                {creator.first_name} {creator.last_name}
               </DialogTitle>
             </DialogHeader>
             
             <CreatorProfile 
               creator={creatorData}
               onInviteClick={() => setShowCampaigns(true)}
+              coverLetter={creator.cover_letter}
             />
           </div>
         ) : (

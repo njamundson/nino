@@ -20,9 +20,10 @@ interface CreatorProfileProps {
   creator: Creator;
   onInviteClick: () => void;
   onMessageClick?: () => void;
+  coverLetter?: string;
 }
 
-const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfileProps) => {
+const CreatorProfile = ({ creator, onInviteClick, onMessageClick, coverLetter }: CreatorProfileProps) => {
   const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
 
   return (
@@ -41,6 +42,7 @@ const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfi
             instagram={creator.instagram}
             website={creator.website}
             onMessageClick={onMessageClick}
+            coverLetter={coverLetter}
           />
 
           <div className="mt-auto">
