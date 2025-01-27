@@ -18,16 +18,13 @@ export const useApplicationManagement = () => {
     console.log('Starting application update:', { applicationId, status });
     
     try {
-      // First, check if we have a valid session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        throw new Error('Authentication error');
-      }
-
-      if (!session) {
-        console.error('No active session');
-        throw new Error('No active session');
+      // Check for active session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        console.error('No active session found');
+        toast.error("Please sign in to continue");
+        return false;
       }
 
       // Update application status
@@ -38,7 +35,8 @@ export const useApplicationManagement = () => {
 
       if (applicationError) {
         console.error('Error updating application:', applicationError);
-        throw applicationError;
+        toast.error("Failed to update application");
+        return false;
       }
 
       // If accepting and not keeping campaign active, update opportunity status
@@ -50,7 +48,8 @@ export const useApplicationManagement = () => {
 
         if (opportunityError) {
           console.error('Error updating opportunity:', opportunityError);
-          throw opportunityError;
+          toast.error("Failed to update campaign status");
+          return false;
         }
       }
 
@@ -58,7 +57,6 @@ export const useApplicationManagement = () => {
       await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
       await queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
 
-      // Show success message
       toast.success(
         status === 'accepted' 
           ? "Creator accepted successfully! You can now message them."
