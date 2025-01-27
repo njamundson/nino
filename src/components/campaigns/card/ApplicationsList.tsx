@@ -45,13 +45,10 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   };
 
   const handleUpdateStatus = (status: 'accepted' | 'rejected') => {
-    if (!selectedApplication) {
-      console.error('No application selected for status update');
-      return;
-    }
+    if (!selectedApplication) return;
     
-    // First update the application status
     onViewProfile({ ...selectedApplication, status });
+    setSelectedApplication(null);
   };
 
   return (

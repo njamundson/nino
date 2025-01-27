@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Creator } from "@/types/creator";
 import { useState } from "react";
@@ -36,7 +36,6 @@ const CreatorProfileModal = ({
     if (!onUpdateStatus) return;
     onUpdateStatus('accepted');
     setShowAcceptDialog(false);
-    onClose();
   };
 
   const handleReject = () => {
@@ -52,6 +51,7 @@ const CreatorProfileModal = ({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-3xl">
+          <DialogTitle className="sr-only">Creator Profile</DialogTitle>
           <div className="relative w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
               <div className="space-y-4">
@@ -80,16 +80,16 @@ const CreatorProfileModal = ({
                     <Button
                       onClick={handleReject}
                       disabled={isProcessing}
-                      className="flex-1 bg-[#F1F1F1] text-gray-600 hover:bg-gray-100 py-6 rounded-[32px]"
                       type="button"
+                      className="flex-1 bg-[#F1F1F1] text-gray-600 hover:bg-gray-100 py-6 rounded-[32px]"
                     >
                       Reject
                     </Button>
                     <Button
                       onClick={handleAccept}
                       disabled={isProcessing}
-                      className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-[32px]"
                       type="button"
+                      className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white py-6 rounded-[32px]"
                     >
                       Accept
                     </Button>
