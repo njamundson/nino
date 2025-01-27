@@ -25,26 +25,18 @@ interface CampaignCardProps {
   onEdit: (campaign: any) => void;
   onDelete: (id: string) => void;
   applications?: any[];
-  onUpdateApplicationStatus?: (applicationId: string, newStatus: 'accepted' | 'rejected') => Promise<boolean>;
 }
 
 const CampaignCard = ({ 
   campaign, 
   onEdit, 
   onDelete, 
-  applications = [], 
-  onUpdateApplicationStatus 
+  applications = []
 }: CampaignCardProps) => {
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
-  const [localApplications, setLocalApplications] = useState(applications);
   const navigate = useNavigate();
-  
-  const { 
-    isProcessing,
-    handleAcceptApplication,
-    handleRejectApplication
-  } = useApplicationActions({ opportunityId: campaign.id });
+  const { isProcessing } = useApplicationActions({ opportunityId: campaign.id });
 
   const handleMessageCreator = (userId: string) => {
     navigate(`/brand/messages?userId=${userId}`);
@@ -53,48 +45,6 @@ const CampaignCard = ({
   const handleViewProfile = (application: any) => {
     setSelectedCreator(application.creator);
     setSelectedApplication(application);
-  };
-
-  const handleUpdateStatus = (applicationId: string) => async (newStatus: 'accepted' | 'rejected', keepCampaignActive?: boolean) => {
-    if (onUpdateApplicationStatus) {
-      try {
-        if (newStatus === 'accepted') {
-          await handleAcceptApplication(applicationId, selectedCreator.user_id);
-          
-          // Update local state
-          if (!keepCampaignActive) {
-            setLocalApplications([]);
-          } else {
-            setLocalApplications(prevApps => 
-              prevApps.map(app => 
-                app.id === applicationId 
-                  ? { ...app, status: 'accepted' }
-                  : app
-              )
-            );
-          }
-          
-          toast.success("Proposal accepted successfully! The creator has been added to your bookings.");
-          
-          // Close the modal
-          setSelectedCreator(null);
-          setSelectedApplication(null);
-          return true;
-        } else {
-          await handleRejectApplication(applicationId);
-          setLocalApplications(prevApps => 
-            prevApps.filter(app => app.id !== applicationId)
-          );
-          toast.success("Proposal rejected successfully");
-          return true;
-        }
-      } catch (error) {
-        console.error('Error updating application status:', error);
-        toast.error("Failed to update proposal status. Please try again.");
-        return false;
-      }
-    }
-    return false;
   };
 
   return (
@@ -157,7 +107,7 @@ const CampaignCard = ({
           </div>
 
           <ApplicationsList
-            applications={localApplications}
+            applications={applications}
             onViewProfile={handleViewProfile}
             onMessageCreator={handleMessageCreator}
           />
@@ -173,9 +123,11 @@ const CampaignCard = ({
           }}
           creator={selectedCreator}
           coverLetter={selectedApplication.cover_letter}
-          onUpdateStatus={handleUpdateStatus(selectedApplication.id)}
+          onUpdateStatus={() => {
+            toast.error("Application management is currently unavailable");
+            return Promise.resolve(false);
+          }}
           onMessageCreator={() => handleMessageCreator(selectedCreator.user_id)}
-          opportunityId={campaign.id}
           isProcessing={isProcessing}
         />
       )}

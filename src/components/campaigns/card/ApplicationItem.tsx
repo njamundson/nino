@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Eye, MapPin } from "lucide-react";
 import { useEffect } from "react";
 import { Creator } from "@/types/creator";
-import { toast } from "sonner";
 
 interface ApplicationItemProps {
   application: {
