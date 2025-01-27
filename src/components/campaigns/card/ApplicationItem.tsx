@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Eye, MapPin } from "lucide-react";
+import { Eye, MapPin, Check, X } from "lucide-react";
 import { useEffect } from "react";
 import { Creator } from "@/types/creator";
 
@@ -13,9 +13,14 @@ interface ApplicationItemProps {
   };
   onViewProfile: () => void;
   onMessageCreator: () => void;
+  onUpdateStatus?: (status: 'accepted' | 'rejected') => Promise<void>;
 }
 
-const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) => {
+const ApplicationItem = ({ 
+  application, 
+  onViewProfile,
+  onUpdateStatus 
+}: ApplicationItemProps) => {
   useEffect(() => {
     console.log('Application data:', application);
     console.log('Creator data:', application?.creator);
@@ -65,14 +70,36 @@ const ApplicationItem = ({ application, onViewProfile }: ApplicationItemProps) =
                 </p>
               )}
             </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={onViewProfile}
-              className="text-gray-500 hover:text-gray-900"
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              {application.status === 'pending' && onUpdateStatus && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => onUpdateStatus('accepted')}
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => onUpdateStatus('rejected')}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onViewProfile}
+                className="text-gray-500 hover:text-gray-900"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           
           <div className="bg-gray-50/80 backdrop-blur-sm p-6 rounded-2xl border border-gray-100">
