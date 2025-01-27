@@ -70,7 +70,6 @@ export const ChatContainer = ({
               currentUserId={currentUserId}
               selectedChat={selectedChat}
               onReaction={handleReaction}
-              onDelete={handleDeleteMessage}
             />
           </div>
           <ChatInput
