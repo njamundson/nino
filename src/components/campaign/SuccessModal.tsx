@@ -1,7 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 export interface SuccessModalProps {
   isOpen: boolean;
@@ -11,21 +10,16 @@ export interface SuccessModalProps {
 }
 
 const SuccessModal = ({ isOpen, onOpenChange, onKeepActive, onClose }: SuccessModalProps) => {
-  const navigate = useNavigate();
-
   const handleKeepActive = () => {
     if (onKeepActive) {
       onKeepActive();
     }
-    onOpenChange(false);
   };
 
   const handleClose = () => {
     if (onClose) {
       onClose();
     }
-    onOpenChange(false);
-    navigate("/brand/creators");
   };
 
   return (

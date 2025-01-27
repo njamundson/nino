@@ -34,31 +34,48 @@ const CreatorProfileModal = ({
     setShowAcceptDialog(true);
   };
 
-  const handleAcceptConfirm = () => {
+  const handleAcceptConfirm = async () => {
     if (!onUpdateStatus) return;
-    onUpdateStatus('accepted');
-    setShowAcceptDialog(false);
-    setShowSuccessModal(true);
+    try {
+      await onUpdateStatus('accepted');
+      setShowAcceptDialog(false);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error('Error accepting proposal:', error);
+      setShowAcceptDialog(false);
+    }
   };
 
-  const handleKeepActive = () => {
+  const handleKeepActive = async () => {
     if (!onUpdateStatus) return;
-    onUpdateStatus('accepted', true);
-    setShowSuccessModal(false);
-    onClose();
+    try {
+      await onUpdateStatus('accepted', true);
+      setShowSuccessModal(false);
+      onClose();
+    } catch (error) {
+      console.error('Error keeping campaign active:', error);
+    }
   };
 
-  const handleCloseProject = () => {
+  const handleCloseProject = async () => {
     if (!onUpdateStatus) return;
-    onUpdateStatus('accepted', false);
-    setShowSuccessModal(false);
-    onClose();
+    try {
+      await onUpdateStatus('accepted', false);
+      setShowSuccessModal(false);
+      onClose();
+    } catch (error) {
+      console.error('Error closing project:', error);
+    }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (!onUpdateStatus) return;
-    onUpdateStatus('rejected');
-    onClose();
+    try {
+      await onUpdateStatus('rejected');
+      onClose();
+    } catch (error) {
+      console.error('Error rejecting proposal:', error);
+    }
   };
 
   const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.trim() || 
