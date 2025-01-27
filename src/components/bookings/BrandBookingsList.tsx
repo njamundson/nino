@@ -63,8 +63,9 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
   // Set up real-time subscription for booking updates
   useEffect(() => {
-    const channel = supabase
-      .channel('brand-booking-updates')
+    // Subscribe to applications table changes
+    const applicationsChannel = supabase
+      .channel('bookings-applications')
       .on(
         'postgres_changes',
         {
@@ -73,15 +74,33 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           table: 'applications',
           filter: 'status=eq.accepted'
         },
-        () => {
-          console.log('Brand booking update detected, refetching...');
+        (payload) => {
+          console.log('Application update detected:', payload);
+          refetch();
+        }
+      )
+      .subscribe();
+
+    // Subscribe to opportunities table changes
+    const opportunitiesChannel = supabase
+      .channel('bookings-opportunities')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'opportunities'
+        },
+        (payload) => {
+          console.log('Opportunity update detected:', payload);
           refetch();
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(applicationsChannel);
+      supabase.removeChannel(opportunitiesChannel);
     };
   }, [refetch]);
 
