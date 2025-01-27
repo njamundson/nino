@@ -141,7 +141,13 @@ const CreatorGrid = ({
   const allCreators = data?.pages.flatMap(page => page.creators) || [];
 
   return (
-    <div className="space-y-8">
+    <motion.div 
+      className="space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className={`grid grid-cols-1 ${
         isMobile ? 'gap-4' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6'
       }`}>
@@ -150,8 +156,9 @@ const CreatorGrid = ({
             key={creator.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
             transition={{ 
-              duration: 0.4,
+              duration: 0.6,
               ease: [0.25, 0.1, 0.25, 1],
               delay: index * 0.1 
             }}
@@ -175,7 +182,7 @@ const CreatorGrid = ({
           </button>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
