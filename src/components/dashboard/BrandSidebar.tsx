@@ -9,7 +9,6 @@ import {
   MessageSquare,
   LogOut,
   FileCheck,
-  Settings,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -75,9 +74,9 @@ const BrandSidebar = () => {
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="h-full bg-white/50 backdrop-blur-xl rounded-xl shadow-sm flex flex-col border border-gray-100"
+        className="h-full bg-white/70 backdrop-blur-xl rounded-xl shadow-lg border border-gray-100/50 overflow-hidden"
       >
-        <div className="px-3 pt-8 pb-6 border-b border-gray-100">
+        <div className="px-3 pt-8 pb-6 border-b border-gray-100/50">
           <Link to="/brand/dashboard" className="flex items-center px-4">
             <motion.img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
@@ -101,31 +100,31 @@ const BrandSidebar = () => {
                 <Link
                   to={item.path}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                    "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300",
                     isActive
-                      ? "bg-nino-primary/10 text-nino-primary"
-                      : "text-gray-600 hover:text-nino-primary hover:bg-nino-primary/5"
+                      ? "bg-gradient-to-r from-nino-primary/20 to-nino-primary/5 text-nino-primary"
+                      : "text-gray-600 hover:text-nino-primary hover:bg-gradient-to-r hover:from-nino-primary/10 hover:to-transparent"
                   )}
                 >
                   <item.icon className={cn(
-                    "w-[18px] h-[18px] transition-colors",
+                    "w-[18px] h-[18px] transition-colors duration-300",
                     isActive
                       ? "text-nino-primary"
                       : "text-gray-400 group-hover:text-nino-primary"
                   )} />
-                  <span>{item.label}</span>
+                  <span className="font-medium">{item.label}</span>
                 </Link>
               </motion.div>
             );
           })}
         </nav>
 
-        <div className="p-3 mt-auto border-t border-gray-100">
+        <div className="p-3 mt-auto border-t border-gray-100/50 bg-gradient-to-b from-transparent to-gray-50/30">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-nino-primary hover:bg-nino-primary/5 transition-all duration-200"
+            className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-nino-primary hover:bg-gradient-to-r hover:from-nino-primary/10 hover:to-transparent transition-all duration-300"
           >
             <LogOut className="w-[18px] h-[18px]" />
             <span>Sign Out</span>
