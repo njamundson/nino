@@ -8,17 +8,28 @@ export const useApplicationManagement = () => {
   const queryClient = useQueryClient();
 
   const handleUpdateStatus = async (
-    applicationId: string, 
+    applicationId: string,
     opportunityId: string,
     status: 'accepted' | 'rejected',
     keepCampaignActive?: boolean
   ) => {
     if (isProcessing) return false;
     setIsProcessing(true);
+    console.log('Starting application update:', { applicationId, status });
     
     try {
-      console.log('Updating application status:', { applicationId, status });
-      
+      // First, check if we have a valid session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error('Authentication error');
+      }
+
+      if (!session) {
+        console.error('No active session');
+        throw new Error('No active session');
+      }
+
       // Update application status
       const { error: applicationError } = await supabase
         .from('applications')
@@ -27,8 +38,7 @@ export const useApplicationManagement = () => {
 
       if (applicationError) {
         console.error('Error updating application:', applicationError);
-        toast.error("Failed to update application status");
-        return false;
+        throw applicationError;
       }
 
       // If accepting and not keeping campaign active, update opportunity status
@@ -40,8 +50,7 @@ export const useApplicationManagement = () => {
 
         if (opportunityError) {
           console.error('Error updating opportunity:', opportunityError);
-          toast.error("Failed to update campaign status");
-          return false;
+          throw opportunityError;
         }
       }
 
@@ -50,15 +59,16 @@ export const useApplicationManagement = () => {
       await queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
 
       // Show success message
-      toast.success(status === 'accepted' ? 
-        "Creator accepted successfully! You can now message them." : 
-        "Application rejected successfully"
+      toast.success(
+        status === 'accepted' 
+          ? "Creator accepted successfully! You can now message them."
+          : "Application rejected successfully"
       );
 
       return true;
     } catch (error) {
       console.error('Error in handleUpdateStatus:', error);
-      toast.error("An unexpected error occurred");
+      toast.error("An error occurred. Please try again.");
       return false;
     } finally {
       setIsProcessing(false);
