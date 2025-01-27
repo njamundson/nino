@@ -122,22 +122,22 @@ const Messages = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-nino-bg">
+    <div className="h-[calc(100vh-6rem)] flex flex-col bg-nino-bg">
       <PageHeader
         title="Messages"
         description="Connect and communicate with creators."
       />
       
-      <div className="flex-1 min-h-0 container px-0">
+      <div className="flex-1 min-h-0 container px-0 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-          <div className="md:col-span-1 bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100 h-[calc(100vh-12rem)]">
+          <div className="md:col-span-1 bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100 h-full">
             <ChatList 
               onSelectChat={handleSelectChat}
               selectedUserId={selectedUserId}
             />
           </div>
           
-          <div className="md:col-span-2 h-[calc(100vh-12rem)]">
+          <div className="md:col-span-2 h-full">
             <ChatContainer
               selectedChat={selectedUserId}
               selectedFirstName={selectedFirstName}
