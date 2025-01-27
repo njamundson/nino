@@ -14,7 +14,7 @@ interface CreatorProfileModalProps {
   creator: Creator;
   coverLetter?: string;
   onMessageCreator?: () => void;
-  onUpdateStatus?: (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => void;
+  onUpdateStatus?: (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => Promise<boolean>;
   opportunityId?: string;
   isProcessing?: boolean;
 }
