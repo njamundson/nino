@@ -13,7 +13,7 @@ interface ApplicationItemProps {
   };
   onViewProfile: () => void;
   onMessageCreator: () => void;
-  onUpdateStatus?: (status: 'accepted' | 'rejected') => Promise<void>;
+  onUpdateStatus?: (status: 'accepted' | 'rejected') => Promise<boolean>;
 }
 
 const ApplicationItem = ({ 

@@ -10,9 +10,15 @@ interface ApplicationsListProps {
   applications: any[];
   onViewProfile: (application: any) => void;
   onMessageCreator: (userId: string) => void;
+  onUpdateApplicationStatus?: (applicationId: string, newStatus: 'accepted' | 'rejected') => Promise<boolean>;
 }
 
-const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }: ApplicationsListProps) => {
+const ApplicationsList = ({ 
+  applications = [], 
+  onViewProfile, 
+  onMessageCreator,
+  onUpdateApplicationStatus 
+}: ApplicationsListProps) => {
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const { isProcessing, handleUpdateStatus } = useApplicationManagement();
@@ -49,7 +55,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   };
 
   const handleStatusUpdate = async (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => {
-    if (!selectedApplication) return;
+    if (!selectedApplication) return false;
     
     const success = await handleUpdateStatus(
       selectedApplication.id,
@@ -89,6 +95,12 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
                   console.error('No creator user_id found:', application);
                   toast.error("Unable to message creator");
                 }
+              }}
+              onUpdateStatus={async (status) => {
+                if (onUpdateApplicationStatus) {
+                  return await onUpdateApplicationStatus(application.id, status);
+                }
+                return false;
               }}
             />
           ))}
