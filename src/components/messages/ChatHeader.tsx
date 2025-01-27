@@ -1,19 +1,26 @@
 import { ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatHeaderProps {
   senderFirstName?: string;
   senderLastName?: string;
+  senderProfileImage?: string | null;
   onBack?: () => void;
 }
 
 export const ChatHeader = ({ 
   senderFirstName, 
   senderLastName,
+  senderProfileImage,
   onBack 
 }: ChatHeaderProps) => {
   const isMobile = useIsMobile();
   const hasSelectedChat = Boolean(senderFirstName && senderLastName);
+
+  const initials = hasSelectedChat 
+    ? `${senderFirstName?.[0] || ''}${senderLastName?.[0] || ''}`
+    : '';
 
   return (
     <div className="border-b border-gray-100 p-6 bg-white/50 backdrop-blur-xl">
@@ -27,18 +34,20 @@ export const ChatHeader = ({
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </button>
           )}
-          <h1 className="text-2xl font-semibold text-gray-900">
-            {hasSelectedChat ? `${senderFirstName} ${senderLastName}` : "Messages"}
-          </h1>
+          {hasSelectedChat ? (
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={senderProfileImage || ''} alt={`${senderFirstName} ${senderLastName}`} />
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                {`${senderFirstName} ${senderLastName}`}
+              </h1>
+            </div>
+          ) : (
+            <h1 className="text-2xl font-semibold text-gray-900">Messages</h1>
+          )}
         </div>
-        
-        {hasSelectedChat && (
-          <div>
-            <h2 className="text-xl font-semibold text-nino-primary">
-              Creator
-            </h2>
-          </div>
-        )}
       </div>
     </div>
   );
