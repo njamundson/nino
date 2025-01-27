@@ -111,7 +111,7 @@ const MyCampaigns = () => {
 
   if (error) {
     return (
-      <div className="p-8">
+      <div className="space-y-8">
         <PageHeader
           title="My Campaigns"
           description="Manage and track all your creator campaigns."
@@ -126,7 +126,7 @@ const MyCampaigns = () => {
   }
 
   return (
-    <div className="p-4 md:p-8 space-y-8">
+    <div className="space-y-8">
       <PageHeader
         title="My Campaigns"
         description="Manage and track all your creator campaigns."
