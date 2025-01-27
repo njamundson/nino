@@ -10,6 +10,7 @@ import {
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { motion, AnimatePresence } from "framer-motion";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
@@ -75,12 +76,34 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
   };
 
   const handleReaction = async (emoji: string) => {
+    // Optimistically update the UI
+    const existingReaction = reactions.find(r => r.emoji === emoji);
+    const updatedReactions = existingReaction
+      ? reactions.map(r => 
+          r.emoji === emoji 
+            ? { ...r, count: r.count + 1 }
+            : r
+        )
+      : [...reactions, { emoji, count: 1 }];
+    
+    setReactions(updatedReactions);
+
     if (onReaction) {
-      await onReaction(message.id, emoji);
-      toast({
-        title: "Reaction added",
-        description: `You reacted with ${emoji}`,
-      });
+      try {
+        await onReaction(message.id, emoji);
+        toast({
+          title: "Reaction added",
+          description: `You reacted with ${emoji}`,
+        });
+      } catch (error) {
+        // Revert optimistic update on error
+        setReactions(reactions);
+        toast({
+          title: "Error",
+          description: "Failed to add reaction",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -110,20 +133,36 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
         </p>
       </div>
 
-      {reactions.length > 0 && (
-        <div className={cn(
-          "absolute -bottom-6 flex gap-1 items-center",
-          isCurrentUser ? "right-2" : "left-2"
-        )}>
-          <div className="bg-white rounded-full px-2 py-1 shadow-md flex items-center gap-1">
-            {reactions.map(({ emoji, count }, index) => (
-              <span key={index} className="text-sm">
-                {emoji}{count > 1 && count}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {reactions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              "absolute -bottom-6 flex gap-1 items-center",
+              isCurrentUser ? "right-2" : "left-2"
+            )}
+          >
+            <motion.div 
+              layout
+              className="bg-white rounded-full px-2 py-1 shadow-md flex items-center gap-1"
+            >
+              {reactions.map(({ emoji, count }, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="text-sm"
+                >
+                  {emoji}{count > 1 && count}
+                </motion.span>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className={cn(
         "absolute bottom-0 translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-1 pt-2 z-10",
