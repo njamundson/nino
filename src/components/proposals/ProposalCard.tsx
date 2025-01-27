@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/integrations/supabase/types/opportunity";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useState } from "react";
-import { ProposalStatusBadge } from "./ProposalStatusBadge";
+import ProposalStatusBadge from "./ProposalStatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ProposalCardProps {

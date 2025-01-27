@@ -5,7 +5,7 @@ interface ProposalStatusBadgeProps {
   status: string;
 }
 
-export const ProposalStatusBadge = ({ status }: ProposalStatusBadgeProps) => {
+const ProposalStatusBadge = ({ status }: ProposalStatusBadgeProps) => {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'pending':
@@ -47,3 +47,5 @@ export const ProposalStatusBadge = ({ status }: ProposalStatusBadgeProps) => {
     </Badge>
   );
 };
+
+export default ProposalStatusBadge;
