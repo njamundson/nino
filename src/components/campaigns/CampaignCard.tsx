@@ -36,7 +36,7 @@ const CampaignCard = ({
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const navigate = useNavigate();
-  const { isProcessing } = useApplicationActions();
+  const { isProcessing } = useApplicationActions({ opportunityId: campaign.id });
 
   const handleMessageCreator = (userId: string) => {
     navigate(`/brand/messages?userId=${userId}`);
