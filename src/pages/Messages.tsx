@@ -122,36 +122,38 @@ const Messages = () => {
   };
 
   return (
-    <div>
+    <div className="h-screen overflow-hidden flex flex-col">
       <PageHeader
         title="Messages"
         description="Connect and communicate with creators."
       />
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-16rem)]">
-        <div className="md:col-span-1 bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-          <ChatList 
-            onSelectChat={handleSelectChat}
-            selectedUserId={selectedUserId}
-          />
-        </div>
-        
-        <div className="md:col-span-2 h-full">
-          <ChatContainer
-            selectedChat={selectedUserId}
-            selectedFirstName={selectedFirstName}
-            selectedLastName={selectedLastName}
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            handleSendMessage={handleSendMessage}
-            isRecording={isRecording}
-            setIsRecording={setIsRecording}
-            editingMessage={editingMessage}
-            setEditingMessage={setEditingMessage}
-            messages={messages as Message[]}
-            currentUserId={currentUser?.id}
-            onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
-          />
+      <div className="flex-1 overflow-hidden p-4 md:p-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+          <div className="md:col-span-1 bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+            <ChatList 
+              onSelectChat={handleSelectChat}
+              selectedUserId={selectedUserId}
+            />
+          </div>
+          
+          <div className="md:col-span-2 h-full">
+            <ChatContainer
+              selectedChat={selectedUserId}
+              selectedFirstName={selectedFirstName}
+              selectedLastName={selectedLastName}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              handleSendMessage={handleSendMessage}
+              isRecording={isRecording}
+              setIsRecording={setIsRecording}
+              editingMessage={editingMessage}
+              setEditingMessage={setEditingMessage}
+              messages={messages as Message[]}
+              currentUserId={currentUser?.id}
+              onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
+            />
+          </div>
         </div>
       </div>
     </div>
