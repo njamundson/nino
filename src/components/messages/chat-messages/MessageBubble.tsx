@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
@@ -33,6 +34,23 @@ interface MessageBubbleProps {
 
 const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: MessageBubbleProps) => {
   const [showReactions, setShowReactions] = useState(false);
+  const { toast } = useToast();
+
+  const handleDelete = () => {
+    onDelete?.(message.id);
+    toast({
+      title: "Message deleted",
+      description: "Your message has been deleted successfully",
+    });
+  };
+
+  const handleReaction = (emoji: string) => {
+    onReaction?.(message.id, emoji);
+    toast({
+      title: "Reaction added",
+      description: `You reacted with ${emoji}`,
+    });
+  };
 
   return (
     <div className={cn(
@@ -82,7 +100,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 hover:bg-gray-100 rounded-full"
-                  onClick={() => onReaction?.(message.id, emoji)}
+                  onClick={() => handleReaction(emoji)}
                 >
                   {emoji}
                 </Button>
@@ -112,7 +130,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => onDelete?.(message.id)}
+                  onClick={handleDelete}
                   className="bg-red-600 hover:bg-red-700"
                 >
                   Delete

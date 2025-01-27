@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, Send, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChatInputProps {
   newMessage: string;
@@ -25,6 +26,7 @@ const ChatInput = ({
   setEditingMessage,
 }: ChatInputProps) => {
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     return () => {
@@ -54,6 +56,11 @@ const ChatInput = ({
       if (error) throw error;
     } catch (error) {
       console.error('Error updating typing status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update typing status",
+        variant: "destructive",
+      });
     }
   };
 
@@ -77,6 +84,13 @@ const ChatInput = ({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleSend = () => {
+    if (newMessage.trim()) {
+      handleSendMessage();
+      updateTypingStatus(false);
     }
   };
 
@@ -108,14 +122,20 @@ const ChatInput = ({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsRecording(true)}
+              onClick={() => {
+                setIsRecording(true);
+                toast({
+                  title: "Recording started",
+                  description: "Click again to stop recording",
+                });
+              }}
               className="rounded-full"
             >
               <Mic className="h-5 w-5 text-gray-500" />
             </Button>
           )}
           <Button
-            onClick={handleSendMessage}
+            onClick={handleSend}
             disabled={!newMessage.trim() && !isRecording}
             className="rounded-full"
           >

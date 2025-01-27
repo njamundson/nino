@@ -4,6 +4,8 @@ import ChatMessages from "@/components/messages/ChatMessages";
 import ChatInput from "@/components/messages/ChatInput";
 import { Message } from "@/types/message";
 import { useMessages } from "@/hooks/useMessages";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatContainerProps {
   selectedChat: string | null;
@@ -20,6 +22,7 @@ export const ChatContainer = ({
   currentUserId,
   onMobileBack,
 }: ChatContainerProps) => {
+  const [senderProfileImage, setSenderProfileImage] = useState<string | null>(null);
   const {
     data: messages,
     newMessage,
@@ -33,6 +36,24 @@ export const ChatContainer = ({
     handleReaction,
   } = useMessages(selectedChat || '');
 
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      if (!selectedChat) return;
+      
+      const { data: creatorProfile } = await supabase
+        .from('creators')
+        .select('profile_image_url')
+        .eq('user_id', selectedChat)
+        .single();
+
+      if (creatorProfile) {
+        setSenderProfileImage(creatorProfile.profile_image_url);
+      }
+    };
+
+    fetchProfileImage();
+  }, [selectedChat]);
+
   return (
     <Card className="flex flex-col h-[36rem] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
       {selectedChat ? (
@@ -40,6 +61,7 @@ export const ChatContainer = ({
           <ChatHeader
             senderFirstName={selectedFirstName}
             senderLastName={selectedLastName}
+            senderProfileImage={senderProfileImage}
             onBack={onMobileBack}
           />
           <div className="flex-1 overflow-hidden">
