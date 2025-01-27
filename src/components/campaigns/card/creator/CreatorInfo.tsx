@@ -8,14 +8,8 @@ interface CreatorInfoProps {
 
 export const CreatorInfo = ({ creator }: CreatorInfoProps) => {
   const getDisplayName = () => {
-    console.log("Creator data in display name:", creator);
-    
-    // Check direct first_name property
-    if (creator.first_name) {
-      return `${creator.first_name} ${creator.last_name || ''}`.trim();
-    }
-    
-    return 'Creator';
+    if (!creator) return 'Creator';
+    return `${creator.first_name || ''} ${creator.last_name || ''}`.trim() || 'Creator';
   };
 
   const displayName = getDisplayName();

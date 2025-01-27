@@ -7,13 +7,24 @@ interface CreatorSocialsProps {
 }
 
 export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps) => {
+  const formatInstagramHandle = (handle: string) => {
+    return handle.replace(/^@/, '').trim();
+  };
+
+  const formatWebsiteUrl = (url: string) => {
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      return `https://${url}`;
+    }
+    return url;
+  };
+
   if (!creator?.instagram && !creator?.website && !onMessageClick) return null;
 
   return (
     <div className="flex gap-3">
       {creator?.instagram && (
         <a
-          href={`https://instagram.com/${creator.instagram.replace('@', '')}`}
+          href={`https://instagram.com/${formatInstagramHandle(creator.instagram)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
@@ -24,7 +35,7 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
       )}
       {creator?.website && (
         <a
-          href={creator.website}
+          href={formatWebsiteUrl(creator.website)}
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"

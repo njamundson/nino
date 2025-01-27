@@ -30,7 +30,6 @@ const ApplicationsList = ({
     return null;
   }
 
-  // Filter out rejected and invalid applications
   const activeApplications = applications.filter(app => {
     if (!app || typeof app !== 'object') {
       console.error('Invalid application object:', app);
@@ -47,6 +46,7 @@ const ApplicationsList = ({
       toast.error("Error loading creator profile");
       return;
     }
+    console.log('Selected application data:', application);
     setSelectedApplication(application);
   };
 
