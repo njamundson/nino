@@ -8,13 +8,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 interface AcceptDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (keepCampaignActive: boolean) => void;
+  onConfirm: () => void;
   creatorName: string;
   isProcessing?: boolean;
 }
@@ -38,7 +37,7 @@ const AcceptDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isProcessing}>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => onConfirm(false)}
+            onClick={onConfirm}
             disabled={isProcessing}
             className="relative"
           >

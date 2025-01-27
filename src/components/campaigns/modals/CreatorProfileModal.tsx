@@ -58,6 +58,7 @@ const CreatorProfileModal = ({
   const handleReject = () => {
     if (!onUpdateStatus) return;
     onUpdateStatus('rejected');
+    onClose();
   };
 
   const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.trim() || 
