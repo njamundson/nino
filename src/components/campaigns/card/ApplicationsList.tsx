@@ -51,12 +51,47 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
     setSelectedApplication(null);
   };
 
-  const handleUpdateStatus = async (status: 'accepted' | 'rejected') => {
+  const handleUpdateStatus = async (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => {
     if (!selectedApplication) return;
     
     setIsProcessing(true);
     try {
-      if (status === 'rejected') {
+      if (status === 'accepted') {
+        // Update application status
+        const { error: applicationError } = await supabase
+          .from('applications')
+          .update({ status: 'accepted' })
+          .eq('id', selectedApplication.id);
+
+        if (applicationError) throw applicationError;
+
+        // If not keeping campaign active, update opportunity status
+        if (!keepCampaignActive) {
+          const { error: opportunityError } = await supabase
+            .from('opportunities')
+            .update({ status: 'active' })
+            .eq('id', selectedApplication.opportunity_id);
+
+          if (opportunityError) throw opportunityError;
+        }
+        
+        // Update local state
+        setLocalApplications(prev => 
+          prev.map(app => 
+            app.id === selectedApplication.id 
+              ? { ...app, status: 'accepted' }
+              : app
+          )
+        );
+        
+        // Show success message
+        toast.success("Proposal accepted! The creator has been added to your bookings.");
+        
+        // Message the creator
+        if (selectedApplication.creator?.user_id) {
+          onMessageCreator(selectedApplication.creator.user_id);
+        }
+      } else {
         // Delete the application instead of updating status
         const { error } = await supabase
           .from('applications')
@@ -65,44 +100,22 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
 
         if (error) throw error;
         
-        // Immediately update local state to remove the rejected application
+        // Update local state
         setLocalApplications(prev => 
           prev.filter(app => app.id !== selectedApplication.id)
         );
         
-        toast.success("Application rejected");
-      } else {
-        // For acceptance, update the status
-        const { error } = await supabase
-          .from('applications')
-          .update({ status })
-          .eq('id', selectedApplication.id);
-
-        if (error) throw error;
-        
-        // Update local state to reflect the acceptance
-        setLocalApplications(prev => 
-          prev.map(app => 
-            app.id === selectedApplication.id 
-              ? { ...app, status: 'accepted' } 
-              : app
-          )
-        );
-        
-        // Only send a message when accepting the application
-        if (selectedApplication.creator?.user_id) {
-          onMessageCreator(selectedApplication.creator.user_id);
-        }
-        
-        toast.success("Application accepted");
+        toast.success("Proposal rejected");
       }
 
-      // Invalidate and refetch the applications query
+      // Invalidate and refetch relevant queries
       queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+      queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
+      
       setSelectedApplication(null);
     } catch (error) {
       console.error('Error updating application status:', error);
-      toast.error("Failed to update application status");
+      toast.error("Failed to update proposal status");
     } finally {
       setIsProcessing(false);
     }
