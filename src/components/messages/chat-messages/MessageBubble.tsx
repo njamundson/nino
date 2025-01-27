@@ -79,7 +79,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
       </div>
 
       <div className={cn(
-        "absolute bottom-0 translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-1 pt-2",
+        "absolute bottom-0 translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-1 pt-2 z-10",
         isCurrentUser ? "left-0" : "right-0"
       )}>
         <DropdownMenu>
@@ -95,6 +95,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
           <DropdownMenuContent 
             align={isCurrentUser ? "start" : "end"}
             className="p-1 flex gap-1 min-w-0"
+            sideOffset={5}
           >
             {REACTION_EMOJIS.map((emoji) => (
               <Button
