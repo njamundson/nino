@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import ApplicationItem from "./ApplicationItem";
 import CreatorProfileModal from "../modals/CreatorProfileModal";
 import ApplicationsHeader from "./applications/ApplicationsHeader";
@@ -15,6 +16,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const { isProcessing, handleUpdateStatus } = useApplicationManagement();
+  const navigate = useNavigate();
 
   if (!Array.isArray(applications)) {
     console.error('Invalid applications data:', applications);
@@ -49,18 +51,29 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   const handleStatusUpdate = async (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => {
     if (!selectedApplication) return;
     
-    await handleUpdateStatus(
-      selectedApplication.id,
-      selectedApplication.opportunity_id,
-      status,
-      keepCampaignActive,
-      () => {
-        setSelectedApplication(null);
-        if (status === 'accepted' && selectedApplication.creator?.user_id) {
-          onMessageCreator(selectedApplication.creator.user_id);
-        }
+    try {
+      await handleUpdateStatus(
+        selectedApplication.id,
+        selectedApplication.opportunity_id,
+        status,
+        keepCampaignActive
+      );
+
+      setSelectedApplication(null);
+
+      if (status === 'accepted' && selectedApplication.creator?.user_id) {
+        // Show success message
+        toast.success("Proposal accepted! Redirecting to messages...");
+        
+        // Navigate to messages with the creator's user ID
+        setTimeout(() => {
+          navigate(`/brand/messages?userId=${selectedApplication.creator.user_id}`);
+        }, 1500);
       }
-    );
+    } catch (error) {
+      console.error('Error updating application status:', error);
+      toast.error("Failed to update application status");
+    }
   };
 
   return (

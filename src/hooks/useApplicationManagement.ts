@@ -11,8 +11,7 @@ export const useApplicationManagement = () => {
     applicationId: string, 
     opportunityId: string,
     status: 'accepted' | 'rejected',
-    keepCampaignActive?: boolean,
-    onSuccess?: () => void
+    keepCampaignActive?: boolean
   ) => {
     setIsProcessing(true);
     try {
@@ -35,13 +34,12 @@ export const useApplicationManagement = () => {
           if (opportunityError) throw opportunityError;
         }
 
-        toast.success("Proposal accepted! The creator has been added to your bookings.");
-
         // Invalidate and refetch relevant queries
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
           queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] })
         ]);
+
       } else {
         // Delete the application instead of updating status
         const { error } = await supabase
@@ -51,14 +49,12 @@ export const useApplicationManagement = () => {
 
         if (error) throw error;
         
-        toast.success("Proposal rejected");
         await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
       }
 
-      onSuccess?.();
     } catch (error) {
       console.error('Error updating application status:', error);
-      toast.error("Failed to update proposal status");
+      throw error; // Re-throw to handle in component
     } finally {
       setIsProcessing(false);
     }
