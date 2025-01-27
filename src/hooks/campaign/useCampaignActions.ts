@@ -8,13 +8,18 @@ export const useCampaignActions = () => {
 
   const handleDelete = async (campaignId: string) => {
     try {
+      console.log('Deleting campaign:', campaignId);
+      
       // First delete all related applications
       const { error: applicationsError } = await supabase
         .from('applications')
         .delete()
         .eq('opportunity_id', campaignId);
 
-      if (applicationsError) throw applicationsError;
+      if (applicationsError) {
+        console.error('Error deleting applications:', applicationsError);
+        throw applicationsError;
+      }
 
       // Then delete the campaign itself
       const { error } = await supabase
@@ -22,7 +27,10 @@ export const useCampaignActions = () => {
         .delete()
         .eq('id', campaignId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting campaign:', error);
+        throw error;
+      }
 
       toast({
         title: "Success",
