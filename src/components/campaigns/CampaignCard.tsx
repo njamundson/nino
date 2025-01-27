@@ -48,8 +48,8 @@ const CampaignCard = ({
     setSelectedApplication(application);
   };
 
-  const handleAcceptConfirm = async () => {
-    if (!selectedApplication || isProcessing) return;
+  const handleAcceptConfirm = async (): Promise<boolean> => {
+    if (!selectedApplication || isProcessing) return false;
     
     console.log('Accepting application:', selectedApplication.id);
     const success = await handleAcceptApplication(selectedApplication.id);
@@ -59,6 +59,8 @@ const CampaignCard = ({
       setSelectedApplication(null);
       handleMessageCreator(selectedApplication.creator.user_id);
     }
+    
+    return success;
   };
 
   return (
