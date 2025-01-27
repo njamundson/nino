@@ -92,25 +92,6 @@ const MyCampaigns = () => {
     }
   };
 
-  // Handle application status updates
-  const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected'): Promise<boolean> => {
-    try {
-      const { error } = await supabase
-        .from('applications')
-        .update({ status: newStatus })
-        .eq('id', applicationId);
-
-      if (error) throw error;
-
-      toast.success(`Application ${newStatus} successfully`);
-      return true;
-    } catch (error) {
-      console.error('Error updating application status:', error);
-      toast.error('Failed to update application status');
-      return false;
-    }
-  };
-
   if (error) {
     return (
       <div className="space-y-8">
@@ -159,7 +140,6 @@ const MyCampaigns = () => {
                 applications={campaign.applications}
                 onEdit={setEditingCampaign}
                 onDelete={handleDelete}
-                onUpdateApplicationStatus={handleUpdateApplicationStatus}
               />
             </motion.div>
           ))}
