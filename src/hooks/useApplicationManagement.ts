@@ -16,13 +16,19 @@ export const useApplicationManagement = () => {
     setIsProcessing(true);
     
     try {
+      console.log('Updating application status:', { applicationId, status });
+      
       // Update application status
       const { error: applicationError } = await supabase
         .from('applications')
         .update({ status })
         .eq('id', applicationId);
 
-      if (applicationError) throw applicationError;
+      if (applicationError) {
+        console.error('Error updating application:', applicationError);
+        toast.error("Failed to update application status");
+        return false;
+      }
 
       // If accepting and not keeping campaign active, update opportunity status
       if (status === 'accepted' && !keepCampaignActive) {
@@ -31,19 +37,27 @@ export const useApplicationManagement = () => {
           .update({ status: 'closed' })
           .eq('id', opportunityId);
 
-        if (opportunityError) throw opportunityError;
+        if (opportunityError) {
+          console.error('Error updating opportunity:', opportunityError);
+          toast.error("Failed to update campaign status");
+          return false;
+        }
       }
 
       // Invalidate relevant queries
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
-        queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] })
-      ]);
+      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+      await queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
+
+      // Show success message
+      toast.success(status === 'accepted' ? 
+        "Creator accepted successfully! You can now message them." : 
+        "Application rejected successfully"
+      );
 
       return true;
     } catch (error) {
-      console.error('Error updating application status:', error);
-      toast.error("Failed to update application status");
+      console.error('Error in handleUpdateStatus:', error);
+      toast.error("An unexpected error occurred");
       return false;
     } finally {
       setIsProcessing(false);

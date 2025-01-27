@@ -32,11 +32,12 @@ const CreatorProfileModal = ({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleAccept = () => {
+    if (isProcessing) return;
     setShowAcceptDialog(true);
   };
 
   const handleAcceptConfirm = async () => {
-    if (!onUpdateStatus) return;
+    if (!onUpdateStatus || isProcessing) return;
     
     setShowAcceptDialog(false);
     const success = await onUpdateStatus('accepted');
@@ -47,13 +48,12 @@ const CreatorProfileModal = ({
   };
 
   const handleKeepActive = async () => {
-    if (!onUpdateStatus) return;
+    if (!onUpdateStatus || isProcessing) return;
     
     const success = await onUpdateStatus('accepted', true);
     if (success) {
       setShowSuccessModal(false);
       onClose();
-      toast.success("Application accepted and campaign kept active");
       if (onMessageCreator) {
         onMessageCreator();
       }
@@ -61,13 +61,12 @@ const CreatorProfileModal = ({
   };
 
   const handleCloseProject = async () => {
-    if (!onUpdateStatus) return;
+    if (!onUpdateStatus || isProcessing) return;
     
     const success = await onUpdateStatus('accepted', false);
     if (success) {
       setShowSuccessModal(false);
       onClose();
-      toast.success("Application accepted and campaign closed");
       if (onMessageCreator) {
         onMessageCreator();
       }
@@ -75,12 +74,11 @@ const CreatorProfileModal = ({
   };
 
   const handleReject = async () => {
-    if (!onUpdateStatus) return;
+    if (!onUpdateStatus || isProcessing) return;
     
     const success = await onUpdateStatus('rejected');
     if (success) {
       onClose();
-      toast.success("Application rejected");
     }
   };
 
