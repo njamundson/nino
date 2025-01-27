@@ -5,6 +5,7 @@ import ApplicationItem from "./ApplicationItem";
 import CreatorModal from "@/components/creators/CreatorModal";
 import ApplicationsHeader from "./applications/ApplicationsHeader";
 import { useApplicationManagement } from "@/hooks/useApplicationManagement";
+import ApplicationMessage from "../modals/profile/ApplicationMessage";
 
 interface ApplicationsListProps {
   applications: any[];
@@ -30,6 +31,7 @@ const ApplicationsList = ({
     return null;
   }
 
+  // Filter out rejected and invalid applications
   const activeApplications = applications.filter(app => {
     if (!app || typeof app !== 'object') {
       console.error('Invalid application object:', app);
@@ -46,27 +48,7 @@ const ApplicationsList = ({
       toast.error("Error loading creator profile");
       return;
     }
-
-    // Transform the creator data to match the expected format
-    const creatorData = {
-      id: application.creator.id,
-      first_name: application.creator.first_name,
-      last_name: application.creator.last_name,
-      bio: application.creator.bio,
-      location: application.creator.location,
-      instagram: application.creator.instagram,
-      website: application.creator.website,
-      specialties: application.creator.specialties || [],
-      creator_type: application.creator.creator_type,
-      profile_image_url: application.creator.profile_image_url,
-      user_id: application.creator.user_id,
-      cover_letter: application.cover_letter
-    };
-
-    setSelectedApplication({
-      ...application,
-      creator: creatorData
-    });
+    setSelectedApplication(application);
   };
 
   const handleCloseModal = () => {
@@ -131,6 +113,14 @@ const ApplicationsList = ({
           creator={selectedApplication.creator}
           isOpen={!!selectedApplication}
           onClose={handleCloseModal}
+          coverLetter={selectedApplication.cover_letter}
+          onUpdateStatus={handleStatusUpdate}
+          isProcessing={isProcessing}
+          onMessageCreator={() => {
+            if (selectedApplication.creator?.user_id) {
+              onMessageCreator(selectedApplication.creator.user_id);
+            }
+          }}
         />
       )}
     </div>

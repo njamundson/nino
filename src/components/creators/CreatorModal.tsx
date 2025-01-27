@@ -12,6 +12,8 @@ import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
 import { CreatorData, CreatorType } from "@/types/creator";
 import { LoadingSpinner } from "../ui/loading-spinner";
+import ApplicationMessage from "../campaigns/modals/profile/ApplicationMessage";
+import { Button } from "../ui/button";
 
 interface Creator {
   id: string;
@@ -24,17 +26,27 @@ interface Creator {
   profile_image_url: string | null;
   first_name: string | null;
   last_name: string | null;
-  user_id: string;
-  cover_letter?: string;
 }
 
 interface CreatorModalProps {
   creator: Creator | null;
   isOpen: boolean;
   onClose: () => void;
+  coverLetter?: string;
+  onUpdateStatus?: (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => Promise<boolean>;
+  isProcessing?: boolean;
+  onMessageCreator?: () => void;
 }
 
-const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
+const CreatorModal = ({ 
+  creator, 
+  isOpen, 
+  onClose,
+  coverLetter,
+  onUpdateStatus,
+  isProcessing,
+  onMessageCreator 
+}: CreatorModalProps) => {
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
@@ -157,6 +169,31 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     }
   };
 
+  const renderActionButtons = () => {
+    if (onUpdateStatus) {
+      return (
+        <div className="flex gap-3 mt-6">
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={() => onUpdateStatus('rejected')}
+            disabled={isProcessing}
+          >
+            Decline
+          </Button>
+          <Button
+            className="flex-1 bg-nino-primary hover:bg-nino-primary/90"
+            onClick={() => onUpdateStatus('accepted')}
+            disabled={isProcessing}
+          >
+            Accept
+          </Button>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-nino-bg">
@@ -168,15 +205,18 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {creator.first_name} {creator.last_name}
+                {creator.first_name}
               </DialogTitle>
             </DialogHeader>
             
             <CreatorProfile 
               creator={creatorData}
               onInviteClick={() => setShowCampaigns(true)}
-              coverLetter={creator.cover_letter}
+              onMessageClick={onMessageCreator}
+              coverLetter={coverLetter}
             />
+
+            {renderActionButtons()}
           </div>
         ) : (
           <CampaignSelection
