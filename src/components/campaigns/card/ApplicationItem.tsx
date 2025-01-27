@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, MapPin, Check, X } from "lucide-react";
 import { useEffect } from "react";
 import { Creator } from "@/types/creator";
+import { toast } from "sonner";
 
 interface ApplicationItemProps {
   application: {
@@ -34,6 +35,34 @@ const ApplicationItem = ({
       .map(part => part[0])
       .join('')
       .toUpperCase();
+  };
+
+  const handleAccept = async () => {
+    if (!onUpdateStatus) return;
+    
+    try {
+      const success = await onUpdateStatus('accepted');
+      if (success) {
+        toast.success("Application accepted successfully!");
+      }
+    } catch (error) {
+      console.error('Error accepting application:', error);
+      toast.error("Failed to accept application");
+    }
+  };
+
+  const handleReject = async () => {
+    if (!onUpdateStatus) return;
+    
+    try {
+      const success = await onUpdateStatus('rejected');
+      if (success) {
+        toast.success("Application rejected successfully");
+      }
+    } catch (error) {
+      console.error('Error rejecting application:', error);
+      toast.error("Failed to reject application");
+    }
   };
 
   const displayName = creator?.first_name 
@@ -76,7 +105,7 @@ const ApplicationItem = ({
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => onUpdateStatus('accepted')}
+                    onClick={handleAccept}
                     className="text-green-600 hover:text-green-700 hover:bg-green-50"
                   >
                     <Check className="h-4 w-4" />
@@ -84,7 +113,7 @@ const ApplicationItem = ({
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => onUpdateStatus('rejected')}
+                    onClick={handleReject}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <X className="h-4 w-4" />
