@@ -37,15 +37,15 @@ const Messages = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-6rem)] flex flex-col bg-nino-bg">
+    <div className="h-[calc(100vh-6rem)] flex flex-col overflow-hidden">
       <PageHeader
         title="Messages"
         description="Connect and communicate with brands."
       />
       
-      <div className="flex-1 container px-0 pb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-1 bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100 h-[36rem]">
+      <div className="flex-1 container px-0 pb-6 overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-14rem)]">
+          <div className="md:col-span-1 bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
             <ChatList 
               onSelectChat={handleSelectChat}
               selectedUserId={selectedUserId}
