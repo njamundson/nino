@@ -1,4 +1,5 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,21 +7,27 @@ import { useNavigate } from "react-router-dom";
 export interface SuccessModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  onKeepActive?: () => void;
+  onClose?: () => void;
 }
 
-const SuccessModal = ({ isOpen, onOpenChange }: SuccessModalProps) => {
+const SuccessModal = ({ isOpen, onOpenChange, onKeepActive, onClose }: SuccessModalProps) => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        onOpenChange(false);
-        navigate("/brand/creators");
-      }, 3000);
-
-      return () => clearTimeout(timer);
+  const handleKeepActive = () => {
+    if (onKeepActive) {
+      onKeepActive();
     }
-  }, [isOpen, navigate, onOpenChange]);
+    onOpenChange(false);
+  };
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
+    onOpenChange(false);
+    navigate("/brand/creators");
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -32,11 +39,26 @@ const SuccessModal = ({ isOpen, onOpenChange }: SuccessModalProps) => {
           </div>
           <div className="space-y-2 text-center">
             <h2 className="text-2xl font-medium tracking-tight text-gray-900">
-              Campaign Created Successfully
+              Success!
             </h2>
             <p className="text-gray-500 text-base leading-relaxed">
-              Ready to find the perfect creators for your campaign? Let's browse and invite creators to apply!
+              Do you need more creators for this campaign, or should we close this project posting?
             </p>
+          </div>
+          <div className="flex gap-4 w-full mt-6">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={handleKeepActive}
+            >
+              Keep Active
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={handleClose}
+            >
+              Close Project
+            </Button>
           </div>
         </div>
       </DialogContent>
