@@ -2,24 +2,12 @@ import { cn } from "@/lib/utils";
 import { Message } from "@/types/message";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Smile, MoreHorizontal, Trash2 } from "lucide-react";
+import { Smile } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,20 +17,11 @@ interface MessageBubbleProps {
   message: Message;
   isCurrentUser: boolean;
   onReaction?: (messageId: string, emoji: string) => void;
-  onDelete?: (messageId: string) => void;
 }
 
-const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: MessageBubbleProps) => {
+const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProps) => {
   const [showReactions, setShowReactions] = useState(false);
   const { toast } = useToast();
-
-  const handleDelete = () => {
-    onDelete?.(message.id);
-    toast({
-      title: "Message deleted",
-      description: "Your message has been deleted successfully",
-    });
-  };
 
   const handleReaction = (emoji: string) => {
     onReaction?.(message.id, emoji);
@@ -110,37 +89,6 @@ const MessageBubble = ({ message, isCurrentUser, onReaction, onDelete }: Message
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {isCurrentUser && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="secondary"
-                size="icon"
-                className="h-8 w-8 rounded-full bg-white shadow-md hover:bg-gray-50"
-              >
-                <Trash2 className="h-4 w-4 text-gray-600" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete Message</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to delete this message? This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDelete}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
       </div>
     </div>
   );
