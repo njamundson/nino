@@ -49,16 +49,20 @@ const CampaignCard = ({
     setSelectedApplication(application);
   };
 
-  const handleAcceptConfirm = async (applicationId: string) => {
-    const success = await handleAcceptApplication(applicationId);
-    if (success) {
-      setShowSuccessModal(true);
+  const handleAcceptConfirm = async (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => {
+    if (selectedApplication) {
+      const success = await handleAcceptApplication(selectedApplication.id);
+      if (success) {
+        setShowSuccessModal(true);
+      }
+      return success;
     }
+    return false;
   };
 
   const handleKeepActive = async () => {
     if (selectedApplication) {
-      const success = await handleAcceptApplication(selectedApplication.id, true);
+      const success = await handleAcceptApplication(selectedApplication.id);
       if (success) {
         setShowSuccessModal(false);
         setSelectedCreator(null);
@@ -70,7 +74,7 @@ const CampaignCard = ({
 
   const handleCloseProject = async () => {
     if (selectedApplication) {
-      const success = await handleAcceptApplication(selectedApplication.id, false);
+      const success = await handleAcceptApplication(selectedApplication.id);
       if (success) {
         setShowSuccessModal(false);
         setSelectedCreator(null);
