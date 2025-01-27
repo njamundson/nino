@@ -111,7 +111,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
       if (error) throw error;
 
-      // Process messages to get unique conversations with latest message
       const conversationsMap = new Map();
       
       messages?.forEach((msg: any) => {
@@ -133,7 +132,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       });
 
       const conversationsList = Array.from(conversationsMap.values());
-      console.log('Processed conversations:', conversationsList);
       setUsers(conversationsList);
 
     } catch (error) {
@@ -172,14 +170,19 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
       if (error) throw error;
 
+      // Remove the deleted chat from the users state
+      setUsers(prevUsers => prevUsers.filter(user => user.otherUser.id !== userId));
+      
+      // If the deleted chat was selected, clear the selection
+      if (selectedUserId === userId) {
+        onSelectChat('', '', '', null);
+      }
+
       toast({
         title: "Chat deleted",
         description: "The conversation has been removed",
       });
 
-      if (currentUser) {
-        fetchChatUsers(currentUser.id);
-      }
     } catch (error) {
       console.error('Error deleting chat:', error);
       toast({
