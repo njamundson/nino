@@ -6,6 +6,7 @@ import AcceptDialog from "./profile/AcceptDialog";
 import CreatorBio from "@/components/creators/modal/profile/CreatorBio";
 import CreatorImage from "@/components/creators/modal/profile/CreatorImage";
 import SuccessModal from "@/components/campaign/SuccessModal";
+import { toast } from "sonner";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
@@ -36,45 +37,50 @@ const CreatorProfileModal = ({
 
   const handleAcceptConfirm = async () => {
     if (!onUpdateStatus) return;
-    try {
-      await onUpdateStatus('accepted');
-      setShowAcceptDialog(false);
+    
+    setShowAcceptDialog(false);
+    const success = await onUpdateStatus('accepted');
+    
+    if (success) {
       setShowSuccessModal(true);
-    } catch (error) {
-      console.error('Error accepting proposal:', error);
-      setShowAcceptDialog(false);
     }
   };
 
   const handleKeepActive = async () => {
     if (!onUpdateStatus) return;
-    try {
-      await onUpdateStatus('accepted', true);
+    
+    const success = await onUpdateStatus('accepted', true);
+    if (success) {
       setShowSuccessModal(false);
       onClose();
-    } catch (error) {
-      console.error('Error keeping campaign active:', error);
+      toast.success("Application accepted and campaign kept active");
+      if (onMessageCreator) {
+        onMessageCreator();
+      }
     }
   };
 
   const handleCloseProject = async () => {
     if (!onUpdateStatus) return;
-    try {
-      await onUpdateStatus('accepted', false);
+    
+    const success = await onUpdateStatus('accepted', false);
+    if (success) {
       setShowSuccessModal(false);
       onClose();
-    } catch (error) {
-      console.error('Error closing project:', error);
+      toast.success("Application accepted and campaign closed");
+      if (onMessageCreator) {
+        onMessageCreator();
+      }
     }
   };
 
   const handleReject = async () => {
     if (!onUpdateStatus) return;
-    try {
-      await onUpdateStatus('rejected');
+    
+    const success = await onUpdateStatus('rejected');
+    if (success) {
       onClose();
-    } catch (error) {
-      console.error('Error rejecting proposal:', error);
+      toast.success("Application rejected");
     }
   };
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const useApplicationManagement = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -13,6 +14,7 @@ export const useApplicationManagement = () => {
     keepCampaignActive?: boolean
   ) => {
     setIsProcessing(true);
+    
     try {
       // Update application status
       const { error: applicationError } = await supabase
@@ -26,21 +28,23 @@ export const useApplicationManagement = () => {
       if (status === 'accepted' && !keepCampaignActive) {
         const { error: opportunityError } = await supabase
           .from('opportunities')
-          .update({ status: 'active' })
+          .update({ status: 'closed' })
           .eq('id', opportunityId);
 
         if (opportunityError) throw opportunityError;
       }
 
-      // Invalidate and refetch relevant queries
+      // Invalidate relevant queries
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
         queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] })
       ]);
 
+      return true;
     } catch (error) {
       console.error('Error updating application status:', error);
-      throw error;
+      toast.error("Failed to update application status");
+      return false;
     } finally {
       setIsProcessing(false);
     }

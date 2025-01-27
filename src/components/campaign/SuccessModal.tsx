@@ -5,8 +5,8 @@ import { CheckCircle2 } from "lucide-react";
 export interface SuccessModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onKeepActive?: () => void;
-  onClose?: () => void;
+  onKeepActive: () => void;
+  onClose: () => void;
 }
 
 const SuccessModal = ({ isOpen, onOpenChange, onKeepActive, onClose }: SuccessModalProps) => {

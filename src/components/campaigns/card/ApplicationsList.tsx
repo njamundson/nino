@@ -5,7 +5,6 @@ import ApplicationItem from "./ApplicationItem";
 import CreatorProfileModal from "../modals/CreatorProfileModal";
 import ApplicationsHeader from "./applications/ApplicationsHeader";
 import { useApplicationManagement } from "@/hooks/useApplicationManagement";
-import SuccessModal from "@/components/campaign/SuccessModal";
 
 interface ApplicationsListProps {
   applications: any[];
@@ -16,7 +15,6 @@ interface ApplicationsListProps {
 const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }: ApplicationsListProps) => {
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { isProcessing, handleUpdateStatus } = useApplicationManagement();
   const navigate = useNavigate();
 
@@ -53,38 +51,20 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   const handleStatusUpdate = async (status: 'accepted' | 'rejected', keepCampaignActive?: boolean) => {
     if (!selectedApplication) return;
     
-    try {
-      await handleUpdateStatus(
-        selectedApplication.id,
-        selectedApplication.opportunity_id,
-        status,
-        keepCampaignActive
-      );
+    const success = await handleUpdateStatus(
+      selectedApplication.id,
+      selectedApplication.opportunity_id,
+      status,
+      keepCampaignActive
+    );
 
-      if (status === 'accepted') {
-        setSelectedApplication(null);
-        setShowSuccessModal(true);
-      } else {
-        setSelectedApplication(null);
+    if (success && status === 'accepted') {
+      if (selectedApplication?.creator?.user_id) {
+        navigate(`/brand/messages?userId=${selectedApplication.creator.user_id}`);
       }
-    } catch (error) {
-      console.error('Error updating application status:', error);
-      toast.error("Failed to update application status");
     }
-  };
 
-  const handleKeepActive = async () => {
-    setShowSuccessModal(false);
-    if (selectedApplication?.creator?.user_id) {
-      navigate(`/brand/messages?userId=${selectedApplication.creator.user_id}`);
-    }
-  };
-
-  const handleCloseProject = async () => {
-    setShowSuccessModal(false);
-    if (selectedApplication?.creator?.user_id) {
-      navigate(`/brand/messages?userId=${selectedApplication.creator.user_id}`);
-    }
+    return success;
   };
 
   return (
@@ -130,13 +110,6 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
           }}
         />
       )}
-
-      <SuccessModal
-        isOpen={showSuccessModal}
-        onOpenChange={setShowSuccessModal}
-        onKeepActive={handleKeepActive}
-        onClose={handleCloseProject}
-      />
     </div>
   );
 };
