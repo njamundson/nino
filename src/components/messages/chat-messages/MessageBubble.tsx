@@ -22,6 +22,7 @@ interface MessageBubbleProps {
 
 const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProps) => {
   const [reactions, setReactions] = useState<{ emoji: string; count: number }[]>([]);
+  const [userReaction, setUserReaction] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -30,9 +31,10 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
   }, [message.id]);
 
   const fetchReactions = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
     const { data, error } = await supabase
       .from('message_reactions')
-      .select('emoji')
+      .select('emoji, user_id')
       .eq('message_id', message.id);
 
     if (error) {
@@ -40,6 +42,13 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
       return;
     }
 
+    // Find user's current reaction if any
+    if (user) {
+      const userCurrentReaction = data.find(r => r.user_id === user.id);
+      setUserReaction(userCurrentReaction?.emoji || null);
+    }
+
+    // Count reactions
     const reactionCounts = data.reduce((acc: { [key: string]: number }, reaction) => {
       acc[reaction.emoji] = (acc[reaction.emoji] || 0) + 1;
       return acc;
@@ -76,31 +85,62 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
   };
 
   const handleReaction = async (emoji: string) => {
+    // If user already has a reaction and it's different, remove the old one first
+    if (userReaction && userReaction !== emoji) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Remove old reaction from database
+      await supabase
+        .from('message_reactions')
+        .delete()
+        .match({ 
+          message_id: message.id,
+          user_id: user.id 
+        });
+    }
+
+    // If selecting the same emoji, do nothing
+    if (userReaction === emoji) return;
+
     // Optimistically update the UI
     const existingReaction = reactions.find(r => r.emoji === emoji);
-    const updatedReactions = existingReaction
-      ? reactions.map(r => 
+    let updatedReactions = reactions;
+
+    if (userReaction) {
+      // Remove old reaction count
+      updatedReactions = updatedReactions.map(r => 
+        r.emoji === userReaction 
+          ? { ...r, count: Math.max(0, r.count - 1) }
+          : r
+      ).filter(r => r.count > 0);
+    }
+
+    updatedReactions = existingReaction
+      ? updatedReactions.map(r => 
           r.emoji === emoji 
             ? { ...r, count: r.count + 1 }
             : r
         )
-      : [...reactions, { emoji, count: 1 }];
+      : [...updatedReactions, { emoji, count: 1 }];
     
     setReactions(updatedReactions);
+    setUserReaction(emoji);
 
     if (onReaction) {
       try {
         await onReaction(message.id, emoji);
         toast({
-          title: "Reaction added",
+          title: "Reaction updated",
           description: `You reacted with ${emoji}`,
         });
       } catch (error) {
         // Revert optimistic update on error
         setReactions(reactions);
+        setUserReaction(userReaction);
         toast({
           title: "Error",
-          description: "Failed to add reaction",
+          description: "Failed to update reaction",
           variant: "destructive",
         });
       }
@@ -188,7 +228,10 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
                 key={emoji}
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 hover:bg-gray-100 rounded-full"
+                className={cn(
+                  "h-8 w-8 hover:bg-gray-100 rounded-full",
+                  userReaction === emoji && "bg-gray-100"
+                )}
                 onClick={() => handleReaction(emoji)}
               >
                 {emoji}
