@@ -25,7 +25,7 @@ interface CampaignCardProps {
   onEdit: (campaign: any) => void;
   onDelete: (id: string) => void;
   applications?: any[];
-  onUpdateApplicationStatus?: (applicationId: string, newStatus: 'accepted' | 'rejected') => void;
+  onUpdateApplicationStatus?: (applicationId: string, newStatus: 'accepted' | 'rejected') => Promise<boolean>;
 }
 
 const CampaignCard = ({ 
@@ -75,22 +75,26 @@ const CampaignCard = ({
           }
           
           toast.success("Proposal accepted successfully! The creator has been added to your bookings.");
+          
+          // Close the modal
+          setSelectedCreator(null);
+          setSelectedApplication(null);
+          return true;
         } else {
           await handleRejectApplication(applicationId);
           setLocalApplications(prevApps => 
             prevApps.filter(app => app.id !== applicationId)
           );
           toast.success("Proposal rejected successfully");
+          return true;
         }
-        
-        // Close the modal
-        setSelectedCreator(null);
-        setSelectedApplication(null);
       } catch (error) {
         console.error('Error updating application status:', error);
         toast.error("Failed to update proposal status. Please try again.");
+        return false;
       }
     }
+    return false;
   };
 
   return (

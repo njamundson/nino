@@ -184,12 +184,18 @@ const CampaignFormContainer = () => {
 
   const handleKeepActive = () => {
     setIsSuccessModalOpen(false);
-    toast.success("Campaign kept active");
+    toast({
+      title: "Success",
+      description: "Campaign kept active",
+    });
   };
 
   const handleClose = () => {
     setIsSuccessModalOpen(false);
-    toast.success("Campaign closed");
+    toast({
+      title: "Success",
+      description: "Campaign closed",
+    });
   };
 
   return (
