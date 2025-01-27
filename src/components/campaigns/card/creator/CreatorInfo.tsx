@@ -10,17 +10,12 @@ export const CreatorInfo = ({ creator }: CreatorInfoProps) => {
   const getDisplayName = () => {
     console.log("Creator data in display name:", creator);
     
-    // Direct properties check
+    // Check direct first_name property
     if (creator.first_name) {
       return `${creator.first_name} ${creator.last_name || ''}`.trim();
     }
     
-    // Profile check
-    if (creator.profile?.first_name) {
-      return `${creator.profile.first_name} ${creator.profile.last_name || ''}`.trim();
-    }
-    
-    return 'Anonymous Creator';
+    return 'Creator';
   };
 
   const displayName = getDisplayName();

@@ -78,9 +78,9 @@ const CreatorProfileModal = ({
     }
   };
 
-  const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.trim() || 
-    `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim() ||
-    'Anonymous Creator';
+  const fullName = creator.first_name ? 
+    `${creator.first_name} ${creator.last_name || ''}`.trim() : 
+    'Creator';
 
   return (
     <>
