@@ -114,7 +114,7 @@ const ChatMessages = ({
   return (
     <div 
       ref={scrollContainerRef}
-      className="h-full overflow-y-auto px-6 py-8 space-y-6"
+      className="h-full overflow-y-auto px-4 py-6 space-y-6"
       onScroll={handleScroll}
     >
       <AnimatePresence mode="popLayout">
