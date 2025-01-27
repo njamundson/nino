@@ -82,7 +82,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
       setSelectedApplication(null);
     } catch (error) {
       console.error('Error updating application:', error);
-      toast.error("Failed to update application");
+      toast.error("Failed to update application status");
     } finally {
       setIsProcessing(false);
     }
