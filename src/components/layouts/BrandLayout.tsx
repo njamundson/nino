@@ -3,7 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../dashboard/BrandSidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import MobileMenu from "../dashboard/MobileMenu";
 import { usePrefetchData } from "@/hooks/usePrefetchData";
 
@@ -37,9 +37,18 @@ const BrandLayout = () => {
         </div>
         
         <div className="p-4 pt-28 md:p-8 md:pt-32">
-          <div key={location.pathname} className="w-full">
-            <Outlet />
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="w-full"
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
