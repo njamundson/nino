@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
 export interface ChatMessagesProps {
   messages: Message[];
@@ -26,6 +27,9 @@ const ChatMessages = ({
   const [isNearBottom, setIsNearBottom] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { ref: inViewRef, inView } = useInView({
+    threshold: 0.5,
+  });
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     messagesEndRef.current?.scrollIntoView({ behavior });
@@ -123,6 +127,7 @@ const ChatMessages = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className="space-y-4"
+            ref={index === 0 ? inViewRef : undefined}
           >
             <DateDivider date={date} />
             <div className="space-y-4">
