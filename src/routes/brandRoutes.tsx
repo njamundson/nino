@@ -14,9 +14,7 @@ export const brandRoutes = [
     path: "/brand/dashboard",
     element: (
       <ProtectedBrandRoute>
-        <BrandLayout>
-          <Dashboard />
-        </BrandLayout>
+        <Dashboard />
       </ProtectedBrandRoute>
     ),
   },
@@ -24,9 +22,7 @@ export const brandRoutes = [
     path: "/brand/campaigns",
     element: (
       <ProtectedBrandRoute>
-        <BrandLayout>
-          <MyCampaigns />
-        </BrandLayout>
+        <MyCampaigns />
       </ProtectedBrandRoute>
     ),
   },
@@ -34,9 +30,7 @@ export const brandRoutes = [
     path: "/brand/campaigns/new",
     element: (
       <ProtectedBrandRoute>
-        <BrandLayout>
-          <NewCampaign />
-        </BrandLayout>
+        <NewCampaign />
       </ProtectedBrandRoute>
     ),
   },
@@ -44,9 +38,7 @@ export const brandRoutes = [
     path: "/brand/creators",
     element: (
       <ProtectedBrandRoute>
-        <BrandLayout>
-          <ViewCreators />
-        </BrandLayout>
+        <ViewCreators />
       </ProtectedBrandRoute>
     ),
   },
@@ -54,9 +46,7 @@ export const brandRoutes = [
     path: "/brand/bookings",
     element: (
       <ProtectedBrandRoute>
-        <BrandLayout>
-          <BrandBookings />
-        </BrandLayout>
+        <BrandBookings />
       </ProtectedBrandRoute>
     ),
   },
@@ -64,9 +54,7 @@ export const brandRoutes = [
     path: "/brand/messages",
     element: (
       <ProtectedBrandRoute>
-        <BrandLayout>
-          <Messages />
-        </BrandLayout>
+        <Messages />
       </ProtectedBrandRoute>
     ),
   },
@@ -74,9 +62,7 @@ export const brandRoutes = [
     path: "/brand/settings",
     element: (
       <ProtectedBrandRoute>
-        <BrandLayout>
-          <Settings />
-        </BrandLayout>
+        <Settings />
       </ProtectedBrandRoute>
     ),
   },
