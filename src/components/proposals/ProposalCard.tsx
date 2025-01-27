@@ -68,9 +68,14 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent" />
           
+          {/* Status Badge - Positioned in top right */}
+          <div className="absolute top-4 right-4 z-10">
+            <ProposalStatusBadge status={application.status} />
+          </div>
+          
           <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex-1">
+            <div className="flex flex-col gap-4">
+              <div>
                 <p className="text-sm text-white/90 mb-1">
                   {application.opportunity?.brand?.company_name || "Unknown Brand"}
                 </p>
@@ -78,10 +83,7 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
                   {application.opportunity?.title || "Untitled Opportunity"}
                 </h3>
               </div>
-              <ProposalStatusBadge status={application.status} />
-            </div>
 
-            <div className="space-y-4">
               {application.cover_letter && (
                 <p className="text-sm text-white/80 line-clamp-2">
                   {application.cover_letter}
