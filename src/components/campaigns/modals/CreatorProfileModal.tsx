@@ -1,164 +1,154 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Creator } from "@/types/creator";
-import { useState } from "react";
-import { MapPin, X } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { CreatorSocials } from "../card/creator/CreatorSocials";
-import AcceptDialog from "./profile/AcceptDialog";
+import { Calendar, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Creator } from "@/types/creator";
+import { Opportunity } from "@/integrations/supabase/types/opportunity";
+import ApplicationForm from "@/components/projects/modal/ApplicationForm";
 
 interface CreatorProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   creator: Creator;
-  coverLetter?: string;
-  onMessageCreator?: () => void;
-  onUpdateStatus?: () => Promise<boolean>;
-  isProcessing?: boolean;
+  selectedCampaign?: Opportunity;
+  onInvite?: () => void;
 }
 
-const CreatorProfileModal = ({
-  isOpen,
-  onClose,
-  creator,
-  coverLetter,
-  onMessageCreator,
-  onUpdateStatus,
-  isProcessing
+const CreatorProfileModal = ({ 
+  isOpen, 
+  onClose, 
+  creator, 
+  selectedCampaign,
+  onInvite 
 }: CreatorProfileModalProps) => {
-  const [showAcceptDialog, setShowAcceptDialog] = useState(false);
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleAccept = () => {
-    if (isProcessing) return;
-    setShowAcceptDialog(true);
+  const handleApplicationSubmit = () => {
+    onClose();
+    queryClient.invalidateQueries({ queryKey: ['applications'] });
   };
 
-  const handleAcceptConfirm = async () => {
-    if (!onUpdateStatus || isProcessing) return;
-    const success = await onUpdateStatus();
-    if (success) {
-      setShowAcceptDialog(false);
-      onClose();
-    }
-  };
-
-  const fullName = creator.first_name ? 
-    `${creator.first_name} ${creator.last_name || ''}`.trim() : 
-    'Creator';
-
-  return (
-    <>
+  if (showApplicationForm && selectedCampaign) {
+    return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white rounded-3xl">
-          <div className="relative">
-            <button 
-              onClick={onClose}
-              className="absolute right-6 top-6 text-gray-400 hover:text-gray-600 transition-colors z-10"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-              <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-gray-100">
-                {creator.profile_image_url ? (
-                  <img
-                    src={creator.profile_image_url}
-                    alt={fullName}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-400">
-                    No image available
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col space-y-6">
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-semibold text-gray-900">
-                    {fullName}
-                  </h2>
-                  
-                  {creator.location && (
-                    <div className="flex items-center gap-2 text-gray-500">
-                      <MapPin className="w-4 h-4" />
-                      <span>{creator.location}</span>
-                    </div>
-                  )}
-                </div>
-
-                {creator.bio && (
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-medium text-gray-900">About</h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {creator.bio}
-                    </p>
-                  </div>
-                )}
-
-                {creator.specialties && creator.specialties.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-medium text-gray-900">Specialties</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {creator.specialties.map((specialty, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="bg-nino-primary/5 text-nino-primary border-nino-primary/20 hover:bg-nino-primary/10"
-                        >
-                          {specialty}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <CreatorSocials creator={creator} onMessageClick={onMessageCreator} />
-
-                {coverLetter && (
-                  <div className="space-y-3">
-                    <h3 className="text-lg font-medium text-gray-900">Application Message</h3>
-                    <div className="bg-gray-50/80 backdrop-blur-sm p-4 rounded-xl border border-gray-100">
-                      <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                        {coverLetter}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {onUpdateStatus && (
-                  <div className="flex gap-4 mt-auto pt-4">
-                    <Button
-                      onClick={onClose}
-                      disabled={isProcessing}
-                      variant="outline"
-                      className="flex-1 border-2 border-nino-primary/20 text-nino-primary hover:bg-nino-primary/5 rounded-full py-6"
-                    >
-                      Reject
-                    </Button>
-                    <Button
-                      onClick={handleAccept}
-                      disabled={isProcessing}
-                      className="flex-1 bg-nino-primary hover:bg-nino-primary/90 text-white rounded-full py-6"
-                    >
-                      Accept
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogTitle className="sr-only">Send Invitation</DialogTitle>
+          <ApplicationForm
+            opportunity={selectedCampaign}
+            onBack={() => setShowApplicationForm(false)}
+            onClose={handleApplicationSubmit}
+            onModalClose={handleApplicationSubmit}
+          />
         </DialogContent>
       </Dialog>
+    );
+  }
 
-      <AcceptDialog
-        isOpen={showAcceptDialog}
-        onOpenChange={setShowAcceptDialog}
-        onConfirm={handleAcceptConfirm}
-        creatorName={fullName}
-        isProcessing={isProcessing}
-      />
-    </>
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogTitle className="text-2xl font-semibold px-8 pt-6">
+          Creator Profile
+        </DialogTitle>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+          {/* Creator Info */}
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-xl font-medium">
+                {creator.first_name} {creator.last_name}
+              </h3>
+              {creator.creator_type && (
+                <Badge variant="secondary" className="capitalize">
+                  {creator.creator_type}
+                </Badge>
+              )}
+            </div>
+
+            {creator.location && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <MapPin className="w-4 h-4" />
+                <span>{creator.location}</span>
+              </div>
+            )}
+
+            {creator.bio && (
+              <div className="space-y-2">
+                <h4 className="font-medium">About</h4>
+                <p className="text-muted-foreground">{creator.bio}</p>
+              </div>
+            )}
+
+            {creator.specialties && creator.specialties.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium">Specialties</h4>
+                <div className="flex flex-wrap gap-2">
+                  {creator.specialties.map((specialty, index) => (
+                    <Badge key={index} variant="secondary">
+                      {specialty}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Social Links & Actions */}
+          <div className="space-y-6">
+            {(creator.instagram || creator.website) && (
+              <div className="space-y-2">
+                <h4 className="font-medium">Social Links</h4>
+                <div className="space-y-2">
+                  {creator.instagram && (
+                    <a
+                      href={`https://instagram.com/${creator.instagram}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-nino-primary hover:underline block"
+                    >
+                      @{creator.instagram}
+                    </a>
+                  )}
+                  {creator.website && (
+                    <a
+                      href={creator.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-nino-primary hover:underline block"
+                    >
+                      {creator.website}
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {selectedCampaign && (
+              <div className="space-y-4">
+                <h4 className="font-medium">Selected Campaign</h4>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h5 className="font-medium">{selectedCampaign.title}</h5>
+                  {selectedCampaign.description && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {selectedCampaign.description}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  onClick={() => setShowApplicationForm(true)}
+                  className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
+                >
+                  Send Invitation
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
