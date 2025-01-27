@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import ApplicationItem from "./ApplicationItem";
-import CreatorModal from "@/components/creators/CreatorModal";
+import CreatorProfileModal from "../modals/CreatorProfileModal";
 import ApplicationsHeader from "./applications/ApplicationsHeader";
 import { useApplicationManagement } from "@/hooks/useApplicationManagement";
 
@@ -108,10 +108,18 @@ const ApplicationsList = ({
       )}
 
       {selectedApplication && (
-        <CreatorModal
+        <CreatorProfileModal
           creator={selectedApplication.creator}
           isOpen={!!selectedApplication}
           onClose={handleCloseModal}
+          coverLetter={selectedApplication.cover_letter}
+          onUpdateStatus={handleStatusUpdate}
+          isProcessing={isProcessing}
+          onMessageCreator={() => {
+            if (selectedApplication.creator?.user_id) {
+              onMessageCreator(selectedApplication.creator.user_id);
+            }
+          }}
         />
       )}
     </div>
