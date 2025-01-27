@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 interface BookingsListProps {
   onChatClick: (creatorId: string) => void;
@@ -16,7 +17,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  const { data: bookings, isLoading } = useQuery({
+  const { data: bookings, isLoading, refetch } = useQuery({
     queryKey: ['active-bookings'],
     queryFn: async () => {
       try {
@@ -59,6 +60,30 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
     },
     refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
+
+  // Set up real-time subscription for booking updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('booking-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'applications',
+          filter: 'status=eq.accepted'
+        },
+        () => {
+          console.log('Booking update detected, refetching...');
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
 
   if (isLoading) {
     return (
