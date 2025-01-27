@@ -14,6 +14,10 @@ interface CreatorProfileModalProps {
   creator: Creator;
   selectedCampaign?: Opportunity;
   onInvite?: () => void;
+  coverLetter?: string;
+  onUpdateStatus?: () => Promise<boolean>;
+  isProcessing?: boolean;
+  onMessageCreator?: () => void;
 }
 
 const CreatorProfileModal = ({ 
@@ -21,7 +25,11 @@ const CreatorProfileModal = ({
   onClose, 
   creator, 
   selectedCampaign,
-  onInvite 
+  onInvite,
+  coverLetter,
+  onUpdateStatus,
+  isProcessing,
+  onMessageCreator
 }: CreatorProfileModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const queryClient = useQueryClient();
@@ -82,6 +90,13 @@ const CreatorProfileModal = ({
               </div>
             )}
 
+            {coverLetter && (
+              <div className="space-y-2">
+                <h4 className="font-medium">Application Message</h4>
+                <p className="text-muted-foreground whitespace-pre-wrap">{coverLetter}</p>
+              </div>
+            )}
+
             {creator.specialties && creator.specialties.length > 0 && (
               <div className="space-y-2">
                 <h4 className="font-medium">Specialties</h4>
@@ -126,25 +141,37 @@ const CreatorProfileModal = ({
               </div>
             )}
 
-            {selectedCampaign && (
-              <div className="space-y-4">
-                <h4 className="font-medium">Selected Campaign</h4>
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h5 className="font-medium">{selectedCampaign.title}</h5>
-                  {selectedCampaign.description && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {selectedCampaign.description}
-                    </p>
-                  )}
-                </div>
+            {/* Action Buttons */}
+            <div className="space-y-3 pt-4">
+              {onUpdateStatus && (
+                <Button
+                  onClick={onUpdateStatus}
+                  disabled={isProcessing}
+                  className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
+                >
+                  {isProcessing ? "Processing..." : "Accept Application"}
+                </Button>
+              )}
+              
+              {onMessageCreator && (
+                <Button
+                  onClick={onMessageCreator}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Message Creator
+                </Button>
+              )}
+
+              {onInvite && (
                 <Button
                   onClick={() => setShowApplicationForm(true)}
                   className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white"
                 >
                   Send Invitation
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </DialogContent>
