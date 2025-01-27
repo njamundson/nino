@@ -17,7 +17,6 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   const [showApplications, setShowApplications] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [localApplications, setLocalApplications] = useState(applications);
   const queryClient = useQueryClient();
 
   if (!Array.isArray(applications)) {
@@ -27,7 +26,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
   }
 
   // Filter out rejected and invalid applications
-  const activeApplications = localApplications.filter(app => {
+  const activeApplications = applications.filter(app => {
     if (!app || typeof app !== 'object') {
       console.error('Invalid application object:', app);
       return false;
@@ -74,16 +73,7 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
 
           if (opportunityError) throw opportunityError;
         }
-        
-        // Update local state
-        setLocalApplications(prev => 
-          prev.map(app => 
-            app.id === selectedApplication.id 
-              ? { ...app, status: 'accepted' }
-              : app
-          )
-        );
-        
+
         // Show success message
         toast.success("Proposal accepted! The creator has been added to your bookings.");
         
@@ -91,6 +81,13 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
         if (selectedApplication.creator?.user_id) {
           onMessageCreator(selectedApplication.creator.user_id);
         }
+
+        // Invalidate and refetch relevant queries
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
+          queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] })
+        ]);
+
       } else {
         // Delete the application instead of updating status
         const { error } = await supabase
@@ -100,18 +97,13 @@ const ApplicationsList = ({ applications = [], onViewProfile, onMessageCreator }
 
         if (error) throw error;
         
-        // Update local state
-        setLocalApplications(prev => 
-          prev.filter(app => app.id !== selectedApplication.id)
-        );
-        
         toast.success("Proposal rejected");
+
+        // Invalidate queries
+        await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
       }
 
-      // Invalidate and refetch relevant queries
-      queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
-      queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
-      
+      // Close the modal after successful update
       setSelectedApplication(null);
     } catch (error) {
       console.error('Error updating application status:', error);
