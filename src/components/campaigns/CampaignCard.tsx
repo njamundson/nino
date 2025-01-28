@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, MoreVertical, ChevronDown, ChevronUp } from "lucide-react";
+import { Calendar, MapPin, MoreVertical } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -76,6 +76,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
 
   const applications = campaign.applications || [];
   const pendingApplications = applications.filter(app => app.status === 'pending');
+  const acceptedApplications = applications.filter(app => app.status === 'accepted');
 
   return (
     <>
@@ -141,14 +142,14 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                 </Badge>
               )}
               <Badge
-                variant={campaign.status === "open" ? "default" : "secondary"}
+                variant={acceptedApplications.length > 0 ? "default" : "secondary"}
                 className={`px-2 py-0.5 ${
-                  campaign.status === "open" 
+                  acceptedApplications.length > 0
                     ? "bg-nino-primary text-white" 
                     : "bg-nino-bg text-nino-text"
                 }`}
               >
-                {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+                {acceptedApplications.length} {acceptedApplications.length === 1 ? "Booking" : "Bookings"}
               </Badge>
             </div>
           </div>
