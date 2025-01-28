@@ -20,6 +20,12 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  // Determine the display status - if it's in the Applied tab and has a cover letter, 
+  // it should show as Pending regardless of how it was initiated
+  const displayStatus = type === 'application' && application.cover_letter 
+    ? 'pending'
+    : application.status;
+
   const handleUpdateStatus = async (status: 'accepted' | 'rejected') => {
     try {
       if (status === 'rejected') {
@@ -68,9 +74,9 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent" />
           
-          {/* Status Badge - Positioned in top right */}
+          {/* Status Badge - Using displayStatus instead of application.status */}
           <div className="absolute top-4 right-4 z-10">
-            <ProposalStatusBadge status={application.status} />
+            <ProposalStatusBadge status={displayStatus} />
           </div>
           
           <div className="absolute inset-x-0 bottom-0 p-6 text-white">
