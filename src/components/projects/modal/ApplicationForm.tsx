@@ -71,15 +71,16 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
         return;
       }
 
-      // Check if application already exists
+      // Check for existing application
       const { data: existingApplication } = await supabase
         .from("applications")
-        .select("id")
+        .select("*")
         .eq("opportunity_id", opportunity.id)
         .eq("creator_id", creator.id)
         .maybeSingle();
 
-      if (existingApplication) {
+      // If there's an existing application that was initiated by the creator, show error
+      if (existingApplication && existingApplication.initiated_by === 'creator') {
         toast({
           title: "Already Applied",
           description: "You have already submitted an application for this opportunity.",
@@ -88,25 +89,34 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
         return;
       }
 
-      console.log('Submitting application...');
-      const { error: applicationError } = await supabase
-        .from("applications")
-        .insert({
-          opportunity_id: opportunity.id,
-          creator_id: creator.id,
-          cover_letter: data.coverLetter,
-          initiated_by: 'creator',
-          status: 'pending'
-        });
+      // If there's an existing application initiated by the brand, update it
+      if (existingApplication && existingApplication.initiated_by === 'brand') {
+        const { error: updateError } = await supabase
+          .from("applications")
+          .update({
+            cover_letter: data.coverLetter,
+            status: 'pending'
+          })
+          .eq('id', existingApplication.id);
 
-      if (applicationError) {
-        console.error('Error submitting application:', applicationError);
-        toast({
-          title: "Error",
-          description: "Failed to submit application. Please try again.",
-          variant: "destructive",
-        });
-        return;
+        if (updateError) {
+          throw updateError;
+        }
+      } else {
+        // Create new application
+        const { error: applicationError } = await supabase
+          .from("applications")
+          .insert({
+            opportunity_id: opportunity.id,
+            creator_id: creator.id,
+            cover_letter: data.coverLetter,
+            initiated_by: 'creator',
+            status: 'pending'
+          });
+
+        if (applicationError) {
+          throw applicationError;
+        }
       }
 
       console.log('Application submitted successfully');
