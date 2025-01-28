@@ -182,22 +182,6 @@ const CampaignFormContainer = () => {
 
   const currentStepIndex = ["basic", "requirements", "compensation"].indexOf(currentStep);
 
-  const handleKeepActive = () => {
-    setIsSuccessModalOpen(false);
-    toast({
-      title: "Success",
-      description: "Campaign kept active",
-    });
-  };
-
-  const handleClose = () => {
-    setIsSuccessModalOpen(false);
-    toast({
-      title: "Success",
-      description: "Campaign closed",
-    });
-  };
-
   return (
     <div className="p-8">
       <FormProgress 
@@ -220,8 +204,6 @@ const CampaignFormContainer = () => {
       <SuccessModal
         isOpen={isSuccessModalOpen}
         onOpenChange={setIsSuccessModalOpen}
-        onKeepActive={handleKeepActive}
-        onClose={handleClose}
       />
     </div>
   );

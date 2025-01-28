@@ -1,15 +1,27 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 
 export interface SuccessModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onKeepActive: () => void;
-  onClose: () => void;
 }
 
-const SuccessModal = ({ isOpen, onOpenChange, onKeepActive, onClose }: SuccessModalProps) => {
+const SuccessModal = ({ isOpen, onOpenChange }: SuccessModalProps) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        onOpenChange(false);
+        navigate("/brand/creators");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, navigate, onOpenChange]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[400px] p-0 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-lg">
@@ -23,23 +35,8 @@ const SuccessModal = ({ isOpen, onOpenChange, onKeepActive, onClose }: SuccessMo
               Success!
             </h2>
             <p className="text-gray-500 text-base leading-relaxed">
-              Do you need more creators for this campaign, or should we close this project posting?
+              Your campaign is now active. View creators and invite them to the project.
             </p>
-          </div>
-          <div className="flex gap-4 w-full mt-6">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={onKeepActive}
-            >
-              Keep Active
-            </Button>
-            <Button
-              className="flex-1"
-              onClick={onClose}
-            >
-              Close Project
-            </Button>
           </div>
         </div>
       </DialogContent>
