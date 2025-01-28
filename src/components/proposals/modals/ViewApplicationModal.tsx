@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, CheckCircle2, X } from "lucide-react";
+import { Calendar, MapPin, CheckCircle2, X, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Application } from "@/integrations/supabase/types/opportunity";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ interface ViewApplicationModalProps {
 const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStatus }: ViewApplicationModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [isDecling, setIsDecling] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
@@ -51,6 +52,29 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
       toast.error("Failed to decline invitation");
     } finally {
       setIsDecling(false);
+    }
+  };
+
+  const handleDeleteApplication = async () => {
+    try {
+      setIsDeleting(true);
+      const { error } = await supabase
+        .from('applications')
+        .delete()
+        .eq('id', application.id);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      queryClient.invalidateQueries({ queryKey: ['my-applications'] });
+      
+      toast.success("Application deleted successfully");
+      onClose();
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      toast.error("Failed to delete application");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -162,7 +186,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
           </div>
 
           {/* Action Buttons */}
-          {type === 'proposal' && (
+          {type === 'proposal' ? (
             <div className="flex justify-end gap-3 pt-4">
               <Button 
                 variant="outline" 
@@ -181,6 +205,20 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
                 Apply Now
               </Button>
             </div>
+          ) : (
+            type === 'application' && application.cover_letter && (
+              <div className="flex justify-end gap-3 pt-4">
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteApplication}
+                  disabled={isDeleting}
+                  className="gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {isDeleting ? 'Deleting...' : 'Delete Application'}
+                </Button>
+              </div>
+            )
           )}
         </div>
       </DialogContent>
