@@ -47,21 +47,7 @@ const MyCampaigns = () => {
           compensation_details,
           deliverables,
           image_url,
-          created_at,
-          applications (
-            id,
-            status,
-            cover_letter,
-            creator:creators (
-              id,
-              profile_image_url,
-              user_id,
-              profile:profiles (
-                first_name,
-                last_name
-              )
-            )
-          )
+          created_at
         `)
         .eq('brand_id', brand.id)
         .order('created_at', { ascending: false });
@@ -137,7 +123,6 @@ const MyCampaigns = () => {
             >
               <CampaignCard
                 campaign={campaign}
-                applications={campaign.applications}
                 onEdit={setEditingCampaign}
                 onDelete={handleDelete}
               />
