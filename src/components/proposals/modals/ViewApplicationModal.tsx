@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, CheckCircle2, X } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Application } from "@/integrations/supabase/types/opportunity";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,8 @@ import { useState } from "react";
 import ApplicationForm from "@/components/projects/modal/ApplicationForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { DialogTitle } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ViewApplicationModalProps {
   isOpen: boolean;
@@ -19,6 +21,7 @@ interface ViewApplicationModalProps {
 
 const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStatus }: ViewApplicationModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [isDecling, setIsDecling] = useState(false);
   const queryClient = useQueryClient();
   
   const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
@@ -26,10 +29,29 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
   const title = application.opportunity?.title || "Untitled Opportunity";
 
   const handleApplicationSubmit = () => {
-    // Close the modal
     onClose();
-    // Refresh the applications data
     queryClient.invalidateQueries({ queryKey: ['applications'] });
+  };
+
+  const handleDecline = async () => {
+    try {
+      setIsDecling(true);
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: 'rejected' })
+        .eq('id', application.id);
+
+      if (error) throw error;
+
+      toast.success("Invitation declined");
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      onClose();
+    } catch (error) {
+      console.error('Error declining invitation:', error);
+      toast.error("Failed to decline invitation");
+    } finally {
+      setIsDecling(false);
+    }
   };
 
   if (showApplicationForm && application.opportunity) {
@@ -139,13 +161,23 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
             )}
           </div>
 
-          {/* Apply Now Button for Proposals */}
+          {/* Action Buttons */}
           {type === 'proposal' && (
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-end gap-3 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={handleDecline}
+                disabled={isDecling}
+                className="gap-2"
+              >
+                <X className="w-4 h-4" />
+                Not Interested
+              </Button>
               <Button 
                 onClick={() => setShowApplicationForm(true)}
-                className="bg-[#A55549] hover:bg-[#A55549]/90 text-white"
+                className="bg-[#A55549] hover:bg-[#A55549]/90 text-white gap-2"
               >
+                <CheckCircle2 className="w-4 h-4" />
                 Apply Now
               </Button>
             </div>
