@@ -37,6 +37,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
   const handleDecline = async () => {
     try {
       setIsDecling(true);
+      
       const { error } = await supabase
         .from('applications')
         .delete()
@@ -44,11 +45,15 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
 
       if (error) throw error;
 
-      // Close modal first for better UX
+      // Close modal first
       onClose();
       
-      // Then update the UI and show success message
-      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      // Then update queries and show success message
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['applications'] }),
+        queryClient.invalidateQueries({ queryKey: ['my-applications'] })
+      ]);
+      
       toast.success("Invitation declined");
     } catch (error) {
       console.error('Error declining invitation:', error);
@@ -61,6 +66,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
   const handleDeleteApplication = async () => {
     try {
       setIsDeleting(true);
+      
       const { error } = await supabase
         .from('applications')
         .delete()
@@ -68,12 +74,15 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
 
       if (error) throw error;
 
-      // Close modal first for better UX
+      // Close modal first
       onClose();
       
-      // Then update the UI and show success message
-      queryClient.invalidateQueries({ queryKey: ['applications'] });
-      queryClient.invalidateQueries({ queryKey: ['my-applications'] });
+      // Then update queries and show success message
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['applications'] }),
+        queryClient.invalidateQueries({ queryKey: ['my-applications'] })
+      ]);
+      
       toast.success("Application deleted successfully");
     } catch (error) {
       console.error('Error deleting application:', error);
