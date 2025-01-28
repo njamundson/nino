@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,7 +28,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
     }
   };
 
-  const [showDates, setShowDates] = useState(true); // Set to true by default
+  const [showDates, setShowDates] = useState(true);
 
   const handleToggleDates = (checked: boolean) => {
     setShowDates(checked);
