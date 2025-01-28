@@ -15,9 +15,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, memo } from "react";
 
-const Sidebar = () => {
+const Sidebar = memo(() => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -60,7 +60,7 @@ const Sidebar = () => {
     }
   };
 
-  const SidebarContent = () => (
+  const SidebarContent = memo(() => (
     <div className="h-full bg-white flex flex-col rounded-3xl shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] border border-gray-100/50">
       <div className="p-6 flex justify-start border-b border-gray-100/50">
         <img 
@@ -108,7 +108,7 @@ const Sidebar = () => {
         </button>
       </div>
     </div>
-  );
+  ));
 
   if (isMobile) {
     return (
@@ -132,6 +132,7 @@ const Sidebar = () => {
       <SidebarContent />
     </div>
   );
-};
+});
 
+Sidebar.displayName = "Sidebar";
 export default Sidebar;
