@@ -18,15 +18,15 @@ const ProposalsTabs = ({
 }: ProposalsTabsProps) => {
   const isMobile = useIsMobile();
 
-  // Filter applications to separate user-initiated applications from brand invitations
-  // Show only brand-initiated pending invitations in the Pending tab
+  // Show brand-initiated applications that are still pending in the Pending tab
   const pendingInvitations = myApplications.filter(app => 
     app.initiated_by === 'brand' && app.status === 'pending'
   );
   
-  // Show all creator-initiated applications and non-pending brand invitations
+  // Show creator-initiated applications and brand invitations that have been acted upon
   const userApplications = myApplications.filter(app => 
-    app.initiated_by === 'creator' || app.status !== 'pending'
+    app.initiated_by === 'creator' || 
+    (app.initiated_by === 'brand' && app.status !== 'pending')
   );
 
   console.log('Pending invitations:', pendingInvitations);
