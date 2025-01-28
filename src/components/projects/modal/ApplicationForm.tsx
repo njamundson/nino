@@ -71,6 +71,23 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
         return;
       }
 
+      // Check if application already exists
+      const { data: existingApplication } = await supabase
+        .from("applications")
+        .select("id")
+        .eq("opportunity_id", opportunity.id)
+        .eq("creator_id", creator.id)
+        .maybeSingle();
+
+      if (existingApplication) {
+        toast({
+          title: "Already Applied",
+          description: "You have already submitted an application for this opportunity.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       console.log('Submitting application...');
       const { error: applicationError } = await supabase
         .from("applications")
@@ -84,17 +101,6 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
 
       if (applicationError) {
         console.error('Error submitting application:', applicationError);
-        
-        // Check if it's a duplicate application
-        if (applicationError.code === '23505') {
-          toast({
-            title: "Already Applied",
-            description: "You have already submitted an application for this opportunity.",
-            variant: "destructive",
-          });
-          return;
-        }
-
         toast({
           title: "Error",
           description: "Failed to submit application. Please try again.",
