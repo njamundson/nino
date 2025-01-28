@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import BookingCard from "./BookingCard";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -73,8 +72,8 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           table: 'applications',
           filter: 'status=eq.accepted'
         },
-        () => {
-          console.log('Booking update detected, refetching...');
+        (payload) => {
+          console.log('Booking update detected:', payload);
           refetch();
         }
       )
