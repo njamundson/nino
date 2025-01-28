@@ -132,13 +132,17 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
 
             <div className="flex flex-wrap gap-2">
               {campaign.payment_details && (
-                <Badge variant="secondary" className="bg-nino-bg text-nino-text px-2 py-0.5">
-                  💰 {campaign.payment_details}
+                <Badge variant="secondary" className="bg-nino-bg text-nino-text px-2 py-0.5 max-w-[200px]">
+                  <span className="inline-block truncate">
+                    💰 {campaign.payment_details}
+                  </span>
                 </Badge>
               )}
               {campaign.compensation_details && (
-                <Badge variant="secondary" className="bg-nino-bg text-nino-text px-2 py-0.5">
-                  🎁 {campaign.compensation_details}
+                <Badge variant="secondary" className="bg-nino-bg text-nino-text px-2 py-0.5 max-w-[200px]">
+                  <span className="inline-block truncate">
+                    🎁 {campaign.compensation_details}
+                  </span>
                 </Badge>
               )}
               <Badge
