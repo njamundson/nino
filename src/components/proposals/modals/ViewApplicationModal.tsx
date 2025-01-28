@@ -44,9 +44,12 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
 
       if (error) throw error;
 
-      toast.success("Invitation declined");
+      // Close modal first for better UX
+      onClose();
+      
+      // Then update the UI and show success message
       queryClient.invalidateQueries({ queryKey: ['applications'] });
-      onClose(); // Close the modal immediately after successful decline
+      toast.success("Invitation declined");
     } catch (error) {
       console.error('Error declining invitation:', error);
       toast.error("Failed to decline invitation");
@@ -65,11 +68,13 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
 
       if (error) throw error;
 
+      // Close modal first for better UX
+      onClose();
+      
+      // Then update the UI and show success message
       queryClient.invalidateQueries({ queryKey: ['applications'] });
       queryClient.invalidateQueries({ queryKey: ['my-applications'] });
-      
       toast.success("Application deleted successfully");
-      onClose(); // Close the modal immediately after successful deletion
     } catch (error) {
       console.error('Error deleting application:', error);
       toast.error("Failed to delete application");
