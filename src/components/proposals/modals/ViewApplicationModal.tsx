@@ -38,7 +38,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
       setIsDecling(true);
       const { error } = await supabase
         .from('applications')
-        .update({ status: 'rejected' })
+        .delete()
         .eq('id', application.id);
 
       if (error) throw error;
