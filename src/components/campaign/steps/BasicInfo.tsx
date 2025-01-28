@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -93,7 +93,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
             <Switch
               checked={showDates}
               onCheckedChange={handleToggleDates}
-              className="data-[state=checked]:bg-nino-primary"
+              className="data-[state=checked]:bg-nino-primary data-[state=checked]:hover:bg-nino-primary/90"
             />
             <span className="text-sm text-gray-600">
               {showDates ? "Specify dates" : "No specific dates"}
