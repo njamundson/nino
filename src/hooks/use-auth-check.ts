@@ -17,15 +17,18 @@ export const useAuthCheck = () => {
         setIsLoading(true);
         console.log("Checking brand access...");
 
-        // Get current session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
-          throw sessionError;
+          if (mounted) {
+            setHasAccess(false);
+            setIsLoading(false);
+          }
+          return false;
         }
 
-        if (!session) {
+        if (!sessionData.session) {
           console.log("No active session found");
           if (mounted) {
             setHasAccess(false);
@@ -34,26 +37,12 @@ export const useAuthCheck = () => {
           return false;
         }
 
-        // Try to refresh the session
-        const { error: refreshError } = await supabase.auth.refreshSession();
-        if (refreshError) {
-          console.error("Error refreshing session:", refreshError);
-          // If refresh fails, sign out and redirect to sign in
-          await supabase.auth.signOut();
-          if (mounted) {
-            setHasAccess(false);
-            setIsLoading(false);
-          }
-          navigate('/signin', { replace: true });
-          return false;
-        }
-
-        console.log("Session found:", session);
+        console.log("Session found:", sessionData.session);
 
         const { data: brands, error: brandError } = await supabase
           .from('brands')
           .select('id')
-          .eq('user_id', session.user.id)
+          .eq('user_id', sessionData.session.user.id)
           .maybeSingle();
 
         if (brandError) {
@@ -82,12 +71,6 @@ export const useAuthCheck = () => {
           setIsLoading(false);
           setHasAccess(false);
         }
-        toast({
-          title: "Authentication Error",
-          description: "Please sign in again.",
-          variant: "destructive",
-        });
-        navigate('/signin', { replace: true });
         return false;
       }
     };
@@ -104,7 +87,7 @@ export const useAuthCheck = () => {
           setHasAccess(false);
           setIsLoading(false);
         }
-        navigate('/signin', { replace: true });
+        navigate('/', { replace: true });
         return;
       }
 

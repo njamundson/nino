@@ -12,39 +12,23 @@ import { motion } from "framer-motion";
 const MyCampaigns = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
 
-  // Fetch campaigns data with improved error handling
+  // Fetch campaigns data
   const { data: campaigns, isLoading, error } = useQuery({
     queryKey: ['my-campaigns'],
     queryFn: async () => {
       console.log('Fetching campaigns data...');
       
+      // Get current user's brand ID
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) {
-        console.error('User fetch error:', userError);
-        throw userError;
-      }
+      if (userError) throw userError;
 
-      if (!user) {
-        console.error('No user found');
-        throw new Error('No authenticated user found');
-      }
-
-      // Get brand ID with better error handling
       const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .eq('user_id', user?.id)
+        .single();
       
-      if (brandError) {
-        console.error('Brand fetch error:', brandError);
-        throw brandError;
-      }
-
-      if (!brand) {
-        console.error('No brand found for user');
-        throw new Error('No brand profile found');
-      }
+      if (brandError) throw brandError;
 
       // Fetch campaigns with related data
       const { data, error: campaignsError } = await supabase
@@ -82,21 +66,16 @@ const MyCampaigns = () => {
         .eq('brand_id', brand.id)
         .order('created_at', { ascending: false });
 
-      if (campaignsError) {
-        console.error('Campaigns fetch error:', campaignsError);
-        throw campaignsError;
-      }
+      if (campaignsError) throw campaignsError;
       
       console.log('Campaigns fetched:', data?.length);
       return data || [];
     },
     retry: 1,
-    refetchOnWindowFocus: true,
-    staleTime: 1000 * 60, // Consider data stale after 1 minute
-    gcTime: 1000 * 60 * 5, // Keep unused data for 5 minutes
+    refetchOnWindowFocus: false,
   });
 
-  // Handle campaign deletion with better error feedback
+  // Handle campaign deletion
   const handleDelete = async (campaignId: string) => {
     try {
       const { error } = await supabase
@@ -104,21 +83,16 @@ const MyCampaigns = () => {
         .delete()
         .eq('id', campaignId);
 
-      if (error) {
-        console.error('Delete error:', error);
-        toast.error('Failed to delete campaign');
-        throw error;
-      }
+      if (error) throw error;
 
       toast.success('Campaign deleted successfully');
     } catch (error) {
       console.error('Error deleting campaign:', error);
-      toast.error('Failed to delete campaign. Please try again.');
+      toast.error('Failed to delete campaign');
     }
   };
 
   if (error) {
-    console.error('Query error:', error);
     return (
       <div className="space-y-8">
         <PageHeader
@@ -127,7 +101,7 @@ const MyCampaigns = () => {
         />
         <div className="mt-8 text-center py-12 bg-red-50 rounded-lg">
           <p className="text-red-600">
-            Error loading campaigns. Please try refreshing the page.
+            Error loading campaigns. Please try again later.
           </p>
         </div>
       </div>

@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
-import { useNavigate } from "react-router-dom";
 
 type OpportunityPayload = RealtimePostgresChangesPayload<{
   [key: string]: any;
@@ -12,7 +11,6 @@ type OpportunityPayload = RealtimePostgresChangesPayload<{
 
 export const useCampaignData = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   // Set up real-time subscription for campaign updates
   useEffect(() => {
@@ -44,98 +42,98 @@ export const useCampaignData = () => {
   return useQuery({
     queryKey: ['my-campaigns'],
     queryFn: async () => {
-      try {
-        console.log('Executing campaign data fetch');
-        
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          navigate('/signin');
-          throw sessionError;
-        }
+      console.log('Executing campaign data fetch');
+      
+      // Get current session and refresh if needed
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw sessionError;
+      }
 
-        if (!session) {
-          console.log('No active session found');
-          navigate('/signin');
-          throw new Error('No active session');
-        }
+      if (!session) {
+        console.log('No active session found');
+        throw new Error('No active session');
+      }
 
-        // Get the brand ID first
-        const { data: brand, error: brandError } = await supabase
-          .from('brands')
-          .select('id')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
+      // Refresh session to ensure token is valid
+      const { error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        console.error('Error refreshing session:', refreshError);
+        throw refreshError;
+      }
 
-        if (brandError) {
-          console.error('Error fetching brand:', brandError);
-          toast.error('Error loading brand data');
-          throw brandError;
-        }
+      // Get the brand ID first
+      const { data: brand, error: brandError } = await supabase
+        .from('brands')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
 
-        if (!brand) {
-          console.log('No brand found for user');
-          return [];
-        }
+      if (brandError) {
+        console.error('Error fetching brand:', brandError);
+        toast.error('Error loading brand data');
+        throw brandError;
+      }
 
-        // Fetch campaigns with related data
-        const { data, error } = await supabase
-          .from('opportunities')
-          .select(`
+      if (!brand) {
+        console.log('No brand found for user');
+        return [];
+      }
+
+      // Fetch campaigns with related data
+      const { data, error } = await supabase
+        .from('opportunities')
+        .select(`
+          id,
+          title,
+          description,
+          start_date,
+          end_date,
+          status,
+          requirements,
+          perks,
+          location,
+          payment_details,
+          compensation_details,
+          deliverables,
+          image_url,
+          created_at,
+          brand:brands (
+            company_name,
+            brand_type,
+            location
+          ),
+          applications (
             id,
-            title,
-            description,
-            start_date,
-            end_date,
             status,
-            requirements,
-            perks,
-            location,
-            payment_details,
-            compensation_details,
-            deliverables,
-            image_url,
-            created_at,
-            brand:brands (
-              company_name,
-              brand_type,
-              location
-            ),
-            applications (
+            cover_letter,
+            creator:creators (
               id,
-              status,
-              cover_letter,
-              creator:creators (
-                id,
-                profile_image_url,
-                user_id,
-                profile:profiles (
-                  first_name,
-                  last_name
-                )
+              profile_image_url,
+              user_id,
+              profile:profiles (
+                first_name,
+                last_name
               )
             )
-          `)
-          .eq('brand_id', brand.id)
-          .order('created_at', { ascending: false });
+          )
+        `)
+        .eq('brand_id', brand.id)
+        .order('created_at', { ascending: false });
 
-        if (error) {
-          console.error('Error fetching campaigns:', error);
-          toast.error('Error loading campaigns');
-          throw error;
-        }
-
-        console.log(`Successfully fetched ${data?.length || 0} campaigns`);
-        return data || [];
-      } catch (error) {
-        console.error('Error in campaign data fetch:', error);
+      if (error) {
+        console.error('Error fetching campaigns:', error);
         toast.error('Error loading campaigns');
         throw error;
       }
+
+      console.log(`Successfully fetched ${data?.length || 0} campaigns`);
+      return data || [];
     },
-    staleTime: 1000 * 60, // 1 minute
-    gcTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0,
+    gcTime: 0,
     retry: 2,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,

@@ -15,9 +15,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { useState, memo } from "react";
+import { useState } from "react";
 
-const Sidebar = memo(() => {
+const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -60,7 +60,7 @@ const Sidebar = memo(() => {
     }
   };
 
-  const SidebarContent = memo(() => (
+  const SidebarContent = () => (
     <div className="h-full bg-white flex flex-col rounded-3xl shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] border border-gray-100/50">
       <div className="p-6 flex justify-start border-b border-gray-100/50">
         <img 
@@ -72,12 +72,12 @@ const Sidebar = memo(() => {
           decoding="sync"
           style={{ 
             imageRendering: 'crisp-edges',
-            willChange: 'transform'
+            willChange: 'transform' // Optimize for GPU acceleration
           }}
         />
       </div>
 
-      <nav className="flex-1 px-4 py-6 overflow-y-auto">
+      <nav className="flex-1 px-4 py-6 overflow-hidden">
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.path}>
@@ -108,7 +108,7 @@ const Sidebar = memo(() => {
         </button>
       </div>
     </div>
-  ));
+  );
 
   if (isMobile) {
     return (
@@ -128,11 +128,10 @@ const Sidebar = memo(() => {
   }
 
   return (
-    <div className="h-screen w-64 p-4">
+    <div className="h-screen sticky top-0 w-64 p-4">
       <SidebarContent />
     </div>
   );
-});
+};
 
-Sidebar.displayName = "Sidebar";
 export default Sidebar;

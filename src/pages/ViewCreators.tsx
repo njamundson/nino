@@ -3,7 +3,6 @@ import PageHeader from "@/components/shared/PageHeader";
 import CreatorGrid from "@/components/creators/CreatorGrid";
 import CreatorFilters from "@/components/creators/CreatorFilters";
 import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
 
 const ViewCreators = () => {
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
@@ -28,12 +27,7 @@ const ViewCreators = () => {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-8"
-    >
+    <div className="space-y-8">
       <PageHeader
         title="Browse Creators"
         description="Discover and connect with talented creators for your campaigns."
@@ -51,7 +45,7 @@ const ViewCreators = () => {
         selectedCreatorType={selectedCreatorType}
         selectedLocations={selectedLocations}
       />
-    </motion.div>
+    </div>
   );
 };
 

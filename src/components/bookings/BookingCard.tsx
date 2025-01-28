@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MessageSquare, Calendar, MapPin } from "lucide-react";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/utils";
 
 interface BookingCardProps {
   booking: {
@@ -35,30 +35,6 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
     `${booking.creator.profile.first_name} ${booking.creator.profile.last_name}` : 
     'Anonymous Creator';
 
-  const formatDateRange = () => {
-    if (!booking.opportunity.start_date || !booking.opportunity.end_date) return null;
-    
-    const startDate = new Date(booking.opportunity.start_date);
-    const endDate = new Date(booking.opportunity.end_date);
-    
-    return `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return 'bg-green-500/10 hover:bg-green-500/20 text-green-700';
-      case 'completed':
-        return 'bg-gray-500/10 hover:bg-gray-500/20 text-gray-700';
-      case 'pending':
-        return 'bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-700';
-      default:
-        return 'bg-blue-500/10 hover:bg-blue-500/20 text-blue-700';
-    }
-  };
-
-  const dateRange = formatDateRange();
-
   return (
     <Card 
       className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
@@ -89,24 +65,15 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
           <p className="text-sm font-medium text-white/90 mb-1">
             {creatorName}
           </p>
-          <h3 className="text-2xl font-semibold leading-tight line-clamp-2 mb-2">
+          <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
             {booking.opportunity.title}
           </h3>
-          
-          {dateRange && (
-            <p className="text-sm text-white/80 flex items-center gap-1 mb-2">
-              <Calendar className="w-4 h-4" />
-              {dateRange}
-            </p>
-          )}
-          
           {booking.opportunity.location && (
-            <p className="text-sm text-white/80 flex items-center gap-1">
+            <p className="text-sm text-white/80 mt-2 flex items-center gap-1">
               <MapPin className="w-4 h-4" />
               {booking.opportunity.location}
             </p>
           )}
-          
           {(booking.opportunity.payment_details || booking.opportunity.compensation_details) && (
             <div className="flex gap-2 mt-2">
               {booking.opportunity.payment_details && (
@@ -147,7 +114,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
         {/* Status Badge */}
         <Badge 
           variant="secondary" 
-          className={`absolute top-4 right-4 capitalize ${getStatusColor(booking.opportunity.status)}`}
+          className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-900 capitalize shadow-md"
         >
           {booking.opportunity.status}
         </Badge>

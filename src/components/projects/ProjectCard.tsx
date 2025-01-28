@@ -82,8 +82,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           loading="lazy"
         />
 
-        {/* Updated gradient overlay with more subtle fade */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent opacity-90 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         
         {isCompleted && (
           <Badge 
