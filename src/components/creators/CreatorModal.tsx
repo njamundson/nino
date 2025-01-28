@@ -138,18 +138,15 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
   if (!creator) return null;
 
-  const creatorData: CreatorData = {
+  const creatorData: Creator = {
     id: creator.id,
-    firstName: creator.first_name || '',
-    lastName: creator.last_name || '',
     bio: creator.bio || '',
     specialties: creator.specialties || [],
     instagram: creator.instagram || '',
     website: creator.website || '',
     location: creator.location || '',
-    profileImage: creator.profile_image_url,
-    creatorType: creator.creator_type as CreatorType || 'solo',
     profile_image_url: creator.profile_image_url,
+    creator_type: creator.creator_type as CreatorType || 'solo',
     first_name: creator.first_name,
     last_name: creator.last_name
   };
