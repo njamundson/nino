@@ -28,9 +28,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
     }
   };
 
-  const [showDates, setShowDates] = useState(
-    !!(formData.startDate || formData.endDate)
-  );
+  const [showDates, setShowDates] = useState(true); // Set to true by default
 
   const handleToggleDates = (checked: boolean) => {
     setShowDates(checked);
@@ -95,7 +93,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
             <Switch
               checked={showDates}
               onCheckedChange={handleToggleDates}
-              className="data-[state=checked]:bg-gray-900"
+              className="data-[state=checked]:bg-nino-primary"
             />
             <span className="text-sm text-gray-600">
               {showDates ? "Specify dates" : "No specific dates"}
