@@ -1,150 +1,113 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import CreatorProfileModal from "./modals/CreatorProfileModal";
-import CampaignDetails from "./card/CampaignDetails";
-import ApplicationsList from "./card/ApplicationsList";
-import { useApplicationActions } from "@/hooks/useApplicationActions";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, MoreVertical } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 interface CampaignCardProps {
-  campaign: any;
+  campaign: {
+    id: string;
+    title: string;
+    description: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    status: string;
+    location: string | null;
+    payment_details: string | null;
+    compensation_details: string | null;
+  };
   onEdit: (campaign: any) => void;
   onDelete: (id: string) => void;
-  applications?: any[];
 }
 
-const CampaignCard = ({ 
-  campaign, 
-  onEdit, 
-  onDelete, 
-  applications = []
-}: CampaignCardProps) => {
-  const [selectedCreator, setSelectedCreator] = useState<any>(null);
-  const [selectedApplication, setSelectedApplication] = useState<any>(null);
-  const navigate = useNavigate();
-  const { isProcessing, handleAcceptApplication } = useApplicationActions({ 
-    opportunityId: campaign.id 
-  });
-
-  const handleMessageCreator = (userId: string) => {
-    navigate(`/brand/messages?userId=${userId}`);
-  };
-
-  const handleViewProfile = (application: any) => {
-    setSelectedCreator(application.creator);
-    setSelectedApplication(application);
-  };
-
-  const handleAcceptConfirm = async (): Promise<boolean> => {
-    if (!selectedApplication || isProcessing) return false;
-    
-    console.log('Accepting application:', selectedApplication.id);
-    const success = await handleAcceptApplication(selectedApplication.id);
-    
-    if (success) {
-      setSelectedCreator(null);
-      setSelectedApplication(null);
-      handleMessageCreator(selectedApplication.creator.user_id);
+const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
+  const handleDelete = async () => {
+    try {
+      await onDelete(campaign.id);
+      toast.success("Campaign deleted successfully");
+    } catch (error) {
+      console.error("Error deleting campaign:", error);
+      toast.error("Failed to delete campaign");
     }
-    
-    return success;
   };
 
   return (
-    <>
-      <Card className="overflow-hidden backdrop-blur-lg bg-white/80 border-0 shadow-lg rounded-2xl transition-all duration-300 hover:shadow-xl">
-        <div className="p-8">
-          <div className="flex justify-between items-start">
-            <div className="space-y-6 flex-1">
-              <div>
-                <h3 className="text-2xl font-medium text-gray-900 tracking-tight mb-2">
-                  {campaign.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {campaign.description}
-                </p>
-              </div>
-
-              <CampaignDetails campaign={campaign} />
-            </div>
-
-            <div className="flex gap-2 ml-6">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onEdit(campaign)}
-                className="text-gray-500 hover:text-gray-900 hover:bg-gray-100/80"
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-gray-500 hover:text-red-600 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your campaign
-                      and remove all associated applications.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => onDelete(campaign.id)}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </div>
-
-          <ApplicationsList
-            applications={applications}
-            onViewProfile={handleViewProfile}
-            onMessageCreator={handleMessageCreator}
-          />
+    <Card className="p-6 space-y-6">
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <h3 className="text-xl font-semibold text-gray-900">
+            {campaign.title}
+          </h3>
+          {campaign.location && (
+            <p className="text-gray-500 flex items-center gap-1.5">
+              <MapPin className="h-4 w-4" />
+              {campaign.location}
+            </p>
+          )}
         </div>
-      </Card>
 
-      {selectedCreator && selectedApplication && (
-        <CreatorProfileModal
-          isOpen={!!selectedCreator}
-          onClose={() => {
-            setSelectedCreator(null);
-            setSelectedApplication(null);
-          }}
-          creator={selectedCreator}
-          coverLetter={selectedApplication.cover_letter}
-          onUpdateStatus={handleAcceptConfirm}
-          onMessageCreator={() => handleMessageCreator(selectedCreator.user_id)}
-          isProcessing={isProcessing}
-        />
-      )}
-    </>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(campaign)}>
+              Edit campaign
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={handleDelete}
+            >
+              Delete campaign
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <p className="text-gray-600">{campaign.description}</p>
+        </div>
+
+        {(campaign.start_date || campaign.end_date) && (
+          <div className="flex items-center gap-2 text-gray-500">
+            <Calendar className="h-4 w-4" />
+            <span>
+              {campaign.start_date && formatDate(campaign.start_date)}
+              {campaign.end_date && ` - ${formatDate(campaign.end_date)}`}
+            </span>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2">
+          {campaign.payment_details && (
+            <Badge variant="secondary" className="px-2 py-0.5">
+              💰 {campaign.payment_details}
+            </Badge>
+          )}
+          {campaign.compensation_details && (
+            <Badge variant="secondary" className="px-2 py-0.5">
+              🎁 {campaign.compensation_details}
+            </Badge>
+          )}
+          <Badge
+            variant={campaign.status === "open" ? "default" : "secondary"}
+            className="px-2 py-0.5"
+          >
+            {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+          </Badge>
+        </div>
+      </div>
+    </Card>
   );
 };
 
