@@ -18,14 +18,17 @@ const ProposalsTabs = ({
 }: ProposalsTabsProps) => {
   const isMobile = useIsMobile();
 
+  // Filter out any accepted applications since they should be in Bookings
+  const activeApplications = myApplications.filter(app => app.status !== 'accepted');
+
   // Show brand-initiated applications that haven't been acted upon yet in Pending tab
-  const pendingInvitations = myApplications.filter(app => 
+  const pendingInvitations = activeApplications.filter(app => 
     app.initiated_by === 'brand' && 
     !app.cover_letter // If there's no cover letter, it means the creator hasn't applied yet
   );
   
   // Show creator-initiated applications and brand invitations that have been acted upon
-  const userApplications = myApplications.filter(app => 
+  const userApplications = activeApplications.filter(app => 
     app.initiated_by === 'creator' || 
     (app.initiated_by === 'brand' && app.cover_letter) // If there's a cover letter, creator has applied
   );
