@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from 'react';
+import React, { useRef, useState, type ChangeEvent, useEffect } from 'react';
 import { Camera, ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -81,7 +81,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
   };
 
   // Clean up object URL when component unmounts or when uploadedImage changes
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
