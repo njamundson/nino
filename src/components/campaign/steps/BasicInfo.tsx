@@ -93,7 +93,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
             <Switch
               checked={showDates}
               onCheckedChange={handleToggleDates}
-              className="data-[state=checked]:bg-nino-primary data-[state=checked]:hover:bg-nino-primary/90"
+              className="data-[state=checked]:bg-nino-primary data-[state=checked]:hover:bg-[#F9F6F2]"
             />
             <span className="text-sm text-gray-600">
               {showDates ? "Specify dates" : "No specific dates"}
