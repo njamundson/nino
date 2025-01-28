@@ -9,10 +9,8 @@ interface Creator {
   specialties: string[] | null;
   instagram: string | null;
   website: string | null;
-  profile: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
+  first_name: string | null;
+  last_name: string | null;
   profile_image_url: string | null;
 }
 
@@ -23,7 +21,8 @@ interface CreatorProfileProps {
 }
 
 const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfileProps) => {
-  const fullName = `${creator.profile?.first_name || ''} ${creator.profile?.last_name || ''}`.trim();
+  // Safely get the full name using direct properties instead of nested profile
+  const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.trim();
 
   return (
     <div className="w-full max-w-4xl mx-auto">
