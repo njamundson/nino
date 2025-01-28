@@ -8,6 +8,7 @@ import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useState } from "react";
 import { ProposalStatusBadge } from "./ProposalStatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 
 interface ProposalCardProps {
   application: Application;
@@ -17,6 +18,7 @@ interface ProposalCardProps {
 
 const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) => {
   const [showModal, setShowModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -48,6 +50,28 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
     } catch (error) {
       console.error('Error updating application status:', error);
       toast.error("Failed to update application status");
+    }
+  };
+
+  const handleDeleteApplication = async () => {
+    try {
+      setIsDeleting(true);
+      const { error } = await supabase
+        .from('applications')
+        .delete()
+        .eq('id', application.id);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      queryClient.invalidateQueries({ queryKey: ['my-applications'] });
+      
+      toast.success("Application deleted successfully");
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      toast.error("Failed to delete application");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -113,6 +137,18 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
                     className="border-white/30 text-white hover:bg-white/20"
                   >
                     Message Brand
+                  </Button>
+                )}
+                {type === 'application' && application.cover_letter && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDeleteApplication}
+                    disabled={isDeleting}
+                    className="border-white/30 text-white hover:bg-white/20"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    {isDeleting ? 'Deleting...' : 'Delete'}
                   </Button>
                 )}
               </div>
