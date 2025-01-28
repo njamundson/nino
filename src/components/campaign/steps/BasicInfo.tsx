@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +28,7 @@ const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
     }
   };
 
-  const [showDates, setShowDates] = React.useState(
+  const [showDates, setShowDates] = useState(
     !!(formData.startDate || formData.endDate)
   );
 
