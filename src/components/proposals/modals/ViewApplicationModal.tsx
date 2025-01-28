@@ -46,7 +46,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
 
       toast.success("Invitation declined");
       queryClient.invalidateQueries({ queryKey: ['applications'] });
-      onClose();
+      onClose(); // Close the modal immediately after successful decline
     } catch (error) {
       console.error('Error declining invitation:', error);
       toast.error("Failed to decline invitation");
@@ -195,7 +195,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
                 className="gap-2"
               >
                 <X className="w-4 h-4" />
-                Not Interested
+                {isDecling ? 'Declining...' : 'Not Interested'}
               </Button>
               <Button 
                 onClick={() => setShowApplicationForm(true)}
