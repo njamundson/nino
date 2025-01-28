@@ -9,7 +9,6 @@ import {
   MessageSquare,
   LogOut,
   FileCheck,
-  Settings,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -78,6 +77,13 @@ const BrandSidebar = () => {
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
               className="h-16"
+              loading="eager"
+              fetchPriority="high"
+              decoding="sync"
+              style={{ 
+                imageRendering: 'crisp-edges',
+                willChange: 'transform'
+              }}
             />
           </Link>
         </div>
@@ -90,14 +96,14 @@ const BrandSidebar = () => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200",
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                   isActive
                     ? "bg-nino-primary/10 text-nino-primary"
-                    : "text-gray-600 hover:text-nino-primary hover:bg-nino-primary/5"
+                    : "text-nino-gray hover:text-nino-primary hover:bg-nino-primary/5"
                 )}
               >
                 <item.icon className={cn(
-                  "w-[18px] h-[18px] transition-colors",
+                  "w-5 h-5 transition-colors",
                   isActive
                     ? "text-nino-primary"
                     : "text-gray-400 group-hover:text-nino-primary"
@@ -111,9 +117,9 @@ const BrandSidebar = () => {
         <div className="p-3 mt-auto border-t border-gray-100">
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-nino-primary hover:bg-nino-primary/5 transition-colors duration-200"
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-nino-gray hover:text-nino-primary hover:bg-nino-primary/5 transition-all duration-200"
           >
-            <LogOut className="w-[18px] h-[18px]" />
+            <LogOut className="w-5 h-5" />
             <span>Sign Out</span>
           </button>
         </div>
