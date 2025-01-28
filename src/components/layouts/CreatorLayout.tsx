@@ -19,30 +19,31 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
       <Sidebar />
       <div className={`flex-1 ${isMobile ? 'w-full' : ''}`}>
         <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 px-4 md:px-8">
-          <div className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/95 to-transparent" />
           <div className="relative">
             <DashboardHeader />
           </div>
         </div>
-        <div className="p-4 pt-28 md:p-8 md:pt-32">
-          <Suspense fallback={
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <LoadingSpinner size="lg" />
-            </div>
-          }>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
-          </Suspense>
-        </div>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={location.pathname}
+            className="p-4 pt-28 md:p-8 md:pt-32"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Suspense 
+              fallback={
+                <div className="flex items-center justify-center min-h-[60vh]">
+                  <LoadingSpinner size="lg" />
+                </div>
+              }
+            >
+              {children}
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
