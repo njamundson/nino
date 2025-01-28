@@ -44,7 +44,8 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           `)
           .eq('creator_id', creator.id)
           .eq('status', 'accepted')
-          .in('opportunity.status', ['active', 'open']);
+          .in('opportunity.status', ['active', 'open', 'completed'])
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
         return data || [];
@@ -63,25 +64,47 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
 
   // Set up real-time subscription for booking updates
   useEffect(() => {
-    const channel = supabase
-      .channel('booking-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'applications',
-          filter: 'status=eq.accepted'
-        },
-        () => {
-          console.log('Booking update detected, refetching...');
-          refetch();
-        }
-      )
-      .subscribe();
+    const channels = [
+      // Subscribe to applications changes
+      supabase
+        .channel('creator-bookings-applications')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'applications',
+            filter: 'status=eq.accepted'
+          },
+          (payload) => {
+            console.log('Application update detected:', payload);
+            refetch();
+          }
+        )
+        .subscribe(),
+
+      // Subscribe to opportunities changes
+      supabase
+        .channel('creator-bookings-opportunities')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'opportunities'
+          },
+          (payload) => {
+            console.log('Opportunity update detected:', payload);
+            refetch();
+          }
+        )
+        .subscribe()
+    ];
 
     return () => {
-      supabase.removeChannel(channel);
+      channels.forEach(channel => {
+        supabase.removeChannel(channel);
+      });
     };
   }, [refetch]);
 

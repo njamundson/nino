@@ -44,7 +44,8 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           `)
           .eq('status', 'accepted')
           .eq('opportunity.brand_id', brand.id)
-          .in('opportunity.status', ['active', 'open']);
+          .in('opportunity.status', ['active', 'open', 'completed'])
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
         return data || [];
@@ -63,44 +64,47 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
   // Set up real-time subscription for booking updates
   useEffect(() => {
-    // Subscribe to applications table changes
-    const applicationsChannel = supabase
-      .channel('bookings-applications')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'applications',
-          filter: 'status=eq.accepted'
-        },
-        (payload) => {
-          console.log('Application update detected:', payload);
-          refetch();
-        }
-      )
-      .subscribe();
+    const channels = [
+      // Subscribe to applications table changes
+      supabase
+        .channel('bookings-applications')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'applications',
+            filter: 'status=eq.accepted'
+          },
+          (payload) => {
+            console.log('Application update detected:', payload);
+            refetch();
+          }
+        )
+        .subscribe(),
 
-    // Subscribe to opportunities table changes
-    const opportunitiesChannel = supabase
-      .channel('bookings-opportunities')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'opportunities'
-        },
-        (payload) => {
-          console.log('Opportunity update detected:', payload);
-          refetch();
-        }
-      )
-      .subscribe();
+      // Subscribe to opportunities table changes
+      supabase
+        .channel('bookings-opportunities')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'opportunities'
+          },
+          (payload) => {
+            console.log('Opportunity update detected:', payload);
+            refetch();
+          }
+        )
+        .subscribe()
+    ];
 
     return () => {
-      supabase.removeChannel(applicationsChannel);
-      supabase.removeChannel(opportunitiesChannel);
+      channels.forEach(channel => {
+        supabase.removeChannel(channel);
+      });
     };
   }, [refetch]);
 
