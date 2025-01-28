@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,7 +21,7 @@ export interface BasicInfoProps {
   setFormData: (data: any) => void;
 }
 
-const BasicInfo = ({ formData, setFormData }: BasicInfoProps) => {
+const BasicInfo: React.FC<BasicInfoProps> = ({ formData, setFormData }) => {
   const handleDateSelect = (field: string) => (date: Date | undefined) => {
     if (date) {
       setFormData({ ...formData, [field]: date.toISOString() });
