@@ -69,7 +69,7 @@ const ViewApplicationModal = ({ isOpen, onClose, application, type, onUpdateStat
       queryClient.invalidateQueries({ queryKey: ['my-applications'] });
       
       toast.success("Application deleted successfully");
-      onClose();
+      onClose(); // Close the modal immediately after successful deletion
     } catch (error) {
       console.error('Error deleting application:', error);
       toast.error("Failed to delete application");
