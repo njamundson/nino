@@ -11,6 +11,7 @@ interface ImageUploadProps {
 const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadProps) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -62,6 +63,17 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
     fileInputRef.current?.click();
   };
 
+  const handleImageError = () => {
+    if (imageRef.current) {
+      imageRef.current.src = '/placeholder.svg';
+      toast({
+        title: "Warning",
+        description: "Failed to load image. Using placeholder instead.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col items-center space-y-4 w-full max-w-2xl mx-auto">
       <div className="relative group cursor-pointer w-full">
@@ -80,8 +92,10 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
           {uploadedImage ? (
             <div className="relative w-full h-full overflow-hidden rounded-xl">
               <img 
+                ref={imageRef}
                 src={uploadedImage} 
-                alt="Campaign" 
+                alt="Campaign"
+                onError={handleImageError}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
