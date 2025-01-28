@@ -72,12 +72,12 @@ const Sidebar = () => {
           decoding="sync"
           style={{ 
             imageRendering: 'crisp-edges',
-            willChange: 'transform' // Optimize for GPU acceleration
+            willChange: 'transform'
           }}
         />
       </div>
 
-      <nav className="flex-1 px-4 py-6 overflow-hidden">
+      <nav className="flex-1 px-4 py-6 overflow-y-auto">
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.path}>
@@ -128,7 +128,7 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="h-screen sticky top-0 w-64 p-4">
+    <div className="h-screen w-64 p-4">
       <SidebarContent />
     </div>
   );
