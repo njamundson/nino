@@ -150,10 +150,8 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     profileImage: creator.profile_image_url,
     creatorType: creator.creator_type as CreatorType || 'solo',
     profile_image_url: creator.profile_image_url,
-    profile: {
-      first_name: creator.first_name,
-      last_name: creator.last_name
-    }
+    first_name: creator.first_name,
+    last_name: creator.last_name
   };
 
   return (
