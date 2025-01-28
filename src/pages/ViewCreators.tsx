@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import CreatorGrid from "@/components/creators/CreatorGrid";
 import CreatorFilters from "@/components/creators/CreatorFilters";
@@ -28,22 +26,6 @@ const ViewCreators = () => {
   const handleLocationChange = (location: string) => {
     setSelectedLocations([location]);
   };
-
-  if (error) {
-    return (
-      <div className="space-y-8">
-        <PageHeader
-          title="Browse Creators"
-          description="Discover and connect with talented creators for your campaigns."
-        />
-        <div className="mt-8 text-center py-12 bg-red-50 rounded-lg">
-          <p className="text-red-600">
-            Error loading creators. Please try refreshing the page.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <motion.div 
