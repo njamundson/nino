@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 const MyCampaigns = () => {
   const [editingCampaign, setEditingCampaign] = useState<any>(null);
 
-  // Fetch campaigns data
+  // Fetch campaigns data with applications
   const { data: campaigns, isLoading, error } = useQuery({
     queryKey: ['my-campaigns'],
     queryFn: async () => {
@@ -30,7 +30,7 @@ const MyCampaigns = () => {
       
       if (brandError) throw brandError;
 
-      // Fetch campaigns with related data
+      // Fetch campaigns with applications and creator data
       const { data, error: campaignsError } = await supabase
         .from('opportunities')
         .select(`
@@ -47,7 +47,28 @@ const MyCampaigns = () => {
           compensation_details,
           deliverables,
           image_url,
-          created_at
+          created_at,
+          applications (
+            id,
+            status,
+            cover_letter,
+            creator:creators (
+              id,
+              bio,
+              location,
+              specialties,
+              instagram,
+              website,
+              creator_type,
+              profile_image_url,
+              first_name,
+              last_name,
+              profile:profiles (
+                first_name,
+                last_name
+              )
+            )
+          )
         `)
         .eq('brand_id', brand.id)
         .order('created_at', { ascending: false });
