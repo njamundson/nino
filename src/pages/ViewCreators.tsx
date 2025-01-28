@@ -13,62 +13,6 @@ const ViewCreators = () => {
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const { data: creators, isLoading, error } = useQuery({
-    queryKey: ['creators', selectedSpecialties, selectedCreatorType, selectedLocations],
-    queryFn: async () => {
-      try {
-        let query = supabase
-          .from('creators')
-          .select(`
-            id,
-            first_name,
-            last_name,
-            bio,
-            location,
-            instagram,
-            website,
-            specialties,
-            creator_type,
-            profile_image_url,
-            profile:profiles (
-              first_name,
-              last_name
-            )
-          `)
-          .eq('onboarding_completed', true);
-
-        if (selectedSpecialties.length > 0) {
-          query = query.contains('specialties', selectedSpecialties);
-        }
-
-        if (selectedCreatorType) {
-          query = query.eq('creator_type', selectedCreatorType);
-        }
-
-        if (selectedLocations.length > 0) {
-          query = query.in('location', selectedLocations);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error('Error fetching creators:', error);
-          toast.error('Error loading creators');
-          throw error;
-        }
-
-        return data || [];
-      } catch (error) {
-        console.error('Error in creator data fetch:', error);
-        toast.error('Error loading creators');
-        throw error;
-      }
-    },
-    staleTime: 1000 * 60, // 1 minute
-    gcTime: 1000 * 60 * 5, // 5 minutes
-    retry: 2
-  });
-
   const handleSpecialtyChange = (specialty: string) => {
     setSelectedSpecialties((prev) => 
       prev.includes(specialty)
@@ -121,8 +65,6 @@ const ViewCreators = () => {
         onLocationChange={handleLocationChange}
       />
       <CreatorGrid 
-        creators={creators}
-        isLoading={isLoading}
         selectedSpecialties={selectedSpecialties}
         selectedCreatorType={selectedCreatorType}
         selectedLocations={selectedLocations}
