@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UseApplicationActionsProps {
   opportunityId: string;
@@ -8,6 +9,7 @@ interface UseApplicationActionsProps {
 
 export const useApplicationActions = ({ opportunityId }: UseApplicationActionsProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleAcceptApplication = async (applicationId: string) => {
     setIsProcessing(true);
@@ -36,6 +38,12 @@ export const useApplicationActions = ({ opportunityId }: UseApplicationActionsPr
         throw opportunityError;
       }
 
+      // Invalidate relevant queries to refresh the UI
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
+        queryClient.invalidateQueries({ queryKey: ['active-bookings'] })
+      ]);
+
       console.log('Application accepted successfully');
       return true;
     } catch (error) {
@@ -54,10 +62,13 @@ export const useApplicationActions = ({ opportunityId }: UseApplicationActionsPr
       
       const { error } = await supabase
         .from('applications')
-        .update({ status: 'rejected' })
+        .delete()
         .eq('id', applicationId);
 
       if (error) throw error;
+
+      // Invalidate relevant queries to refresh the UI
+      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
 
       console.log('Application rejected successfully');
       return true;
