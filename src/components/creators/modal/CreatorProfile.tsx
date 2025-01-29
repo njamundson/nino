@@ -94,16 +94,11 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
               )}
               {application.cover_letter && (
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">Cover Letter</p>
                   <p className="text-sm text-gray-600 whitespace-pre-wrap max-h-[200px] overflow-y-auto">
                     {application.cover_letter}
                   </p>
                 </div>
               )}
-              <div className="flex justify-between items-center text-sm text-gray-500">
-                <span>Status: <span className="font-medium capitalize">{application.status}</span></span>
-                <span>Submitted: {new Date(application.created_at || '').toLocaleDateString()}</span>
-              </div>
             </div>
 
             {application.status === 'pending' && (
