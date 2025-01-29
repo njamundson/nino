@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MessageSquare, Calendar, MapPin, ExternalLink, ChevronDown } from "lucide-react";
+import { MessageSquare, Calendar, MapPin, ExternalLink, ChevronDown, Mail } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import {
   Collapsible,
@@ -159,7 +159,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
               <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="pt-4 space-y-4 animate-accordion-down">
+            <CollapsibleContent className="pt-4 animate-accordion-down">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                 <div className="flex items-center gap-4">
                   {booking.creator.profile_image_url ? (
@@ -177,31 +177,21 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                   )}
                   <div>
                     <h4 className="font-medium text-gray-900">{creatorName}</h4>
-                    {booking.creator.specialties && booking.creator.specialties.length > 0 && (
-                      <p className="text-sm text-gray-500">{booking.creator.specialties.join(', ')}</p>
-                    )}
+                    <div className="flex items-center gap-1 text-sm text-gray-500">
+                      <Mail className="w-4 h-4" />
+                      <span>Contact via chat</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleChatClick}
-                    className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    Chat
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleViewCreator}
-                    className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    View Profile
-                  </Button>
-                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleChatClick}
+                  className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Chat
+                </Button>
               </div>
             </CollapsibleContent>
           </div>
