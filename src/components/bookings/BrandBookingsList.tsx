@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import BookingCard from "./BookingCard";
+import BookingDetailsCard from "./BookingDetailsCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
@@ -124,11 +124,12 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   return (
     <div className="space-y-6">
       {bookings.map((booking: any) => (
-        <BookingCard
+        <BookingDetailsCard
           key={booking.id}
           booking={booking}
           onChatClick={() => onChatClick(booking.creator.user_id)}
           onViewCreator={() => onViewCreator(booking.creator)}
+          onRefresh={refetch}
         />
       ))}
     </div>
