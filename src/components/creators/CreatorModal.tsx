@@ -39,7 +39,7 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
   const [isInviting, setIsInviting] = useState(false);
 
   // Fetch the application data if not provided
-  const { data: applicationData } = useQuery({
+  const { data: applicationData, isLoading: isLoadingApplication } = useQuery({
     queryKey: ['creator-application', creator?.id],
     queryFn: async () => {
       if (!creator || application) return null;
@@ -70,14 +70,16 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
           )
         `)
         .eq('creator_id', creator.id)
-        .single();
+        .order('created_at', { ascending: false })
+        .limit(1);
 
       if (error) {
         console.error('Error fetching application:', error);
         return null;
       }
 
-      return data as Application;
+      // Return the most recent application or null if none exists
+      return data && data.length > 0 ? data[0] as Application : null;
     },
     enabled: !!creator && !application,
   });
@@ -206,7 +208,7 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-nino-bg">
-        {isLoadingCampaigns && showCampaigns ? (
+        {isLoadingApplication ? (
           <div className="flex items-center justify-center p-12">
             <LoadingSpinner />
           </div>
@@ -221,7 +223,7 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
             <CreatorProfile 
               creator={creatorData}
               onInviteClick={() => setShowCampaigns(true)}
-              application={application || applicationData}
+              application={application || applicationData || null}
             />
           </div>
         ) : (
