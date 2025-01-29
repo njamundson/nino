@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MessageSquare, Calendar, MapPin, ExternalLink, ChevronDown } from "lucide-react";
+import { MessageCircle, Calendar, MapPin, UserRound, XCircle } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import {
   Collapsible,
@@ -9,6 +9,12 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useState } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface BookingCardProps {
   booking: {
@@ -52,6 +58,12 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
   const handleViewCreator = (e: React.MouseEvent) => {
     e.stopPropagation();
     onViewCreator();
+  };
+
+  const handleCancelBooking = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Add cancel booking logic here
+    console.log('Cancel booking clicked');
   };
 
   return (
@@ -156,11 +168,10 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                   Active
                 </Badge>
               </div>
-              <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </CollapsibleTrigger>
 
             <CollapsibleContent className="pt-4 space-y-4 animate-accordion-down">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl group">
                 <div className="flex items-center gap-4">
                   {booking.creator.profile_image_url ? (
                     <img 
@@ -177,30 +188,58 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                   )}
                   <div>
                     <h4 className="font-medium text-gray-900">{creatorName}</h4>
-                    {booking.creator.specialties && booking.creator.specialties.length > 0 && (
-                      <p className="text-sm text-gray-500">{booking.creator.specialties.join(', ')}</p>
-                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleChatClick}
-                    className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    Chat
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleViewCreator}
-                    className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    View Profile
-                  </Button>
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleChatClick}
+                          className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
+                        >
+                          <MessageCircle className="w-5 h-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Chat with Creator</p>
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleViewCreator}
+                          className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
+                        >
+                          <UserRound className="w-5 h-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View Profile</p>
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleCancelBooking}
+                          className="rounded-full hover:bg-destructive/10 hover:text-destructive"
+                        >
+                          <XCircle className="w-5 h-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Cancel Booking</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
             </CollapsibleContent>
