@@ -206,6 +206,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
         <DialogContent className="max-w-4xl p-0">
           <CreatorProfile
             creator={selectedCreator}
+            onClose={handleCloseCreatorModal}
             onInviteClick={() => {}}
             onMessageClick={() => {}}
           />

@@ -6,9 +6,11 @@ import CreatorSocialLinks from "./profile/CreatorSocialLinks";
 interface CreatorProfileProps {
   creator: Creator;
   onClose?: () => void;
+  onInviteClick?: () => void;
+  onMessageClick?: () => void;
 }
 
-const CreatorProfile = ({ creator, onClose }: CreatorProfileProps) => {
+const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick }: CreatorProfileProps) => {
   const fullName = creator.first_name && creator.last_name 
     ? `${creator.first_name} ${creator.last_name}`
     : 'Creator';
@@ -20,10 +22,24 @@ const CreatorProfile = ({ creator, onClose }: CreatorProfileProps) => {
       </h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-        <CreatorImage creator={creator} />
+        <CreatorImage 
+          profileImageUrl={creator.profile_image_url} 
+          fullName={fullName} 
+        />
         <div className="space-y-6">
-          <CreatorBio creator={creator} />
-          <CreatorSocialLinks creator={creator} />
+          <CreatorBio 
+            bio={creator.bio}
+            specialties={creator.specialties}
+            location={creator.location}
+            instagram={creator.instagram}
+            website={creator.website}
+            onMessageClick={onMessageClick}
+            coverLetter={undefined}
+          />
+          <CreatorSocialLinks 
+            instagram={creator.instagram}
+            website={creator.website}
+          />
         </div>
       </div>
     </div>

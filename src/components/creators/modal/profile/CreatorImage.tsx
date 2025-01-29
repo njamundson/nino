@@ -1,4 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Creator } from "@/types/creator";
 
 interface CreatorImageProps {
   profileImageUrl: string | null;
@@ -7,9 +8,11 @@ interface CreatorImageProps {
 
 const CreatorImage = ({ profileImageUrl, fullName }: CreatorImageProps) => {
   const initials = fullName
-    .split(' ')
-    .map(n => n[0])
-    .join('');
+    ? fullName
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+    : '';
 
   return (
     <div className="relative w-full">
