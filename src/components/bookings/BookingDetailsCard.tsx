@@ -110,7 +110,7 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
     <>
       <Card className="overflow-hidden bg-white border border-gray-100 rounded-2xl transition-all duration-300">
         <div className="p-6 space-y-6">
-          <ProjectDetails opportunity={booking.opportunity} />
+          <ProjectDetails opportunity={booking.opportunity} onRefresh={onRefresh} />
           
           <CompensationDetails 
             payment_details={booking.opportunity.payment_details}
