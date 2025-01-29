@@ -16,12 +16,7 @@ const BrandBookings = () => {
   };
 
   return (
-    <motion.div
-      className="min-h-screen space-y-8 px-4 md:px-8 py-6"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-    >
+    <div className="space-y-8">
       <PageHeader
         title="Bookings"
         description="Manage your active creator collaborations and projects"
@@ -33,7 +28,7 @@ const BrandBookings = () => {
           onViewCreator={handleViewCreator}
         />
       </div>
-    </motion.div>
+    </div>
   );
 };
 
