@@ -19,16 +19,16 @@ const BrandLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-nino-bg">
-      {isMobile && (
+      {isMobile ? (
         <MobileMenu 
           isMobileMenuOpen={isMobileMenuOpen}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
+      ) : (
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
       )}
-
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
 
       <div className="flex-1 overflow-x-hidden w-full">
         <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-4 sm:py-6 px-4 md:px-8">

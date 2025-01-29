@@ -69,7 +69,7 @@ const BrandSidebar = () => {
   };
 
   return (
-    <div className="h-screen sticky top-0 w-64 p-2 sm:p-4 hidden lg:block">
+    <div className="h-full w-64 p-2 sm:p-4 bg-nino-bg">
       <div className="h-full bg-white backdrop-blur-xl rounded-xl shadow-sm flex flex-col border border-gray-100">
         <div className="px-3 pt-6 sm:pt-8 pb-4 sm:pb-6 border-b border-gray-100">
           <Link to="/brand/dashboard" className="flex items-center px-4">
