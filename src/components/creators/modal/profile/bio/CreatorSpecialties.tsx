@@ -1,63 +1,26 @@
 import { Badge } from "@/components/ui/badge";
-import { Application } from "@/integrations/supabase/types/opportunity";
 
 interface CreatorSpecialtiesProps {
-  specialties?: string[];
-  application?: Application | null;
+  specialties: string[] | null;
 }
 
-const CreatorSpecialties = ({ specialties, application }: CreatorSpecialtiesProps) => {
+const CreatorSpecialties = ({ specialties }: CreatorSpecialtiesProps) => {
+  if (!specialties?.length) return null;
+
   return (
     <div className="space-y-3">
-      {specialties?.length ? (
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
-          <div className="flex flex-wrap gap-1.5">
-            {specialties.map((specialty: string, index: number) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="bg-white/50"
-              >
-                {specialty}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {application && (
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-nino-text">Application Details</h3>
-          <div className="bg-gray-50/80 backdrop-blur-sm p-4 rounded-xl border border-gray-100 space-y-2">
-            {application.opportunity && (
-              <p className="text-sm text-gray-600">
-                Applied for: <span className="font-medium">{application.opportunity.title}</span>
-              </p>
-            )}
-            {application.status && (
-              <p className="text-sm text-gray-600">
-                Status: <span className="font-medium capitalize">{application.status}</span>
-              </p>
-            )}
-            {application.created_at && (
-              <p className="text-sm text-gray-600">
-                Submitted: <span className="font-medium">
-                  {new Date(application.created_at).toLocaleDateString()}
-                </span>
-              </p>
-            )}
-            {application.cover_letter && (
-              <div className="pt-2">
-                <p className="text-sm font-medium text-gray-700 mb-1">Cover Letter</p>
-                <p className="text-sm text-gray-600 whitespace-pre-wrap">
-                  {application.cover_letter}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <h3 className="text-lg font-semibold text-nino-text">Specialties</h3>
+      <div className="flex flex-wrap gap-2 max-w-full">
+        {specialties.map((specialty, index) => (
+          <Badge 
+            key={index}
+            variant="outline" 
+            className="px-3 py-1 rounded-full border-[1.5px] border-nino-primary/20 text-nino-primary/90 bg-white/50 hover:bg-white/80 transition-all duration-300 hover:border-nino-primary/40 whitespace-nowrap"
+          >
+            {specialty}
+          </Badge>
+        ))}
+      </div>
     </div>
   );
 };
