@@ -13,13 +13,15 @@ interface ViewApplicationModalProps {
   onClose: () => void;
   application: Application;
   type: 'proposal' | 'application';
+  onUpdateStatus?: (status: 'accepted' | 'rejected') => Promise<void>;
 }
 
 const ViewApplicationModal = ({ 
   isOpen, 
   onClose, 
   application, 
-  type 
+  type,
+  onUpdateStatus 
 }: ViewApplicationModalProps) => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -122,6 +124,7 @@ const ViewApplicationModal = ({
           onDelete={handleDeleteApplication}
           onApply={() => setShowApplicationForm(true)}
           hasCoverLetter={!!application.cover_letter}
+          onUpdateStatus={onUpdateStatus}
         />
       </DialogContent>
     </Dialog>

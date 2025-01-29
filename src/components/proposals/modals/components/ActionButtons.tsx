@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { X, CheckCircle2, Trash2 } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface ActionButtonsProps {
   type: 'proposal' | 'application';
@@ -9,53 +9,82 @@ interface ActionButtonsProps {
   onDelete: () => void;
   onApply: () => void;
   hasCoverLetter: boolean;
+  onUpdateStatus?: (status: 'accepted' | 'rejected') => Promise<void>;
 }
 
-const ActionButtons = ({ 
-  type, 
-  isDeleting, 
-  isDeclining, 
-  onDecline, 
-  onDelete, 
+const ActionButtons = ({
+  type,
+  isDeleting,
+  isDeclining,
+  onDecline,
+  onDelete,
   onApply,
-  hasCoverLetter 
+  hasCoverLetter,
+  onUpdateStatus
 }: ActionButtonsProps) => {
-  if (type === 'proposal') {
+  if (type === 'proposal' && !hasCoverLetter) {
     return (
-      <div className="flex justify-end gap-3 pt-4">
+      <div className="flex gap-3 mt-6">
+        <Button onClick={onApply} className="flex-1">
+          Apply Now
+        </Button>
         <Button 
           variant="outline" 
           onClick={onDecline}
           disabled={isDeclining}
-          className="gap-2"
+          className="flex-1"
         >
-          <X className="w-4 h-4" />
-          {isDeclining ? 'Declining...' : 'Not Interested'}
-        </Button>
-        <Button 
-          onClick={onApply}
-          className="bg-[#A55549] hover:bg-[#A55549]/90 text-white gap-2"
-        >
-          <CheckCircle2 className="w-4 h-4" />
-          Apply Now
+          {isDeclining ? (
+            <>
+              <LoadingSpinner className="mr-2 h-4 w-4" />
+              Declining...
+            </>
+          ) : (
+            "Not Interested"
+          )}
         </Button>
       </div>
     );
   }
 
-  return type === 'application' && hasCoverLetter ? (
-    <div className="flex justify-end gap-3 pt-4">
+  if (type === 'application' && onUpdateStatus) {
+    return (
+      <div className="flex gap-3 mt-6">
+        <Button 
+          onClick={() => onUpdateStatus('accepted')}
+          className="flex-1"
+        >
+          Accept
+        </Button>
+        <Button 
+          variant="outline"
+          onClick={() => onUpdateStatus('rejected')}
+          className="flex-1"
+        >
+          Reject
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex justify-end mt-6">
       <Button
-        variant="destructive"
+        variant="outline"
         onClick={onDelete}
         disabled={isDeleting}
-        className="gap-2"
       >
-        <Trash2 className="w-4 h-4" />
-        {isDeleting ? 'Deleting...' : 'Delete Application'}
+        {isDeleting ? (
+          <>
+            <LoadingSpinner className="mr-2 h-4 w-4" />
+            Deleting...
+          </>
+        ) : (
+          "Delete Application"
+        )}
       </Button>
     </div>
-  ) : null;
+  );
 };
 
 export default ActionButtons;
