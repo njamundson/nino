@@ -1,88 +1,92 @@
-import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
-interface UseApplicationActionsProps {
-  opportunityId: string;
-}
-
-export const useApplicationActions = ({ opportunityId }: UseApplicationActionsProps) => {
-  const [isProcessing, setIsProcessing] = useState(false);
+export const useApplicationActions = () => {
   const queryClient = useQueryClient();
 
   const handleAcceptApplication = async (applicationId: string) => {
-    setIsProcessing(true);
     try {
       console.log('Processing application acceptance:', applicationId);
       
-      // Update application status to accepted
-      const { error: applicationError } = await supabase
+      if (!applicationId) {
+        throw new Error('Application ID is required');
+      }
+
+      // First get the application details to ensure we have a valid opportunity_id
+      const { data: application, error: fetchError } = await supabase
+        .from('applications')
+        .select('opportunity_id')
+        .eq('id', applicationId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching application:', fetchError);
+        throw fetchError;
+      }
+
+      if (!application?.opportunity_id) {
+        throw new Error('No opportunity found for this application');
+      }
+
+      // Update the application status
+      const { error: updateError } = await supabase
         .from('applications')
         .update({ status: 'accepted' })
         .eq('id', applicationId);
 
-      if (applicationError) {
-        console.error('Error updating application:', applicationError);
-        throw applicationError;
+      if (updateError) {
+        console.error('Error updating application:', updateError);
+        throw updateError;
       }
 
-      // Update opportunity status to active
+      // Update the opportunity status
       const { error: opportunityError } = await supabase
         .from('opportunities')
         .update({ status: 'active' })
-        .eq('id', opportunityId);
+        .eq('id', application.opportunity_id);
 
       if (opportunityError) {
         console.error('Error updating opportunity:', opportunityError);
         throw opportunityError;
       }
 
-      // Invalidate relevant queries to refresh the UI
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
-        queryClient.invalidateQueries({ queryKey: ['active-bookings'] })
-      ]);
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
 
-      console.log('Application accepted successfully');
-      return true;
+      toast.success('Application accepted successfully');
     } catch (error) {
       console.error('Error in handleAcceptApplication:', error);
-      toast.error("Failed to accept application. Please try again.");
-      return false;
-    } finally {
-      setIsProcessing(false);
+      toast.error('Failed to accept application. Please try again.');
+      throw error;
     }
   };
 
   const handleRejectApplication = async (applicationId: string) => {
-    setIsProcessing(true);
     try {
-      console.log('Processing application rejection:', applicationId);
-      
+      if (!applicationId) {
+        throw new Error('Application ID is required');
+      }
+
       const { error } = await supabase
         .from('applications')
-        .delete()
+        .update({ status: 'rejected' })
         .eq('id', applicationId);
 
       if (error) throw error;
 
-      // Invalidate relevant queries to refresh the UI
-      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
-
-      console.log('Application rejected successfully');
-      return true;
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      toast.success('Application rejected successfully');
     } catch (error) {
       console.error('Error rejecting application:', error);
-      toast.error("Failed to reject application. Please try again.");
-      return false;
-    } finally {
-      setIsProcessing(false);
+      toast.error('Failed to reject application. Please try again.');
+      throw error;
     }
   };
 
   return {
-    isProcessing,
     handleAcceptApplication,
     handleRejectApplication
   };
