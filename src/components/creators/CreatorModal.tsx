@@ -51,7 +51,22 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
           opportunity:opportunities (
             id,
             title,
-            description
+            description,
+            brand_id,
+            start_date,
+            end_date,
+            status,
+            requirements,
+            perks,
+            compensation_type,
+            compensation_amount,
+            location,
+            payment_details,
+            compensation_details,
+            deliverables,
+            image_url,
+            created_at,
+            updated_at
           )
         `)
         .eq('creator_id', creator.id)
@@ -62,7 +77,7 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
         return null;
       }
 
-      return data;
+      return data as Application;
     },
     enabled: !!creator && !application,
   });
