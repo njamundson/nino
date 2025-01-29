@@ -7,12 +7,11 @@ import {
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import CreatorProfile from "./modal/CreatorProfile";
+import BrowseCreatorProfile from "./modal/BrowseCreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
-import { CreatorData, CreatorType } from "@/types/creator";
+import { CreatorType } from "@/types/creator";
 import { LoadingSpinner } from "../ui/loading-spinner";
-import { Application } from "@/integrations/supabase/types/opportunity";
 
 interface Creator {
   id: string;
@@ -31,62 +30,11 @@ interface CreatorModalProps {
   creator: Creator | null;
   isOpen: boolean;
   onClose: () => void;
-  application?: Application;
 }
 
-const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalProps) => {
+const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
-
-  // Fetch the application data if not provided
-  const { data: applicationData, isLoading: isLoadingApplication } = useQuery({
-    queryKey: ['creator-application', creator?.id],
-    queryFn: async () => {
-      try {
-        if (!creator || application) return null;
-
-        const { data, error } = await supabase
-          .from('applications')
-          .select(`
-            *,
-            opportunity:opportunities (
-              id,
-              title,
-              description,
-              brand_id,
-              start_date,
-              end_date,
-              status,
-              requirements,
-              perks,
-              compensation_type,
-              compensation_amount,
-              location,
-              payment_details,
-              compensation_details,
-              deliverables,
-              image_url,
-              created_at,
-              updated_at
-            )
-          `)
-          .eq('creator_id', creator.id)
-          .order('created_at', { ascending: false })
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching application:', error);
-          return null;
-        }
-
-        return data;
-      } catch (error) {
-        console.error('Error in application query:', error);
-        return null;
-      }
-    },
-    enabled: !!creator && !application,
-  });
 
   const { data: campaigns, isLoading: isLoadingCampaigns } = useQuery({
     queryKey: ['brand-campaigns'],
@@ -139,7 +87,6 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
     try {
       setIsInviting(true);
 
-      // Check if invitation already exists
       const { data: existingInvite, error: checkError } = await supabase
         .from('applications')
         .select('id, status')
@@ -201,22 +148,18 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
     creator_type: creator.creator_type as CreatorType || 'solo',
     first_name: creator.first_name,
     last_name: creator.last_name,
-    user_id: '', // Required by Creator type
-    created_at: new Date().toISOString(), // Required by Creator type
-    updated_at: new Date().toISOString(), // Required by Creator type
-    profile_id: null, // Required by Creator type
-    notifications_enabled: true, // Optional but good to provide a default
-    onboarding_completed: true // Optional but good to provide a default
+    user_id: '', 
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    profile_id: null,
+    notifications_enabled: true,
+    onboarding_completed: true
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-nino-bg">
-        {isLoadingApplication ? (
-          <div className="flex items-center justify-center p-12">
-            <LoadingSpinner />
-          </div>
-        ) : !showCampaigns ? (
+        {!showCampaigns ? (
           <div>
             <DialogHeader className="p-8 pb-0">
               <DialogTitle className="text-3xl font-semibold text-nino-text">
@@ -224,10 +167,9 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
               </DialogTitle>
             </DialogHeader>
             
-            <CreatorProfile 
+            <BrowseCreatorProfile 
               creator={creatorData}
               onInviteClick={() => setShowCampaigns(true)}
-              application={application || applicationData || null}
             />
           </div>
         ) : (
