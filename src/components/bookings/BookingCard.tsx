@@ -28,6 +28,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import CreatorModal from "@/components/creators/CreatorModal";
+import { CreatorType } from "@/types/creator";
 
 interface BookingCardProps {
   booking: {
@@ -120,15 +121,15 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
   // Transform booking.creator into the format expected by CreatorModal
   const modalCreator = {
     id: booking.creator.id,
-    bio: booking.creator.bio,
-    location: booking.creator.location,
-    specialties: booking.creator.specialties,
-    instagram: booking.creator.instagram,
-    website: booking.creator.website,
-    first_name: booking.creator.profile?.first_name,
-    last_name: booking.creator.profile?.last_name,
+    bio: booking.creator.bio || '',
+    location: booking.creator.location || '',
+    specialties: booking.creator.specialties || [],
+    instagram: booking.creator.instagram || '',
+    website: booking.creator.website || '',
+    first_name: booking.creator.profile?.first_name || '',
+    last_name: booking.creator.profile?.last_name || '',
     profile_image_url: booking.creator.profile_image_url,
-    creator_type: booking.creator.creator_type
+    creator_type: (booking.creator.creator_type as CreatorType) || 'solo'
   };
 
   return (
