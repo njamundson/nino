@@ -14,7 +14,7 @@ const ActionButtons = ({ onAccept, onReject, isProcessing }: ActionButtonsProps)
         <Button
           onClick={onAccept}
           disabled={isProcessing}
-          className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white py-6 rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300 border-2 border-transparent hover:border-[#E5DEFF]"
+          className="bg-green-500 hover:bg-green-600 text-white py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
         >
           {isProcessing ? (
             <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -27,7 +27,7 @@ const ActionButtons = ({ onAccept, onReject, isProcessing }: ActionButtonsProps)
           onClick={onReject}
           disabled={isProcessing}
           variant="outline"
-          className="border-2 border-[#D6BCFA] text-[#6E59A5] hover:bg-[#E5DEFF] py-6 rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300"
+          className="border-2 border-red-500 text-red-500 hover:bg-red-50 py-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
         >
           <XSquare className="w-5 h-5 mr-2" />
           Reject
