@@ -43,43 +43,49 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
     queryKey: ['creator-application', creator?.id],
     queryFn: async () => {
       if (!creator || application) return null;
+      console.log('Fetching application for creator:', creator.id);
 
-      const { data, error } = await supabase
-        .from('applications')
-        .select(`
-          *,
-          opportunity:opportunities (
-            id,
-            title,
-            description,
-            brand_id,
-            start_date,
-            end_date,
-            status,
-            requirements,
-            perks,
-            compensation_type,
-            compensation_amount,
-            location,
-            payment_details,
-            compensation_details,
-            deliverables,
-            image_url,
-            created_at,
-            updated_at
-          )
-        `)
-        .eq('creator_id', creator.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
+      try {
+        const { data, error } = await supabase
+          .from('applications')
+          .select(`
+            *,
+            opportunity:opportunities (
+              id,
+              title,
+              description,
+              brand_id,
+              start_date,
+              end_date,
+              status,
+              requirements,
+              perks,
+              compensation_type,
+              compensation_amount,
+              location,
+              payment_details,
+              compensation_details,
+              deliverables,
+              image_url,
+              created_at,
+              updated_at
+            )
+          `)
+          .eq('creator_id', creator.id)
+          .order('created_at', { ascending: false })
+          .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching application:', error);
+        if (error) {
+          console.error('Error fetching application:', error);
+          return null;
+        }
+
+        console.log('Application data fetched:', data);
+        return data;
+      } catch (error) {
+        console.error('Error in application query:', error);
         return null;
       }
-
-      // Return the most recent application or null if none exists
-      return data && data.length > 0 ? data[0] as Application : null;
     },
     enabled: !!creator && !application,
   });
