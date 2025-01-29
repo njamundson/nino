@@ -15,6 +15,10 @@ interface ProjectDetailsProps {
 }
 
 const ProjectDetails = ({ opportunity }: ProjectDetailsProps) => {
+  const getStatusMessage = (status: string) => {
+    return status === 'open' ? 'Campaign is still hiring creators.' : 'Campaign is done hiring creators';
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-start">
@@ -26,7 +30,7 @@ const ProjectDetails = ({ opportunity }: ProjectDetailsProps) => {
             variant="secondary" 
             className="capitalize bg-nino-primary/10 text-nino-primary hover:bg-nino-primary/20"
           >
-            {opportunity.status}
+            {getStatusMessage(opportunity.status)}
           </Badge>
         </div>
       </div>
