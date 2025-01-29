@@ -20,8 +20,8 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
     : creator.first_name || 'Creator';
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-4xl font-semibold text-gray-900 px-6 pt-6">
+    <div className="space-y-4">
+      <h2 className="text-4xl font-semibold text-gray-900 px-6 pt-4">
         {fullName}
       </h2>
       
