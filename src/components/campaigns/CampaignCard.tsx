@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, ChevronDown, ChevronUp } from "lucide-react";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,6 +19,12 @@ const CampaignCard = ({ campaign, onDelete, onEdit }: CampaignCardProps) => {
     if (onDelete) {
       onDelete();
     }
+  };
+
+  const formatDate = (date: string | Date | null) => {
+    if (!date) return null;
+    const parsedDate = new Date(date);
+    return isValid(parsedDate) ? format(parsedDate, 'MMM d, yyyy') : null;
   };
 
   return (
@@ -80,11 +86,11 @@ const CampaignCard = ({ campaign, onDelete, onEdit }: CampaignCardProps) => {
               <div>
                 <p className="text-sm text-gray-600 flex items-center gap-2">
                   <span className="w-5 text-gray-400">🗓️</span>
-                  {format(new Date(campaign.start_date), 'MMM d, yyyy')}
-                  {campaign.end_date && (
+                  {formatDate(campaign.start_date)}
+                  {campaign.end_date && formatDate(campaign.end_date) && (
                     <>
                       <span className="text-gray-400">→</span>
-                      {format(new Date(campaign.end_date), 'MMM d, yyyy')}
+                      {formatDate(campaign.end_date)}
                     </>
                   )}
                 </p>
@@ -167,7 +173,7 @@ const CampaignCard = ({ campaign, onDelete, onEdit }: CampaignCardProps) => {
                             {application.creator?.first_name} {application.creator?.last_name}
                           </p>
                           <p className="text-xs text-gray-500">
-                            Applied {format(new Date(application.created_at), 'MMM d, yyyy')}
+                            Applied {formatDate(application.created_at)}
                           </p>
                         </div>
                       </div>
