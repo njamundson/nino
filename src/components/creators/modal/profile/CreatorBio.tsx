@@ -44,17 +44,6 @@ const CreatorBio = ({
       </div>
 
       <CreatorSpecialties specialties={specialties} />
-
-      {coverLetter && (
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-nino-text">Application Message</h3>
-          <div className="bg-gray-50/80 backdrop-blur-sm p-4 rounded-xl border border-gray-100">
-            <p className="text-base leading-relaxed text-nino-text/90 whitespace-pre-wrap break-words">
-              {coverLetter}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
