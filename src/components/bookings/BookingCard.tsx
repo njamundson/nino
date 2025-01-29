@@ -70,17 +70,6 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                 {booking.opportunity.status}
               </Badge>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleChatClick}
-                className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
-              >
-                <MessageSquare className="w-4 h-4" />
-                Chat
-              </Button>
-            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500">
@@ -118,7 +107,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
               )}
             </div>
 
-            {/* Deliverables Section - Moved up */}
+            {/* Deliverables Section */}
             {booking.opportunity.deliverables && booking.opportunity.deliverables.length > 0 && (
               <div className="space-y-2">
                 <h5 className="text-sm font-medium text-gray-900">Deliverables</h5>
@@ -174,15 +163,26 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                     )}
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleViewCreator}
-                  className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  View Profile
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleChatClick}
+                    className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    Chat
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleViewCreator}
+                    className="gap-2 rounded-full hover:bg-nino-primary/10 hover:text-nino-primary border-gray-200"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    View Profile
+                  </Button>
+                </div>
               </div>
             </CollapsibleContent>
           </div>
