@@ -8,7 +8,7 @@ const BrandDashboard = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="space-y-8 px-4 sm:px-0"
+      className="space-y-8"
     >
       <BrandStatsCards />
       <DashboardContent />
