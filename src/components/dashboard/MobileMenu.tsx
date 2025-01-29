@@ -26,7 +26,7 @@ const MobileMenu = ({ isMobileMenuOpen, setIsMobileMenuOpen }: MobileMenuProps) 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
           <motion.div 
@@ -34,7 +34,7 @@ const MobileMenu = ({ isMobileMenuOpen, setIsMobileMenuOpen }: MobileMenuProps) 
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -100, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 left-0 z-40 w-64"
+            className="fixed inset-y-0 left-0 z-40 w-64 lg:hidden"
           >
             <Sidebar />
           </motion.div>

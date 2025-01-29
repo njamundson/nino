@@ -69,14 +69,14 @@ const BrandSidebar = () => {
   };
 
   return (
-    <div className="h-screen sticky top-0 w-64 p-4">
+    <div className="h-screen sticky top-0 w-64 p-2 sm:p-4 hidden lg:block">
       <div className="h-full bg-white backdrop-blur-xl rounded-xl shadow-sm flex flex-col border border-gray-100">
-        <div className="px-3 pt-8 pb-6 border-b border-gray-100">
+        <div className="px-3 pt-6 sm:pt-8 pb-4 sm:pb-6 border-b border-gray-100">
           <Link to="/brand/dashboard" className="flex items-center px-4">
             <img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
               alt="Nino" 
-              className="h-16"
+              className="h-12 sm:h-16"
               loading="eager"
               fetchPriority="high"
               decoding="sync"
@@ -96,14 +96,14 @@ const BrandSidebar = () => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-3 px-4 py-2.5 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200",
                   isActive
                     ? "bg-nino-primary/10 text-nino-primary"
                     : "text-nino-gray hover:text-nino-primary hover:bg-nino-primary/5"
                 )}
               >
                 <item.icon className={cn(
-                  "w-5 h-5 transition-colors",
+                  "w-4 h-4 sm:w-5 sm:h-5 transition-colors",
                   isActive
                     ? "text-nino-primary"
                     : "text-gray-400 group-hover:text-nino-primary"
@@ -117,9 +117,9 @@ const BrandSidebar = () => {
         <div className="p-3 mt-auto border-t border-gray-100">
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-nino-gray hover:text-nino-primary hover:bg-nino-primary/5 transition-all duration-200"
+            className="flex items-center gap-3 w-full px-4 py-2.5 sm:py-3 rounded-xl text-sm font-medium text-nino-gray hover:text-nino-primary hover:bg-nino-primary/5 transition-all duration-200"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Sign Out</span>
           </button>
         </div>
