@@ -54,7 +54,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
 
   return (
     <div className="h-full p-6">
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-6 h-full">
+      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-6 h-full">
         <div className="relative h-full">
           <CreatorImage 
             profileImageUrl={creator.profile_image_url} 
