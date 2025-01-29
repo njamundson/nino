@@ -19,9 +19,7 @@ interface CreatorProfileProps {
 
 const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, application }: CreatorProfileProps) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
-  const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions({
-    opportunityId: application?.opportunity_id || '',
-  });
+  const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions();
 
   if (!creator) return null;
 

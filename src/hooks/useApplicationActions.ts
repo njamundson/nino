@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useApplicationActions = () => {
+  const [isProcessing, setIsProcessing] = useState(false);
   const queryClient = useQueryClient();
 
-  const handleAcceptApplication = async (applicationId: string) => {
+  const handleAcceptApplication = async (applicationId: string): Promise<boolean> => {
+    setIsProcessing(true);
     try {
       console.log('Processing application acceptance:', applicationId);
       
@@ -57,14 +60,18 @@ export const useApplicationActions = () => {
       queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
 
       toast.success('Application accepted successfully');
+      return true;
     } catch (error) {
       console.error('Error in handleAcceptApplication:', error);
       toast.error('Failed to accept application. Please try again.');
-      throw error;
+      return false;
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleRejectApplication = async (applicationId: string) => {
+  const handleRejectApplication = async (applicationId: string): Promise<boolean> => {
+    setIsProcessing(true);
     try {
       if (!applicationId) {
         throw new Error('Application ID is required');
@@ -79,14 +86,18 @@ export const useApplicationActions = () => {
 
       queryClient.invalidateQueries({ queryKey: ['applications'] });
       toast.success('Application rejected successfully');
+      return true;
     } catch (error) {
       console.error('Error rejecting application:', error);
       toast.error('Failed to reject application. Please try again.');
-      throw error;
+      return false;
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   return {
+    isProcessing,
     handleAcceptApplication,
     handleRejectApplication
   };

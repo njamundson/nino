@@ -56,9 +56,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   
-  const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions({
-    opportunityId: campaign.id,
-  });
+  const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions();
 
   const handleDelete = async () => {
     try {
