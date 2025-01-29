@@ -1,5 +1,5 @@
 import { MapPin } from "lucide-react";
-import CreatorSpecialties from "./CreatorSpecialties";
+import CreatorSpecialties from "./bio/CreatorSpecialties";
 import SocialLinks from "./social/SocialLinks";
 
 interface CreatorBioProps {
