@@ -13,11 +13,11 @@ interface CreatorProfileProps {
 const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick }: CreatorProfileProps) => {
   const fullName = creator.first_name && creator.last_name 
     ? `${creator.first_name} ${creator.last_name}`
-    : 'Creator';
+    : creator.first_name || 'Creator';
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-gray-900 px-6 pt-6">
+      <h2 className="text-4xl font-semibold text-gray-900 px-6 pt-6">
         {fullName}
       </h2>
       
