@@ -11,6 +11,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ProjectDetails from "./details/ProjectDetails";
@@ -103,7 +107,11 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
     first_name: booking.creator.profile?.first_name || '',
     last_name: booking.creator.profile?.last_name || '',
     profile_image_url: booking.creator.profile_image_url,
-    creator_type: (booking.creator.creator_type as CreatorType) || 'solo'
+    creator_type: (booking.creator.creator_type as CreatorType) || 'solo',
+    user_id: booking.creator.user_id,
+    created_at: booking.created_at,
+    updated_at: booking.created_at,
+    profile_id: null
   };
 
   return (
