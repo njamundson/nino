@@ -35,7 +35,7 @@ const MobileMenu = ({ isMobileMenuOpen, setIsMobileMenuOpen }: MobileMenuProps) 
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed inset-y-0 left-0 z-50 w-64 lg:hidden"
+              className="fixed inset-y-4 left-4 z-50 w-[calc(100%-2rem)] max-w-[280px] lg:hidden"
             >
               <Sidebar />
             </motion.div>

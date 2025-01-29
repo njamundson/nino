@@ -69,9 +69,9 @@ const BrandSidebar = () => {
   };
 
   return (
-    <div className="h-full w-64 p-2 sm:p-4 bg-nino-bg">
-      <div className="h-full bg-white backdrop-blur-xl rounded-xl shadow-sm flex flex-col border border-gray-100">
-        <div className="px-3 pt-6 sm:pt-8 pb-4 sm:pb-6 border-b border-gray-100">
+    <div className="h-full w-full bg-transparent">
+      <div className="h-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-lg flex flex-col border border-gray-100/50">
+        <div className="px-3 pt-6 sm:pt-8 pb-4 sm:pb-6 border-b border-gray-100/50">
           <Link to="/brand/dashboard" className="flex items-center px-4">
             <img 
               src="/lovable-uploads/9f6502bf-d41d-42d5-b425-985d947e9f6f.png" 
@@ -114,7 +114,7 @@ const BrandSidebar = () => {
           })}
         </nav>
 
-        <div className="p-3 mt-auto border-t border-gray-100">
+        <div className="p-3 mt-auto border-t border-gray-100/50">
           <button
             onClick={handleSignOut}
             className="flex items-center gap-3 w-full px-4 py-2.5 sm:py-3 rounded-xl text-sm font-medium text-nino-gray hover:text-nino-primary hover:bg-nino-primary/5 transition-all duration-200"
