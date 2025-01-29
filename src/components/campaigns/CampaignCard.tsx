@@ -4,6 +4,8 @@ import { Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { format, isValid } from "date-fns";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import BrowseCreatorProfile from "../creators/modal/BrowseCreatorProfile";
 
 interface CampaignCardProps {
   campaign: any;
@@ -13,6 +15,7 @@ interface CampaignCardProps {
 
 const CampaignCard = ({ campaign, onDelete, onEdit }: CampaignCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const hasApplications = campaign.applications && campaign.applications.length > 0;
 
   const handleDelete = async () => {
@@ -27,8 +30,13 @@ const CampaignCard = ({ campaign, onDelete, onEdit }: CampaignCardProps) => {
     return isValid(parsedDate) ? format(parsedDate, 'MMM d, yyyy') : null;
   };
 
+  const handleViewCreator = (creator: any) => {
+    setSelectedCreator(creator);
+  };
+
   return (
-    <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+    <>
+      <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-start">
           <div className="space-y-2">
@@ -128,72 +136,84 @@ const CampaignCard = ({ campaign, onDelete, onEdit }: CampaignCardProps) => {
         </div>
       </div>
 
-      {hasApplications && (
-        <div className="border-t border-gray-100">
-          <Button
-            variant="ghost"
-            className="w-full flex items-center justify-between p-4 hover:bg-gray-50"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            <span className="font-medium text-gray-700">
-              Applications ({campaign.applications.length})
-            </span>
-            {isExpanded ? (
-              <ChevronUp className="h-4 w-4 text-gray-500" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-gray-500" />
-            )}
-          </Button>
+        {hasApplications && (
+          <div className="border-t border-gray-100">
+            <Button
+              variant="ghost"
+              className="w-full flex items-center justify-between p-4 hover:bg-gray-50"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              <span className="font-medium text-gray-700">
+                Applications ({campaign.applications.length})
+              </span>
+              {isExpanded ? (
+                <ChevronUp className="h-4 w-4 text-gray-500" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              )}
+            </Button>
 
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
-                <div className="p-4 space-y-3 bg-gray-50">
-                  {campaign.applications.map((application: any) => (
-                    <div
-                      key={application.id}
-                      className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
-                    >
-                      <div className="flex items-center gap-3">
-                        {application.creator?.profile_image_url && (
-                          <img
-                            src={application.creator.profile_image_url}
-                            alt="Creator"
-                            className="w-8 h-8 rounded-full object-cover"
-                          />
-                        )}
-                        <div>
-                          <p className="font-medium text-sm text-gray-900">
-                            {application.creator?.first_name} {application.creator?.last_name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Applied {formatDate(application.created_at)}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs"
-                        onClick={() => window.open(`/applications/${application.id}`, '_blank')}
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-4 space-y-3 bg-gray-50">
+                    {campaign.applications.map((application: any) => (
+                      <div
+                        key={application.id}
+                        className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
                       >
-                        View Details
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-    </Card>
+                        <div className="flex items-center gap-3">
+                          {application.creator?.profile_image_url && (
+                            <img
+                              src={application.creator.profile_image_url}
+                              alt="Creator"
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium text-sm text-gray-900">
+                              {application.creator?.first_name} {application.creator?.last_name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Applied {formatDate(application.created_at)}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => handleViewCreator(application.creator)}
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+      </Card>
+
+      <Dialog open={!!selectedCreator} onOpenChange={() => setSelectedCreator(null)}>
+        <DialogContent className="max-w-3xl h-[80vh] p-0">
+          {selectedCreator && (
+            <BrowseCreatorProfile
+              creator={selectedCreator}
+              onClose={() => setSelectedCreator(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
