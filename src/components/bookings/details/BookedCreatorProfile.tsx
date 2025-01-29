@@ -23,17 +23,17 @@ const BookedCreatorProfile = ({
     : creator.first_name || 'Creator';
 
   return (
-    <div className="h-full p-6">
-      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-6 h-full">
-        <div className="relative h-full">
+    <div className="h-full p-6 overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-6 h-full">
+        <div className="relative h-full max-h-[600px] overflow-hidden rounded-2xl">
           <CreatorImage 
             profileImageUrl={creator.profile_image_url} 
             fullName={fullName} 
           />
         </div>
         
-        <div className="flex flex-col h-full">
-          <div className="flex-grow space-y-6">
+        <div className="flex flex-col h-full overflow-y-auto">
+          <div className="flex-grow space-y-6 pr-2">
             <CreatorBio 
               bio={creator.bio}
               specialties={creator.specialties}
