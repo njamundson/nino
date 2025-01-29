@@ -26,7 +26,15 @@ const ProjectsList = () => {
           return [];
         }
 
-        // Get all open opportunities that haven't been applied to by this creator
+        // First get the IDs of opportunities the creator has already applied to
+        const { data: appliedOpportunities } = await supabase
+          .from('applications')
+          .select('opportunity_id')
+          .eq('creator_id', creator.id);
+
+        const appliedOpportunityIds = appliedOpportunities?.map(app => app.opportunity_id) || [];
+
+        // Then get all open opportunities excluding the ones already applied to
         const { data: opportunities, error } = await supabase
           .from('opportunities')
           .select(`
@@ -55,12 +63,7 @@ const ProjectsList = () => {
             )
           `)
           .eq('status', 'open')
-          .not('id', 'in', (
-            supabase
-              .from('applications')
-              .select('opportunity_id')
-              .eq('creator_id', creator.id)
-          ));
+          .not('id', 'in', appliedOpportunityIds);
 
         if (error) {
           console.error("Error fetching opportunities:", error);
