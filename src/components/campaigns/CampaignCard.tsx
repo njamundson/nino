@@ -1,218 +1,254 @@
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, ChevronDown, ChevronUp } from "lucide-react";
-import { format, isValid } from "date-fns";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, MoreVertical } from "lucide-react";
+import { formatDate } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import BrowseCreatorProfile from "../creators/modal/BrowseCreatorProfile";
+import ApplicationsHeader from "./card/applications/ApplicationsHeader";
+import CreatorProfile from "@/components/creators/modal/CreatorProfile";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useApplicationActions } from "@/hooks/useApplicationActions";
+import AcceptDialog from "./modals/profile/AcceptDialog";
 
 interface CampaignCardProps {
-  campaign: any;
-  onDelete?: () => void;
-  onEdit?: (campaign: any) => void;
+  campaign: {
+    id: string;
+    title: string;
+    description: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    status: string;
+    location: string | null;
+    payment_details: string | null;
+    compensation_details: string | null;
+    applications?: Array<{
+      id: string;
+      status: string;
+      cover_letter: string | null;
+      creator: {
+        id: string;
+        bio: string | null;
+        location: string | null;
+        specialties: string[] | null;
+        instagram: string | null;
+        website: string | null;
+        creator_type: string;
+        profile_image_url: string | null;
+        first_name: string | null;
+        last_name: string | null;
+      };
+    }>;
+  };
+  onEdit: (campaign: any) => void;
+  onDelete: (id: string) => void;
 }
 
-const CampaignCard = ({ campaign, onDelete, onEdit }: CampaignCardProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
+  const [isApplicationsExpanded, setIsApplicationsExpanded] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
-  const hasApplications = campaign.applications && campaign.applications.length > 0;
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [showAcceptDialog, setShowAcceptDialog] = useState(false);
+  
+  const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions({
+    opportunityId: campaign.id,
+  });
 
   const handleDelete = async () => {
-    if (onDelete) {
-      onDelete();
+    try {
+      await onDelete(campaign.id);
+      toast.success("Campaign deleted successfully");
+    } catch (error) {
+      console.error("Error deleting campaign:", error);
+      toast.error("Failed to delete campaign");
     }
   };
 
-  const formatDate = (date: string | Date | null) => {
-    if (!date) return null;
-    const parsedDate = new Date(date);
-    return isValid(parsedDate) ? format(parsedDate, 'MMM d, yyyy') : null;
+  const handleViewCreator = (creator: any, application: any) => {
+    setSelectedCreator(creator);
+    setSelectedApplication(application);
   };
 
-  const handleViewCreator = (creator: any) => {
-    setSelectedCreator(creator);
+  const handleCloseCreatorModal = () => {
+    setSelectedCreator(null);
+    setSelectedApplication(null);
   };
+
+  const handleAccept = async () => {
+    if (!selectedApplication?.id) return;
+    
+    const success = await handleAcceptApplication(selectedApplication.id);
+    if (success) {
+      toast.success("Application accepted successfully");
+      handleCloseCreatorModal();
+    }
+    setShowAcceptDialog(false);
+  };
+
+  const handleReject = async () => {
+    if (!selectedApplication?.id) return;
+    
+    const success = await handleRejectApplication(selectedApplication.id);
+    if (success) {
+      toast.success("Application rejected successfully");
+      handleCloseCreatorModal();
+    }
+  };
+
+  const applications = campaign.applications || [];
+  const pendingApplications = applications.filter(app => app.status === 'pending');
+  const acceptedApplications = applications.filter(app => app.status === 'accepted');
 
   return (
     <>
-      <Card className="overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
-      <div className="p-6 space-y-6">
-        <div className="flex justify-between items-start">
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold text-gray-900">{campaign.title}</h3>
-            <p className="text-sm text-gray-500">{campaign.description}</p>
-          </div>
-          <div className="flex gap-2">
-            {onEdit && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onEdit(campaign)}
-                className="text-gray-600 hover:text-gray-900 border-gray-200"
-              >
-                Edit
-              </Button>
-            )}
-            {onDelete && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDelete}
-                className="text-gray-600 hover:text-gray-900 border-gray-200"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </div>
+      <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300">
+        <div className="p-6 space-y-6">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <h3 className="text-xl font-semibold text-nino-text">
+                {campaign.title}
+              </h3>
+              {campaign.location && (
+                <p className="text-nino-gray flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4" />
+                  {campaign.location}
+                </p>
+              )}
+            </div>
 
-        <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-100">
-          <div className="space-y-3">
-            {campaign.location && (
-              <p className="text-sm text-gray-600 flex items-center gap-2">
-                <span className="w-5 text-gray-400">📍</span>
-                {campaign.location}
-              </p>
-            )}
-            {campaign.payment_details && (
-              <p className="text-sm text-gray-600 flex items-center gap-2">
-                <span className="w-5 text-gray-400">💰</span>
-                {campaign.payment_details}
-              </p>
-            )}
-            {campaign.compensation_details && (
-              <p className="text-sm text-gray-600 flex items-center gap-2">
-                <span className="w-5 text-gray-400">🎁</span>
-                {campaign.compensation_details}
-              </p>
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onEdit(campaign)}>
+                  Edit campaign
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-red-600"
+                  onClick={handleDelete}
+                >
+                  Delete campaign
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="space-y-4">
-            {campaign.start_date && (
-              <div>
-                <p className="text-sm text-gray-600 flex items-center gap-2">
-                  <span className="w-5 text-gray-400">🗓️</span>
-                  {formatDate(campaign.start_date)}
-                  {campaign.end_date && formatDate(campaign.end_date) && (
-                    <>
-                      <span className="text-gray-400">→</span>
-                      {formatDate(campaign.end_date)}
-                    </>
-                  )}
-                </p>
+            <div>
+              <p className="text-nino-gray">{campaign.description}</p>
+            </div>
+
+            {(campaign.start_date || campaign.end_date) && (
+              <div className="flex items-center gap-2 text-nino-gray">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  {campaign.start_date && formatDate(campaign.start_date)}
+                  {campaign.end_date && ` - ${formatDate(campaign.end_date)}`}
+                </span>
               </div>
             )}
 
-            {campaign.requirements?.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-2">Requirements</h4>
-                <ul className="space-y-1">
-                  {campaign.requirements.map((req: string, index: number) => (
-                    <li key={index} className="text-sm text-gray-600 flex items-center gap-2">
-                      <span className="text-gray-400">•</span>
-                      {req}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {campaign.deliverables?.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-2">Deliverables</h4>
-                <ul className="space-y-1">
-                  {campaign.deliverables.map((del: string, index: number) => (
-                    <li key={index} className="text-sm text-gray-600 flex items-center gap-2">
-                      <span className="text-gray-400">•</span>
-                      {del}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-        {hasApplications && (
-          <div className="border-t border-gray-100">
-            <Button
-              variant="ghost"
-              className="w-full flex items-center justify-between p-4 hover:bg-gray-50"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              <span className="font-medium text-gray-700">
-                Applications ({campaign.applications.length})
-              </span>
-              {isExpanded ? (
-                <ChevronUp className="h-4 w-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-gray-500" />
+            <div className="flex flex-wrap gap-2">
+              {campaign.payment_details && (
+                <Badge variant="secondary" className="bg-nino-bg text-nino-text px-2 py-0.5 max-w-[200px]">
+                  <span className="inline-block truncate">
+                    💰 {campaign.payment_details}
+                  </span>
+                </Badge>
               )}
-            </Button>
+              {campaign.compensation_details && (
+                <Badge variant="secondary" className="bg-nino-bg text-nino-text px-2 py-0.5 max-w-[200px]">
+                  <span className="inline-block truncate">
+                    🎁 {campaign.compensation_details}
+                  </span>
+                </Badge>
+              )}
+              <Badge
+                variant={acceptedApplications.length > 0 ? "default" : "secondary"}
+                className={`px-2 py-0.5 ${
+                  acceptedApplications.length > 0
+                    ? "bg-nino-primary text-white" 
+                    : "bg-nino-bg text-nino-text"
+                }`}
+              >
+                {acceptedApplications.length} {acceptedApplications.length === 1 ? "Booking" : "Bookings"}
+              </Badge>
+            </div>
+          </div>
 
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="p-4 space-y-3 bg-gray-50">
-                    {campaign.applications.map((application: any) => (
-                      <div
-                        key={application.id}
-                        className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
-                      >
-                        <div className="flex items-center gap-3">
-                          {application.creator?.profile_image_url && (
-                            <img
-                              src={application.creator.profile_image_url}
-                              alt="Creator"
-                              className="w-8 h-8 rounded-full object-cover"
-                            />
+          {pendingApplications.length > 0 && (
+            <div className="pt-4 border-t border-gray-100">
+              <ApplicationsHeader
+                count={pendingApplications.length}
+                isExpanded={isApplicationsExpanded}
+                onToggle={() => setIsApplicationsExpanded(!isApplicationsExpanded)}
+              />
+              
+              {isApplicationsExpanded && (
+                <div className="mt-4 space-y-3">
+                  {pendingApplications.map((application) => (
+                    <div
+                      key={application.id}
+                      className="p-3 bg-gray-50/80 rounded-xl cursor-pointer hover:bg-gray-100/80 transition-colors"
+                      onClick={() => handleViewCreator(application.creator, application)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">
+                            {application.creator.first_name} {application.creator.last_name}
+                          </p>
+                          {application.creator.location && (
+                            <p className="text-sm text-gray-500">
+                              {application.creator.location}
+                            </p>
                           )}
-                          <div>
-                            <p className="font-medium text-sm text-gray-900">
-                              {application.creator?.first_name} {application.creator?.last_name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Applied {formatDate(application.created_at)}
-                            </p>
-                          </div>
                         </div>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          className="text-xs"
-                          onClick={() => handleViewCreator(application.creator)}
+                          className="text-nino-primary hover:text-nino-primary/90"
                         >
-                          View Details
+                          View Profile
                         </Button>
                       </div>
-                    ))}
-                  </div>
-                </motion.div>
+                    </div>
+                  ))}
+                </div>
               )}
-            </AnimatePresence>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </Card>
 
-      <Dialog open={!!selectedCreator} onOpenChange={() => setSelectedCreator(null)}>
-        <DialogContent className="max-w-3xl h-[80vh] p-0">
-          {selectedCreator && (
-            <BrowseCreatorProfile
-              creator={selectedCreator}
-              onClose={() => setSelectedCreator(null)}
-            />
-          )}
+      <Dialog open={!!selectedCreator} onOpenChange={handleCloseCreatorModal}>
+        <DialogContent className="max-w-4xl p-0">
+          <DialogTitle className="sr-only">Creator Profile</DialogTitle>
+          <CreatorProfile
+            creator={selectedCreator}
+            onClose={handleCloseCreatorModal}
+            onInviteClick={() => {}}
+            onMessageClick={() => {}}
+            application={selectedApplication}
+          />
         </DialogContent>
       </Dialog>
+
+      <AcceptDialog
+        isOpen={showAcceptDialog}
+        onOpenChange={setShowAcceptDialog}
+        onConfirm={handleAccept}
+        creatorName={`${selectedCreator?.first_name || ''} ${selectedCreator?.last_name || ''}`}
+        isProcessing={isProcessing}
+      />
     </>
   );
 };

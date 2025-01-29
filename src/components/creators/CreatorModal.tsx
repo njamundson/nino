@@ -9,7 +9,6 @@ import BrowseCreatorProfile from "./modal/BrowseCreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
 import { CreatorType } from "@/types/creator";
-import { useCreatorInvite } from "@/hooks/useCreatorInvite";
 
 interface Creator {
   id: string;
@@ -32,7 +31,7 @@ interface CreatorModalProps {
 
 const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
   const [showCampaigns, setShowCampaigns] = useState(false);
-  const { handleInvite, isInviting } = useCreatorInvite();
+  const [isInviting, setIsInviting] = useState(false);
 
   const { data: campaigns, isLoading: isLoadingCampaigns } = useQuery({
     queryKey: ['brand-campaigns'],
@@ -60,7 +59,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
         const { data: opportunities, error: oppsError } = await supabase
           .from('opportunities')
-          .select('*, brands(company_name)')
+          .select('*')
           .eq('brand_id', brand.id)
           .eq('status', 'open');
 
@@ -79,13 +78,57 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     },
   });
 
-  const handleInviteCreator = async (opportunityId: string) => {
+  const handleInvite = async (opportunityId: string) => {
     if (!creator) return;
     
-    const success = await handleInvite(creator.id, opportunityId);
-    if (success) {
+    try {
+      setIsInviting(true);
+
+      const { data: existingInvite, error: checkError } = await supabase
+        .from('applications')
+        .select('id, status')
+        .eq('opportunity_id', opportunityId)
+        .eq('creator_id', creator.id)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error("Error checking existing invitation:", checkError);
+        toast.error("Failed to check existing invitations");
+        return;
+      }
+
+      if (existingInvite) {
+        if (existingInvite.status === 'invited') {
+          toast.error("Creator has already been invited to this campaign");
+          return;
+        } else if (existingInvite.status === 'accepted') {
+          toast.error("Creator is already part of this campaign");
+          return;
+        }
+      }
+
+      const { error } = await supabase
+        .from('applications')
+        .insert({
+          opportunity_id: opportunityId,
+          creator_id: creator.id,
+          status: 'invited'
+        });
+
+      if (error) {
+        console.error("Error inviting creator:", error);
+        toast.error("Failed to invite creator");
+        return;
+      }
+
+      toast.success("Creator invited successfully!");
       setShowCampaigns(false);
       onClose();
+    } catch (error) {
+      console.error("Error in handleInvite:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsInviting(false);
     }
   };
 
@@ -122,7 +165,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <CampaignSelection
             campaigns={campaigns}
             onBack={() => setShowCampaigns(false)}
-            onSelect={handleInviteCreator}
+            onSelect={handleInvite}
             isLoading={isInviting}
           />
         )}

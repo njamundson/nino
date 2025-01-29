@@ -1,21 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Calendar, MapPin } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { formatDate } from "@/lib/utils";
 
 interface Campaign {
   id: string;
   title: string;
   description: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  location: string | null;
-  payment_details: string | null;
-  compensation_details: string | null;
-  brands: {
-    company_name: string | null;
-  } | null;
 }
 
 interface CampaignSelectionProps {
@@ -54,47 +45,17 @@ const CampaignSelection = ({ campaigns, onBack, onSelect, isLoading = false }: C
             {campaigns.map((campaign) => (
               <div
                 key={campaign.id}
-                className={`p-4 border border-white/20 bg-white/50 rounded-xl transition-all duration-300 ${
-                  !isLoading ? 'hover:bg-white hover:border-white cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                className={`p-4 border-2 border-white bg-white/50 rounded-xl transition-all duration-300 ${
+                  !isLoading ? 'hover:bg-white cursor-pointer' : 'opacity-50 cursor-not-allowed'
                 }`}
                 onClick={() => !isLoading && onSelect(campaign.id)}
               >
                 <h4 className="font-medium text-lg text-nino-text group-hover:text-nino-primary transition-colors">
                   {campaign.title}
                 </h4>
-                {campaign.brands?.company_name && (
-                  <p className="text-sm text-nino-gray mt-1">
-                    {campaign.brands.company_name}
-                  </p>
-                )}
-                <p className="text-sm text-nino-gray mt-2">
+                <p className="text-sm text-nino-gray mt-1">
                   {campaign.description}
                 </p>
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {campaign.location && (
-                    <div className="flex items-center gap-1 text-xs text-nino-gray">
-                      <MapPin className="w-3 h-3" />
-                      <span>{campaign.location}</span>
-                    </div>
-                  )}
-                  {(campaign.start_date || campaign.end_date) && (
-                    <div className="flex items-center gap-1 text-xs text-nino-gray">
-                      <Calendar className="w-3 h-3" />
-                      <span>
-                        {campaign.start_date && formatDate(campaign.start_date)}
-                        {campaign.end_date && ` - ${formatDate(campaign.end_date)}`}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                {(campaign.payment_details || campaign.compensation_details) && (
-                  <div className="mt-3 text-xs text-nino-gray">
-                    {campaign.payment_details && <span>💰 {campaign.payment_details}</span>}
-                    {campaign.compensation_details && (
-                      <span className="ml-3">🎁 {campaign.compensation_details}</span>
-                    )}
-                  </div>
-                )}
               </div>
             ))}
           </div>

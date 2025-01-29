@@ -5,7 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 
 interface BrandBookingsListProps {
@@ -15,13 +15,14 @@ interface BrandBookingsListProps {
 
 const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProps) => {
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   
-  const { data: bookings, isLoading, error, refetch } = useQuery({
+  const { data: bookings, isLoading, refetch } = useQuery({
     queryKey: ['brand-active-bookings'],
     queryFn: async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('No user found');
+        if (!user) return [];
 
         const { data: brand } = await supabase
           .from('brands')
@@ -29,7 +30,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (!brand) throw new Error('No brand found');
+        if (!brand) return [];
 
         const { data, error } = await supabase
           .from('applications')
@@ -46,19 +47,25 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           .in('opportunity.status', ['active', 'open']);
 
         if (error) throw error;
-        console.log('Fetched bookings:', data);
         return data || [];
       } catch (error) {
         console.error('Error fetching brand bookings:', error);
-        throw error;
+        toast({
+          title: "Error",
+          description: "Failed to load bookings. Please try again.",
+          variant: "destructive",
+        });
+        return [];
       }
     },
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
   });
 
   // Set up real-time subscription for booking updates
   useEffect(() => {
+    // Subscribe to applications table changes
     const applicationsChannel = supabase
-      .channel('bookings-changes')
+      .channel('bookings-applications')
       .on(
         'postgres_changes',
         {
@@ -74,8 +81,9 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       )
       .subscribe();
 
+    // Subscribe to opportunities table changes
     const opportunitiesChannel = supabase
-      .channel('opportunities-changes')
+      .channel('bookings-opportunities')
       .on(
         'postgres_changes',
         {
@@ -95,18 +103,6 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       supabase.removeChannel(opportunitiesChannel);
     };
   }, [refetch]);
-
-  if (error) {
-    toast.error("Failed to load bookings. Please try again.");
-    return (
-      <Card className="p-8">
-        <div className="text-center text-muted-foreground py-8">
-          <p className="text-lg font-medium">Error loading bookings</p>
-          <p className="text-sm mt-2">Please refresh the page to try again</p>
-        </div>
-      </Card>
-    );
-  }
 
   if (isLoading) {
     return (
