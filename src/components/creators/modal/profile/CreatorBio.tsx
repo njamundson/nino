@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
 import SocialLinks from "./social/SocialLinks";
 import CreatorSpecialties from "./bio/CreatorSpecialties";
+import { Application } from "@/integrations/supabase/types/opportunity";
 
 interface CreatorBioProps {
   bio: string | null;
@@ -10,6 +11,7 @@ interface CreatorBioProps {
   website: string | null;
   onMessageClick?: () => void;
   coverLetter?: string | null;
+  application?: Application | null;
 }
 
 const CreatorBio = ({ 
@@ -19,7 +21,7 @@ const CreatorBio = ({
   instagram,
   website,
   onMessageClick,
-  coverLetter
+  application
 }: CreatorBioProps) => {
   return (
     <div className="flex-grow space-y-6">
@@ -43,18 +45,10 @@ const CreatorBio = ({
         </p>
       </div>
 
-      <CreatorSpecialties specialties={specialties} />
-
-      {coverLetter && (
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-nino-text">Application Message</h3>
-          <div className="bg-gray-50/80 backdrop-blur-sm p-4 rounded-xl border border-gray-100">
-            <p className="text-base leading-relaxed text-nino-text/90 whitespace-pre-wrap break-words">
-              {coverLetter}
-            </p>
-          </div>
-        </div>
-      )}
+      <CreatorSpecialties 
+        specialties={specialties} 
+        application={application}
+      />
     </div>
   );
 };
