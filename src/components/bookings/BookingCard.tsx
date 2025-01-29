@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MessageCircle, Calendar, MapPin, UserRound, XCircle } from "lucide-react";
+import { MessageCircle, Calendar, MapPin, UserRound, XCircle, ChevronDown } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import {
   Collapsible,
@@ -204,16 +204,21 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
         {/* Booked Creator Section */}
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <div className="border-t pt-4">
-            <CollapsibleTrigger className="flex items-center justify-between w-full">
+            <CollapsibleTrigger className="flex items-center justify-between w-full bg-white hover:bg-gray-50 p-2 rounded-lg transition-colors">
               <div className="flex items-center gap-2">
                 <h4 className="text-sm font-medium text-gray-900">Booked Creator</h4>
                 <Badge variant="secondary" className="bg-green-50 text-green-700 hover:bg-green-100">
                   Active
                 </Badge>
               </div>
+              <ChevronDown 
+                className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
+                  isOpen ? 'transform rotate-180' : ''
+                }`}
+              />
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="pt-4 space-y-4 animate-accordion-down">
+            <CollapsibleContent className="pt-4 space-y-4 animate-accordion-down bg-white">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl group">
                 <div className="flex items-center gap-4">
                   {booking.creator.profile_image_url ? (
