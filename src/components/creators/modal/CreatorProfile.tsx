@@ -50,28 +50,35 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
       {application && (
         <div className="px-6 pb-6">
           <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
+              <span className="px-3 py-1 rounded-full text-sm font-medium capitalize bg-gray-100 text-gray-700">
+                {application.status}
+              </span>
+            </div>
             
-            <div className="space-y-2">
+            <div className="space-y-4">
               {application.opportunity && (
-                <p className="text-sm text-gray-500">
-                  Submitted for: {application.opportunity.title}
-                </p>
-              )}
-              {application.cover_letter && (
                 <div>
-                  <p className="text-sm font-medium text-gray-700 mb-2">Cover Letter</p>
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap">
-                    {application.cover_letter}
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Campaign</p>
+                  <p className="text-base text-gray-900">{application.opportunity.title}</p>
                 </div>
               )}
-              <p className="text-sm text-gray-500">
-                Status: <span className="font-medium capitalize">{application.status}</span>
-              </p>
-              <p className="text-sm text-gray-500">
-                Submitted: {new Date(application.created_at || '').toLocaleDateString()}
-              </p>
+              
+              {application.cover_letter && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Message from Creator</p>
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <p className="text-gray-700 whitespace-pre-wrap">
+                      {application.cover_letter}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex items-center justify-between text-sm text-gray-500 pt-2">
+                <p>Submitted {new Date(application.created_at || '').toLocaleDateString()}</p>
+              </div>
             </div>
           </div>
         </div>
