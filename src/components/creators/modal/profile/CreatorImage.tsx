@@ -6,7 +6,7 @@ interface CreatorImageProps {
 const CreatorImage = ({ profileImageUrl, fullName }: CreatorImageProps) => {
   return (
     <div className="relative w-full h-full">
-      <div className="h-full rounded-xl overflow-hidden bg-white shadow-sm">
+      <div className="h-full rounded-xl overflow-hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
         {profileImageUrl ? (
           <img
             src={profileImageUrl}
