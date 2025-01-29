@@ -16,19 +16,24 @@ const BrandBookings = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <motion.div
+      className="min-h-screen space-y-8 px-4 md:px-8 py-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       <PageHeader
         title="Bookings"
         description="Manage your active creator collaborations and projects"
       />
       
-      <div className="max-w-7xl">
+      <div className="max-w-7xl mx-auto">
         <BrandBookingsList
           onChatClick={handleChatClick}
           onViewCreator={handleViewCreator}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 
