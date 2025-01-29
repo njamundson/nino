@@ -12,6 +12,7 @@ import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
 import { CreatorData, CreatorType } from "@/types/creator";
 import { LoadingSpinner } from "../ui/loading-spinner";
+import { Application } from "@/integrations/supabase/types/opportunity";
 
 interface Creator {
   id: string;
@@ -30,9 +31,10 @@ interface CreatorModalProps {
   creator: Creator | null;
   isOpen: boolean;
   onClose: () => void;
+  application?: Application;
 }
 
-const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
+const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalProps) => {
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
@@ -175,6 +177,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
             <CreatorProfile 
               creator={creatorData}
               onInviteClick={() => setShowCampaigns(true)}
+              application={application}
             />
           </div>
         ) : (
