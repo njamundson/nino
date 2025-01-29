@@ -144,8 +144,8 @@ const MyCampaigns = () => {
             >
               <CampaignCard
                 campaign={campaign}
-                onEdit={setEditingCampaign}
-                onDelete={handleDelete}
+                onEdit={() => setEditingCampaign(campaign)}
+                onDelete={() => handleDelete(campaign.id)}
               />
             </motion.div>
           ))}
