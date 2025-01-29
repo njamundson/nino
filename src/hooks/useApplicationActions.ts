@@ -19,7 +19,14 @@ export const useApplicationActions = () => {
       // First get the application details to ensure we have a valid opportunity_id
       const { data: application, error: fetchError } = await supabase
         .from('applications')
-        .select('opportunity_id')
+        .select(`
+          *,
+          opportunity:opportunities (
+            *,
+            brand:brands(*)
+          ),
+          creator:creators(*)
+        `)
         .eq('id', applicationId)
         .single();
 
@@ -43,7 +50,7 @@ export const useApplicationActions = () => {
         throw updateError;
       }
 
-      // Update the opportunity status
+      // Update the opportunity status to active
       const { error: opportunityError } = await supabase
         .from('opportunities')
         .update({ status: 'active' })
@@ -54,10 +61,11 @@ export const useApplicationActions = () => {
         throw opportunityError;
       }
 
-      // Invalidate relevant queries
+      // Invalidate relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['opportunities'] });
       queryClient.invalidateQueries({ queryKey: ['applications'] });
       queryClient.invalidateQueries({ queryKey: ['brand-active-bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['active-bookings'] });
 
       toast.success('Application accepted successfully');
       return true;

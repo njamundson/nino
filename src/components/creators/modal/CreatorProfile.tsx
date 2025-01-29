@@ -1,20 +1,14 @@
-import { Creator } from "@/types/creator";
-import CreatorBio from "./profile/CreatorBio";
-import CreatorImage from "./profile/CreatorImage";
-import CreatorSocialLinks from "./profile/CreatorSocialLinks";
-import { Application } from "@/integrations/supabase/types/opportunity";
-import ActionButtons from "@/components/campaigns/modals/profile/ActionButtons";
-import AcceptDialog from "@/components/campaigns/modals/profile/AcceptDialog";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { useApplicationActions } from "@/hooks/useApplicationActions";
-import { toast } from "sonner";
+import AcceptDialog from "@/components/campaigns/modals/profile/AcceptDialog";
 
 interface CreatorProfileProps {
-  creator: Creator;
-  onClose?: () => void;
+  creator: any;
+  onClose: () => void;
   onInviteClick?: () => void;
   onMessageClick?: () => void;
-  application?: Application | null;
+  application?: any;
 }
 
 const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, application }: CreatorProfileProps) => {
@@ -23,101 +17,61 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
 
   if (!creator) return null;
 
-  const fullName = creator.first_name && creator.last_name 
-    ? `${creator.first_name} ${creator.last_name}`
-    : creator.first_name || 'Creator';
-
-  const onAccept = () => {
+  const handleAcceptClick = async () => {
+    if (!application) return;
     setShowAcceptDialog(true);
   };
 
-  const onReject = async () => {
-    if (!application?.id) return;
-    const success = await handleRejectApplication(application.id);
+  const handleConfirmAccept = async () => {
+    if (!application) return;
+    
+    const success = await handleAcceptApplication(application.id);
     if (success) {
-      toast.success("Application rejected successfully");
-      onClose?.();
+      setShowAcceptDialog(false);
+      onClose();
     }
   };
 
-  const onConfirmAccept = async () => {
-    if (!application?.id) return;
-    const success = await handleAcceptApplication(application.id);
+  const handleRejectClick = async () => {
+    if (!application) return;
+    
+    const success = await handleRejectApplication(application.id);
     if (success) {
-      toast.success("Application accepted successfully");
-      onClose?.();
+      onClose();
     }
-    setShowAcceptDialog(false);
   };
 
   return (
-    <div className="h-full p-6">
-      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-6 h-full">
-        <div className="relative h-full">
-          <CreatorImage 
-            profileImageUrl={creator.profile_image_url} 
-            fullName={fullName} 
-          />
-        </div>
-        
-        <div className="flex flex-col h-full">
-          <div className="flex-grow space-y-6">
-            <CreatorBio 
-              bio={creator.bio}
-              specialties={creator.specialties}
-              location={creator.location}
-              instagram={creator.instagram}
-              website={creator.website}
-              onMessageClick={onMessageClick}
-              fullName={fullName}
-            />
-            <CreatorSocialLinks 
-              instagram={creator.instagram}
-              website={creator.website}
-            />
-          </div>
-
-          {application && (
-            <div className="mt-4">
-              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-                <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
-                
-                <div className="space-y-2">
-                  {application.opportunity && (
-                    <p className="text-sm text-gray-500">
-                      Submitted for: {application.opportunity.title}
-                    </p>
-                  )}
-                  {application.cover_letter && (
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-gray-700">Cover Letter:</p>
-                      <p className="text-sm text-gray-600 whitespace-pre-wrap">
-                        {application.cover_letter}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {application.status === 'pending' && (
-                  <div className="pt-2">
-                    <ActionButtons
-                      onAccept={onAccept}
-                      onReject={onReject}
-                      isProcessing={isProcessing}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+    <div className="space-y-6">
+      <div className="flex flex-col items-center">
+        <img src={creator.profile_image_url} alt={`${creator.first_name} ${creator.last_name}`} className="w-32 h-32 rounded-full" />
+        <h2 className="text-xl font-semibold">{creator.first_name} {creator.last_name}</h2>
+        <p className="text-sm text-gray-500">{creator.bio}</p>
       </div>
+
+      {application && (
+        <div className="flex justify-end gap-4 mt-6">
+          <Button
+            variant="outline"
+            onClick={handleRejectClick}
+            disabled={isProcessing}
+          >
+            Reject
+          </Button>
+          <Button
+            onClick={handleAcceptClick}
+            disabled={isProcessing}
+          >
+            Accept
+          </Button>
+        </div>
+      )}
 
       <AcceptDialog
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
-        onConfirm={onConfirmAccept}
-        creatorName={fullName}
+        onConfirm={handleConfirmAccept}
+        creatorName={creator.first_name}
         isProcessing={isProcessing}
       />
     </div>
