@@ -38,7 +38,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
             instagram={creator.instagram}
             website={creator.website}
             onMessageClick={onMessageClick}
-            coverLetter={undefined}
+            coverLetter={application?.cover_letter}
           />
           <CreatorSocialLinks 
             instagram={creator.instagram}
