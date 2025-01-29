@@ -1,4 +1,4 @@
-import { Instagram, Globe, MessageSquare } from "lucide-react";
+import { Instagram, Globe, MessageCircle } from "lucide-react";
 import { formatInstagramUrl, formatWebsiteUrl } from "@/utils/socialMediaUtils";
 import SocialIconButton from "./SocialIconButton";
 
@@ -39,7 +39,7 @@ const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) =
       
       {onMessageClick && (
         <SocialIconButton
-          icon={MessageSquare}
+          icon={MessageCircle}
           onClick={onMessageClick}
           tooltipText="Send message"
           isActive={true}

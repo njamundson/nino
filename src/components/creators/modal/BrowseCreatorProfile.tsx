@@ -52,7 +52,7 @@ const BrowseCreatorProfile = ({
           {onInviteClick && (
             <button
               onClick={onInviteClick}
-              className="mt-4 w-full bg-nino-primary text-white px-4 py-2 rounded-lg hover:bg-nino-primary/90 transition-colors"
+              className="mt-4 w-full bg-white/80 backdrop-blur-sm text-nino-primary border border-nino-primary/20 px-6 py-3 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300 font-medium text-sm"
             >
               Invite to Campaign
             </button>
