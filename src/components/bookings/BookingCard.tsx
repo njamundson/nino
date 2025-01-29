@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MessageSquare, Calendar, MapPin, ExternalLink } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-import { toast } from "sonner";
 
 interface BookingCardProps {
   booking: {
@@ -47,74 +46,92 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
     onViewCreator();
   };
 
-  const handleCardClick = () => {
-    // Could be used for expanding details in the future
-    console.log('Card clicked:', booking);
-  };
-
   return (
-    <Card 
-      onClick={handleCardClick}
-      className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
-    >
-      <div className="relative h-full">
-        {/* Creator Image */}
-        <div className="h-full w-full">
+    <Card className="overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="text-xl font-semibold mb-2">{booking.opportunity.title}</h3>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Badge variant="secondary" className="capitalize">
+                {booking.opportunity.status}
+              </Badge>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleChatClick}
+              className="gap-2"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Chat
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleViewCreator}
+              className="gap-2"
+            >
+              <ExternalLink className="w-4 h-4" />
+              View Creator
+            </Button>
+          </div>
+        </div>
+
+        {/* Creator Info */}
+        <div className="flex items-center gap-4 mb-4">
           {booking.creator.profile_image_url ? (
             <img 
-              src={booking.creator.profile_image_url} 
+              src={booking.creator.profile_image_url}
               alt={creatorName}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="w-12 h-12 rounded-full object-cover"
             />
           ) : (
-            <div className="h-full w-full bg-nino-primary/10 flex items-center justify-center">
-              <span className="text-4xl font-medium text-nino-primary">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-lg font-medium text-primary">
                 {creatorName.split(' ').map(n => n[0]).join('')}
               </span>
             </div>
           )}
+          <div>
+            <h4 className="font-medium">{creatorName}</h4>
+            <p className="text-sm text-muted-foreground">Booked Creator</p>
+          </div>
         </div>
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-
-        {/* Content */}
-        <div className="absolute bottom-24 left-6 right-6 text-white">
-          <p className="text-sm font-medium text-white/90 mb-1">
-            {creatorName}
-          </p>
-          <h3 className="text-2xl font-semibold leading-tight line-clamp-2 mb-2">
-            {booking.opportunity.title}
-          </h3>
-          
-          {/* Dates */}
+        {/* Project Details */}
+        <div className="space-y-3">
           {(booking.opportunity.start_date || booking.opportunity.end_date) && (
-            <p className="text-sm text-white/80 flex items-center gap-1 mb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="w-4 h-4" />
-              {booking.opportunity.start_date && formatDate(booking.opportunity.start_date)}
-              {booking.opportunity.start_date && booking.opportunity.end_date && " - "}
-              {booking.opportunity.end_date && formatDate(booking.opportunity.end_date)}
-            </p>
+              <span>
+                {booking.opportunity.start_date && formatDate(booking.opportunity.start_date)}
+                {booking.opportunity.start_date && booking.opportunity.end_date && " - "}
+                {booking.opportunity.end_date && formatDate(booking.opportunity.end_date)}
+              </span>
+            </div>
           )}
 
-          {/* Location */}
           {booking.opportunity.location && (
-            <p className="text-sm text-white/80 flex items-center gap-1 mb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="w-4 h-4" />
-              {booking.opportunity.location}
-            </p>
+              <span>{booking.opportunity.location}</span>
+            </div>
           )}
 
-          {/* Compensation Details */}
+          {/* Compensation */}
           {(booking.opportunity.payment_details || booking.opportunity.compensation_details) && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-2">
               {booking.opportunity.payment_details && (
-                <Badge variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-0">
+                <Badge variant="outline">
                   💰 {booking.opportunity.payment_details}
                 </Badge>
               )}
               {booking.opportunity.compensation_details && (
-                <Badge variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-0">
+                <Badge variant="outline">
                   🎁 {booking.opportunity.compensation_details}
                 </Badge>
               )}
@@ -123,14 +140,13 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
 
           {/* Deliverables */}
           {booking.opportunity.deliverables && booking.opportunity.deliverables.length > 0 && (
-            <div className="mt-2">
-              <p className="text-sm text-white/90 mb-1">Deliverables:</p>
-              <div className="flex flex-wrap gap-1">
+            <div className="mt-4">
+              <h5 className="text-sm font-medium mb-2">Deliverables:</h5>
+              <div className="flex flex-wrap gap-2">
                 {booking.opportunity.deliverables.map((deliverable, index) => (
                   <Badge 
                     key={index}
-                    variant="secondary" 
-                    className="bg-white/20 hover:bg-white/30 text-white border-0"
+                    variant="secondary"
                   >
                     {deliverable}
                   </Badge>
@@ -139,36 +155,6 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
             </div>
           )}
         </div>
-
-        {/* Action Buttons */}
-        <div className="absolute bottom-6 right-6 flex gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleViewCreator}
-            className="bg-white/90 hover:bg-white text-gray-900 transition-all duration-300 hover:scale-105 shadow-md gap-2"
-          >
-            <ExternalLink className="w-4 h-4" />
-            View Creator
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleChatClick}
-            className="bg-white/90 hover:bg-white text-gray-900 transition-all duration-300 hover:scale-105 shadow-md gap-2"
-          >
-            <MessageSquare className="w-4 h-4" />
-            Chat
-          </Button>
-        </div>
-
-        {/* Status Badge */}
-        <Badge 
-          variant="secondary" 
-          className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-900 capitalize shadow-md"
-        >
-          {booking.opportunity.status}
-        </Badge>
       </div>
     </Card>
   );

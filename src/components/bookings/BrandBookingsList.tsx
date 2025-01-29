@@ -63,7 +63,6 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
   // Set up real-time subscription for booking updates
   useEffect(() => {
-    // Subscribe to applications table changes
     const applicationsChannel = supabase
       .channel('bookings-applications')
       .on(
@@ -74,14 +73,12 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           table: 'applications',
           filter: 'status=eq.accepted'
         },
-        (payload) => {
-          console.log('Application update detected:', payload);
+        () => {
           refetch();
         }
       )
       .subscribe();
 
-    // Subscribe to opportunities table changes
     const opportunitiesChannel = supabase
       .channel('bookings-opportunities')
       .on(
@@ -91,8 +88,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           schema: 'public',
           table: 'opportunities'
         },
-        (payload) => {
-          console.log('Opportunity update detected:', payload);
+        () => {
           refetch();
         }
       )
@@ -107,8 +103,8 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-[400px] w-full" />
-        <Skeleton className="h-[400px] w-full" />
+        <Skeleton className="h-[200px] w-full" />
+        <Skeleton className="h-[200px] w-full" />
       </div>
     );
   }
@@ -127,17 +123,15 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   }
 
   return (
-    <div className="space-y-6">
-      <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
-        {bookings.map((booking: any) => (
-          <BookingCard
-            key={booking.id}
-            booking={booking}
-            onChatClick={() => onChatClick(booking.creator.user_id)}
-            onViewCreator={() => onViewCreator(booking.creator)}
-          />
-        ))}
-      </div>
+    <div className="space-y-4">
+      {bookings.map((booking: any) => (
+        <BookingCard
+          key={booking.id}
+          booking={booking}
+          onChatClick={() => onChatClick(booking.creator.user_id)}
+          onViewCreator={() => onViewCreator(booking.creator)}
+        />
+      ))}
     </div>
   );
 };
