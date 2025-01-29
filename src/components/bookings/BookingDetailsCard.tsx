@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import CreatorModal from "@/components/creators/CreatorModal";
 import ProjectDetails from "./details/ProjectDetails";
 import CompensationDetails from "./details/CompensationDetails";
 import CreatorSection from "./details/CreatorSection";
+import BookedCreatorProfile from "./details/BookedCreatorProfile";
 
 interface BookingDetailsCardProps {
   booking: {
@@ -93,7 +93,6 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
     }
   };
 
-  // Transform booking.creator into the format expected by CreatorModal
   const modalCreator = {
     id: booking.creator.id,
     bio: booking.creator.bio || '',
@@ -151,11 +150,22 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
       </Card>
 
       {/* Creator Profile Modal */}
-      <CreatorModal
-        creator={modalCreator}
-        isOpen={showCreatorModal}
-        onClose={() => setShowCreatorModal(false)}
-      />
+      <Dialog
+        open={showCreatorModal}
+        onOpenChange={setShowCreatorModal}
+      >
+        <DialogContent className="max-w-4xl h-[80vh] p-0">
+          <BookedCreatorProfile
+            creator={modalCreator}
+            onClose={() => setShowCreatorModal(false)}
+            onMessageClick={() => onChatClick(booking.creator.user_id)}
+            onCancelBooking={() => {
+              setShowCreatorModal(false);
+              setShowCancelDialog(true);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
