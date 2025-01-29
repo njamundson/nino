@@ -53,17 +53,19 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
   };
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-4xl font-semibold text-gray-900 px-6 pt-4">
+    <div className="max-h-[85vh] overflow-y-auto">
+      <h2 className="text-2xl font-semibold text-gray-900 px-6 pt-4 mb-4">
         {fullName}
       </h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-        <CreatorImage 
-          profileImageUrl={creator.profile_image_url} 
-          fullName={fullName} 
-        />
-        <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+        <div className="md:max-h-[500px] overflow-hidden">
+          <CreatorImage 
+            profileImageUrl={creator.profile_image_url} 
+            fullName={fullName} 
+          />
+        </div>
+        <div className="space-y-4">
           <CreatorBio 
             bio={creator.bio}
             specialties={creator.specialties}
@@ -71,7 +73,6 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
             instagram={creator.instagram}
             website={creator.website}
             onMessageClick={onMessageClick}
-            coverLetter={application?.cover_letter}
           />
           <CreatorSocialLinks 
             instagram={creator.instagram}
@@ -82,7 +83,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
 
       {application && (
         <div className="px-6 pb-6">
-          <div className="bg-gray-50 rounded-xl p-6 space-y-4">
+          <div className="bg-gray-50 rounded-xl p-4 space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
             
             <div className="space-y-2">
@@ -94,17 +95,15 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
               {application.cover_letter && (
                 <div>
                   <p className="text-sm font-medium text-gray-700 mb-2">Cover Letter</p>
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap">
+                  <p className="text-sm text-gray-600 whitespace-pre-wrap max-h-[200px] overflow-y-auto">
                     {application.cover_letter}
                   </p>
                 </div>
               )}
-              <p className="text-sm text-gray-500">
-                Status: <span className="font-medium capitalize">{application.status}</span>
-              </p>
-              <p className="text-sm text-gray-500">
-                Submitted: {new Date(application.created_at || '').toLocaleDateString()}
-              </p>
+              <div className="flex justify-between items-center text-sm text-gray-500">
+                <span>Status: <span className="font-medium capitalize">{application.status}</span></span>
+                <span>Submitted: {new Date(application.created_at || '').toLocaleDateString()}</span>
+              </div>
             </div>
 
             {application.status === 'pending' && (
