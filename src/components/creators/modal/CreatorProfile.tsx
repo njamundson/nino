@@ -25,7 +25,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
         {fullName}
       </h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
         <CreatorImage 
           profileImageUrl={creator.profile_image_url} 
           fullName={fullName} 
