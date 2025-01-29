@@ -15,9 +15,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface BookingCardProps {
   booking: {
+    id: string;
     opportunity: {
       title: string;
       status: string;
@@ -42,10 +55,14 @@ interface BookingCardProps {
   };
   onChatClick: () => void;
   onViewCreator: () => void;
+  onRefresh?: () => void;
 }
 
-const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) => {
+const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: BookingCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const { toast } = useToast();
+  
   const creatorName = booking.creator.profile ? 
     `${booking.creator.profile.first_name} ${booking.creator.profile.last_name}` : 
     'Anonymous Creator';
@@ -60,10 +77,36 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
     onViewCreator();
   };
 
-  const handleCancelBooking = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Add cancel booking logic here
-    console.log('Cancel booking clicked');
+  const handleCancelBooking = async () => {
+    try {
+      // Update the application status to 'cancelled'
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: 'cancelled' })
+        .eq('id', booking.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Booking Cancelled",
+        description: `The booking with ${creatorName} has been cancelled.`,
+      });
+
+      // Close the dialog
+      setShowCancelDialog(false);
+      
+      // Refresh the bookings list if onRefresh is provided
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel the booking. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -229,7 +272,10 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={handleCancelBooking}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowCancelDialog(true);
+                          }}
                           className="rounded-full hover:bg-destructive/10 hover:text-destructive"
                         >
                           <XCircle className="w-5 h-5" />
@@ -246,6 +292,27 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
           </div>
         </Collapsible>
       </div>
+
+      {/* Cancel Booking Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel the booking with {creatorName}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelBooking}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };
