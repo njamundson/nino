@@ -10,6 +10,7 @@ interface CreatorBioProps {
   website: string | null;
   onMessageClick?: () => void;
   coverLetter?: string | null;
+  fullName: string;
 }
 
 const CreatorBio = ({ 
@@ -19,16 +20,22 @@ const CreatorBio = ({
   instagram,
   website,
   onMessageClick,
-  coverLetter
+  coverLetter,
+  fullName
 }: CreatorBioProps) => {
   return (
     <div className="flex-grow space-y-6">
-      {location && (
-        <div className="flex items-center gap-2 text-nino-gray">
-          <MapPin className="h-5 w-5" />
-          <span className="text-base">{location}</span>
-        </div>
-      )}
+      <div className="space-y-2">
+        <h2 className="text-2xl font-semibold text-nino-text">
+          {fullName}
+        </h2>
+        {location && (
+          <div className="flex items-center gap-2 text-nino-gray">
+            <MapPin className="h-5 w-5" />
+            <span className="text-base">{location}</span>
+          </div>
+        )}
+      </div>
 
       <div className="space-y-2">
         <SocialLinks 

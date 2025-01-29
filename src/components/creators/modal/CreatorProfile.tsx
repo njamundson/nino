@@ -54,12 +54,8 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
 
   return (
     <div className="max-h-[85vh] overflow-y-auto">
-      <h2 className="text-2xl font-semibold text-gray-900 px-6 pt-4 mb-4">
-        {fullName}
-      </h2>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-        <div className="md:max-h-[500px] overflow-hidden">
+        <div className="md:max-h-[600px] overflow-hidden">
           <CreatorImage 
             profileImageUrl={creator.profile_image_url} 
             fullName={fullName} 
@@ -73,6 +69,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
             instagram={creator.instagram}
             website={creator.website}
             onMessageClick={onMessageClick}
+            fullName={fullName}
           />
           <CreatorSocialLinks 
             instagram={creator.instagram}

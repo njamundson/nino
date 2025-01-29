@@ -15,7 +15,7 @@ const CreatorImage = ({ profileImageUrl, fullName }: CreatorImageProps) => {
 
   return (
     <div className="relative w-full">
-      <div className="aspect-[4/3] rounded-xl overflow-hidden bg-white shadow-sm">
+      <div className="aspect-[3/4] rounded-xl overflow-hidden bg-white shadow-sm">
         {profileImageUrl ? (
           <img
             src={profileImageUrl}
