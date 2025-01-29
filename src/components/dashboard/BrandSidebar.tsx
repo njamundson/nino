@@ -69,8 +69,8 @@ const BrandSidebar = () => {
   };
 
   return (
-    <div className="h-full w-full bg-transparent">
-      <div className="h-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-lg flex flex-col border border-gray-100/50">
+    <div className="h-full w-64 p-4 bg-nino-bg lg:fixed lg:left-0 lg:top-0">
+      <div className="h-[calc(100vh-2rem)] bg-white/95 backdrop-blur-xl rounded-3xl shadow-lg flex flex-col border border-gray-100/50">
         <div className="px-3 pt-6 sm:pt-8 pb-4 sm:pb-6 border-b border-gray-100/50">
           <Link to="/brand/dashboard" className="flex items-center px-4">
             <img 

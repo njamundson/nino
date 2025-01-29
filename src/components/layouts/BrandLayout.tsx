@@ -25,12 +25,12 @@ const BrandLayout = () => {
           setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
       ) : (
-        <div className="hidden lg:block">
+        <div className="hidden lg:block w-64 flex-shrink-0">
           <Sidebar />
         </div>
       )}
 
-      <div className="flex-1 overflow-x-hidden w-full">
+      <div className="flex-1 lg:pl-64">
         <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-4 sm:py-6 px-4 md:px-8">
           <div className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/95 to-transparent rounded-3xl" />
           <div className="relative">
