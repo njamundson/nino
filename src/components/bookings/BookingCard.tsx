@@ -21,6 +21,7 @@ interface BookingCardProps {
       payment_details: string | null;
       compensation_details: string | null;
       deliverables?: string[] | null;
+      requirements?: string[] | null;
     };
     creator: {
       bio: string | null;
@@ -119,6 +120,24 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                       className="rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
                     >
                       {deliverable}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Requirements Section */}
+            {booking.opportunity.requirements && booking.opportunity.requirements.length > 0 && (
+              <div className="space-y-2">
+                <h5 className="text-sm font-medium text-gray-900">Requirements</h5>
+                <div className="flex flex-wrap gap-2">
+                  {booking.opportunity.requirements.map((requirement, index) => (
+                    <Badge 
+                      key={index}
+                      variant="secondary"
+                      className="rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+                    >
+                      {requirement}
                     </Badge>
                   ))}
                 </div>
