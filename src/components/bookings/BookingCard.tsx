@@ -50,11 +50,12 @@ interface BookingCardProps {
         last_name: string | null;
       } | null;
       profile_image_url: string | null;
+      user_id: string;
     };
     created_at: string;
   };
-  onChatClick: () => void;
-  onViewCreator: () => void;
+  onChatClick: (userId: string) => void;
+  onViewCreator: (creator: any) => void;
   onRefresh?: () => void;
 }
 
@@ -69,12 +70,12 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
 
   const handleChatClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onChatClick();
+    onChatClick(booking.creator.user_id);
   };
 
   const handleViewCreator = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onViewCreator();
+    onViewCreator(booking.creator);
   };
 
   const handleCancelBooking = async () => {
@@ -89,7 +90,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
 
       toast({
         title: "Booking Cancelled",
-        description: `The booking with ${creatorName} has been cancelled.`,
+        description: `The booking with ${creatorName} has been cancelled. They will be notified of this change.`,
       });
 
       // Close the dialog
@@ -108,6 +109,8 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
       });
     }
   };
+
+  // ... keep existing code (Project Details Section and Compensation Details rendering)
 
   return (
     <Card className="overflow-hidden bg-white border border-gray-100 rounded-2xl transition-all duration-300">
@@ -306,7 +309,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
           <AlertDialogHeader>
             <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to cancel the booking with {creatorName}? This action cannot be undone.
+              Are you sure you want to cancel this project? The creator will be notified.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
