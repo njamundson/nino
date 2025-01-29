@@ -11,9 +11,10 @@ interface CreatorBioProps {
   website?: string | null;
   specialties?: string[];
   creatorId: string;
+  onMessageClick?: () => void;
 }
 
-const CreatorBio = ({ bio, location, instagram, website, specialties = [], creatorId }: CreatorBioProps) => {
+const CreatorBio = ({ bio, location, instagram, website, specialties = [], creatorId, onMessageClick }: CreatorBioProps) => {
   const { data: application } = useQuery({
     queryKey: ['creator-application', creatorId],
     queryFn: async () => {
