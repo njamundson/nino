@@ -48,7 +48,7 @@ const CreatorBio = ({
       {bio && (
         <div className="space-y-2">
           <h3 className="text-lg font-semibold text-nino-text">About</h3>
-          <p className="text-nino-gray line-clamp-4">{bio}</p>
+          <p className="text-nino-gray">{bio}</p>
         </div>
       )}
 
@@ -59,7 +59,7 @@ const CreatorBio = ({
       {coverLetter && (
         <div className="space-y-2">
           <h3 className="text-lg font-semibold text-nino-text">Cover Letter</h3>
-          <p className="text-nino-gray line-clamp-3">{coverLetter}</p>
+          <p className="text-nino-gray">{coverLetter}</p>
         </div>
       )}
     </div>
