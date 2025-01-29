@@ -53,9 +53,9 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
   };
 
   return (
-    <div className="h-full max-h-[80vh] p-6">
+    <div className="h-full p-6">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-6 h-full">
-        <div className="relative h-full max-h-[600px]">
+        <div className="relative h-full">
           <CreatorImage 
             profileImageUrl={creator.profile_image_url} 
             fullName={fullName} 
@@ -80,8 +80,8 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
           </div>
 
           {application && (
-            <div className="mt-auto pt-6">
-              <div className="bg-gray-50 rounded-xl p-4 space-y-4">
+            <div className="mt-4">
+              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
                 <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
                 
                 <div className="space-y-2">
@@ -91,8 +91,9 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
                     </p>
                   )}
                   {application.cover_letter && (
-                    <div>
-                      <p className="text-sm text-gray-600 line-clamp-3">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-gray-700">Cover Letter:</p>
+                      <p className="text-sm text-gray-600 whitespace-pre-wrap">
                         {application.cover_letter}
                       </p>
                     </div>
@@ -100,11 +101,13 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
                 </div>
 
                 {application.status === 'pending' && (
-                  <ActionButtons
-                    onAccept={onAccept}
-                    onReject={onReject}
-                    isProcessing={isProcessing}
-                  />
+                  <div className="pt-2">
+                    <ActionButtons
+                      onAccept={onAccept}
+                      onReject={onReject}
+                      isProcessing={isProcessing}
+                    />
+                  </div>
                 )}
               </div>
             </div>
