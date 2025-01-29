@@ -1,8 +1,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +9,6 @@ import BrowseCreatorProfile from "./modal/BrowseCreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
 import { CreatorType } from "@/types/creator";
-import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface Creator {
   id: string;
@@ -160,18 +157,10 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 rounded-3xl overflow-hidden bg-nino-bg">
         {!showCampaigns ? (
-          <div>
-            <DialogHeader className="p-8 pb-0">
-              <DialogTitle className="text-3xl font-semibold text-nino-text">
-                {creator.first_name}
-              </DialogTitle>
-            </DialogHeader>
-            
-            <BrowseCreatorProfile 
-              creator={creatorData}
-              onInviteClick={() => setShowCampaigns(true)}
-            />
-          </div>
+          <BrowseCreatorProfile 
+            creator={creatorData}
+            onInviteClick={() => setShowCampaigns(true)}
+          />
         ) : (
           <CampaignSelection
             campaigns={campaigns}
