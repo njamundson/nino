@@ -138,7 +138,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
   if (!creator) return null;
 
-  const creatorData: Creator = {
+  const creatorData = {
     id: creator.id,
     bio: creator.bio || '',
     specialties: creator.specialties || [],
@@ -148,7 +148,13 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     profile_image_url: creator.profile_image_url,
     creator_type: creator.creator_type as CreatorType || 'solo',
     first_name: creator.first_name,
-    last_name: creator.last_name
+    last_name: creator.last_name,
+    user_id: '', // Required by Creator type
+    created_at: new Date().toISOString(), // Required by Creator type
+    updated_at: new Date().toISOString(), // Required by Creator type
+    profile_id: null, // Required by Creator type
+    notifications_enabled: true, // Optional but good to provide a default
+    onboarding_completed: true // Optional but good to provide a default
   };
 
   return (
