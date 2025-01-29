@@ -17,7 +17,7 @@ const BrandBookings = () => {
 
   return (
     <motion.div
-      className="min-h-screen space-y-6"
+      className="min-h-screen space-y-8 px-4 md:px-8 py-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
@@ -27,7 +27,7 @@ const BrandBookings = () => {
         description="Manage your active creator collaborations and projects"
       />
       
-      <div className="container mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto">
         <BrandBookingsList
           onChatClick={handleChatClick}
           onViewCreator={handleViewCreator}

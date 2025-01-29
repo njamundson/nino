@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import BookingCard from "./BookingCard";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -102,19 +101,19 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-[200px] w-full" />
-        <Skeleton className="h-[200px] w-full" />
+      <div className="space-y-6">
+        <Skeleton className="h-[300px] w-full rounded-2xl" />
+        <Skeleton className="h-[300px] w-full rounded-2xl" />
       </div>
     );
   }
 
   if (!bookings || bookings.length === 0) {
     return (
-      <Card className="p-8">
-        <div className="text-center text-muted-foreground py-8">
-          <p className="text-lg font-medium">No active bookings yet</p>
-          <p className="text-sm mt-2">
+      <Card className="p-12 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm">
+        <div className="text-center text-gray-500">
+          <p className="text-lg font-medium mb-2">No active bookings yet</p>
+          <p className="text-sm">
             When you accept creator applications, they will appear here
           </p>
         </div>
@@ -123,7 +122,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {bookings.map((booking: any) => (
         <BookingCard
           key={booking.id}
