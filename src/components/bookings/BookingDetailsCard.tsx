@@ -22,6 +22,7 @@ interface BookingDetailsCardProps {
   booking: {
     id: string;
     opportunity: {
+      id: string;
       title: string;
       status: string;
       start_date: string | null;
