@@ -38,6 +38,35 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
+  // Fetch the application data if not provided
+  const { data: applicationData } = useQuery({
+    queryKey: ['creator-application', creator?.id],
+    queryFn: async () => {
+      if (!creator || application) return null;
+
+      const { data, error } = await supabase
+        .from('applications')
+        .select(`
+          *,
+          opportunity:opportunities (
+            id,
+            title,
+            description
+          )
+        `)
+        .eq('creator_id', creator.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching application:', error);
+        return null;
+      }
+
+      return data;
+    },
+    enabled: !!creator && !application,
+  });
+
   const { data: campaigns, isLoading: isLoadingCampaigns } = useQuery({
     queryKey: ['brand-campaigns'],
     queryFn: async () => {
@@ -177,7 +206,7 @@ const CreatorModal = ({ creator, isOpen, onClose, application }: CreatorModalPro
             <CreatorProfile 
               creator={creatorData}
               onInviteClick={() => setShowCampaigns(true)}
-              application={application}
+              application={application || applicationData}
             />
           </div>
         ) : (

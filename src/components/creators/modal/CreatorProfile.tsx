@@ -9,7 +9,7 @@ interface CreatorProfileProps {
   onClose?: () => void;
   onInviteClick?: () => void;
   onMessageClick?: () => void;
-  application?: Application;
+  application?: Application | null;
 }
 
 const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, application }: CreatorProfileProps) => {
@@ -53,7 +53,11 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
             <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
             
             <div className="space-y-2">
-              <p className="text-sm text-gray-500">Submitted for: {application.opportunity?.title}</p>
+              {application.opportunity && (
+                <p className="text-sm text-gray-500">
+                  Submitted for: {application.opportunity.title}
+                </p>
+              )}
               {application.cover_letter && (
                 <div>
                   <p className="text-sm font-medium text-gray-700 mb-2">Cover Letter</p>
