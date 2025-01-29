@@ -13,7 +13,9 @@ import { toast } from "sonner";
 import { useState } from "react";
 import ApplicationsHeader from "./card/applications/ApplicationsHeader";
 import CreatorProfile from "@/components/creators/modal/CreatorProfile";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useApplicationActions } from "@/hooks/useApplicationActions";
+import AcceptDialog from "./modals/profile/AcceptDialog";
 
 interface CampaignCardProps {
   campaign: {
@@ -41,10 +43,6 @@ interface CampaignCardProps {
         profile_image_url: string | null;
         first_name: string | null;
         last_name: string | null;
-        profile?: {
-          first_name: string | null;
-          last_name: string | null;
-        } | null;
       };
     }>;
   };
@@ -55,6 +53,12 @@ interface CampaignCardProps {
 const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   const [isApplicationsExpanded, setIsApplicationsExpanded] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [showAcceptDialog, setShowAcceptDialog] = useState(false);
+  
+  const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions({
+    opportunityId: campaign.id,
+  });
 
   const handleDelete = async () => {
     try {
@@ -66,12 +70,35 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     }
   };
 
-  const handleViewCreator = (creator: any) => {
+  const handleViewCreator = (creator: any, application: any) => {
     setSelectedCreator(creator);
+    setSelectedApplication(application);
   };
 
   const handleCloseCreatorModal = () => {
     setSelectedCreator(null);
+    setSelectedApplication(null);
+  };
+
+  const handleAccept = async () => {
+    if (!selectedApplication?.id) return;
+    
+    const success = await handleAcceptApplication(selectedApplication.id);
+    if (success) {
+      toast.success("Application accepted successfully");
+      handleCloseCreatorModal();
+    }
+    setShowAcceptDialog(false);
+  };
+
+  const handleReject = async () => {
+    if (!selectedApplication?.id) return;
+    
+    const success = await handleRejectApplication(selectedApplication.id);
+    if (success) {
+      toast.success("Application rejected successfully");
+      handleCloseCreatorModal();
+    }
   };
 
   const applications = campaign.applications || [];
@@ -172,7 +199,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                     <div
                       key={application.id}
                       className="p-3 bg-gray-50/80 rounded-xl cursor-pointer hover:bg-gray-100/80 transition-colors"
-                      onClick={() => handleViewCreator(application.creator)}
+                      onClick={() => handleViewCreator(application.creator, application)}
                     >
                       <div className="flex items-center justify-between">
                         <div>
@@ -204,14 +231,24 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
 
       <Dialog open={!!selectedCreator} onOpenChange={handleCloseCreatorModal}>
         <DialogContent className="max-w-4xl p-0">
+          <DialogTitle className="sr-only">Creator Profile</DialogTitle>
           <CreatorProfile
             creator={selectedCreator}
             onClose={handleCloseCreatorModal}
             onInviteClick={() => {}}
             onMessageClick={() => {}}
+            application={selectedApplication}
           />
         </DialogContent>
       </Dialog>
+
+      <AcceptDialog
+        isOpen={showAcceptDialog}
+        onOpenChange={setShowAcceptDialog}
+        onConfirm={handleAccept}
+        creatorName={`${selectedCreator?.first_name || ''} ${selectedCreator?.last_name || ''}`}
+        isProcessing={isProcessing}
+      />
     </>
   );
 };
