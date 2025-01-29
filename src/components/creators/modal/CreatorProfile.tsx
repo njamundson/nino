@@ -13,6 +13,8 @@ interface CreatorProfileProps {
 }
 
 const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, application }: CreatorProfileProps) => {
+  if (!creator) return null;
+
   const fullName = creator.first_name && creator.last_name 
     ? `${creator.first_name} ${creator.last_name}`
     : creator.first_name || 'Creator';
