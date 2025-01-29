@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
+import CreatorSpecialties from "./CreatorSpecialties";
 import SocialLinks from "./social/SocialLinks";
-import CreatorSpecialties from "./bio/CreatorSpecialties";
 
 interface CreatorBioProps {
   bio: string | null;
@@ -15,7 +15,7 @@ interface CreatorBioProps {
 
 const CreatorBio = ({ 
   bio, 
-  specialties, 
+  specialties,
   location,
   instagram,
   website,
@@ -24,7 +24,7 @@ const CreatorBio = ({
   fullName
 }: CreatorBioProps) => {
   return (
-    <div className="flex-grow space-y-6">
+    <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-nino-text">
           {fullName}
@@ -43,14 +43,25 @@ const CreatorBio = ({
           website={website}
           onMessageClick={onMessageClick}
         />
-
-        <h3 className="text-lg font-semibold text-nino-text">About</h3>
-        <p className="text-base leading-relaxed text-nino-text/90">
-          {bio || "No bio available"}
-        </p>
       </div>
 
-      <CreatorSpecialties specialties={specialties} />
+      {bio && (
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold text-nino-text">About</h3>
+          <p className="text-nino-gray line-clamp-4">{bio}</p>
+        </div>
+      )}
+
+      {specialties && specialties.length > 0 && (
+        <CreatorSpecialties specialties={specialties} />
+      )}
+
+      {coverLetter && (
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold text-nino-text">Cover Letter</h3>
+          <p className="text-nino-gray line-clamp-3">{coverLetter}</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -53,61 +53,64 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
   };
 
   return (
-    <div className="max-h-[85vh] overflow-y-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-        <div className="md:max-h-[600px] overflow-hidden">
+    <div className="h-full max-h-[80vh] p-6">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-6 h-full">
+        <div className="relative h-full max-h-[600px]">
           <CreatorImage 
             profileImageUrl={creator.profile_image_url} 
             fullName={fullName} 
           />
         </div>
-        <div className="space-y-4">
-          <CreatorBio 
-            bio={creator.bio}
-            specialties={creator.specialties}
-            location={creator.location}
-            instagram={creator.instagram}
-            website={creator.website}
-            onMessageClick={onMessageClick}
-            fullName={fullName}
-          />
-          <CreatorSocialLinks 
-            instagram={creator.instagram}
-            website={creator.website}
-          />
+        
+        <div className="flex flex-col h-full">
+          <div className="flex-grow space-y-6">
+            <CreatorBio 
+              bio={creator.bio}
+              specialties={creator.specialties}
+              location={creator.location}
+              instagram={creator.instagram}
+              website={creator.website}
+              onMessageClick={onMessageClick}
+              fullName={fullName}
+            />
+            <CreatorSocialLinks 
+              instagram={creator.instagram}
+              website={creator.website}
+            />
+          </div>
+
+          {application && (
+            <div className="mt-auto pt-6">
+              <div className="bg-gray-50 rounded-xl p-4 space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
+                
+                <div className="space-y-2">
+                  {application.opportunity && (
+                    <p className="text-sm text-gray-500">
+                      Submitted for: {application.opportunity.title}
+                    </p>
+                  )}
+                  {application.cover_letter && (
+                    <div>
+                      <p className="text-sm text-gray-600 line-clamp-3">
+                        {application.cover_letter}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {application.status === 'pending' && (
+                  <ActionButtons
+                    onAccept={onAccept}
+                    onReject={onReject}
+                    isProcessing={isProcessing}
+                  />
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {application && (
-        <div className="px-6 pb-6">
-          <div className="bg-gray-50 rounded-xl p-4 space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
-            
-            <div className="space-y-2">
-              {application.opportunity && (
-                <p className="text-sm text-gray-500">
-                  Submitted for: {application.opportunity.title}
-                </p>
-              )}
-              {application.cover_letter && (
-                <div>
-                  <p className="text-sm text-gray-600 whitespace-pre-wrap max-h-[200px] overflow-y-auto">
-                    {application.cover_letter}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {application.status === 'pending' && (
-              <ActionButtons
-                onAccept={onAccept}
-                onReject={onReject}
-                isProcessing={isProcessing}
-              />
-            )}
-          </div>
-        </div>
-      )}
 
       <AcceptDialog
         isOpen={showAcceptDialog}
