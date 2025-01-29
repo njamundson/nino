@@ -104,7 +104,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
           </div>
 
           {/* Compensation Details */}
-          {(booking.opportunity.payment_details || booking.opportunity.compensation_details) && (
+          <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
               {booking.opportunity.payment_details && (
                 <Badge variant="outline" className="rounded-full border-gray-200">
@@ -117,7 +117,25 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                 </Badge>
               )}
             </div>
-          )}
+
+            {/* Deliverables Section - Moved up */}
+            {booking.opportunity.deliverables && booking.opportunity.deliverables.length > 0 && (
+              <div className="space-y-2">
+                <h5 className="text-sm font-medium text-gray-900">Deliverables</h5>
+                <div className="flex flex-wrap gap-2">
+                  {booking.opportunity.deliverables.map((deliverable, index) => (
+                    <Badge 
+                      key={index}
+                      variant="secondary"
+                      className="rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+                    >
+                      {deliverable}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Booked Creator Section */}
@@ -166,24 +184,6 @@ const BookingCard = ({ booking, onChatClick, onViewCreator }: BookingCardProps) 
                   View Profile
                 </Button>
               </div>
-
-              {/* Deliverables Section */}
-              {booking.opportunity.deliverables && booking.opportunity.deliverables.length > 0 && (
-                <div className="space-y-2">
-                  <h5 className="text-sm font-medium text-gray-900">Deliverables</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {booking.opportunity.deliverables.map((deliverable, index) => (
-                      <Badge 
-                        key={index}
-                        variant="secondary"
-                        className="rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
-                      >
-                        {deliverable}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
             </CollapsibleContent>
           </div>
         </Collapsible>
