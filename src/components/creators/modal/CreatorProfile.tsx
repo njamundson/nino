@@ -1,56 +1,29 @@
-import { Button } from "@/components/ui/button";
+import { Creator } from "@/types/creator";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorImage from "./profile/CreatorImage";
-
-interface Creator {
-  id: string;
-  bio: string | null;
-  location: string | null;
-  specialties: string[] | null;
-  instagram: string | null;
-  website: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  profile_image_url: string | null;
-}
+import CreatorSocialLinks from "./profile/CreatorSocialLinks";
 
 interface CreatorProfileProps {
   creator: Creator;
-  onInviteClick: () => void;
-  onMessageClick?: () => void;
+  onClose?: () => void;
 }
 
-const CreatorProfile = ({ creator, onInviteClick, onMessageClick }: CreatorProfileProps) => {
-  // Safely get the full name using direct properties instead of nested profile
-  const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.trim();
+const CreatorProfile = ({ creator, onClose }: CreatorProfileProps) => {
+  const fullName = creator.first_name && creator.last_name 
+    ? `${creator.first_name} ${creator.last_name}`
+    : 'Creator';
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="space-y-6">
+      <h2 className="text-2xl font-semibold text-gray-900 px-6 pt-6">
+        {fullName}
+      </h2>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-        <CreatorImage 
-          profileImageUrl={creator.profile_image_url} 
-          fullName={fullName} 
-        />
-        
-        <div className="flex flex-col h-full space-y-6">
-          <CreatorBio 
-            bio={creator.bio}
-            location={creator.location}
-            specialties={creator.specialties}
-            instagram={creator.instagram}
-            website={creator.website}
-            onMessageClick={onMessageClick}
-          />
-
-          <div className="mt-auto">
-            <Button
-              size="lg"
-              className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white rounded-[24px] shadow-md transition-all duration-300 hover:shadow-lg"
-              onClick={onInviteClick}
-            >
-              Invite to Campaign
-            </Button>
-          </div>
+        <CreatorImage creator={creator} />
+        <div className="space-y-6">
+          <CreatorBio creator={creator} />
+          <CreatorSocialLinks creator={creator} />
         </div>
       </div>
     </div>
