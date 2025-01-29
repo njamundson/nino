@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import CreatorCard from "./CreatorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -22,7 +22,26 @@ const CreatorGrid = ({
   const isMobile = useIsMobile();
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchCreators = async ({ pageParam = 0 }) => {
+  // Memoize the base query to prevent unnecessary rebuilds
+  const baseQuery = useMemo(() => {
+    return supabase
+      .from('creators')
+      .select(`
+        id,
+        first_name,
+        last_name,
+        bio,
+        location,
+        specialties,
+        creator_type,
+        instagram,
+        website,
+        profile_image_url
+      `)
+      .eq('onboarding_completed', true);
+  }, []);
+
+  const fetchCreators = useCallback(async ({ pageParam = 0 }) => {
     try {
       console.log("Fetching creators with filters:", { 
         selectedSpecialties, 
@@ -31,24 +50,11 @@ const CreatorGrid = ({
         page: pageParam
       });
 
-      let query = supabase
-        .from('creators')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          bio,
-          location,
-          specialties,
-          creator_type,
-          instagram,
-          website,
-          profile_image_url
-        `)
-        .eq('onboarding_completed', true)
-        .range(pageParam * CREATORS_PER_PAGE, (pageParam + 1) * CREATORS_PER_PAGE - 1);
+      let query = baseQuery.range(
+        pageParam * CREATORS_PER_PAGE, 
+        (pageParam + 1) * CREATORS_PER_PAGE - 1
+      );
 
-      // Only apply filters if they are not empty/null
       if (selectedSpecialties.length > 0) {
         query = query.contains('specialties', selectedSpecialties);
       }
@@ -64,6 +70,7 @@ const CreatorGrid = ({
       const { data: creatorsData, error: fetchError } = await query;
 
       if (fetchError) {
+        console.error("Error fetching creators:", fetchError);
         throw fetchError;
       }
 
@@ -88,8 +95,6 @@ const CreatorGrid = ({
           last_name: creator.last_name || ''
         }
       }));
-
-      console.log("Fetched creators:", formattedCreators);
       
       const hasMore = formattedCreators.length === CREATORS_PER_PAGE;
       return {
@@ -101,7 +106,7 @@ const CreatorGrid = ({
       setError(error instanceof Error ? error : new Error('An error occurred'));
       throw error;
     }
-  };
+  }, [baseQuery, selectedSpecialties, selectedCreatorType, selectedLocations]);
 
   const {
     data,
@@ -114,7 +119,13 @@ const CreatorGrid = ({
     queryFn: fetchCreators,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    gcTime: 1000 * 60 * 10, // Keep unused data in cache for 10 minutes
   });
+
+  const allCreators = useMemo(() => {
+    return data?.pages.flatMap(page => page.creators) || [];
+  }, [data?.pages]);
 
   if (error) {
     return (
@@ -137,8 +148,6 @@ const CreatorGrid = ({
       </div>
     );
   }
-
-  const allCreators = data?.pages.flatMap(page => page.creators) || [];
 
   return (
     <motion.div 
