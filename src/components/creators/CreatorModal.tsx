@@ -140,15 +140,19 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
 
   const creatorData = {
     id: creator.id,
+    firstName: creator.first_name || '',
+    lastName: creator.last_name || '',
     bio: creator.bio || '',
     specialties: creator.specialties || [],
     instagram: creator.instagram || '',
     website: creator.website || '',
     location: creator.location || '',
-    profile_image_url: creator.profile_image_url,
-    creator_type: creator.creator_type as CreatorType || 'solo',
-    first_name: creator.first_name,
-    last_name: creator.last_name,
+    profileImage: creator.profile_image_url,
+    creatorType: creator.creator_type as CreatorType || 'solo',
+    profile: {
+      first_name: creator.first_name,
+      last_name: creator.last_name
+    },
     user_id: '', // Required by Creator type
     created_at: new Date().toISOString(), // Required by Creator type
     updated_at: new Date().toISOString(), // Required by Creator type
@@ -167,7 +171,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
         ) : !showCampaigns ? (
           <div>
             <DialogHeader className="p-8 pb-0">
-              <DialogTitle className="text-3xl font-semibold text-nino-text">
+              <DialogTitle className="text-4xl font-semibold text-nino-text">
                 {creator.first_name}
               </DialogTitle>
             </DialogHeader>

@@ -18,9 +18,9 @@ const CreatorProfile = ({ creator, onClose, onInviteClick }: CreatorProfileProps
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const fullName = creator.first_name && creator.last_name 
-    ? `${creator.first_name} ${creator.last_name}`
-    : creator.first_name || 'Creator';
+  const fullName = creator.firstName && creator.lastName 
+    ? `${creator.firstName} ${creator.lastName}`
+    : creator.firstName || 'Creator';
 
   const handleAccept = async () => {
     setIsAcceptDialogOpen(true);
@@ -62,15 +62,27 @@ const CreatorProfile = ({ creator, onClose, onInviteClick }: CreatorProfileProps
       </h2>
 
       <div className="px-6">
-        <CreatorImage imageUrl={creator.profile_image_url} />
+        <CreatorImage 
+          profileImageUrl={creator.profileImage} 
+          fullName={fullName}
+        />
       </div>
 
       <div className="px-6">
-        <CreatorBio creator={creator} />
+        <CreatorBio 
+          bio={creator.bio}
+          specialties={creator.specialties}
+          location={creator.location}
+          instagram={creator.instagram}
+          website={creator.website}
+        />
       </div>
 
       <div className="px-6 pb-6">
-        <CreatorSocialLinks creator={creator} />
+        <CreatorSocialLinks 
+          instagram={creator.instagram}
+          website={creator.website}
+        />
         <div className="mt-6">
           <ActionButtons
             onAccept={handleAccept}
