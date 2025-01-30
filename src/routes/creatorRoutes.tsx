@@ -1,14 +1,24 @@
-import { Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import CreatorLayout from "@/components/layouts/CreatorLayout";
 import ProtectedCreatorRoute from "@/components/auth/ProtectedCreatorRoute";
-import Dashboard from "@/pages/Dashboard";
-import Projects from "@/pages/Projects";
-import Proposals from "@/pages/Proposals";
-import Bookings from "@/pages/Bookings";
-import Messages from "@/pages/Messages";
-import Settings from "@/pages/Settings";
-import CompletedProjects from "@/pages/CompletedProjects";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
+
+// Lazy load page components
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Projects = lazy(() => import("@/pages/Projects"));
+const Proposals = lazy(() => import("@/pages/Proposals"));
+const Bookings = lazy(() => import("@/pages/Bookings"));
+const Messages = lazy(() => import("@/pages/Messages"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const CompletedProjects = lazy(() => import("@/pages/CompletedProjects"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <LoadingSpinner size="lg" className="text-nino-primary/40" />
+  </div>
+);
 
 export const creatorRoutes = [
   {
@@ -24,7 +34,9 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Dashboard />
+          <Suspense fallback={<PageLoader />}>
+            <Dashboard />
+          </Suspense>
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -34,7 +46,9 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Projects />
+          <Suspense fallback={<PageLoader />}>
+            <Projects />
+          </Suspense>
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -44,7 +58,9 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <CompletedProjects />
+          <Suspense fallback={<PageLoader />}>
+            <CompletedProjects />
+          </Suspense>
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -54,7 +70,9 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Proposals />
+          <Suspense fallback={<PageLoader />}>
+            <Proposals />
+          </Suspense>
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -64,7 +82,9 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Bookings />
+          <Suspense fallback={<PageLoader />}>
+            <Bookings />
+          </Suspense>
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -74,7 +94,9 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Messages />
+          <Suspense fallback={<PageLoader />}>
+            <Messages />
+          </Suspense>
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -84,7 +106,9 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Settings />
+          <Suspense fallback={<PageLoader />}>
+            <Settings />
+          </Suspense>
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
