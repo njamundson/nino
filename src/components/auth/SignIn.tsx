@@ -53,19 +53,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
       console.log("User authenticated, checking profile...");
       
-      // Check for creator profile
-      const { data: creator, error: creatorError } = await supabase
-        .from('creators')
-        .select('id, onboarding_completed')
-        .eq('user_id', data.user.id)
-        .maybeSingle();
-
-      if (creatorError) {
-        console.error('Error fetching creator profile:', creatorError);
-        throw creatorError;
-      }
-
-      // Check for brand profile
+      // Check for brand profile first
       const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id, onboarding_completed')
@@ -77,22 +65,43 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         throw brandError;
       }
 
-      console.log("Profile check complete:", { creator, brand });
-
-      // Handle navigation based on user type and onboarding status
-      if (creator) {
-        if (creator.onboarding_completed) {
-          navigate('/creator/dashboard', { replace: true });
-        } else {
-          navigate('/onboarding/creator', { replace: true });
-        }
-      } else if (brand) {
+      // If brand profile exists, handle brand navigation
+      if (brand) {
+        console.log("Brand profile found:", brand);
         if (brand.onboarding_completed) {
           navigate('/brand/dashboard', { replace: true });
         } else {
           navigate('/onboarding/brand', { replace: true });
         }
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        });
+        return; // Early return after handling brand navigation
+      }
+
+      // Only check for creator profile if no brand profile exists
+      const { data: creator, error: creatorError } = await supabase
+        .from('creators')
+        .select('id, onboarding_completed')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
+
+      if (creatorError) {
+        console.error('Error fetching creator profile:', creatorError);
+        throw creatorError;
+      }
+
+      // Handle creator navigation
+      if (creator) {
+        console.log("Creator profile found:", creator);
+        if (creator.onboarding_completed) {
+          navigate('/creator/dashboard', { replace: true });
+        } else {
+          navigate('/onboarding/creator', { replace: true });
+        }
       } else {
+        console.log("No profile found, redirecting to onboarding");
         navigate('/onboarding', { replace: true });
       }
 
