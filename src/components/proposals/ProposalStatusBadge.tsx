@@ -13,25 +13,25 @@ export const ProposalStatusBadge = ({ status }: ProposalStatusBadgeProps) => {
         return {
           icon: Clock,
           text: status === 'invited' ? 'Invited' : 'Pending',
-          className: 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20'
+          className: 'bg-gradient-to-b from-nino-text/80 to-nino-text/90 text-nino-white'
         };
       case 'accepted':
         return {
           icon: Check,
           text: 'Accepted',
-          className: 'bg-green-500/10 text-green-500 hover:bg-green-500/20'
+          className: 'bg-gradient-to-b from-nino-primary/90 to-nino-primary text-nino-white'
         };
       case 'rejected':
         return {
           icon: X,
           text: 'Rejected',
-          className: 'bg-red-500/10 text-red-500 hover:bg-red-500/20'
+          className: 'bg-gradient-to-b from-nino-gray/80 to-nino-gray/90 text-nino-white'
         };
       default:
         return {
           icon: Clock,
           text: status,
-          className: 'bg-gray-500/10 text-gray-500 hover:bg-gray-500/20'
+          className: 'bg-gradient-to-b from-nino-gray/80 to-nino-gray/90 text-nino-white'
         };
     }
   };
@@ -41,7 +41,7 @@ export const ProposalStatusBadge = ({ status }: ProposalStatusBadgeProps) => {
   return (
     <Badge 
       variant="secondary"
-      className={`${className} flex items-center gap-1.5 px-3 py-1.5 shadow-sm`}
+      className={`${className} border-0 shadow-sm backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5 font-medium`}
     >
       <Icon className="w-4 h-4" />
       {text}
