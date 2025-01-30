@@ -42,9 +42,9 @@ const Proposals = () => {
   }
 
   // Filter for brand invitations (initiated by brand) that don't have a cover letter yet
-  const pendingInvitations = (applications?.filter((app: Application) => 
+  const pendingInvitations = applications?.filter(app => 
     app.initiated_by === 'brand' && !app.cover_letter
-  ) || []) as Application[];
+  ) || [] as Application[];
 
   return (
     <motion.div 
