@@ -28,21 +28,28 @@ const menuItems = [
   { icon: CheckCircle, label: "Completed Projects", path: "/creator/completed-projects" },
 ];
 
+// Memoized logo component to prevent unnecessary re-renders
+const Logo = memo(() => (
+  <img 
+    src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
+    alt="NINO" 
+    className="h-16"
+    loading="eager"
+    fetchPriority="high"
+    decoding="sync"
+    style={{ 
+      imageRendering: 'crisp-edges',
+      willChange: 'transform'
+    }}
+  />
+));
+
+Logo.displayName = 'Logo';
+
 const SidebarContent = memo(({ handleNavigation, location, handleSignOut }: any) => (
   <div className="h-full bg-white flex flex-col rounded-3xl shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] border border-gray-100/50">
     <div className="p-6 flex justify-start border-b border-gray-100/50">
-      <img 
-        src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
-        alt="NINO" 
-        className="h-16"
-        loading="eager"
-        fetchPriority="high"
-        decoding="sync"
-        style={{ 
-          imageRendering: 'crisp-edges',
-          willChange: 'transform'
-        }}
-      />
+      <Logo />
     </div>
 
     <nav className="flex-1 px-4 py-6 overflow-hidden">
