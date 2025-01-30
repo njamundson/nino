@@ -1,40 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Loader2, CheckCircle } from "lucide-react";
+import { Plus, Loader2, CheckCircle, BadgeCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProjectModal from "./ProjectModal";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-
-interface Brand {
-  id: string;
-  company_name: string | null;
-  brand_type: string | null;
-  location: string | null;
-  description: string | null;
-  website: string | null;
-  instagram: string | null;
-}
-
-interface Opportunity {
-  id: string;
-  brand_id: string;
-  title: string;
-  description: string | null;
-  location: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  perks: string[] | null;
-  requirements: string[] | null;
-  payment_details: string | null;
-  compensation_details: string | null;
-  deliverables: string[] | null;
-  brand: Brand | null;
-  image_url: string | null;
-  application_status?: string;
-  application_id?: string;
-}
+import { Application, Opportunity } from "@/integrations/supabase/types/opportunity";
 
 interface ProjectCardProps {
   opportunity: Opportunity;
@@ -47,6 +19,11 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Check if there's an existing application for this opportunity
+  const hasInvitation = opportunity.applications?.some(
+    (app: Application) => app.initiated_by === "brand" && !app.cover_letter
+  );
   
   const handleViewDetails = () => {
     setIsLoading(true);
@@ -94,40 +71,49 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           </Badge>
         )}
 
-        <div className="absolute bottom-20 left-6 right-6 text-white">
-          <p className="text-sm font-medium text-white/90 mb-1">
-            {opportunity.brand?.company_name || "Loading..."}
-          </p>
-          <h3 className="text-2xl font-semibold leading-tight line-clamp-2">
-            {opportunity.title}
-          </h3>
-          {opportunity.location && (
-            <p className="text-sm text-white/80 mt-2">
-              📍 {opportunity.location}
-            </p>
-          )}
-        </div>
+        {hasInvitation && (
+          <Badge 
+            variant="secondary" 
+            className="absolute top-6 right-6 bg-blue-500 text-white border-0 flex items-center gap-1.5"
+          >
+            <BadgeCheck className="w-4 h-4" />
+            Invited
+          </Badge>
+        )}
 
-        <Button
-          size="icon"
-          variant="secondary"
-          className="absolute bottom-6 right-6 rounded-full bg-white/90 hover:bg-white transition-all duration-300 hover:scale-105 shadow-md"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="h-4 w-4 text-gray-900" />
-          )}
-        </Button>
+        <div className="absolute bottom-20 left-6 right-6 text-white">
+          <div className="flex flex-col gap-4">
+            <div>
+              <p className="text-sm text-white/90 mb-1">
+                {opportunity.brand?.company_name || "Unknown Brand"}
+              </p>
+              <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                {opportunity.title}
+              </h3>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleViewDetails}
+                className="bg-white/90 hover:bg-white text-gray-900"
+              >
+                View Details
+              </Button>
+            </div>
+          </div>
+        </div>
       </Card>
 
-      <ProjectModal 
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        opportunity={opportunity}
-        isCompleted={isCompleted}
-      />
+      {showModal && (
+        <ProjectModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          opportunity={opportunity}
+          isCompleted={isCompleted}
+        />
+      )}
     </>
   );
 };
