@@ -28,6 +28,11 @@ const CampaignHeader = ({
   onDelete,
   onViewCreator,
 }: CampaignHeaderProps) => {
+  // Filter to only show valid applications (has cover letter and not cancelled)
+  const validApplications = applications.filter(
+    app => app.cover_letter && app.cover_letter !== '' && app.status !== 'cancelled'
+  );
+
   return (
     <div className="flex items-start justify-between">
       <div className="space-y-1 flex-1 min-w-0">
@@ -52,11 +57,11 @@ const CampaignHeader = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64 bg-white">
             <div className="px-2 py-1.5 text-sm font-semibold">
-              Applications ({applications.length})
+              Applications ({validApplications.length})
             </div>
             <DropdownMenuSeparator />
-            {applications.length > 0 ? (
-              applications.map((application) => (
+            {validApplications.length > 0 ? (
+              validApplications.map((application) => (
                 <DropdownMenuItem
                   key={application.id}
                   className="flex items-center gap-2 p-2 cursor-pointer"
