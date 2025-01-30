@@ -1,5 +1,4 @@
 import { lazy } from "react";
-import CreatorLayout from "@/components/layouts/CreatorLayout";
 import ProtectedCreatorRoute from "@/components/auth/ProtectedCreatorRoute";
 import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
 
@@ -22,82 +21,66 @@ export const creatorRoutes = [
     ),
   },
   {
-    path: "/creator/dashboard",
+    path: "dashboard",
     element: (
       <ProtectedCreatorRoute>
-        <CreatorLayout>
-          <Dashboard />
-        </CreatorLayout>
+        <Dashboard />
       </ProtectedCreatorRoute>
     ),
   },
   {
-    path: "/creator/projects",
+    path: "projects",
     element: (
       <ProtectedCreatorRoute>
-        <CreatorLayout>
-          <Projects />
-        </CreatorLayout>
+        <Projects />
       </ProtectedCreatorRoute>
     ),
   },
   {
-    path: "/creator/completed-projects",
+    path: "completed-projects",
     element: (
       <ProtectedCreatorRoute>
-        <CreatorLayout>
-          <CompletedProjects />
-        </CreatorLayout>
+        <CompletedProjects />
       </ProtectedCreatorRoute>
     ),
   },
   {
-    path: "/creator/proposals",
+    path: "proposals",
     element: (
       <ProtectedCreatorRoute>
-        <CreatorLayout>
-          <Proposals />
-        </CreatorLayout>
+        <Proposals />
       </ProtectedCreatorRoute>
     ),
   },
   {
-    path: "/creator/applications",
+    path: "applications",
     element: (
       <ProtectedCreatorRoute>
-        <CreatorLayout>
-          <Applications />
-        </CreatorLayout>
+        <Applications />
       </ProtectedCreatorRoute>
     ),
   },
   {
-    path: "/creator/bookings",
+    path: "bookings",
     element: (
       <ProtectedCreatorRoute>
-        <CreatorLayout>
-          <Bookings />
-        </CreatorLayout>
+        <Bookings />
       </ProtectedCreatorRoute>
     ),
   },
   {
-    path: "/creator/messages",
+    path: "messages",
     element: (
       <ProtectedCreatorRoute>
-        <CreatorLayout>
-          <Messages />
-        </CreatorLayout>
+        <Messages />
       </ProtectedCreatorRoute>
     ),
   },
   {
-    path: "/creator/settings",
+    path: "settings",
     element: (
       <ProtectedCreatorRoute>
-        <CreatorLayout>
-          <Settings />
-        </CreatorLayout>
+        <Settings />
       </ProtectedCreatorRoute>
     ),
   },

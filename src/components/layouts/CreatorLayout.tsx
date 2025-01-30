@@ -1,13 +1,9 @@
-import { ReactNode, Suspense, memo, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Suspense, memo, useEffect } from "react";
+import { useLocation, Outlet } from "react-router-dom";
 import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
-
-interface CreatorLayoutProps {
-  children: ReactNode;
-}
 
 // Static sidebar wrapper that never re-renders
 const StaticSidebar = memo(() => <Sidebar />, () => true);
@@ -18,7 +14,7 @@ const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
 
 // Optimized page transition component with fade animation
-const PageTransition = memo(({ children }: { children: ReactNode }) => (
+const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -56,7 +52,7 @@ const LoadingTransition = () => (
   </motion.div>
 );
 
-const CreatorLayout = ({ children }: CreatorLayoutProps) => {
+const CreatorLayout = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
   
@@ -94,7 +90,7 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
           <PageTransition key={location.pathname.split("/").slice(0, 3).join("/")}>
             <main className="p-4 pt-28 md:p-8 md:pt-32">
               <Suspense fallback={<LoadingTransition />}>
-                {children}
+                <Outlet />
               </Suspense>
             </main>
           </PageTransition>
