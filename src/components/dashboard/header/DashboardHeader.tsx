@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { NotificationPopover } from './NotificationPopover';
-import { UserMenu } from './UserMenu';
+import UserMenu from './UserMenu';
 
 const DashboardHeader = () => {
   return (
