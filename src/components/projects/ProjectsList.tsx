@@ -60,7 +60,7 @@ const ProjectsList = () => {
               opportunity_id
             )
           `)
-          .eq('status', 'open');
+          .not('status', 'in', ['completed', 'closed']); // Show all opportunities that aren't completed or closed
 
         if (error) {
           console.error("Error fetching opportunities:", error);
