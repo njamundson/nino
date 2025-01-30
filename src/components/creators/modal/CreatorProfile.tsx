@@ -2,7 +2,7 @@ import { Creator } from "@/types/creator";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorImage from "./profile/CreatorImage";
 import CreatorSocialLinks from "./profile/CreatorSocialLinks";
-import { Application } from "@/integrations/supabase/types/opportunity";
+import { Application } from "@/integrations/supabase/types/application";
 import ActionButtons from "@/components/campaigns/modals/profile/ActionButtons";
 import AcceptDialog from "@/components/campaigns/modals/profile/AcceptDialog";
 import { useState } from "react";
@@ -85,7 +85,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
                 <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
                 
                 <div className="space-y-2">
-                  {application.opportunity && (
+                  {application.opportunity?.title && (
                     <p className="text-sm text-gray-500">
                       Submitted for: {application.opportunity.title}
                     </p>
