@@ -2,58 +2,127 @@ import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useCreatorDashboard } from "@/hooks/useCreatorDashboard";
 
 interface Note {
-  id: number;
+  id: string;
   text: string;
   completed: boolean;
+  created_at?: string;
 }
 
 const QuickNotes = () => {
   const [newNote, setNewNote] = useState('');
   const [notes, setNotes] = useState<Note[]>([]);
   const { toast } = useToast();
+  const { data: creator } = useCreatorDashboard();
 
   useEffect(() => {
-    const savedNotes = localStorage.getItem('creator-notes');
-    if (savedNotes) {
-      setNotes(JSON.parse(savedNotes));
+    if (creator) {
+      fetchNotes();
     }
-  }, []);
+  }, [creator]);
 
-  useEffect(() => {
-    localStorage.setItem('creator-notes', JSON.stringify(notes));
-  }, [notes]);
+  const fetchNotes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('creator_notes')
+        .select('*')
+        .eq('creator_id', creator?.id)
+        .order('created_at', { ascending: false });
 
-  const handleAddNote = (e: React.FormEvent) => {
+      if (error) throw error;
+      setNotes(data || []);
+    } catch (error) {
+      console.error('Error fetching notes:', error);
+      toast({
+        title: "Error loading notes",
+        description: "Please try refreshing the page",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newNote.trim()) return;
+    if (!newNote.trim() || !creator) return;
     
-    const note = {
-      id: Date.now(),
-      text: newNote,
-      completed: false
-    };
-    
-    setNotes([...notes, note]);
-    setNewNote('');
-    
-    toast({
-      description: "Note added successfully",
-    });
+    try {
+      const { data, error } = await supabase
+        .from('creator_notes')
+        .insert([{
+          creator_id: creator.id,
+          text: newNote,
+          completed: false
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setNotes([data, ...notes]);
+      setNewNote('');
+      
+      toast({
+        description: "Note added successfully",
+      });
+    } catch (error) {
+      console.error('Error adding note:', error);
+      toast({
+        title: "Error adding note",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
-  const toggleNote = (id: number) => {
-    setNotes(notes.map(note => 
-      note.id === id ? { ...note, completed: !note.completed } : note
-    ));
+  const toggleNote = async (id: string) => {
+    try {
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+
+      const { error } = await supabase
+        .from('creator_notes')
+        .update({ completed: !note.completed })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setNotes(notes.map(note => 
+        note.id === id ? { ...note, completed: !note.completed } : note
+      ));
+    } catch (error) {
+      console.error('Error updating note:', error);
+      toast({
+        title: "Error updating note",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
-  const deleteNote = (id: number) => {
-    setNotes(notes.filter(note => note.id !== id));
-    toast({
-      description: "Note deleted successfully",
-    });
+  const deleteNote = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('creator_notes')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setNotes(notes.filter(note => note.id !== id));
+      toast({
+        description: "Note deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      toast({
+        title: "Error deleting note",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

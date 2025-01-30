@@ -2,59 +2,127 @@ import React, { useState, useEffect } from 'react';
 import { Target } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useCreatorDashboard } from "@/hooks/useCreatorDashboard";
 
 interface Goal {
-  id: number;
+  id: string;
   text: string;
   completed: boolean;
-  dueDate?: string;
+  created_at?: string;
 }
 
 const Goals = () => {
   const [newGoal, setNewGoal] = useState('');
   const [goals, setGoals] = useState<Goal[]>([]);
   const { toast } = useToast();
+  const { data: creator } = useCreatorDashboard();
 
   useEffect(() => {
-    const savedGoals = localStorage.getItem('creator-goals');
-    if (savedGoals) {
-      setGoals(JSON.parse(savedGoals));
+    if (creator) {
+      fetchGoals();
     }
-  }, []);
+  }, [creator]);
 
-  useEffect(() => {
-    localStorage.setItem('creator-goals', JSON.stringify(goals));
-  }, [goals]);
+  const fetchGoals = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('creator_goals')
+        .select('*')
+        .eq('creator_id', creator?.id)
+        .order('created_at', { ascending: false });
 
-  const handleAddGoal = (e: React.FormEvent) => {
+      if (error) throw error;
+      setGoals(data || []);
+    } catch (error) {
+      console.error('Error fetching goals:', error);
+      toast({
+        title: "Error loading goals",
+        description: "Please try refreshing the page",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddGoal = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newGoal.trim()) return;
+    if (!newGoal.trim() || !creator) return;
     
-    const goal = {
-      id: Date.now(),
-      text: newGoal,
-      completed: false
-    };
-    
-    setGoals([...goals, goal]);
-    setNewGoal('');
-    
-    toast({
-      description: "Goal added successfully",
-    });
+    try {
+      const { data, error } = await supabase
+        .from('creator_goals')
+        .insert([{
+          creator_id: creator.id,
+          text: newGoal,
+          completed: false
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setGoals([data, ...goals]);
+      setNewGoal('');
+      
+      toast({
+        description: "Goal added successfully",
+      });
+    } catch (error) {
+      console.error('Error adding goal:', error);
+      toast({
+        title: "Error adding goal",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
-  const toggleGoal = (id: number) => {
-    setGoals(goals.map(goal => 
-      goal.id === id ? { ...goal, completed: !goal.completed } : goal
-    ));
+  const toggleGoal = async (id: string) => {
+    try {
+      const goal = goals.find(g => g.id === id);
+      if (!goal) return;
+
+      const { error } = await supabase
+        .from('creator_goals')
+        .update({ completed: !goal.completed })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setGoals(goals.map(goal => 
+        goal.id === id ? { ...goal, completed: !goal.completed } : goal
+      ));
+    } catch (error) {
+      console.error('Error updating goal:', error);
+      toast({
+        title: "Error updating goal",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
-  const deleteGoal = (id: number) => {
-    setGoals(goals.filter(goal => goal.id !== id));
-    toast({
-      description: "Goal deleted successfully",
-    });
+  const deleteGoal = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('creator_goals')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setGoals(goals.filter(goal => goal.id !== id));
+      toast({
+        description: "Goal deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+      toast({
+        title: "Error deleting goal",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
