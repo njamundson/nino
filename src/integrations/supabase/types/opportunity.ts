@@ -26,3 +26,5 @@ export interface Opportunity {
   application_status?: string;
   application_id?: string;
 }
+
+export type { Application } from './application';
