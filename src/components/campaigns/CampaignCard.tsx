@@ -81,10 +81,9 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     }
   };
 
-  // Filter applications to only show actual applications (not just invitations)
+  // Filter applications to only show those with a cover letter (actual submissions)
   const applications = (campaign.applications || []).filter(app => 
-    app.initiated_by === 'creator' || // Show all creator-initiated applications
-    (app.initiated_by === 'brand' && app.status !== 'pending') // Only show brand invitations if they've been responded to
+    app.cover_letter !== null && app.cover_letter !== '' // Only show applications with a cover letter
   );
   
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
