@@ -8,7 +8,7 @@ export interface CreatorData {
   instagram: string;
   website: string;
   location: string;
-  profileImage: string;
+  profileImage: string | null;
   creatorType: CreatorType;
   profile_image_url: string | null;
   profile?: {
@@ -29,28 +29,6 @@ export const CREATOR_SPECIALTIES = [
   'Model/Talent',
   'Public Relations/Writer'
 ] as const;
-
-export interface Creator {
-  id: string;
-  bio: string | null;
-  location: string | null;
-  specialties: string[] | null;
-  instagram: string | null;
-  website: string | null;
-  creator_type: CreatorType;
-  profile_image_url: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  profile?: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-  profile_id: string | null;
-  onboarding_completed?: boolean;
-}
 
 export const validateInstagramHandle = (handle: string): boolean => {
   const username = handle.startsWith('@') ? handle.slice(1) : handle;

@@ -12,7 +12,7 @@ interface CreatorGridProps {
   selectedLocations: string[];
 }
 
-const CREATORS_PER_PAGE = 12; // Increased from 9 for better pagination efficiency
+const CREATORS_PER_PAGE = 12;
 
 const CreatorGrid = ({
   selectedSpecialties,
@@ -22,19 +22,18 @@ const CreatorGrid = ({
   const isMobile = useIsMobile();
   const [error, setError] = useState<Error | null>(null);
 
-  // Memoize the filter conditions to prevent unnecessary query rebuilds
   const filterConditions = useMemo(() => ({
     specialties: selectedSpecialties,
     creatorType: selectedCreatorType,
     locations: selectedLocations,
   }), [selectedSpecialties, selectedCreatorType, selectedLocations]);
 
-  // Memoize the base query
   const baseQuery = useMemo(() => {
     return supabase
       .from('creators')
       .select(`
         id,
+        user_id,
         first_name,
         last_name,
         bio,
@@ -83,9 +82,9 @@ const CreatorGrid = ({
         return { creators: [], nextPage: null };
       }
 
-      // Map creators data with optimized transformation
       const formattedCreators: CreatorData[] = creatorsData.map(creator => ({
         id: creator.id,
+        user_id: creator.user_id,
         firstName: creator.first_name || '',
         lastName: creator.last_name || '',
         bio: creator.bio || '',
@@ -177,7 +176,7 @@ const CreatorGrid = ({
             transition={{ 
               duration: 0.6,
               ease: [0.25, 0.1, 0.25, 1],
-              delay: Math.min(index * 0.1, 0.3) // Cap the maximum delay at 0.3s
+              delay: Math.min(index * 0.1, 0.3)
             }}
           >
             <CreatorCard 
