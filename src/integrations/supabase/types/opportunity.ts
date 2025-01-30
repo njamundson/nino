@@ -1,4 +1,5 @@
 import { Brand } from './brand';
+import { Application } from './application';
 
 export interface Opportunity {
   id: string;
@@ -20,17 +21,18 @@ export interface Opportunity {
   created_at: string | null;
   updated_at: string | null;
   brand?: Brand;
+  applications?: Application[];
 }
 
 export interface Application {
   id: string;
   opportunity_id: string;
   creator_id: string;
-  status: string | null;
+  status: string;
   cover_letter: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-  initiated_by: 'creator' | 'brand';
+  created_at: string;
+  updated_at: string;
+  initiated_by: "creator" | "brand";
   opportunity?: Opportunity;
   creator?: {
     id: string;

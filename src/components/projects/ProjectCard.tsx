@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Loader2, CheckCircle, BadgeCheck } from "lucide-react";
+import { CheckCircle, BadgeCheck, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProjectModal from "./ProjectModal";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Application, Opportunity } from "@/integrations/supabase/types/opportunity";
 
 interface ProjectCardProps {
-  opportunity: Opportunity;
+  opportunity: Opportunity & { current_creator_id?: string };
   isCompleted?: boolean;
 }
 
@@ -20,10 +20,40 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // Check if there's an existing application for this opportunity
-  const hasInvitation = opportunity.applications?.some(
-    (app: Application) => app.initiated_by === "brand" && !app.cover_letter
+  // Get the application status for the current creator
+  const creatorApplication = opportunity.applications?.find(
+    app => app.creator_id === opportunity.current_creator_id
   );
+
+  const getApplicationBadge = () => {
+    if (!creatorApplication) return null;
+
+    if (creatorApplication.initiated_by === "brand" && !creatorApplication.cover_letter) {
+      return (
+        <Badge 
+          variant="secondary" 
+          className="absolute top-6 right-6 bg-blue-500 text-white border-0 flex items-center gap-1.5"
+        >
+          <BadgeCheck className="w-4 h-4" />
+          Invited
+        </Badge>
+      );
+    }
+
+    if (creatorApplication.initiated_by === "creator") {
+      return (
+        <Badge 
+          variant="secondary" 
+          className="absolute top-6 right-6 bg-orange-500 text-white border-0 flex items-center gap-1.5"
+        >
+          <Clock className="w-4 h-4" />
+          Applied
+        </Badge>
+      );
+    }
+
+    return null;
+  };
   
   const handleViewDetails = () => {
     setIsLoading(true);
@@ -71,15 +101,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           </Badge>
         )}
 
-        {hasInvitation && (
-          <Badge 
-            variant="secondary" 
-            className="absolute top-6 right-6 bg-blue-500 text-white border-0 flex items-center gap-1.5"
-          >
-            <BadgeCheck className="w-4 h-4" />
-            Invited
-          </Badge>
-        )}
+        {getApplicationBadge()}
 
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <div className="flex flex-col gap-4">

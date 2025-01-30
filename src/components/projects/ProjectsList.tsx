@@ -26,32 +26,11 @@ const ProjectsList = () => {
           return [];
         }
 
-        // First get the IDs of opportunities the creator has already applied to
-        const { data: appliedOpportunities } = await supabase
-          .from('applications')
-          .select('opportunity_id')
-          .eq('creator_id', creator.id);
-
-        const appliedOpportunityIds = appliedOpportunities?.map(app => app.opportunity_id) || [];
-
-        // Then get all open opportunities excluding the ones already applied to
+        // Get all open opportunities and their applications
         const { data: opportunities, error } = await supabase
           .from('opportunities')
           .select(`
-            id,
-            brand_id,
-            title,
-            description,
-            location,
-            start_date,
-            end_date,
-            perks,
-            requirements,
-            payment_details,
-            compensation_details,
-            deliverables,
-            image_url,
-            status,
+            *,
             brand:brands (
               id,
               company_name,
@@ -60,6 +39,13 @@ const ProjectsList = () => {
               description,
               website,
               instagram
+            ),
+            applications!left (
+              id,
+              status,
+              creator_id,
+              initiated_by,
+              cover_letter
             )
           `)
           .eq('status', 'open');
@@ -74,13 +60,14 @@ const ProjectsList = () => {
           return [];
         }
 
-        // Filter out opportunities that the creator has already applied to
-        const availableOpportunities = opportunities?.filter(
-          opp => !appliedOpportunityIds.includes(opp.id)
-        ) || [];
+        // Add creator_id to each opportunity for the current user
+        const opportunitiesWithCreatorId = opportunities.map(opp => ({
+          ...opp,
+          current_creator_id: creator.id
+        }));
 
-        console.log("Fetched available projects:", availableOpportunities);
-        return availableOpportunities;
+        console.log("Fetched available projects:", opportunitiesWithCreatorId);
+        return opportunitiesWithCreatorId;
       } catch (error) {
         console.error("Error in query:", error);
         toast({
