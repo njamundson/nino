@@ -161,7 +161,7 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
               className="flex items-center gap-2"
               onClick={() => setShowDeleteDialog(true)}
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3 w-3" />
               Cancel Campaign
             </Button>
           </div>
