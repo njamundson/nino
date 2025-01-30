@@ -1,5 +1,6 @@
 export interface CreatorData {
   id: string;
+  user_id: string;
   firstName: string;
   lastName: string;
   bio: string;
@@ -7,14 +8,14 @@ export interface CreatorData {
   instagram: string;
   website: string;
   location: string;
-  profileImage: string | null;
+  profileImage: string;
   creatorType: CreatorType;
   profile_image_url: string | null;
-  notifications_enabled?: boolean;
-  profile: {
+  profile?: {
     first_name: string | null;
     last_name: string | null;
   } | null;
+  notifications_enabled?: boolean;
 }
 
 export type CreatorType = 'solo' | 'couple' | 'family' | 'group';
