@@ -61,7 +61,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           currentCreatorId={opportunity.current_creator_id}
         />
 
-        <div className="absolute bottom-20 left-6 right-6 text-white">
+        <div className="absolute bottom-6 left-6 right-6 text-white">
           <div className="flex flex-col gap-4">
             <div>
               <p className="text-sm text-white/90 mb-1">
