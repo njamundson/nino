@@ -32,7 +32,8 @@ export const useNotifications = () => {
         `)
         .eq('receiver_id', user.id)
         .eq('read', false)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(5); // Limit to 5 unread messages for better performance
 
       if (messagesError) {
         console.error('Error fetching messages:', messagesError);
@@ -65,7 +66,8 @@ export const useNotifications = () => {
           )
         `)
         .eq('status', 'pending')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(5); // Limit to 5 pending applications
 
       if (applicationsError) {
         console.error('Error fetching applications:', applicationsError);
@@ -84,10 +86,12 @@ export const useNotifications = () => {
 
       // Combine and sort all notifications by date
       return [...messageNotifications, ...applicationNotifications]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 5); // Limit to 5 most recent notifications
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     },
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 1000 * 60 * 5, // 5 minutes
     retry: 1,
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
   });
 
   const dismissNotification = useMutation({
