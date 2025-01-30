@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import BrandLayout from "./components/layouts/BrandLayout";
+import CreatorLayout from "./components/layouts/CreatorLayout";
 import { brandRoutes } from "./routes/brandRoutes";
 import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
@@ -47,13 +48,15 @@ const AnimatedRoutes = () => {
             />
           ))}
         </Route>
-        {creatorRoutes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={route.element}
-          />
-        ))}
+        <Route path="/creator" element={<CreatorLayout />}>
+          {creatorRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path.replace('/creator/', '')}
+              element={route.element}
+            />
+          ))}
+        </Route>
         {adminRoutes.map((route) => (
           <Route
             key={route.path}
