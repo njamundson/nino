@@ -88,6 +88,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
 
   const handleCancelBooking = async () => {
     try {
+      // Update the application status to 'cancelled'
       const { error } = await supabase
         .from('applications')
         .update({ status: 'cancelled' })
@@ -100,8 +101,10 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
         description: `The booking with ${creatorName} has been cancelled. They will be notified of this change.`,
       });
 
+      // Close the dialog
       setShowCancelDialog(false);
       
+      // Refresh the bookings list if onRefresh is provided
       if (onRefresh) {
         onRefresh();
       }
@@ -115,6 +118,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
     }
   };
 
+  // Transform booking.creator into the format expected by CreatorModal
   const modalCreator = {
     id: booking.creator.id,
     bio: booking.creator.bio || '',
@@ -125,14 +129,14 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
     first_name: booking.creator.profile?.first_name || '',
     last_name: booking.creator.profile?.last_name || '',
     profile_image_url: booking.creator.profile_image_url,
-    creator_type: (booking.creator.creator_type as CreatorType) || 'solo',
-    user_id: booking.creator.user_id
+    creator_type: (booking.creator.creator_type as CreatorType) || 'solo'
   };
 
   return (
     <>
       <Card className="overflow-hidden bg-white border border-gray-100 rounded-2xl transition-all duration-300">
         <div className="p-6 space-y-6">
+          {/* Project Details Section */}
           <div className="space-y-4">
             <div className="flex justify-between items-start">
               <div className="space-y-1.5">
@@ -168,6 +172,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
               )}
             </div>
 
+            {/* Compensation Details */}
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 {booking.opportunity.payment_details && (
@@ -182,6 +187,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
                 )}
               </div>
 
+              {/* Deliverables Section */}
               {booking.opportunity.deliverables && booking.opportunity.deliverables.length > 0 && (
                 <div className="space-y-2">
                   <h5 className="text-sm font-medium text-gray-900">Deliverables</h5>
@@ -199,6 +205,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
                 </div>
               )}
 
+              {/* Requirements Section */}
               {booking.opportunity.requirements && booking.opportunity.requirements.length > 0 && (
                 <div className="space-y-2">
                   <h5 className="text-sm font-medium text-gray-900">Requirements</h5>
@@ -218,6 +225,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
             </div>
           </div>
 
+          {/* Booked Creator Section */}
           <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <div className="border-t pt-4">
               <CollapsibleTrigger className="flex items-center justify-between w-full bg-white hover:bg-gray-50 p-2 rounded-lg transition-all duration-200 ease-in-out">
@@ -316,6 +324,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
           </Collapsible>
         </div>
 
+        {/* Cancel Booking Dialog */}
         <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -337,6 +346,7 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
         </AlertDialog>
       </Card>
 
+      {/* Creator Profile Modal */}
       <CreatorModal
         creator={modalCreator}
         isOpen={showCreatorModal}

@@ -26,19 +26,19 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
       case 'basic':
         return (
           <BasicInfoStep
-            firstName={creatorData.first_name}
-            lastName={creatorData.last_name}
+            firstName={creatorData.firstName}
+            lastName={creatorData.lastName}
             bio={creatorData.bio}
             location={creatorData.location}
-            profileImage={creatorData.profile_image_url}
+            profileImage={creatorData.profileImage}
             onUpdateField={updateField}
-            onUpdateImage={(url) => updateField('profile_image_url', url)}
+            onUpdateImage={(url) => updateField('profileImage', url)}
           />
         );
       case 'professional':
         return (
           <ProfessionalInfoStep
-            creatorType={creatorData.creator_type}
+            creatorType={creatorData.creatorType}
             skills={creatorData.specialties}
             onUpdateField={updateField}
             onUpdateSkills={(skills) => updateField('specialties', skills)}

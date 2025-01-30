@@ -21,7 +21,6 @@ interface Creator {
   profile_image_url: string | null;
   first_name: string | null;
   last_name: string | null;
-  user_id: string;
 }
 
 interface CreatorModalProps {
@@ -146,7 +145,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
     creator_type: creator.creator_type as CreatorType || 'solo',
     first_name: creator.first_name,
     last_name: creator.last_name,
-    user_id: creator.user_id,
+    user_id: '', 
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     profile_id: null,

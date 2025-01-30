@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { CreatorData, CreatorType } from "@/types/creator";
+import { CreatorData } from "@/types/creator";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useCreatorOnboarding = () => {
@@ -8,16 +8,17 @@ export const useCreatorOnboarding = () => {
   const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
     id: crypto.randomUUID(),
-    user_id: "",
-    first_name: "",
-    last_name: "",
+    firstName: "",
+    lastName: "",
     bio: "",
     specialties: [],
     instagram: "",
     website: "",
     location: "",
-    profile_image_url: "",
-    creator_type: "Content Creator",
+    profileImage: null,
+    creatorType: "solo",
+    profile: null,
+    profile_image_url: null
   });
 
   const updateField = (field: keyof CreatorData, value: any) => {
@@ -36,7 +37,7 @@ export const useCreatorOnboarding = () => {
       }
       setCurrentStep('professional');
     } else if (currentStep === 'professional') {
-      if (!creatorData.creator_type || creatorData.specialties.length === 0) {
+      if (!creatorData.creatorType || creatorData.specialties.length === 0) {
         toast({
           title: "Required Fields Missing",
           description: "Please select your creator type and at least one specialty.",
@@ -64,6 +65,7 @@ export const useCreatorOnboarding = () => {
         throw new Error("No authenticated session");
       }
 
+      // Update creator profile and mark onboarding as complete
       const { error } = await supabase
         .from('creators')
         .update({
@@ -72,11 +74,11 @@ export const useCreatorOnboarding = () => {
           instagram: creatorData.instagram,
           website: creatorData.website,
           specialties: creatorData.specialties,
-          creator_type: creatorData.creator_type,
-          profile_image_url: creatorData.profile_image_url,
+          creator_type: creatorData.creatorType,
+          profile_image_url: creatorData.profileImage,
           onboarding_completed: true,
-          first_name: creatorData.first_name,
-          last_name: creatorData.last_name
+          first_name: creatorData.firstName,
+          last_name: creatorData.lastName
         })
         .eq('user_id', session.user.id);
 
