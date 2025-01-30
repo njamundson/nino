@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Send, Image, X } from 'lucide-react';
+import { Send, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
@@ -9,8 +9,6 @@ interface ChatInputProps {
   newMessage: string;
   setNewMessage: (message: string) => void;
   handleSendMessage: () => void;
-  isRecording?: boolean;
-  setIsRecording?: (isRecording: boolean) => void;
   selectedChat: string;
   editingMessage?: any;
   setEditingMessage?: (message: any) => void;
@@ -42,7 +40,6 @@ const ChatInput = ({
     try {
       setIsUploading(true);
 
-      // First get the creator's profile to check permissions
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
@@ -69,7 +66,6 @@ const ChatInput = ({
         return;
       }
 
-      // Upload the file
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const { error: uploadError } = await supabase.storage
@@ -85,11 +81,8 @@ const ChatInput = ({
         .from('chat-attachments')
         .getPublicUrl(fileName);
 
-      // Add the image URL to the message
-      setNewMessage(prevMessage => {
-        const prefix = prevMessage ? `${prevMessage}\n` : '';
-        return `${prefix}![Image](${publicUrl})`;
-      });
+      // Update the message text directly instead of using a callback
+      setNewMessage(`${newMessage ? newMessage + '\n' : ''}![Image](${publicUrl})`);
 
       toast({
         title: "Success",

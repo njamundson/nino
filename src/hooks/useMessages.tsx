@@ -7,8 +7,6 @@ export const useMessages = (userId: string) => {
   const {
     newMessage,
     setNewMessage,
-    isRecording,
-    setIsRecording,
     editingMessage,
     setEditingMessage,
     handleSendMessage,
@@ -25,8 +23,6 @@ export const useMessages = (userId: string) => {
     error,
     newMessage,
     setNewMessage,
-    isRecording,
-    setIsRecording,
     editingMessage,
     setEditingMessage,
     handleSendMessage,
