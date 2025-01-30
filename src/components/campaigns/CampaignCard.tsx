@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, MoreVertical } from "lucide-react";
+import { Calendar, MapPin, MoreVertical, ListChecks } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -159,26 +160,61 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
               )}
             </div>
 
-            {!isCompleted && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0 flex-shrink-0">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white">
-                  <DropdownMenuItem onClick={() => onEdit(campaign)}>
-                    Edit campaign
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-red-600"
-                    onClick={handleDelete}
-                  >
-                    Delete campaign
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            <div className="flex items-center gap-2">
+              {applications.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                      <ListChecks className="h-4 w-4" />
+                      <span className="sr-only">View applications</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64 bg-white">
+                    <div className="px-2 py-1.5 text-sm font-semibold">
+                      Applications ({applications.length})
+                    </div>
+                    <DropdownMenuSeparator />
+                    {applications.map((application) => (
+                      <DropdownMenuItem
+                        key={application.id}
+                        className="flex items-center gap-2 p-2 cursor-pointer"
+                        onClick={() => handleViewCreator(application.creator, application)}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">
+                            {application.creator.first_name} {application.creator.last_name}
+                          </p>
+                          <p className="text-sm text-gray-500 truncate">
+                            {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                          </p>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+
+              {!isCompleted && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0 flex-shrink-0">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-white">
+                    <DropdownMenuItem onClick={() => onEdit(campaign)}>
+                      Edit campaign
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      onClick={handleDelete}
+                    >
+                      Delete campaign
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
           </div>
 
           <div className="space-y-4">
