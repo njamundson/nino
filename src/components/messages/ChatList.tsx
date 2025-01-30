@@ -19,7 +19,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
   const { toast } = useToast();
 
-  const { chats, isLoading, deleteChat } = useChatList(currentUser?.id);
+  const { chats, isLoading } = useChatList(currentUser?.id);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -52,13 +52,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       return 'Yesterday';
     } else {
       return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    }
-  };
-
-  const handleDeleteChat = (userId: string) => {
-    deleteChat(userId);
-    if (selectedUserId === userId) {
-      onSelectChat('', '', '', null);
     }
   };
 
@@ -102,7 +95,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
                   chat.otherUser.lastName,
                   chat.otherUser.profileImage
                 )}
-                onDelete={() => handleDeleteChat(chat.otherUser.id)}
               />
             ))}
           </div>

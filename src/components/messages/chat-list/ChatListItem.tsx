@@ -1,24 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useState } from "react";
 
 interface ChatListItemProps {
   chat: any;
@@ -26,7 +6,6 @@ interface ChatListItemProps {
   currentUserId: string | undefined;
   formatTime: (dateString: string) => string;
   onSelect: () => void;
-  onDelete: () => void;
 }
 
 export const ChatListItem = ({
@@ -35,24 +14,10 @@ export const ChatListItem = ({
   currentUserId,
   formatTime,
   onSelect,
-  onDelete,
 }: ChatListItemProps) => {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  
   const fullName = chat.otherUser.firstName && chat.otherUser.lastName 
     ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
     : 'Unnamed User';
-
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete();
-    setIsDeleteDialogOpen(false);
-  };
 
   return (
     <div
@@ -82,50 +47,6 @@ export const ChatListItem = ({
           }`}>
             {chat.sender_id === currentUserId ? `You: ${chat.content}` : chat.content}
           </p>
-        </div>
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <AlertDialogTrigger asChild>
-                  <DropdownMenuItem
-                    className="text-red-600"
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      handleDelete(e as unknown as React.MouseEvent);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete conversation
-                  </DropdownMenuItem>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Conversation</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to delete this conversation? This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction 
-                      onClick={confirmDelete}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
     </div>

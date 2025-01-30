@@ -123,40 +123,8 @@ export const useChatList = (currentUserId: string | undefined) => {
     };
   }, [currentUserId, toast]);
 
-  const deleteChat = async (otherUserId: string) => {
-    if (!currentUserId) return;
-
-    // Optimistically remove the chat from the UI
-    const chatToDelete = chats.find(chat => chat.otherUser.id === otherUserId);
-    setChats(prevChats => prevChats.filter(chat => chat.otherUser.id !== otherUserId));
-
-    try {
-      const { error } = await supabase
-        .from('messages')
-        .delete()
-        .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`);
-
-      if (error) throw error;
-
-      // Clear the messages from the cache
-      queryClient.removeQueries({ queryKey: ['messages', otherUserId] });
-    } catch (error) {
-      console.error('Error deleting chat:', error);
-      // Revert the optimistic update on error
-      if (chatToDelete) {
-        setChats(prevChats => [...prevChats, chatToDelete]);
-      }
-      toast({
-        title: "Error",
-        description: "Failed to delete the conversation",
-        variant: "destructive",
-      });
-    }
-  };
-
   return {
     chats,
-    isLoading,
-    deleteChat
+    isLoading
   };
 };
