@@ -8,17 +8,29 @@ import CampaignSkeleton from "@/components/campaigns/CampaignSkeleton";
 import EmptyCampaigns from "@/components/campaigns/EmptyCampaigns";
 import EditCampaignModal from "@/components/campaigns/EditCampaignModal";
 import { motion } from "framer-motion";
+import { Application } from "@/integrations/supabase/types/application";
+
+interface Campaign {
+  id: string;
+  title: string;
+  description: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  status: string;
+  location: string | null;
+  payment_details: string | null;
+  compensation_details: string | null;
+  applications?: Application[];
+}
 
 const MyCampaigns = () => {
-  const [editingCampaign, setEditingCampaign] = useState<any>(null);
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
 
-  // Fetch campaigns data with applications
   const { data: campaigns, isLoading, error } = useQuery({
     queryKey: ['my-campaigns'],
     queryFn: async () => {
       console.log('Fetching campaigns data...');
       
-      // Get current user's brand ID
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
 
@@ -30,7 +42,6 @@ const MyCampaigns = () => {
       
       if (brandError) throw brandError;
 
-      // Fetch campaigns with applications and creator data
       const { data, error: campaignsError } = await supabase
         .from('opportunities')
         .select(`
@@ -40,18 +51,18 @@ const MyCampaigns = () => {
           start_date,
           end_date,
           status,
-          requirements,
-          perks,
           location,
           payment_details,
           compensation_details,
-          deliverables,
-          image_url,
-          created_at,
           applications (
             id,
+            opportunity_id,
+            creator_id,
             status,
             cover_letter,
+            created_at,
+            updated_at,
+            initiated_by,
             creator:creators (
               id,
               bio,
@@ -62,11 +73,7 @@ const MyCampaigns = () => {
               creator_type,
               profile_image_url,
               first_name,
-              last_name,
-              profile:profiles (
-                first_name,
-                last_name
-              )
+              last_name
             )
           )
         `)
@@ -76,16 +83,14 @@ const MyCampaigns = () => {
       if (campaignsError) throw campaignsError;
       
       console.log('Campaigns fetched:', data?.length);
-      return data || [];
+      return data as Campaign[];
     },
     retry: 1,
     refetchOnWindowFocus: false,
   });
 
-  // Handle campaign deletion
   const handleDelete = async (campaignId: string) => {
     try {
-      // First, delete all applications for this campaign
       const { error: applicationsError } = await supabase
         .from('applications')
         .delete()
@@ -96,7 +101,6 @@ const MyCampaigns = () => {
         throw applicationsError;
       }
 
-      // Then delete the campaign
       const { error: campaignError } = await supabase
         .from('opportunities')
         .delete()
