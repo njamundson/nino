@@ -1,5 +1,5 @@
 import QuickNotes from "./notes/QuickNotes";
-import RecentMessages from "./messages/RecentMessages";
+import Goals from "./goals/Goals";
 import StatsCards from "./stats/StatsCards";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PageHeader from "@/components/shared/PageHeader";
@@ -47,7 +47,7 @@ const CreatorDashboard = () => {
       <div className="space-y-6 md:space-y-8">
         <StatsCards />
         <div className={`grid grid-cols-1 ${isMobile ? 'gap-6' : 'lg:grid-cols-2 gap-6'}`}>
-          <RecentMessages />
+          <Goals />
           <QuickNotes />
         </div>
       </div>
