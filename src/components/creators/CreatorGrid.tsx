@@ -12,7 +12,7 @@ interface CreatorGridProps {
   selectedLocations: string[];
 }
 
-const CREATORS_PER_PAGE = 9;
+const CREATORS_PER_PAGE = 12; // Increased from 9 for better pagination efficiency
 
 const CreatorGrid = ({
   selectedSpecialties,
@@ -22,7 +22,14 @@ const CreatorGrid = ({
   const isMobile = useIsMobile();
   const [error, setError] = useState<Error | null>(null);
 
-  // Memoize the base query to prevent unnecessary rebuilds
+  // Memoize the filter conditions to prevent unnecessary query rebuilds
+  const filterConditions = useMemo(() => ({
+    specialties: selectedSpecialties,
+    creatorType: selectedCreatorType,
+    locations: selectedLocations,
+  }), [selectedSpecialties, selectedCreatorType, selectedLocations]);
+
+  // Memoize the base query
   const baseQuery = useMemo(() => {
     return supabase
       .from('creators')
@@ -44,9 +51,7 @@ const CreatorGrid = ({
   const fetchCreators = useCallback(async ({ pageParam = 0 }) => {
     try {
       console.log("Fetching creators with filters:", { 
-        selectedSpecialties, 
-        selectedCreatorType,
-        selectedLocations,
+        ...filterConditions,
         page: pageParam
       });
 
@@ -55,16 +60,16 @@ const CreatorGrid = ({
         (pageParam + 1) * CREATORS_PER_PAGE - 1
       );
 
-      if (selectedSpecialties.length > 0) {
-        query = query.contains('specialties', selectedSpecialties);
+      if (filterConditions.specialties.length > 0) {
+        query = query.contains('specialties', filterConditions.specialties);
       }
 
-      if (selectedCreatorType) {
-        query = query.eq('creator_type', selectedCreatorType);
+      if (filterConditions.creatorType) {
+        query = query.eq('creator_type', filterConditions.creatorType);
       }
 
-      if (selectedLocations.length > 0 && selectedLocations[0] !== "") {
-        query = query.in('location', selectedLocations);
+      if (filterConditions.locations.length > 0 && filterConditions.locations[0] !== "") {
+        query = query.in('location', filterConditions.locations);
       }
 
       const { data: creatorsData, error: fetchError } = await query;
@@ -78,6 +83,7 @@ const CreatorGrid = ({
         return { creators: [], nextPage: null };
       }
 
+      // Map creators data with optimized transformation
       const formattedCreators: CreatorData[] = creatorsData.map(creator => ({
         id: creator.id,
         firstName: creator.first_name || '',
@@ -106,7 +112,7 @@ const CreatorGrid = ({
       setError(error instanceof Error ? error : new Error('An error occurred'));
       throw error;
     }
-  }, [baseQuery, selectedSpecialties, selectedCreatorType, selectedLocations]);
+  }, [baseQuery, filterConditions]);
 
   const {
     data,
@@ -115,14 +121,16 @@ const CreatorGrid = ({
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: ['creators', selectedSpecialties, selectedCreatorType, selectedLocations],
+    queryKey: ['creators', filterConditions],
     queryFn: fetchCreators,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    gcTime: 1000 * 60 * 10, // Keep unused data in cache for 10 minutes
+    gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes (increased from 10)
+    retry: 2, // Limit retries to reduce unnecessary API calls
   });
 
+  // Memoize the flattened creators array
   const allCreators = useMemo(() => {
     return data?.pages.flatMap(page => page.creators) || [];
   }, [data?.pages]);
@@ -169,7 +177,7 @@ const CreatorGrid = ({
             transition={{ 
               duration: 0.6,
               ease: [0.25, 0.1, 0.25, 1],
-              delay: index * 0.1 
+              delay: Math.min(index * 0.1, 0.3) // Cap the maximum delay at 0.3s
             }}
           >
             <CreatorCard 
