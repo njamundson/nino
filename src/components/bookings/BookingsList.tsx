@@ -10,9 +10,14 @@ import { motion } from "framer-motion";
 interface BookingsListProps {
   onChatClick: (creatorId: string) => void;
   onViewCreator: (creator: any) => void;
+  isCreatorView?: boolean;
 }
 
-const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
+const BookingsList = ({ 
+  onChatClick, 
+  onViewCreator, 
+  isCreatorView = true 
+}: BookingsListProps) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
@@ -120,6 +125,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
             booking={booking}
             onChatClick={() => onChatClick(booking.creator.user_id)}
             onViewCreator={() => onViewCreator(booking.creator)}
+            isCreatorView={isCreatorView}
           />
         ))}
       </div>
