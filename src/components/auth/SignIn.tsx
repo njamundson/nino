@@ -68,16 +68,19 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
       // If brand profile exists, handle brand routing
       if (brand) {
         console.log("Brand profile found:", brand);
-        if (brand.onboarding_completed) {
-          navigate('/brand/dashboard', { replace: true });
-        } else {
-          navigate('/onboarding/brand', { replace: true });
-        }
+        
+        // Show success toast before navigation
         toast({
           title: "Welcome back!",
           description: "You have successfully signed in.",
         });
-        return;
+
+        // Immediate navigation for brand users
+        if (brand.onboarding_completed) {
+          return navigate('/brand/dashboard', { replace: true });
+        } else {
+          return navigate('/onboarding/brand', { replace: true });
+        }
       }
 
       // Only check for creator profile if no brand profile exists
@@ -92,6 +95,12 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         throw creatorError;
       }
 
+      // Show success toast before navigation
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully signed in.",
+      });
+
       // Handle creator routing
       if (creator) {
         console.log("Creator profile found:", creator);
@@ -101,14 +110,9 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
           navigate('/onboarding/creator', { replace: true });
         }
       } else {
-        // No profile found, redirect to onboarding
+        console.log("No profile found, redirecting to onboarding");
         navigate('/onboarding', { replace: true });
       }
-
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
 
     } catch (error) {
       console.error('Sign in error:', error);
