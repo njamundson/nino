@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useMessageActions = (selectedChat: string) => {
   const [newMessage, setNewMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [editingMessage, setEditingMessage] = useState<{ id: string; content: string; } | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleSendMessage = async () => {
     if (!selectedChat || !newMessage.trim()) {
@@ -86,6 +88,10 @@ export const useMessageActions = (selectedChat: string) => {
 
       if (error) throw error;
 
+      // Invalidate both the messages query and the chat list query
+      queryClient.invalidateQueries({ queryKey: ['messages', selectedChat] });
+      queryClient.invalidateQueries({ queryKey: ['chats'] });
+
       toast({
         title: "Success",
         description: "Message deleted successfully",
@@ -115,6 +121,9 @@ export const useMessageActions = (selectedChat: string) => {
         });
 
       if (error) throw error;
+
+      // Invalidate the messages query to refresh reactions
+      queryClient.invalidateQueries({ queryKey: ['messages', selectedChat] });
 
       toast({
         title: "Success",

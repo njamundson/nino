@@ -5,6 +5,7 @@ import { EmptyState } from "./chat-list/EmptyState";
 import { ChatListHeader } from "./chat-list/ChatListHeader";
 import { ChatListItem } from "./chat-list/ChatListItem";
 import CreatorSelectionModal from "./CreatorSelectionModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ChatListProps {
   onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
@@ -18,6 +19,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -136,21 +138,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    }
-  };
-
   const handleDeleteChat = async (userId: string) => {
     try {
       if (!currentUser) return;
@@ -162,8 +149,13 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
       if (error) throw error;
 
+      // Update local state
       setUsers(prevUsers => prevUsers.filter(user => user.otherUser.id !== userId));
       
+      // Clear the messages from the cache for this chat
+      queryClient.removeQueries({ queryKey: ['messages', userId] });
+      
+      // If this was the selected chat, clear the selection
       if (selectedUserId === userId) {
         onSelectChat('', '', '', null);
       }

@@ -39,7 +39,9 @@ export const useMessageQueries = (userId: string) => {
       if (error) throw error;
       return data as Message[];
     },
-    enabled: Boolean(userId)
+    enabled: Boolean(userId),
+    staleTime: 1000 * 60, // Consider data stale after 1 minute
+    cacheTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
   });
 
   const setMessages = (updater: Message[] | ((prev: Message[] | undefined) => Message[])) => {
