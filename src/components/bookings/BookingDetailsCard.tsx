@@ -156,13 +156,12 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
           <div className="flex justify-between items-start">
             <ProjectDetails opportunity={booking.opportunity} />
             <Button
-              variant="destructive"
-              size="sm"
-              className="flex items-center gap-2"
+              variant="ghost"
+              size="icon"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={() => setShowDeleteDialog(true)}
             >
               <Trash2 className="h-4 w-4" />
-              Cancel Campaign
             </Button>
           </div>
           
