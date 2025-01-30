@@ -30,6 +30,7 @@ export interface Application {
   cover_letter: string | null;
   created_at: string | null;
   updated_at: string | null;
+  initiated_by: 'brand' | 'creator' | null;
   opportunity?: Opportunity;
   creator?: {
     id: string;
