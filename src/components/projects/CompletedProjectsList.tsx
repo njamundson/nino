@@ -16,67 +16,57 @@ const CompletedProjectsList = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
-        const { data: creator } = await supabase
-          .from('creators')
+        const { data: brand } = await supabase
+          .from('brands')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (!creator) {
-          console.log("No creator profile found");
+        if (!brand) {
+          console.log("No brand profile found");
           return [];
         }
 
-        const { data: applications, error: appsError } = await supabase
-          .from('applications')
+        const { data: opportunities, error: oppsError } = await supabase
+          .from('opportunities')
           .select(`
-            id,
-            status,
-            opportunity:opportunities (
+            *,
+            brand:brands (
               id,
-              brand_id,
-              title,
-              description,
+              company_name,
+              brand_type,
               location,
-              start_date,
-              end_date,
-              perks,
-              requirements,
-              payment_details,
-              compensation_details,
-              deliverables,
-              image_url,
+              description,
+              website,
+              instagram,
+              user_id,
+              phone_number,
+              support_email,
+              profile_image_url
+            ),
+            applications (
+              id,
               status,
-              compensation_type,
-              compensation_amount,
-              created_at,
-              updated_at,
-              brand:brands (
+              creator:creators (
                 id,
-                company_name,
-                brand_type,
+                first_name,
+                last_name,
+                bio,
                 location,
-                description,
-                website,
                 instagram,
-                user_id,
-                phone_number,
-                support_email,
-                profile_image_url,
-                sms_notifications_enabled,
-                two_factor_enabled,
-                created_at,
-                updated_at,
-                onboarding_completed
+                website,
+                specialties,
+                creator_type,
+                profile_image_url
               )
             )
           `)
-          .eq('creator_id', creator.id)
-          .eq('status', 'accepted')
-          .eq('opportunity.status', 'completed');
+          .eq('brand_id', brand.id)
+          .eq('status', 'completed')
+          .order('end_date', { ascending: false });
 
-        if (appsError) {
-          console.error("Error fetching applications:", appsError);
+        if (oppsError) {
+          console.error("Error fetching opportunities:", oppsError);
           toast({
             title: "Error",
             description: "Could not fetch completed projects",
@@ -85,19 +75,8 @@ const CompletedProjectsList = () => {
           return [];
         }
 
-        const completedProjects = applications.map(app => ({
-          ...app.opportunity,
-          application_status: app.status,
-          application_id: app.id,
-          brand_id: app.opportunity.brand_id,
-          compensation_type: app.opportunity.compensation_type || null,
-          compensation_amount: app.opportunity.compensation_amount || null,
-          created_at: app.opportunity.created_at || null,
-          updated_at: app.opportunity.updated_at || null
-        })) as Opportunity[];
-
-        console.log("Fetched completed projects:", completedProjects);
-        return completedProjects || [];
+        console.log("Fetched completed projects:", opportunities);
+        return opportunities || [];
       } catch (error) {
         console.error("Error in query:", error);
         toast({
@@ -130,7 +109,7 @@ const CompletedProjectsList = () => {
             No completed projects yet
           </h3>
           <p className="text-gray-500">
-            When you complete projects with brands, they will appear here.
+            When you complete projects with creators, they will appear here.
           </p>
         </div>
       </Card>
