@@ -21,6 +21,8 @@ import ProjectDetails from "./details/ProjectDetails";
 import CompensationDetails from "./details/CompensationDetails";
 import CreatorSection from "./details/CreatorSection";
 import BookedCreatorProfile from "./details/BookedCreatorProfile";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 interface BookingDetailsCardProps {
   booking: {
@@ -60,6 +62,7 @@ interface BookingDetailsCardProps {
 const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: BookingDetailsCardProps) => {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showCreatorModal, setShowCreatorModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { toast } = useToast();
 
   const handleCancelBooking = async () => {
@@ -91,6 +94,44 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
     }
   };
 
+  const handleDeleteCampaign = async () => {
+    try {
+      // First update the application status to cancelled
+      const { error: applicationError } = await supabase
+        .from('applications')
+        .update({ status: 'cancelled' })
+        .eq('id', booking.id);
+
+      if (applicationError) throw applicationError;
+
+      // Then update the opportunity status to cancelled
+      const { error: opportunityError } = await supabase
+        .from('opportunities')
+        .update({ status: 'cancelled' })
+        .eq('id', booking.opportunity.id);
+
+      if (opportunityError) throw opportunityError;
+
+      toast({
+        title: "Campaign Deleted",
+        description: "The campaign has been cancelled and the creator has been notified.",
+      });
+
+      setShowDeleteDialog(false);
+      
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error('Error deleting campaign:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the campaign. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const modalCreator = {
     id: booking.creator.id,
     bio: booking.creator.bio || '',
@@ -112,7 +153,18 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
     <>
       <Card className="overflow-hidden bg-white border border-gray-100 rounded-2xl transition-all duration-300">
         <div className="p-6 space-y-6">
-          <ProjectDetails opportunity={booking.opportunity} />
+          <div className="flex justify-between items-start">
+            <ProjectDetails opportunity={booking.opportunity} />
+            <Button
+              variant="destructive"
+              size="sm"
+              className="flex items-center gap-2"
+              onClick={() => setShowDeleteDialog(true)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Cancel Campaign
+            </Button>
+          </div>
           
           <CompensationDetails 
             payment_details={booking.opportunity.payment_details}
@@ -145,6 +197,27 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
                 className="bg-destructive hover:bg-destructive/90"
               >
                 Confirm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Delete Campaign Dialog */}
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Campaign</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this entire campaign? This will cancel the booking with the creator and remove the campaign. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteCampaign}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                Delete Campaign
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
