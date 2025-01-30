@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, UserRound } from "lucide-react";
+import { MessageCircle, UserRound, ChevronDown } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,

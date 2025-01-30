@@ -161,7 +161,7 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
               className="text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={() => setShowDeleteDialog(true)}
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3 w-3" />
             </Button>
           </div>
           
@@ -176,7 +176,6 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
             creator={booking.creator}
             onChatClick={() => onChatClick(booking.creator.user_id)}
             onViewCreator={() => setShowCreatorModal(true)}
-            onCancelClick={() => setShowCancelDialog(true)}
           />
         </div>
 
@@ -221,25 +220,25 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </Card>
 
-      {/* Creator Profile Modal */}
-      <Dialog
-        open={showCreatorModal}
-        onOpenChange={setShowCreatorModal}
-      >
-        <DialogContent className="max-w-4xl h-[80vh] p-0">
-          <BookedCreatorProfile
-            creator={modalCreator}
-            onClose={() => setShowCreatorModal(false)}
-            onMessageClick={() => onChatClick(booking.creator.user_id)}
-            onCancelBooking={() => {
-              setShowCreatorModal(false);
-              setShowCancelDialog(true);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+        {/* Creator Profile Modal */}
+        <Dialog
+          open={showCreatorModal}
+          onOpenChange={setShowCreatorModal}
+        >
+          <DialogContent className="max-w-4xl h-[80vh] p-0">
+            <BookedCreatorProfile
+              creator={modalCreator}
+              onClose={() => setShowCreatorModal(false)}
+              onMessageClick={() => onChatClick(booking.creator.user_id)}
+              onCancelBooking={() => {
+                setShowCreatorModal(false);
+                setShowCancelDialog(true);
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      </Card>
     </>
   );
 };
