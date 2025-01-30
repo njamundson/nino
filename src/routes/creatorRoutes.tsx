@@ -3,47 +3,14 @@ import CreatorLayout from "@/components/layouts/CreatorLayout";
 import ProtectedCreatorRoute from "@/components/auth/ProtectedCreatorRoute";
 import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
 
-// Implement code splitting with preloading for faster transitions
-const Dashboard = lazy(() => {
-  const module = import("@/pages/Dashboard");
-  // Preload the next probable routes
-  import("@/pages/Projects");
-  import("@/pages/Messages");
-  return module;
-});
-
-const Projects = lazy(() => {
-  const module = import("@/pages/Projects");
-  // Preload related routes
-  import("@/pages/Proposals");
-  import("@/pages/CompletedProjects");
-  return module;
-});
-
-const Proposals = lazy(() => {
-  const module = import("@/pages/Proposals");
-  return module;
-});
-
-const Bookings = lazy(() => {
-  const module = import("@/pages/Bookings");
-  return module;
-});
-
-const Messages = lazy(() => {
-  const module = import("@/pages/Messages");
-  return module;
-});
-
-const Settings = lazy(() => {
-  const module = import("@/pages/Settings");
-  return module;
-});
-
-const CompletedProjects = lazy(() => {
-  const module = import("@/pages/CompletedProjects");
-  return module;
-});
+// Implement code splitting with shared chunks for faster transitions
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const Projects = lazy(() => import("@/pages/Projects"));
+const Proposals = lazy(() => import("@/pages/Proposals"));
+const Bookings = lazy(() => import("@/pages/Bookings"));
+const Messages = lazy(() => import("@/pages/Messages"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const CompletedProjects = lazy(() => import("@/pages/CompletedProjects"));
 
 export const creatorRoutes = [
   {
