@@ -6,11 +6,17 @@ import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessa
 // Implement code splitting with preloading for faster transitions
 const Dashboard = lazy(() => {
   const module = import("@/pages/Dashboard");
+  // Preload the next probable routes
+  import("@/pages/Projects");
+  import("@/pages/Messages");
   return module;
 });
 
 const Projects = lazy(() => {
   const module = import("@/pages/Projects");
+  // Preload related routes
+  import("@/pages/Proposals");
+  import("@/pages/CompletedProjects");
   return module;
 });
 
