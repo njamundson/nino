@@ -4,6 +4,7 @@ import CreatorModal from "./CreatorModal";
 import { useCreatorInvite } from "@/hooks/useCreatorInvite";
 import { CreatorData } from "@/types/creator";
 import CreatorCardImage from "./card/CreatorCardImage";
+import { useNavigate } from "react-router-dom";
 
 interface CreatorCardProps {
   creator: CreatorData;
@@ -13,6 +14,7 @@ interface CreatorCardProps {
 const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { handleInvite, isInviting } = useCreatorInvite();
+  const navigate = useNavigate();
 
   const handleInviteClick = async (creatorId: string, opportunityId: string) => {
     const success = await handleInvite(creatorId, opportunityId);
@@ -22,6 +24,10 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
     }
   };
 
+  const handleChatClick = () => {
+    navigate(`/brand/messages?userId=${creator.user_id}`);
+  };
+
   const modalCreator = {
     id: creator.id,
     bio: creator.bio,
@@ -29,10 +35,10 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
     specialties: creator.specialties,
     instagram: creator.instagram,
     website: creator.website,
-    first_name: creator.firstName,
-    last_name: creator.lastName,
+    first_name: creator.first_name,
+    last_name: creator.last_name,
     profile_image_url: creator.profile_image_url,
-    creator_type: creator.creatorType
+    creator_type: creator.creator_type
   };
 
   return (
@@ -52,6 +58,7 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
         creator={modalCreator}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onMessageClick={handleChatClick}
       />
     </>
   );

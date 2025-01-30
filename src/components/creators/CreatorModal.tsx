@@ -27,9 +27,10 @@ interface CreatorModalProps {
   creator: Creator | null;
   isOpen: boolean;
   onClose: () => void;
+  onMessageClick?: () => void;
 }
 
-const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
+const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModalProps) => {
   const [showCampaigns, setShowCampaigns] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
@@ -160,6 +161,7 @@ const CreatorModal = ({ creator, isOpen, onClose }: CreatorModalProps) => {
           <BrowseCreatorProfile 
             creator={creatorData}
             onInviteClick={() => setShowCampaigns(true)}
+            onMessageClick={onMessageClick}
           />
         ) : (
           <CampaignSelection
