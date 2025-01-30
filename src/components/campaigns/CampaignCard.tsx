@@ -81,9 +81,11 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     }
   };
 
-  // Filter applications to only show those with a cover letter (actual submissions)
+  // Filter applications to only show valid submissions (has cover letter and not cancelled)
   const applications = (campaign.applications || []).filter(app => 
-    app.cover_letter !== null && app.cover_letter !== '' // Only show applications with a cover letter
+    app.cover_letter !== null && 
+    app.cover_letter !== '' && 
+    app.status !== 'cancelled'
   );
   
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
