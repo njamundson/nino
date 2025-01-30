@@ -23,19 +23,23 @@ const SocialLinks = ({ instagram, website, onMessageClick }: SocialLinksProps) =
 
   return (
     <div className="flex items-center gap-3">
-      <SocialIconButton
-        icon={Instagram}
-        onClick={instagram ? handleInstagramClick : undefined}
-        tooltipText={instagram ? `@${instagram.replace(/^@/, '').trim()}` : 'No Instagram profile'}
-        isActive={!!instagram}
-      />
+      {instagram && (
+        <SocialIconButton
+          icon={Instagram}
+          onClick={handleInstagramClick}
+          tooltipText={`@${instagram.replace(/^@/, '').trim()}`}
+          isActive={true}
+        />
+      )}
       
-      <SocialIconButton
-        icon={Globe}
-        onClick={website ? handleWebsiteClick : undefined}
-        tooltipText={website || 'No website available'}
-        isActive={!!website}
-      />
+      {website && (
+        <SocialIconButton
+          icon={Globe}
+          onClick={handleWebsiteClick}
+          tooltipText={website}
+          isActive={true}
+        />
+      )}
       
       {onMessageClick && (
         <SocialIconButton
