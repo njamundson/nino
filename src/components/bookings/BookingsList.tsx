@@ -58,8 +58,9 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       }
     },
     refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
-    suspense: false,
-    useErrorBoundary: false
+    retry: 3,
+    staleTime: 1000 * 60 * 2, // Consider data stale after 2 minutes
+    gcTime: 1000 * 60 * 5 // Keep unused data in cache for 5 minutes
   });
 
   // Set up real-time subscription for booking updates
