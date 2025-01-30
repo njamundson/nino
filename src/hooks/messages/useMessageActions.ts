@@ -5,13 +5,49 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export const useMessageActions = (selectedChat: string) => {
   const [newMessage, setNewMessage] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [editingMessage, setEditingMessage] = useState<{ id: string; content: string; } | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const handleSendMessage = async () => {
-    if (!selectedChat || !newMessage.trim()) {
+  const handleImageUpload = async (file: File) => {
+    if (!file) return;
+    
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/functions/v1/upload-attachment', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const { publicUrl } = await response.json();
+      
+      // Create message with image
+      await handleSendMessage(undefined, publicUrl);
+      
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSendMessage = async (customMessage?: string, imageUrl?: string) => {
+    const messageContent = customMessage || newMessage;
+    
+    if (!selectedChat || (!messageContent.trim() && !imageUrl)) {
       toast({
         title: "Error",
         description: "Please enter a message",
@@ -55,10 +91,11 @@ export const useMessageActions = (selectedChat: string) => {
       const messageData = {
         sender_id: user.id,
         receiver_id: selectedChat,
-        content: newMessage,
-        message_type: 'text',
+        content: imageUrl ? `![Image](${imageUrl})` : messageContent,
+        message_type: imageUrl ? 'image' : 'text',
         sender_profile_id: senderProfile.id,
-        receiver_profile_id: receiverProfile.id
+        receiver_profile_id: receiverProfile.id,
+        media_url: imageUrl || null,
       };
 
       const { error } = await supabase
@@ -88,7 +125,6 @@ export const useMessageActions = (selectedChat: string) => {
 
       if (error) throw error;
 
-      // Invalidate both the messages query and the chat list query
       queryClient.invalidateQueries({ queryKey: ['messages', selectedChat] });
       queryClient.invalidateQueries({ queryKey: ['chats'] });
 
@@ -122,7 +158,6 @@ export const useMessageActions = (selectedChat: string) => {
 
       if (error) throw error;
 
-      // Invalidate the messages query to refresh reactions
       queryClient.invalidateQueries({ queryKey: ['messages', selectedChat] });
 
       toast({
@@ -143,12 +178,12 @@ export const useMessageActions = (selectedChat: string) => {
   return {
     newMessage,
     setNewMessage,
-    isRecording,
-    setIsRecording,
+    isUploading,
     editingMessage,
     setEditingMessage,
     handleSendMessage,
     handleDeleteMessage,
-    handleReaction
+    handleReaction,
+    handleImageUpload
   };
 };
