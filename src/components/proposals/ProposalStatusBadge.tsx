@@ -9,9 +9,10 @@ export const ProposalStatusBadge = ({ status }: ProposalStatusBadgeProps) => {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'pending':
+      case 'invited':
         return {
           icon: Clock,
-          text: 'Pending',
+          text: status === 'invited' ? 'Invited' : 'Pending',
           className: 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20'
         };
       case 'accepted':

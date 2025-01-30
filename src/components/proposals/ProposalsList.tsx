@@ -66,7 +66,7 @@ const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: Propos
           transition={{ 
             duration: 0.4, 
             ease: "easeOut",
-            delay: index * 0.1 // Stagger the animations
+            delay: index * 0.1
           }}
         >
           <ProposalCard
