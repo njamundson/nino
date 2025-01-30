@@ -7,6 +7,7 @@ import { ChatListItem } from "./chat-list/ChatListItem";
 import CreatorSelectionModal from "./CreatorSelectionModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useChatDeletion } from "@/hooks/messages/useChatDeletion";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface ChatListProps {
   onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
@@ -176,7 +177,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   if (isLoading || isDeletingChat) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+        <LoadingSpinner size="md" />
       </div>
     );
   }

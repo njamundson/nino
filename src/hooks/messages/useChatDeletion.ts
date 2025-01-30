@@ -9,15 +9,8 @@ export const useChatDeletion = (onChatDeleted: (userId: string) => void) => {
   const queryClient = useQueryClient();
 
   const deleteChat = async (currentUserId: string | undefined, otherUserId: string) => {
-    if (!currentUserId) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to delete conversations",
-        variant: "destructive",
-      });
-      return;
-    }
-
+    if (!currentUserId) return;
+    
     setIsDeletingChat(true);
 
     try {
@@ -28,16 +21,8 @@ export const useChatDeletion = (onChatDeleted: (userId: string) => void) => {
 
       if (error) throw error;
 
-      // Clear the messages from the cache
       queryClient.removeQueries({ queryKey: ['messages', otherUserId] });
-      
-      // Notify parent component
       onChatDeleted(otherUserId);
-
-      toast({
-        title: "Success",
-        description: "The conversation has been removed",
-      });
 
     } catch (error) {
       console.error('Error deleting chat:', error);
