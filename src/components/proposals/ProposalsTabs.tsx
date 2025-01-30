@@ -24,13 +24,13 @@ const ProposalsTabs = ({
   // Show brand-initiated applications that haven't been acted upon yet in Pending tab
   const pendingInvitations = activeApplications.filter(app => 
     app.initiated_by === 'brand' && 
-    !app.cover_letter // If there's no cover letter, it means the creator hasn't applied yet
+    app.status === 'invited'
   );
   
   // Show creator-initiated applications and brand invitations that have been acted upon
   const userApplications = activeApplications.filter(app => 
     app.initiated_by === 'creator' || 
-    (app.initiated_by === 'brand' && app.cover_letter) // If there's a cover letter, creator has applied
+    (app.initiated_by === 'brand' && app.status !== 'invited')
   );
 
   console.log('Pending invitations:', pendingInvitations);
