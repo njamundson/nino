@@ -41,14 +41,15 @@ const Proposals = () => {
     });
   }
 
-  const pendingProposals = applications?.filter((app: Application) => 
-    app.status === 'pending' && 
-    app.opportunity?.brand?.user_id === app.creator?.user_id
-  ) || [];
+  const pendingProposals = applications?.filter((app: Application) => {
+    const initiatedBy = app.initiated_by as 'brand' | 'creator';
+    return app.status === 'pending' && 
+      app.opportunity?.brand?.user_id === app.creator?.user_id;
+  }) || [];
   
-  const myApplications = applications?.filter((app: Application) => 
-    app.opportunity?.brand?.user_id !== app.creator?.user_id
-  ) || [];
+  const myApplications = applications?.filter((app: Application) => {
+    return app.opportunity?.brand?.user_id !== app.creator?.user_id;
+  }) || [];
 
   return (
     <motion.div 
