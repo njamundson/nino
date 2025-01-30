@@ -6,6 +6,7 @@ import { useState } from "react";
 import CreatorModal from "@/components/creators/CreatorModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { CreatorType } from "@/types/creator";
 
 interface ChatHeaderProps {
   senderFirstName?: string;
@@ -42,7 +43,10 @@ export const ChatHeader = ({
         return null;
       }
 
-      return creator;
+      return creator ? {
+        ...creator,
+        creator_type: creator.creator_type as CreatorType || 'solo'
+      } : null;
     },
     enabled: !!senderUserId
   });
