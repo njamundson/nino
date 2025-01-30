@@ -42,9 +42,9 @@ const Applications = () => {
   }
 
   // Filter for applications that have a cover letter (meaning the creator has actually applied)
-  const userApplications = applications?.filter((app: Application) => 
+  const userApplications = (applications?.filter((app: Application) => 
     app.cover_letter && app.initiated_by === 'creator'
-  ) || [];
+  ) || []) as Application[];
 
   return (
     <motion.div 
