@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Instagram, Globe, MessageCircle } from "lucide-react";
 import { formatInstagramUrl, formatWebsiteUrl } from "@/utils/socialMediaUtils";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 interface CreatorSocialLinksProps {
   instagram: string | null;
@@ -24,36 +29,57 @@ const CreatorSocialLinks = ({ instagram, website, onMessageClick }: CreatorSocia
   return (
     <div className="flex items-center gap-3">
       {instagram && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleInstagramClick}
-          className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
-        >
-          <Instagram className="w-5 h-5" />
-        </Button>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleInstagramClick}
+              className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
+            >
+              <Instagram className="w-5 h-5" />
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-auto">
+            @{instagram.replace(/^@/, '')}
+          </HoverCardContent>
+        </HoverCard>
       )}
       
       {website && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleWebsiteClick}
-          className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
-        >
-          <Globe className="w-5 h-5" />
-        </Button>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleWebsiteClick}
+              className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
+            >
+              <Globe className="w-5 h-5" />
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-auto">
+            {website}
+          </HoverCardContent>
+        </HoverCard>
       )}
       
       {onMessageClick && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onMessageClick}
-          className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
-        >
-          <MessageCircle className="w-5 h-5" />
-        </Button>
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onMessageClick}
+              className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
+            >
+              <MessageCircle className="w-5 h-5" />
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-auto">
+            Send message
+          </HoverCardContent>
+        </HoverCard>
       )}
     </div>
   );
