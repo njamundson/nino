@@ -636,6 +636,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      cleanup_old_applications: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_old_messages: {
         Args: Record<PropertyKey, never>
         Returns: undefined
