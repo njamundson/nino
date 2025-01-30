@@ -104,6 +104,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   const applications = campaign.applications || [];
   const pendingApplications = applications.filter(app => app.status === 'pending');
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
+  const isInactive = campaign.status === 'inactive';
 
   return (
     <>
@@ -173,19 +174,21 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                 </Badge>
               )}
               <Badge
-                variant={acceptedApplications.length > 0 ? "default" : "secondary"}
+                variant={isInactive ? "destructive" : acceptedApplications.length > 0 ? "default" : "secondary"}
                 className={`px-2 py-0.5 ${
-                  acceptedApplications.length > 0
+                  isInactive 
+                    ? "bg-red-100 text-red-700"
+                    : acceptedApplications.length > 0
                     ? "bg-nino-primary text-white" 
                     : "bg-nino-bg text-nino-text"
                 }`}
               >
-                {acceptedApplications.length} {acceptedApplications.length === 1 ? "Booking" : "Bookings"}
+                {isInactive ? "Inactive" : acceptedApplications.length > 0 ? "Creator Hired" : "Open"}
               </Badge>
             </div>
           </div>
 
-          {pendingApplications.length > 0 && (
+          {!isInactive && pendingApplications.length > 0 && (
             <div className="pt-4 border-t border-gray-100">
               <ApplicationsHeader
                 count={pendingApplications.length}
