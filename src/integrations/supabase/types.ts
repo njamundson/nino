@@ -184,6 +184,41 @@ export type Database = {
           },
         ]
       }
+      brand_notes: {
+        Row: {
+          brand_id: string
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          text: string
+          updated_at: string | null
+        }
+        Insert: {
+          brand_id: string
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          text: string
+          updated_at?: string | null
+        }
+        Update: {
+          brand_id?: string
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          text?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_notes_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_notification_settings: {
         Row: {
           application_updates: boolean | null
