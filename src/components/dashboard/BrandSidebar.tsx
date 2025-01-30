@@ -78,8 +78,8 @@ const BrandSidebar = () => {
               alt="Nino" 
               className="h-16"
               loading="eager"
+              decoding="async"
               fetchPriority="high"
-              decoding="sync"
               style={{ 
                 imageRendering: 'crisp-edges',
                 willChange: 'transform'
