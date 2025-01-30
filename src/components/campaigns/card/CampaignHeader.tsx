@@ -43,20 +43,20 @@ const CampaignHeader = ({
       </div>
 
       <div className="flex items-center gap-2">
-        {applications.length > 0 && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                <ListChecks className="h-4 w-4" />
-                <span className="sr-only">View applications</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 bg-white">
-              <div className="px-2 py-1.5 text-sm font-semibold">
-                Applications ({applications.length})
-              </div>
-              <DropdownMenuSeparator />
-              {applications.map((application) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <ListChecks className="h-4 w-4" />
+              <span className="sr-only">View applications</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64 bg-white">
+            <div className="px-2 py-1.5 text-sm font-semibold">
+              Applications ({applications.length})
+            </div>
+            <DropdownMenuSeparator />
+            {applications.length > 0 ? (
+              applications.map((application) => (
                 <DropdownMenuItem
                   key={application.id}
                   className="flex items-center gap-2 p-2 cursor-pointer"
@@ -71,10 +71,14 @@ const CampaignHeader = ({
                     </p>
                   </div>
                 </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+              ))
+            ) : (
+              <div className="px-2 py-1.5 text-sm text-gray-500">
+                No applications yet
+              </div>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {!isCompleted && (
           <DropdownMenu>
