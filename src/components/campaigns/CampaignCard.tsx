@@ -160,7 +160,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="bg-white">
                   <DropdownMenuItem onClick={() => onEdit(campaign)}>
                     Edit campaign
                   </DropdownMenuItem>
@@ -214,17 +214,17 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
             </div>
           </div>
 
-          {!isCompleted && !isInactive && pendingApplications.length > 0 && (
+          {!isCompleted && !isInactive && applications.length > 0 && (
             <div className="pt-4 border-t border-gray-100">
               <ApplicationsHeader
-                count={pendingApplications.length}
+                count={applications.length}
                 isExpanded={isApplicationsExpanded}
                 onToggle={() => setIsApplicationsExpanded(!isApplicationsExpanded)}
               />
               
               {isApplicationsExpanded && (
                 <div className="mt-4 space-y-3">
-                  {pendingApplications.map((application) => (
+                  {applications.map((application) => (
                     <div
                       key={application.id}
                       className="p-3 bg-gray-50/80 rounded-xl cursor-pointer hover:bg-gray-100/80 transition-colors"
