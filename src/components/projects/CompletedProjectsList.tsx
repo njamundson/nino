@@ -42,7 +42,11 @@ const CompletedProjectsList = () => {
               user_id,
               phone_number,
               support_email,
-              profile_image_url
+              profile_image_url,
+              sms_notifications_enabled,
+              two_factor_enabled,
+              created_at,
+              updated_at
             ),
             applications (
               id,
@@ -75,8 +79,20 @@ const CompletedProjectsList = () => {
           return [];
         }
 
-        console.log("Fetched completed projects:", opportunities);
-        return opportunities || [];
+        // Transform the data to match the Opportunity type
+        const transformedOpportunities = opportunities?.map(opp => ({
+          ...opp,
+          brand: {
+            ...opp.brand,
+            sms_notifications_enabled: opp.brand?.sms_notifications_enabled ?? true,
+            two_factor_enabled: opp.brand?.two_factor_enabled ?? false,
+            created_at: opp.brand?.created_at ?? opp.created_at,
+            updated_at: opp.brand?.updated_at ?? opp.updated_at,
+          }
+        })) as Opportunity[];
+
+        console.log("Fetched completed projects:", transformedOpportunities);
+        return transformedOpportunities || [];
       } catch (error) {
         console.error("Error in query:", error);
         toast({
