@@ -32,6 +32,7 @@ interface CampaignCardProps {
       id: string;
       status: string;
       cover_letter: string | null;
+      initiated_by?: 'creator' | 'brand';
       creator: {
         id: string;
         bio: string | null;
@@ -101,7 +102,12 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     }
   };
 
-  const applications = campaign.applications || [];
+  // Filter applications to only show actual applications (not just invitations)
+  const applications = (campaign.applications || []).filter(app => 
+    app.initiated_by === 'creator' || // Show all creator-initiated applications
+    (app.initiated_by === 'brand' && app.status !== 'pending') // Only show brand invitations if they've been responded to
+  );
+  
   const pendingApplications = applications.filter(app => app.status === 'pending');
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
   const isInactive = campaign.status === 'inactive';
