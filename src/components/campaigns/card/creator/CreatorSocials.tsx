@@ -17,13 +17,13 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
   return (
     <div className="flex gap-3">
       {creator?.instagram && (
-        <HoverCard openDelay={200} closeDelay={100}>
+        <HoverCard openDelay={300} closeDelay={0}>
           <HoverCardTrigger asChild>
             <a
               href={`https://instagram.com/${creator.instagram.replace('@', '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
+              className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm transition-colors duration-200"
             >
               <Instagram className="w-3.5 h-3.5" />
               {creator.instagram}
@@ -32,7 +32,8 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
           <HoverCardContent 
             side="top" 
             align="start"
-            className="w-64"
+            className="w-64 p-3"
+            forceMount={false}
           >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Instagram Profile</p>
@@ -45,13 +46,13 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
       )}
       
       {creator?.website && (
-        <HoverCard openDelay={200} closeDelay={100}>
+        <HoverCard openDelay={300} closeDelay={0}>
           <HoverCardTrigger asChild>
             <a
               href={creator.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
+              className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm transition-colors duration-200"
             >
               <Globe className="w-3.5 h-3.5" />
               Website
@@ -60,7 +61,8 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
           <HoverCardContent 
             side="top" 
             align="start"
-            className="w-64"
+            className="w-64 p-3"
+            forceMount={false}
           >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Creator Website</p>
@@ -73,11 +75,11 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
       )}
       
       {onMessageClick && (
-        <HoverCard openDelay={200} closeDelay={100}>
+        <HoverCard openDelay={300} closeDelay={0}>
           <HoverCardTrigger asChild>
             <button
               onClick={onMessageClick}
-              className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm"
+              className="text-gray-500 hover:text-gray-700 flex items-center gap-1.5 text-sm transition-colors duration-200"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               Message
@@ -86,7 +88,8 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
           <HoverCardContent 
             side="top" 
             align="start"
-            className="w-64"
+            className="w-64 p-3"
+            forceMount={false}
           >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Start a Conversation</p>
