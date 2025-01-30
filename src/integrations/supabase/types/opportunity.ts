@@ -1,16 +1,4 @@
-import { Creator } from './creator';
-
-export interface Application {
-  id: string;
-  opportunity_id: string;
-  creator_id: string;
-  status: string;
-  cover_letter: string | null;
-  created_at: string;
-  updated_at: string;
-  initiated_by?: 'creator' | 'brand';
-  creator?: Creator;
-}
+import { Brand } from './brand';
 
 export interface Opportunity {
   id: string;
@@ -27,5 +15,9 @@ export interface Opportunity {
   compensation_details: string | null;
   deliverables: string[] | null;
   image_url: string | null;
+  created_at?: string;
+  updated_at?: string;
+  brand?: Brand;
   applications?: Application[];
+  current_creator_id?: string;
 }

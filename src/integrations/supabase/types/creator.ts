@@ -10,10 +10,6 @@ export interface Creator {
   profile_image_url: string | null;
   first_name: string | null;
   last_name: string | null;
-  profile?: {
-    first_name: string | null;
-    last_name: string | null;
-  } | null;
   created_at?: string;
   updated_at?: string;
   profile_id?: string | null;

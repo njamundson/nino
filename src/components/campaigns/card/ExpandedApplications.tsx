@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Application } from "@/integrations/supabase/types/opportunity";
+import { Application } from "@/integrations/supabase/types/application";
 
 interface ExpandedApplicationsProps {
   applications: Application[];
@@ -8,11 +7,11 @@ interface ExpandedApplicationsProps {
 
 const ExpandedApplications = ({ applications, onViewCreator }: ExpandedApplicationsProps) => {
   return (
-    <div className="mt-4 space-y-3">
+    <div className="space-y-4 mt-4">
       {applications.map((application) => (
         <div
           key={application.id}
-          className="p-3 bg-gray-50/80 rounded-xl cursor-pointer hover:bg-gray-100/80 transition-colors"
+          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
           onClick={() => onViewCreator(application.creator, application)}
         >
           <div className="flex items-center justify-between flex-wrap gap-2">
@@ -26,13 +25,9 @@ const ExpandedApplications = ({ applications, onViewCreator }: ExpandedApplicati
                 </p>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-nino-primary hover:text-nino-primary/90 whitespace-nowrap"
-            >
-              View Profile
-            </Button>
+          </div>
+          <div className="text-sm text-gray-500">
+            {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
           </div>
         </div>
       ))}

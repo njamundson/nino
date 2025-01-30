@@ -1,5 +1,5 @@
-import { Opportunity } from './opportunity';
 import { Creator } from './creator';
+import { Opportunity } from './opportunity';
 
 export interface Application {
   id: string;
@@ -9,7 +9,7 @@ export interface Application {
   cover_letter: string | null;
   created_at: string;
   updated_at: string;
-  initiated_by: "creator" | "brand";
-  opportunity?: Opportunity;
+  initiated_by?: 'creator' | 'brand';
   creator?: Creator;
+  opportunity?: Opportunity;
 }
