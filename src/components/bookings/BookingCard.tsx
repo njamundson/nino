@@ -2,7 +2,8 @@ import { Card } from "@/components/ui/card";
 import ProjectDetails from "./details/ProjectDetails";
 import CompensationDetails from "./details/CompensationDetails";
 import CreatorSection from "./details/CreatorSection";
-import { useAuth } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 interface BookingCardProps {
   booking: any;
@@ -17,8 +18,16 @@ const BookingCard = ({
   onViewCreator,
   isCreatorView = false 
 }: BookingCardProps) => {
-  const auth = useAuth();
-  const isCreator = auth?.user?.id === booking.creator?.user_id;
+  const [isCreator, setIsCreator] = useState(false);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsCreator(user?.id === booking.creator?.user_id);
+    };
+    
+    checkUser();
+  }, [booking.creator?.user_id]);
 
   return (
     <Card className="overflow-hidden">
