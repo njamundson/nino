@@ -19,9 +19,9 @@ const ActionButtons = ({
   onDecline,
   onDelete,
   onApply,
-  hasCoverLetter,
-  onUpdateStatus
+  hasCoverLetter
 }: ActionButtonsProps) => {
+  // Only show buttons for proposals (invitations from brands)
   if (type === 'proposal' && !hasCoverLetter) {
     return (
       <div className="flex gap-3 mt-6">
@@ -47,44 +47,30 @@ const ActionButtons = ({
     );
   }
 
-  if (type === 'application' && onUpdateStatus) {
+  // For submitted applications, only show delete button if needed
+  if (type === 'application' && !hasCoverLetter) {
     return (
-      <div className="flex gap-3 mt-6">
-        <Button 
-          onClick={() => onUpdateStatus('accepted')}
-          className="flex-1"
-        >
-          Accept
-        </Button>
-        <Button 
+      <div className="flex justify-end mt-6">
+        <Button
           variant="outline"
-          onClick={() => onUpdateStatus('rejected')}
-          className="flex-1"
+          onClick={onDelete}
+          disabled={isDeleting}
         >
-          Reject
+          {isDeleting ? (
+            <>
+              <LoadingSpinner className="mr-2 h-4 w-4" />
+              Deleting...
+            </>
+          ) : (
+            "Delete Application"
+          )}
         </Button>
       </div>
     );
   }
 
-  return (
-    <div className="flex justify-end mt-6">
-      <Button
-        variant="outline"
-        onClick={onDelete}
-        disabled={isDeleting}
-      >
-        {isDeleting ? (
-          <>
-            <LoadingSpinner className="mr-2 h-4 w-4" />
-            Deleting...
-          </>
-        ) : (
-          "Delete Application"
-        )}
-      </Button>
-    </div>
-  );
+  // Return null if no buttons should be shown
+  return null;
 };
 
 export default ActionButtons;

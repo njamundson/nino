@@ -39,10 +39,7 @@ const ViewApplicationModal = ({
 
       if (error) throw error;
 
-      // Close modal first
       onClose();
-      
-      // Then update queries and show success message
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['applications'] }),
         queryClient.invalidateQueries({ queryKey: ['my-applications'] })
@@ -68,10 +65,7 @@ const ViewApplicationModal = ({
 
       if (error) throw error;
 
-      // Close modal first
       onClose();
-      
-      // Then update queries and show success message
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['applications'] }),
         queryClient.invalidateQueries({ queryKey: ['my-applications'] })
@@ -116,16 +110,19 @@ const ViewApplicationModal = ({
 
         <ProjectDetails application={application} />
 
-        <ActionButtons
-          type={type}
-          isDeleting={isDeleting}
-          isDeclining={isDecling}
-          onDecline={handleDecline}
-          onDelete={handleDeleteApplication}
-          onApply={() => setShowApplicationForm(true)}
-          hasCoverLetter={!!application.cover_letter}
-          onUpdateStatus={onUpdateStatus}
-        />
+        {/* Only show action buttons for proposals (invitations from brands) */}
+        {type === 'proposal' && (
+          <ActionButtons
+            type={type}
+            isDeleting={isDeleting}
+            isDeclining={isDecling}
+            onDecline={handleDecline}
+            onDelete={handleDeleteApplication}
+            onApply={() => setShowApplicationForm(true)}
+            hasCoverLetter={!!application.cover_letter}
+            onUpdateStatus={onUpdateStatus}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
