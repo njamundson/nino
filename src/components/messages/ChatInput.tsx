@@ -44,7 +44,14 @@ const ChatInput = ({
 
       // First get the creator's profile to check permissions
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No authenticated user');
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No authenticated user found",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
@@ -54,7 +61,12 @@ const ChatInput = ({
 
       if (creatorError) {
         console.error('Error fetching creator:', creatorError);
-        throw new Error('Failed to verify permissions');
+        toast({
+          title: "Error",
+          description: "Failed to verify permissions",
+          variant: "destructive",
+        });
+        return;
       }
 
       // Upload the file
@@ -64,7 +76,10 @@ const ChatInput = ({
         .from('chat-attachments')
         .upload(fileName, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('chat-attachments')
