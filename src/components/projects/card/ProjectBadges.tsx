@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Application } from "@/integrations/supabase/types";
+import { Application } from "@/integrations/supabase/types/application";
 
 export interface ProjectBadgesProps {
   applications: Application[];

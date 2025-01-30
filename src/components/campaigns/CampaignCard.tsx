@@ -11,6 +11,7 @@ import AcceptDialog from "./modals/profile/AcceptDialog";
 import CampaignHeader from "./card/CampaignHeader";
 import CampaignBadges from "./card/CampaignBadges";
 import ExpandedApplications from "./card/ExpandedApplications";
+import { Application } from "@/integrations/supabase/types/application";
 
 interface CampaignCardProps {
   campaign: {
@@ -23,24 +24,7 @@ interface CampaignCardProps {
     location: string | null;
     payment_details: string | null;
     compensation_details: string | null;
-    applications?: Array<{
-      id: string;
-      status: string;
-      cover_letter: string | null;
-      initiated_by?: 'creator' | 'brand';
-      creator: {
-        id: string;
-        bio: string | null;
-        location: string | null;
-        specialties: string[] | null;
-        instagram: string | null;
-        website: string | null;
-        creator_type: string;
-        profile_image_url: string | null;
-        first_name: string | null;
-        last_name: string | null;
-      };
-    }>;
+    applications?: Application[];
   };
   onEdit: (campaign: any) => void;
   onDelete: (id: string) => void;
