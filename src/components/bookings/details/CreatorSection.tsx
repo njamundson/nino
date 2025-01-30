@@ -30,9 +30,7 @@ interface CreatorSectionProps {
 const CreatorSection = ({ creator, onChatClick, onViewCreator, onCancelClick }: CreatorSectionProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
-  const creatorName = creator.profile ? 
-    `${creator.profile.first_name || ''} ${creator.profile.last_name || ''}`.trim() : 
-    'Creator';
+  const creatorName = creator.profile?.first_name + ' ' + creator.profile?.last_name;
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
