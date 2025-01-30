@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../dashboard/BrandSidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
@@ -6,7 +6,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 import MobileMenu from "../dashboard/MobileMenu";
 import { usePrefetchData } from "@/hooks/usePrefetchData";
-import { Suspense } from "react";
 import { LoadingSpinner } from "../ui/loading-spinner";
 
 const BrandLayout = () => {
