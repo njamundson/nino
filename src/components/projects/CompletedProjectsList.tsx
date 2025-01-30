@@ -5,6 +5,7 @@ import { Archive } from "lucide-react";
 import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/integrations/supabase/types/opportunity";
+import { Creator } from "@/integrations/supabase/types/creator";
 
 const CompletedProjectsList = () => {
   const { toast } = useToast();
@@ -59,6 +60,7 @@ const CompletedProjectsList = () => {
               initiated_by,
               creator:creators (
                 id,
+                user_id,
                 first_name,
                 last_name,
                 bio,
@@ -67,13 +69,16 @@ const CompletedProjectsList = () => {
                 website,
                 specialties,
                 creator_type,
-                profile_image_url
+                profile_image_url,
+                created_at,
+                updated_at,
+                profile_id,
+                notifications_enabled
               )
             )
           `)
           .eq('brand_id', brand.id)
           .eq('status', 'completed')
-          // Only get opportunities that have at least one accepted application
           .not('applications', 'is', null)
           .order('end_date', { ascending: false });
 
@@ -107,7 +112,8 @@ const CompletedProjectsList = () => {
             opportunity_id: opp.id,
             created_at: app.created_at || opp.created_at,
             updated_at: app.updated_at || opp.updated_at,
-            initiated_by: app.initiated_by || 'creator'
+            initiated_by: app.initiated_by || 'creator',
+            creator: app.creator as Creator // Ensure creator has all required fields
           }))
         })) as Opportunity[];
 
