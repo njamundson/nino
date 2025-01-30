@@ -16,10 +16,8 @@ import { useState } from "react";
 
 interface CreatorSectionProps {
   creator: {
-    profile: {
-      first_name: string | null;
-      last_name: string | null;
-    } | null;
+    first_name: string;
+    last_name: string | null;
     profile_image_url: string | null;
   };
   onChatClick: () => void;
@@ -30,7 +28,10 @@ interface CreatorSectionProps {
 const CreatorSection = ({ creator, onChatClick, onViewCreator, onCancelClick }: CreatorSectionProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
-  const creatorName = creator.profile?.first_name + ' ' + creator.profile?.last_name;
+  // Since first_name is required in the database, we can be confident it exists
+  const creatorName = creator.last_name 
+    ? `${creator.first_name} ${creator.last_name}`
+    : creator.first_name;
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -62,7 +63,7 @@ const CreatorSection = ({ creator, onChatClick, onViewCreator, onCancelClick }: 
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-nino-primary/10 flex items-center justify-center ring-2 ring-white">
                     <span className="text-lg font-medium text-nino-primary">
-                      {creatorName.split(' ').map(n => n[0]).join('')}
+                      {creator.first_name[0].toUpperCase()}
                     </span>
                   </div>
                 )}
