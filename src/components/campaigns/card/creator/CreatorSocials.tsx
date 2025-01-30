@@ -17,7 +17,7 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
   return (
     <div className="flex gap-3">
       {creator?.instagram && (
-        <HoverCard>
+        <HoverCard openDelay={200} closeDelay={100}>
           <HoverCardTrigger asChild>
             <a
               href={`https://instagram.com/${creator.instagram.replace('@', '')}`}
@@ -29,7 +29,11 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
               {creator.instagram}
             </a>
           </HoverCardTrigger>
-          <HoverCardContent className="w-80">
+          <HoverCardContent 
+            side="top" 
+            align="start"
+            className="w-64"
+          >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Instagram Profile</p>
               <p className="text-sm text-muted-foreground">
@@ -41,7 +45,7 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
       )}
       
       {creator?.website && (
-        <HoverCard>
+        <HoverCard openDelay={200} closeDelay={100}>
           <HoverCardTrigger asChild>
             <a
               href={creator.website}
@@ -53,7 +57,11 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
               Website
             </a>
           </HoverCardTrigger>
-          <HoverCardContent className="w-80">
+          <HoverCardContent 
+            side="top" 
+            align="start"
+            className="w-64"
+          >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Creator Website</p>
               <p className="text-sm text-muted-foreground">
@@ -65,7 +73,7 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
       )}
       
       {onMessageClick && (
-        <HoverCard>
+        <HoverCard openDelay={200} closeDelay={100}>
           <HoverCardTrigger asChild>
             <button
               onClick={onMessageClick}
@@ -75,7 +83,11 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
               Message
             </button>
           </HoverCardTrigger>
-          <HoverCardContent className="w-80">
+          <HoverCardContent 
+            side="top" 
+            align="start"
+            className="w-64"
+          >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Start a Conversation</p>
               <p className="text-sm text-muted-foreground">
