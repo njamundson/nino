@@ -156,6 +156,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const handleDeleteChat = async (userId: string) => {
     try {
       if (!currentUser) return;
+      setIsLoading(true);
 
       const { error } = await supabase
         .from('messages')
@@ -164,7 +165,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
       if (error) throw error;
 
-      // Update local state
+      // Update local state by filtering out the deleted conversation
       setUsers(prevUsers => prevUsers.filter(user => user.otherUser.id !== userId));
       
       // Clear the messages from the cache for this chat
@@ -187,6 +188,8 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         description: "Failed to delete the conversation",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
