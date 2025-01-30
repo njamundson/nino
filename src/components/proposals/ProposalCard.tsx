@@ -20,9 +20,10 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Determine the display status based on the application context
-  const displayStatus = type === 'proposal' && application.initiated_by === 'brand' 
-    ? 'invited'
+  // Determine the display status - if it's in the Applied tab and has a cover letter, 
+  // it should show as Pending regardless of how it was initiated
+  const displayStatus = type === 'application' && application.cover_letter 
+    ? 'pending'
     : application.status;
 
   const handleUpdateStatus = async (status: 'accepted' | 'rejected') => {

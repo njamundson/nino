@@ -21,18 +21,16 @@ const ProposalsTabs = ({
   // Filter out any accepted applications since they should be in Bookings
   const activeApplications = myApplications.filter(app => app.status !== 'accepted');
 
-  // Show ONLY brand-initiated applications that haven't been acted upon yet in Pending tab
+  // Show brand-initiated applications that haven't been acted upon yet in Pending tab
   const pendingInvitations = activeApplications.filter(app => 
     app.initiated_by === 'brand' && 
-    app.status === 'invited' &&
-    !app.cover_letter // If they've added a cover letter, they've acted on it
+    app.status === 'invited'
   );
   
-  // Show creator-initiated applications AND brand invitations that have been acted upon
+  // Show creator-initiated applications and brand invitations that have been acted upon
   const userApplications = activeApplications.filter(app => 
     app.initiated_by === 'creator' || 
-    (app.initiated_by === 'brand' && app.status !== 'invited') ||
-    (app.initiated_by === 'brand' && app.cover_letter) // If they've added a cover letter, show in Applied
+    (app.initiated_by === 'brand' && app.status !== 'invited')
   );
 
   console.log('Pending invitations:', pendingInvitations);
