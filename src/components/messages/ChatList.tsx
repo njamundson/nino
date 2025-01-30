@@ -6,6 +6,7 @@ import { ChatListHeader } from "./chat-list/ChatListHeader";
 import { ChatListItem } from "./chat-list/ChatListItem";
 import CreatorSelectionModal from "./CreatorSelectionModal";
 import { useQueryClient } from "@tanstack/react-query";
+import { useChatDeletion } from "@/hooks/messages/useChatDeletion";
 
 interface ChatListProps {
   onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
@@ -20,6 +21,13 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const { toast } = useToast();
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
   const queryClient = useQueryClient();
+
+  const { deleteChat, isDeletingChat } = useChatDeletion((deletedUserId) => {
+    setUsers(prevUsers => prevUsers.filter(user => user.otherUser.id !== deletedUserId));
+    if (selectedUserId === deletedUserId) {
+      onSelectChat('', '', '', null);
+    }
+  });
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -150,47 +158,13 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         description: "Failed to fetch conversations",
         variant: "destructive",
       });
-    }
-  };
-
-  const handleDeleteChat = async (userId: string) => {
-    try {
-      if (!currentUser) return;
-      setIsLoading(true);
-
-      const { error } = await supabase
-        .from('messages')
-        .delete()
-        .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${currentUser.id})`);
-
-      if (error) throw error;
-
-      // Update local state by filtering out the deleted conversation
-      setUsers(prevUsers => prevUsers.filter(user => user.otherUser.id !== userId));
-      
-      // Clear the messages from the cache for this chat
-      queryClient.removeQueries({ queryKey: ['messages', userId] });
-      
-      // If this was the selected chat, clear the selection
-      if (selectedUserId === userId) {
-        onSelectChat('', '', '', null);
-      }
-
-      toast({
-        title: "Chat deleted",
-        description: "The conversation has been removed",
-      });
-
-    } catch (error) {
-      console.error('Error deleting chat:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete the conversation",
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDeleteChat = (userId: string) => {
+    deleteChat(currentUser?.id, userId);
   };
 
   const filteredUsers = users.filter(user => {
@@ -199,7 +173,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     return fullName.includes(searchQuery.toLowerCase());
   });
 
-  if (isLoading) {
+  if (isLoading || isDeletingChat) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
