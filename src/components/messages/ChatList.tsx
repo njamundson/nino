@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "./chat-list/EmptyState";
 import { ChatListHeader } from "./chat-list/ChatListHeader";
 import { ChatListItem } from "./chat-list/ChatListItem";
 import CreatorSelectionModal from "./CreatorSelectionModal";
-import { useQueryClient } from "@tanstack/react-query";
-import { useChatDeletion } from "@/hooks/messages/useChatDeletion";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useChatList } from "@/hooks/messages/useChatList";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatListProps {
   onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
@@ -15,31 +14,19 @@ interface ChatListProps {
 }
 
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
-  const [users, setUsers] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
-  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  const { deleteChat, isDeletingChat } = useChatDeletion((deletedUserId) => {
-    setUsers(prevUsers => prevUsers.filter(user => user.otherUser.id !== deletedUserId));
-    if (selectedUserId === deletedUserId) {
-      onSelectChat('', '', '', null);
-    }
-  });
+  const { chats, isLoading, deleteChat } = useChatList(currentUser?.id);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error) throw error;
-        
         setCurrentUser(user);
-        if (user) {
-          await fetchChatUsers(user.id);
-        }
       } catch (error) {
         console.error('Error fetching current user:', error);
         toast({
@@ -47,41 +34,11 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
           description: "Failed to load user data",
           variant: "destructive",
         });
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchCurrentUser();
-    const channel = subscribeToNewMessages();
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-    };
-  }, []);
-
-  const subscribeToNewMessages = () => {
-    const channel = supabase
-      .channel('chat_updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'messages'
-        },
-        (payload) => {
-          console.log('Real-time update:', payload);
-          if (currentUser) {
-            fetchChatUsers(currentUser.id);
-          }
-        }
-      )
-      .subscribe();
-
-    return channel;
-  };
+  }, [toast]);
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -98,83 +55,20 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     }
   };
 
-  const fetchChatUsers = async (userId: string) => {
-    try {
-      const { data: messages, error } = await supabase
-        .from('messages')
-        .select(`
-          id,
-          content,
-          created_at,
-          sender_id,
-          receiver_id,
-          read,
-          sender:profiles!sender_profile_id (
-            first_name,
-            last_name,
-            creator:creators (
-              profile_image_url
-            )
-          ),
-          receiver:profiles!receiver_profile_id (
-            first_name,
-            last_name,
-            creator:creators (
-              profile_image_url
-            )
-          )
-        `)
-        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      const conversationsMap = new Map();
-      
-      messages?.forEach((msg: any) => {
-        const otherUserId = msg.sender_id === userId ? msg.receiver_id : msg.sender_id;
-        const otherUser = msg.sender_id === userId ? msg.receiver : msg.sender;
-        
-        if (!conversationsMap.has(otherUserId) || 
-            new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
-          conversationsMap.set(otherUserId, {
-            ...msg,
-            otherUser: {
-              id: otherUserId,
-              firstName: otherUser?.first_name || '',
-              lastName: otherUser?.last_name || '',
-              profileImage: otherUser?.creator?.profile_image_url || null
-            }
-          });
-        }
-      });
-
-      const conversationsList = Array.from(conversationsMap.values());
-      setUsers(conversationsList);
-
-    } catch (error) {
-      console.error('Error fetching chat users:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch conversations",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+  const handleDeleteChat = (userId: string) => {
+    deleteChat(userId);
+    if (selectedUserId === userId) {
+      onSelectChat('', '', '', null);
     }
   };
 
-  const handleDeleteChat = (userId: string) => {
-    deleteChat(currentUser?.id, userId);
-  };
-
-  const filteredUsers = users.filter(user => {
-    if (!user?.otherUser) return false;
-    const fullName = `${user.otherUser.firstName} ${user.otherUser.lastName}`.toLowerCase();
+  const filteredChats = chats.filter(chat => {
+    if (!chat?.otherUser) return false;
+    const fullName = `${chat.otherUser.firstName} ${chat.otherUser.lastName}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase());
   });
 
-  if (isLoading || isDeletingChat) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <LoadingSpinner size="md" />
@@ -191,11 +85,11 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       />
 
       <div className="flex-1 overflow-y-auto bg-white">
-        {filteredUsers.length === 0 ? (
+        {filteredChats.length === 0 ? (
           <EmptyState />
         ) : (
           <div className="divide-y divide-gray-50">
-            {filteredUsers.map((chat) => (
+            {filteredChats.map((chat) => (
               <ChatListItem
                 key={chat.otherUser.id}
                 chat={chat}
