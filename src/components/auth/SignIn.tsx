@@ -53,34 +53,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
       console.log("User authenticated, checking profile...");
       
-      // Check for brand profile first
-      const { data: brand, error: brandError } = await supabase
-        .from('brands')
-        .select('id, onboarding_completed')
-        .eq('user_id', data.user.id)
-        .maybeSingle();
-
-      if (brandError) {
-        console.error('Error fetching brand profile:', brandError);
-        throw brandError;
-      }
-
-      // If brand profile exists, handle brand navigation
-      if (brand) {
-        console.log("Brand profile found:", brand);
-        if (brand.onboarding_completed) {
-          navigate('/brand/dashboard', { replace: true });
-        } else {
-          navigate('/onboarding/brand', { replace: true });
-        }
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in.",
-        });
-        return; // Early return after handling brand navigation
-      }
-
-      // Only check for creator profile if no brand profile exists
+      // Check for creator profile
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id, onboarding_completed')
@@ -92,16 +65,34 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         throw creatorError;
       }
 
-      // Handle creator navigation
+      // Check for brand profile
+      const { data: brand, error: brandError } = await supabase
+        .from('brands')
+        .select('id, onboarding_completed')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
+
+      if (brandError) {
+        console.error('Error fetching brand profile:', brandError);
+        throw brandError;
+      }
+
+      console.log("Profile check complete:", { creator, brand });
+
+      // Handle navigation based on user type and onboarding status
       if (creator) {
-        console.log("Creator profile found:", creator);
         if (creator.onboarding_completed) {
           navigate('/creator/dashboard', { replace: true });
         } else {
           navigate('/onboarding/creator', { replace: true });
         }
+      } else if (brand) {
+        if (brand.onboarding_completed) {
+          navigate('/brand/dashboard', { replace: true });
+        } else {
+          navigate('/onboarding/brand', { replace: true });
+        }
       } else {
-        console.log("No profile found, redirecting to onboarding");
         navigate('/onboarding', { replace: true });
       }
 
