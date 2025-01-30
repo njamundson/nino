@@ -31,8 +31,8 @@ const CreatorSection = ({ creator, onChatClick, onViewCreator, onCancelClick }: 
   const [isOpen, setIsOpen] = useState(false);
   
   const creatorName = creator.profile ? 
-    `${creator.profile.first_name} ${creator.profile.last_name}` : 
-    'Anonymous Creator';
+    `${creator.profile.first_name || ''} ${creator.profile.last_name || ''}`.trim() : 
+    'Creator';
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
