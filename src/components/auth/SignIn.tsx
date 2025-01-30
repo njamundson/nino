@@ -51,39 +51,9 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         throw new Error("No user data returned");
       }
 
-      console.log("User authenticated, checking profiles...");
+      console.log("User authenticated, checking profile...");
       
-      // First check for brand profile since we want to prioritize brand login
-      const { data: brand, error: brandError } = await supabase
-        .from('brands')
-        .select('id, onboarding_completed')
-        .eq('user_id', data.user.id)
-        .maybeSingle();
-
-      if (brandError) {
-        console.error('Error fetching brand profile:', brandError);
-        throw brandError;
-      }
-
-      // If brand profile exists, handle brand routing
-      if (brand) {
-        console.log("Brand profile found:", brand);
-        
-        // Show success toast before navigation
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully signed in.",
-        });
-
-        // Immediate navigation for brand users
-        if (brand.onboarding_completed) {
-          return navigate('/brand/dashboard', { replace: true });
-        } else {
-          return navigate('/onboarding/brand', { replace: true });
-        }
-      }
-
-      // Only check for creator profile if no brand profile exists
+      // Check for creator profile
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id, onboarding_completed')
@@ -95,24 +65,41 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         throw creatorError;
       }
 
-      // Show success toast before navigation
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
+      // Check for brand profile
+      const { data: brand, error: brandError } = await supabase
+        .from('brands')
+        .select('id, onboarding_completed')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
 
-      // Handle creator routing
+      if (brandError) {
+        console.error('Error fetching brand profile:', brandError);
+        throw brandError;
+      }
+
+      console.log("Profile check complete:", { creator, brand });
+
+      // Handle navigation based on user type and onboarding status
       if (creator) {
-        console.log("Creator profile found:", creator);
         if (creator.onboarding_completed) {
           navigate('/creator/dashboard', { replace: true });
         } else {
           navigate('/onboarding/creator', { replace: true });
         }
+      } else if (brand) {
+        if (brand.onboarding_completed) {
+          navigate('/brand/dashboard', { replace: true });
+        } else {
+          navigate('/onboarding/brand', { replace: true });
+        }
       } else {
-        console.log("No profile found, redirecting to onboarding");
         navigate('/onboarding', { replace: true });
       }
+
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully signed in.",
+      });
 
     } catch (error) {
       console.error('Sign in error:', error);
