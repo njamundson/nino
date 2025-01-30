@@ -32,7 +32,7 @@ serve(async (req) => {
     const filePath = `${crypto.randomUUID()}.${fileExt}`
 
     const { data, error: uploadError } = await supabase.storage
-      .from('campaign-images')
+      .from('chat-attachments')
       .upload(filePath, file, {
         contentType: file.type,
         upsert: false
@@ -44,7 +44,7 @@ serve(async (req) => {
     }
 
     const { data: { publicUrl } } = supabase.storage
-      .from('campaign-images')
+      .from('chat-attachments')
       .getPublicUrl(filePath)
 
     return new Response(
