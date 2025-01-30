@@ -2,7 +2,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import { useApplications } from "@/hooks/useApplications";
-import { Application } from "@/integrations/supabase/types/opportunity";
+import { Application } from "@/integrations/supabase/types/application";
 import { motion } from "framer-motion";
 import ProposalsList from "@/components/proposals/ProposalsList";
 
@@ -42,9 +42,13 @@ const Proposals = () => {
   }
 
   // Filter for brand invitations (initiated by brand) that don't have a cover letter yet
-  const pendingInvitations = applications?.filter(app => 
+  // and ensure initiated_by is properly typed
+  const pendingInvitations = (applications || []).map(app => ({
+    ...app,
+    initiated_by: app.initiated_by as "creator" | "brand"
+  })).filter(app => 
     app.initiated_by === 'brand' && !app.cover_letter
-  ) || [] as Application[];
+  );
 
   return (
     <motion.div 
