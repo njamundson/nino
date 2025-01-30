@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle, BadgeCheck, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProjectModal from "./ProjectModal";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
-import { Application, Opportunity } from "@/integrations/supabase/types/opportunity";
+import { Opportunity } from "@/integrations/supabase/types/opportunity";
+import ProjectBadges from "./card/ProjectBadges";
 
 interface ProjectCardProps {
   opportunity: Opportunity & { current_creator_id?: string };
@@ -19,41 +18,6 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-
-  // Get the application status for the current creator
-  const creatorApplication = opportunity.applications?.find(
-    app => app.creator_id === opportunity.current_creator_id
-  );
-
-  const getApplicationBadge = () => {
-    if (!creatorApplication) return null;
-
-    if (creatorApplication.initiated_by === "brand" && !creatorApplication.cover_letter) {
-      return (
-        <Badge 
-          variant="secondary" 
-          className="absolute top-6 right-6 bg-blue-500 text-white border-0 flex items-center gap-1.5"
-        >
-          <BadgeCheck className="w-4 h-4" />
-          Invited
-        </Badge>
-      );
-    }
-
-    if (creatorApplication.initiated_by === "creator") {
-      return (
-        <Badge 
-          variant="secondary" 
-          className="absolute top-6 right-6 bg-orange-500 text-white border-0 flex items-center gap-1.5"
-        >
-          <Clock className="w-4 h-4" />
-          Applied
-        </Badge>
-      );
-    }
-
-    return null;
-  };
   
   const handleViewDetails = () => {
     setIsLoading(true);
@@ -91,17 +55,11 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         
-        {isCompleted && (
-          <Badge 
-            variant="secondary" 
-            className="absolute top-6 right-6 bg-green-500 text-white border-0"
-          >
-            <CheckCircle className="w-4 h-4 mr-1" />
-            Completed
-          </Badge>
-        )}
-
-        {getApplicationBadge()}
+        <ProjectBadges 
+          applications={opportunity.applications}
+          isCompleted={isCompleted}
+          currentCreatorId={opportunity.current_creator_id}
+        />
 
         <div className="absolute bottom-20 left-6 right-6 text-white">
           <div className="flex flex-col gap-4">
