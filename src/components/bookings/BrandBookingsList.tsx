@@ -16,7 +16,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  const { data: bookings, isLoading, refetch } = useQuery({
+  const { data: bookings, isLoading, refetch, isError } = useQuery({
     queryKey: ['brand-active-bookings'],
     queryFn: async () => {
       try {
@@ -49,15 +49,12 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         return data || [];
       } catch (error) {
         console.error('Error fetching brand bookings:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load bookings. Please try again.",
-          variant: "destructive",
-        });
-        return [];
+        throw error; // Let the error boundary handle it
       }
     },
     refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
+    retry: 3,
+    staleTime: 1000 * 60, // Consider data stale after 1 minute
   });
 
   // Set up real-time subscription for booking updates
@@ -69,8 +66,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         {
           event: '*',
           schema: 'public',
-          table: 'applications',
-          filter: 'status=eq.accepted'
+          table: 'applications'
         },
         () => {
           refetch();
@@ -98,6 +94,19 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       supabase.removeChannel(opportunitiesChannel);
     };
   }, [refetch]);
+
+  if (isError) {
+    return (
+      <Card className="p-12 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm">
+        <div className="text-center text-gray-500">
+          <p className="text-lg font-medium mb-2">Error loading bookings</p>
+          <p className="text-sm">
+            Please try refreshing the page
+          </p>
+        </div>
+      </Card>
+    );
+  }
 
   if (isLoading) {
     return (
