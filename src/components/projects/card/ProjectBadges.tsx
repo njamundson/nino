@@ -17,7 +17,7 @@ const ProjectBadges = ({ applications, isCompleted, currentCreatorId }: ProjectB
     return (
       <Badge 
         variant="secondary" 
-        className="absolute top-6 right-6 bg-gradient-to-b from-green-400/90 to-green-500/90 text-white border-0 shadow-sm backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5 font-medium"
+        className="absolute top-6 right-6 bg-gradient-to-b from-nino-primary/90 to-nino-primary text-nino-white border-0 shadow-sm backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5 font-medium"
       >
         <CheckCircle className="w-4 h-4" />
         Completed
@@ -31,7 +31,7 @@ const ProjectBadges = ({ applications, isCompleted, currentCreatorId }: ProjectB
     return (
       <Badge 
         variant="secondary" 
-        className="absolute top-6 right-6 bg-gradient-to-b from-blue-400/90 to-blue-500/90 text-white border-0 shadow-sm backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5 font-medium"
+        className="absolute top-6 right-6 bg-gradient-to-b from-nino-text/80 to-nino-text/90 text-nino-white border-0 shadow-sm backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5 font-medium"
       >
         <BadgeCheck className="w-4 h-4" />
         Invited
@@ -43,7 +43,7 @@ const ProjectBadges = ({ applications, isCompleted, currentCreatorId }: ProjectB
     return (
       <Badge 
         variant="secondary" 
-        className="absolute top-6 right-6 bg-gradient-to-b from-orange-400/90 to-orange-500/90 text-white border-0 shadow-sm backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5 font-medium"
+        className="absolute top-6 right-6 bg-gradient-to-b from-nino-gray/80 to-nino-gray/90 text-nino-white border-0 shadow-sm backdrop-blur-sm flex items-center gap-1.5 px-3 py-1.5 font-medium"
       >
         <Clock className="w-4 h-4" />
         Applied
