@@ -28,9 +28,12 @@ const CampaignHeader = ({
   onDelete,
   onViewCreator,
 }: CampaignHeaderProps) => {
-  // Filter to only show valid applications (has cover letter and not cancelled)
+  // Filter to only show pending applications with valid submissions
   const validApplications = applications.filter(
-    app => app.cover_letter && app.cover_letter !== '' && app.status !== 'cancelled'
+    app => app.cover_letter && 
+          app.cover_letter !== '' && 
+          app.status === 'pending' && 
+          app.status !== 'cancelled'
   );
 
   return (
@@ -72,7 +75,7 @@ const CampaignHeader = ({
                       {application.creator?.first_name} {application.creator?.last_name}
                     </p>
                     <p className="text-sm text-gray-500 truncate">
-                      {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                      Pending Review
                     </p>
                   </div>
                 </DropdownMenuItem>
