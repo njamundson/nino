@@ -13,7 +13,7 @@ StaticSidebar.displayName = 'StaticSidebar';
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
 
-// Optimized page transition component with fade animation
+// Enhanced page transition component with improved fade animation
 const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
   <motion.div
     initial={{ opacity: 0 }}
