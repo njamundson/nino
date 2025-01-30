@@ -85,12 +85,24 @@ const MyCampaigns = () => {
   // Handle campaign deletion
   const handleDelete = async (campaignId: string) => {
     try {
-      const { error } = await supabase
+      // First, delete all applications for this campaign
+      const { error: applicationsError } = await supabase
+        .from('applications')
+        .delete()
+        .eq('opportunity_id', campaignId);
+
+      if (applicationsError) {
+        console.error('Error deleting applications:', applicationsError);
+        throw applicationsError;
+      }
+
+      // Then delete the campaign
+      const { error: campaignError } = await supabase
         .from('opportunities')
         .delete()
         .eq('id', campaignId);
 
-      if (error) throw error;
+      if (campaignError) throw campaignError;
 
       toast.success('Campaign deleted successfully');
     } catch (error) {
