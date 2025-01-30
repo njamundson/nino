@@ -63,7 +63,7 @@ const ProjectsList = () => {
             )
           `)
           .eq('status', 'open')
-          .not('id', 'in', appliedOpportunityIds);
+          .not('id', 'in', `(${appliedOpportunityIds.length > 0 ? appliedOpportunityIds.join(',') : 'null'})`);
 
         if (error) {
           console.error("Error fetching opportunities:", error);
