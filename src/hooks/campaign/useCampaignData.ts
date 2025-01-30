@@ -82,7 +82,7 @@ export const useCampaignData = () => {
         return [];
       }
 
-      // Fetch campaigns with related data
+      // Fetch campaigns with related data, excluding inactive ones
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
@@ -121,6 +121,7 @@ export const useCampaignData = () => {
           )
         `)
         .eq('brand_id', brand.id)
+        .neq('status', 'inactive') // Filter out inactive campaigns
         .order('created_at', { ascending: false });
 
       if (error) {
