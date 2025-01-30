@@ -1,4 +1,5 @@
 import { Opportunity } from './opportunity';
+import { Creator } from './creator';
 
 export interface Application {
   id: string;
@@ -10,16 +11,5 @@ export interface Application {
   updated_at: string;
   initiated_by: "creator" | "brand";
   opportunity?: Opportunity;
-  creator?: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    profile_image_url: string;
-    location: string;
-    instagram: string;
-    website: string;
-    creator_type: string;
-    specialties: string[];
-    user_id: string;
-  };
+  creator?: Creator;
 }

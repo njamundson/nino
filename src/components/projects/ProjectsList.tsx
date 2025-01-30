@@ -56,7 +56,8 @@ const ProjectsList = () => {
               initiated_by,
               cover_letter,
               created_at,
-              updated_at
+              updated_at,
+              opportunity_id
             )
           `)
           .eq('status', 'open');
