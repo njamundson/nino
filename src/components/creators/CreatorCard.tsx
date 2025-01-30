@@ -32,7 +32,8 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
     first_name: creator.firstName,
     last_name: creator.lastName,
     profile_image_url: creator.profile_image_url,
-    creator_type: creator.creatorType
+    creator_type: creator.creatorType,
+    user_id: creator.user_id
   };
 
   return (
