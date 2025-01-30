@@ -8,6 +8,7 @@ export const useCreatorOnboarding = () => {
   const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
     id: crypto.randomUUID(),
+    user_id: '', // This will be set when saving to the database
     firstName: "",
     lastName: "",
     bio: "",
