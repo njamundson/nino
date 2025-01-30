@@ -51,6 +51,12 @@ const CompletedProjectsList = () => {
             applications (
               id,
               status,
+              opportunity_id,
+              creator_id,
+              cover_letter,
+              created_at,
+              updated_at,
+              initiated_by,
               creator:creators (
                 id,
                 first_name,
@@ -67,6 +73,8 @@ const CompletedProjectsList = () => {
           `)
           .eq('brand_id', brand.id)
           .eq('status', 'completed')
+          // Only get opportunities that have at least one accepted application
+          .not('applications', 'is', null)
           .order('end_date', { ascending: false });
 
         if (oppsError) {
@@ -79,8 +87,13 @@ const CompletedProjectsList = () => {
           return [];
         }
 
+        // Filter opportunities to only include those with accepted applications
+        const completedWithAcceptedCreator = opportunities?.filter(opp => 
+          opp.applications?.some(app => app.status === 'accepted')
+        );
+
         // Transform the data to match the Opportunity type
-        const transformedOpportunities = opportunities?.map(opp => ({
+        const transformedOpportunities = completedWithAcceptedCreator?.map(opp => ({
           ...opp,
           brand: {
             ...opp.brand,
@@ -88,7 +101,14 @@ const CompletedProjectsList = () => {
             two_factor_enabled: opp.brand?.two_factor_enabled ?? false,
             created_at: opp.brand?.created_at ?? opp.created_at,
             updated_at: opp.brand?.updated_at ?? opp.updated_at,
-          }
+          },
+          applications: opp.applications?.map(app => ({
+            ...app,
+            opportunity_id: opp.id,
+            created_at: app.created_at || opp.created_at,
+            updated_at: app.updated_at || opp.updated_at,
+            initiated_by: app.initiated_by || 'creator'
+          }))
         })) as Opportunity[];
 
         console.log("Fetched completed projects:", transformedOpportunities);
