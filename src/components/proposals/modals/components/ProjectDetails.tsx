@@ -45,16 +45,6 @@ const ProjectDetails = ({ application }: ProjectDetailsProps) => {
           <p className="text-muted-foreground">{application.opportunity.description}</p>
         )}
 
-        {/* Cover Letter */}
-        {application.cover_letter && (
-          <div className="space-y-2">
-            <h5 className="font-medium">Your Cover Letter</h5>
-            <div className="bg-muted/30 p-4 rounded-lg">
-              <p className="text-muted-foreground whitespace-pre-wrap">{application.cover_letter}</p>
-            </div>
-          </div>
-        )}
-
         {/* Requirements */}
         {application.opportunity?.requirements && application.opportunity.requirements.length > 0 && (
           <div className="space-y-2">
@@ -88,6 +78,16 @@ const ProjectDetails = ({ application }: ProjectDetailsProps) => {
                 <li key={index} className="text-muted-foreground">{perk}</li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {/* Your Proposal - Moved to bottom and renamed */}
+        {application.cover_letter && (
+          <div className="space-y-2 mt-6">
+            <h5 className="font-medium">Your Proposal</h5>
+            <div className="bg-muted/30 p-4 rounded-lg">
+              <p className="text-muted-foreground whitespace-pre-wrap">{application.cover_letter}</p>
+            </div>
           </div>
         )}
       </div>
