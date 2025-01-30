@@ -62,8 +62,7 @@ const ProjectsList = () => {
               instagram
             )
           `)
-          .eq('status', 'open')
-          .not('id', 'in', `(${appliedOpportunityIds.length > 0 ? appliedOpportunityIds.join(',') : 'null'})`);
+          .eq('status', 'open');
 
         if (error) {
           console.error("Error fetching opportunities:", error);
@@ -75,8 +74,13 @@ const ProjectsList = () => {
           return [];
         }
 
-        console.log("Fetched available projects:", opportunities);
-        return opportunities || [];
+        // Filter out opportunities that the creator has already applied to
+        const availableOpportunities = opportunities?.filter(
+          opp => !appliedOpportunityIds.includes(opp.id)
+        ) || [];
+
+        console.log("Fetched available projects:", availableOpportunities);
+        return availableOpportunities;
       } catch (error) {
         console.error("Error in query:", error);
         toast({
