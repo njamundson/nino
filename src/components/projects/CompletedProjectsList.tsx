@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Archive } from "lucide-react";
 import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
+import { Opportunity } from "@/integrations/supabase/types/opportunity";
 
 const CompletedProjectsList = () => {
   const { toast } = useToast();
@@ -26,7 +27,6 @@ const CompletedProjectsList = () => {
           return [];
         }
 
-        // Get all accepted applications for this creator
         const { data: applications, error: appsError } = await supabase
           .from('applications')
           .select(`
@@ -47,6 +47,10 @@ const CompletedProjectsList = () => {
               deliverables,
               image_url,
               status,
+              compensation_type,
+              compensation_amount,
+              created_at,
+              updated_at,
               brand:brands (
                 id,
                 company_name,
@@ -54,7 +58,16 @@ const CompletedProjectsList = () => {
                 location,
                 description,
                 website,
-                instagram
+                instagram,
+                user_id,
+                phone_number,
+                support_email,
+                profile_image_url,
+                sms_notifications_enabled,
+                two_factor_enabled,
+                created_at,
+                updated_at,
+                onboarding_completed
               )
             )
           `)
@@ -72,13 +85,16 @@ const CompletedProjectsList = () => {
           return [];
         }
 
-        // Map the applications to match the opportunity structure
         const completedProjects = applications.map(app => ({
           ...app.opportunity,
           application_status: app.status,
           application_id: app.id,
-          brand_id: app.opportunity.brand_id
-        }));
+          brand_id: app.opportunity.brand_id,
+          compensation_type: app.opportunity.compensation_type || null,
+          compensation_amount: app.opportunity.compensation_amount || null,
+          created_at: app.opportunity.created_at || null,
+          updated_at: app.opportunity.updated_at || null
+        })) as Opportunity[];
 
         console.log("Fetched completed projects:", completedProjects);
         return completedProjects || [];
