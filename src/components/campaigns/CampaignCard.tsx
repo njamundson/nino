@@ -139,16 +139,16 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   return (
     <>
       <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300">
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <h3 className="text-xl font-semibold text-nino-text">
+            <div className="space-y-1 flex-1 min-w-0">
+              <h3 className="text-lg sm:text-xl font-semibold text-nino-text truncate pr-2">
                 {campaign.title}
               </h3>
               {campaign.location && (
-                <p className="text-nino-gray flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4" />
-                  {campaign.location}
+                <p className="text-nino-gray flex items-center gap-1.5 text-sm sm:text-base">
+                  <MapPin className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">{campaign.location}</span>
                 </p>
               )}
             </div>
@@ -156,7 +156,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
             {!isCompleted && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
+                  <Button variant="ghost" className="h-8 w-8 p-0 flex-shrink-0">
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -177,13 +177,15 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
 
           <div className="space-y-4">
             <div>
-              <p className="text-nino-gray">{campaign.description}</p>
+              <p className="text-nino-gray text-sm sm:text-base line-clamp-3">
+                {campaign.description}
+              </p>
             </div>
 
             {(campaign.start_date || campaign.end_date) && (
-              <div className="flex items-center gap-2 text-nino-gray">
-                <Calendar className="h-4 w-4" />
-                <span>
+              <div className="flex items-center gap-2 text-nino-gray text-sm sm:text-base">
+                <Calendar className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">
                   {campaign.start_date && formatDate(campaign.start_date)}
                   {campaign.end_date && ` - ${formatDate(campaign.end_date)}`}
                 </span>
@@ -192,14 +194,20 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
 
             <div className="flex flex-wrap gap-2">
               {campaign.payment_details && (
-                <Badge variant="secondary" className="bg-nino-bg text-nino-text px-2 py-0.5 max-w-[200px]">
+                <Badge 
+                  variant="secondary" 
+                  className="bg-nino-bg text-nino-text px-2 py-0.5 text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] sm:max-w-[200px]"
+                >
                   <span className="inline-block truncate">
                     💰 {campaign.payment_details}
                   </span>
                 </Badge>
               )}
               {campaign.compensation_details && (
-                <Badge variant="secondary" className="bg-nino-bg text-nino-text px-2 py-0.5 max-w-[200px]">
+                <Badge 
+                  variant="secondary" 
+                  className="bg-nino-bg text-nino-text px-2 py-0.5 text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] sm:max-w-[200px]"
+                >
                   <span className="inline-block truncate">
                     🎁 {campaign.compensation_details}
                   </span>
@@ -230,13 +238,13 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                       className="p-3 bg-gray-50/80 rounded-xl cursor-pointer hover:bg-gray-100/80 transition-colors"
                       onClick={() => handleViewCreator(application.creator, application)}
                     >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">
                             {application.creator.first_name} {application.creator.last_name}
                           </p>
                           {application.creator.location && (
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 truncate">
                               {application.creator.location}
                             </p>
                           )}
@@ -244,7 +252,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-nino-primary hover:text-nino-primary/90"
+                          className="text-nino-primary hover:text-nino-primary/90 whitespace-nowrap"
                         >
                           View Profile
                         </Button>
@@ -259,7 +267,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
       </Card>
 
       <Dialog open={!!selectedCreator} onOpenChange={handleCloseCreatorModal}>
-        <DialogContent className="max-w-4xl p-0">
+        <DialogContent className="max-w-4xl p-0 w-[95vw] sm:w-auto">
           <DialogTitle className="sr-only">Creator Profile</DialogTitle>
           <CreatorProfile
             creator={selectedCreator}
