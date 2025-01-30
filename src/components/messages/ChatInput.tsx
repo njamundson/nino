@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, Send, X } from "lucide-react";
+import { Send, ImagePlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -8,8 +8,6 @@ interface ChatInputProps {
   newMessage: string;
   setNewMessage: (message: string) => void;
   handleSendMessage: () => void;
-  isRecording: boolean;
-  setIsRecording: (isRecording: boolean) => void;
   selectedChat: string | null;
   editingMessage: { id: string; content: string; } | null;
   setEditingMessage: (message: { id: string; content: string; } | null) => void;
@@ -19,14 +17,13 @@ const ChatInput = ({
   newMessage,
   setNewMessage,
   handleSendMessage,
-  isRecording,
-  setIsRecording,
   selectedChat,
   editingMessage,
   setEditingMessage,
 }: ChatInputProps) => {
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -83,7 +80,43 @@ const ChatInput = ({
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      handleSend();
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload-attachment', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const { url } = await response.json();
+      setNewMessage(`[Image](${url})`);
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -118,25 +151,25 @@ const ChatInput = ({
           className="flex-1 bg-gray-50 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors"
         />
         <div className="flex items-center gap-2">
-          {!isRecording && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setIsRecording(true);
-                toast({
-                  title: "Recording started",
-                  description: "Click again to stop recording",
-                });
-              }}
-              className="rounded-full"
-            >
-              <Mic className="h-5 w-5 text-gray-500" />
-            </Button>
-          )}
+          <input
+            type="file"
+            id="image-upload"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageUpload}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => document.getElementById('image-upload')?.click()}
+            className="rounded-full"
+            disabled={isUploading}
+          >
+            <ImagePlus className="h-5 w-5 text-gray-500" />
+          </Button>
           <Button
             onClick={handleSend}
-            disabled={!newMessage.trim() && !isRecording}
+            disabled={!newMessage.trim() || isUploading}
             className="rounded-full"
           >
             <Send className="h-5 w-5" />
