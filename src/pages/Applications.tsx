@@ -6,7 +6,7 @@ import { Application } from "@/integrations/supabase/types/opportunity";
 import { motion } from "framer-motion";
 import ProposalsList from "@/components/proposals/ProposalsList";
 
-const Proposals = () => {
+const Applications = () => {
   const { toast } = useToast();
   const { data: applications, isLoading: isLoadingApplications, error } = useApplications();
 
@@ -20,14 +20,14 @@ const Proposals = () => {
       if (error) throw error;
 
       toast({
-        title: `Invitation ${newStatus}`,
-        description: `The invitation has been ${newStatus} successfully.`,
+        title: `Application ${newStatus}`,
+        description: `The application has been ${newStatus} successfully.`,
       });
     } catch (error) {
-      console.error('Error updating invitation status:', error);
+      console.error('Error updating application status:', error);
       toast({
         title: "Error",
-        description: "Failed to update invitation status. Please try again.",
+        description: "Failed to update application status. Please try again.",
         variant: "destructive",
       });
     }
@@ -36,16 +36,17 @@ const Proposals = () => {
   if (error) {
     toast({
       title: "Error",
-      description: "Failed to load proposals. Please refresh the page.",
+      description: "Failed to load applications. Please refresh the page.",
       variant: "destructive",
     });
   }
 
-  // Only show brand invitations that haven't been responded to yet
-  const pendingInvitations = applications?.filter((app: Application) => 
+  // Filter out accepted applications and only show creator-initiated ones
+  // or brand invitations that have been responded to with a cover letter
+  const userApplications = applications?.filter((app: Application) => 
     app.status !== 'accepted' && 
-    app.initiated_by === 'brand' && 
-    !app.cover_letter
+    (app.initiated_by === 'creator' || 
+    (app.initiated_by === 'brand' && app.cover_letter))
   ) || [];
 
   return (
@@ -56,20 +57,20 @@ const Proposals = () => {
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <PageHeader 
-        title="Project Invitations" 
-        description="Review and respond to project invitations from brands"
+        title="My Applications" 
+        description="Track all your submitted project applications"
       />
       
       <div className="mt-6">
         <ProposalsList
-          applications={pendingInvitations}
+          applications={userApplications}
           isLoading={isLoadingApplications}
           onUpdateStatus={handleUpdateApplicationStatus}
-          type="proposal"
+          type="application"
         />
       </div>
     </motion.div>
   );
 };
 
-export default Proposals;
+export default Applications;

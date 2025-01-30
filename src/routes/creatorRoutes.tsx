@@ -3,10 +3,10 @@ import CreatorLayout from "@/components/layouts/CreatorLayout";
 import ProtectedCreatorRoute from "@/components/auth/ProtectedCreatorRoute";
 import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
 
-// Implement code splitting with shared chunks for faster transitions
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Projects = lazy(() => import("@/pages/Projects"));
 const Proposals = lazy(() => import("@/pages/Proposals"));
+const Applications = lazy(() => import("@/pages/Applications"));
 const Bookings = lazy(() => import("@/pages/Bookings"));
 const Messages = lazy(() => import("@/pages/Messages"));
 const Settings = lazy(() => import("@/pages/Settings"));
@@ -57,6 +57,16 @@ export const creatorRoutes = [
       <ProtectedCreatorRoute>
         <CreatorLayout>
           <Proposals />
+        </CreatorLayout>
+      </ProtectedCreatorRoute>
+    ),
+  },
+  {
+    path: "/creator/applications",
+    element: (
+      <ProtectedCreatorRoute>
+        <CreatorLayout>
+          <Applications />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),

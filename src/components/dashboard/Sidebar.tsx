@@ -8,6 +8,7 @@ import {
   CheckCircle,
   Menu,
   LogOut,
+  Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +21,8 @@ import { useState, memo, useCallback } from "react";
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/creator/dashboard" },
   { icon: Briefcase, label: "Projects", path: "/creator/projects" },
-  { icon: FileText, label: "Proposals", path: "/creator/proposals" },
+  { icon: FileText, label: "Invitations", path: "/creator/proposals" },
+  { icon: Send, label: "Applications", path: "/creator/applications" },
   { icon: Calendar, label: "Bookings", path: "/creator/bookings" },
   { icon: MessageSquare, label: "Messages", path: "/creator/messages" },
   { icon: CheckCircle, label: "Completed Projects", path: "/creator/completed-projects" },
