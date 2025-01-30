@@ -32,8 +32,7 @@ const CampaignHeader = ({
   const validApplications = applications.filter(
     app => app.cover_letter && 
           app.cover_letter !== '' && 
-          app.status === 'pending' && 
-          app.status !== 'cancelled'
+          app.status === 'pending'
   );
 
   return (
