@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { useState, memo } from "react";
+import { useState, memo, useCallback } from "react";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/creator/dashboard" },
@@ -85,7 +85,7 @@ const Sidebar = () => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -104,13 +104,13 @@ const Sidebar = () => {
         variant: "destructive",
       });
     }
-  };
+  }, [navigate, toast]);
 
-  const handleNavigation = () => {
+  const handleNavigation = useCallback(() => {
     if (isMobile) {
       setIsOpen(false);
     }
-  };
+  }, [isMobile]);
 
   if (isMobile) {
     return (

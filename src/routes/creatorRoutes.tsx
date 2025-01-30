@@ -4,16 +4,16 @@ import ProtectedCreatorRoute from "@/components/auth/ProtectedCreatorRoute";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
 
-// Lazy load page components
-const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Projects = lazy(() => import("@/pages/Projects"));
-const Proposals = lazy(() => import("@/pages/Proposals"));
-const Bookings = lazy(() => import("@/pages/Bookings"));
-const Messages = lazy(() => import("@/pages/Messages"));
-const Settings = lazy(() => import("@/pages/Settings"));
-const CompletedProjects = lazy(() => import("@/pages/CompletedProjects"));
+// Lazy load page components with better chunk naming
+const Dashboard = lazy(() => import("@/pages/Dashboard" /* webpackChunkName: "creator-dashboard" */));
+const Projects = lazy(() => import("@/pages/Projects" /* webpackChunkName: "creator-projects" */));
+const Proposals = lazy(() => import("@/pages/Proposals" /* webpackChunkName: "creator-proposals" */));
+const Bookings = lazy(() => import("@/pages/Bookings" /* webpackChunkName: "creator-bookings" */));
+const Messages = lazy(() => import("@/pages/Messages" /* webpackChunkName: "creator-messages" */));
+const Settings = lazy(() => import("@/pages/Settings" /* webpackChunkName: "creator-settings" */));
+const CompletedProjects = lazy(() => import("@/pages/CompletedProjects" /* webpackChunkName: "creator-completed" */));
 
-// Loading fallback component
+// Optimized loading component
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
     <LoadingSpinner size="lg" className="text-nino-primary/40" />
