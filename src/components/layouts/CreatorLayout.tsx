@@ -9,9 +9,13 @@ interface CreatorLayoutProps {
   children: ReactNode;
 }
 
-// Memoize components to prevent unnecessary re-renders
-const MemoizedHeader = memo(DashboardHeader);
-const MemoizedSidebar = memo(Sidebar);
+// Static sidebar wrapper that never re-renders
+const StaticSidebar = memo(() => <Sidebar />, () => true);
+StaticSidebar.displayName = 'StaticSidebar';
+
+// Static header wrapper that never re-renders
+const StaticHeader = memo(() => <DashboardHeader />, () => true);
+StaticHeader.displayName = 'StaticHeader';
 
 // Optimized page transition component
 const PageTransition = memo(({ children }: { children: ReactNode }) => (
@@ -37,19 +41,19 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
 
   return (
     <div className="flex min-h-screen bg-nino-bg">
-      {/* Persist Sidebar across navigation */}
-      <MemoizedSidebar />
+      {/* Completely static sidebar that never re-renders */}
+      <StaticSidebar />
       
       <div className={`flex-1 ${isMobile ? 'w-full' : ''}`}>
-        {/* Persist Header across navigation */}
+        {/* Static header that never re-renders */}
         <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 px-4 md:px-8">
           <div className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/95 to-transparent rounded-3xl" />
           <div className="relative">
-            <MemoizedHeader />
+            <StaticHeader />
           </div>
         </div>
 
-        {/* Implement smooth page transitions */}
+        {/* Page content with transitions */}
         <AnimatePresence mode="wait" initial={false}>
           <PageTransition key={location.pathname}>
             <main className="p-4 pt-28 md:p-8 md:pt-32">
