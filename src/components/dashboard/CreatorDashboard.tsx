@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import DashboardWelcome from "./header/DashboardWelcome";
 import DashboardStats from "./stats/DashboardStats";
 import DashboardSections from "./sections/DashboardSections";
-import DashboardHeader from "./header/DashboardHeader";
 
 const CreatorDashboard = () => {
   const { data: creator, isLoading, error } = useCreatorDashboard();
@@ -39,7 +38,6 @@ const CreatorDashboard = () => {
       transition={{ duration: 0.3, ease: "easeOut" }}
       layout
     >
-      <DashboardHeader />
       <DashboardWelcome firstName={creator.first_name} />
       <div className="space-y-6 md:space-y-8">
         <DashboardStats />
