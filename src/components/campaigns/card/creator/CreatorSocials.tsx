@@ -33,7 +33,6 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
             side="top" 
             align="start"
             className="w-64 p-3"
-            forceMount={false}
           >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Instagram Profile</p>
@@ -62,7 +61,6 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
             side="top" 
             align="start"
             className="w-64 p-3"
-            forceMount={false}
           >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Creator Website</p>
@@ -89,7 +87,6 @@ export const CreatorSocials = ({ creator, onMessageClick }: CreatorSocialsProps)
             side="top" 
             align="start"
             className="w-64 p-3"
-            forceMount={false}
           >
             <div className="flex flex-col gap-2">
               <p className="text-sm font-medium">Start a Conversation</p>
