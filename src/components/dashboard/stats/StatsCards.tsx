@@ -1,10 +1,11 @@
+import { memo } from "react";
 import { useNewProposals } from "@/hooks/stats/useNewProposals";
 import { useActiveBookings } from "@/hooks/stats/useActiveBookings";
 import { useCompletedProjects } from "@/hooks/stats/useCompletedProjects";
 import { Card } from "@/components/ui/card";
 import { FileText, Calendar, CheckCircle } from "lucide-react";
 
-const StatsCard = ({ 
+const StatsCard = memo(({ 
   title, 
   value, 
   icon: Icon 
@@ -24,7 +25,9 @@ const StatsCard = ({
       </div>
     </div>
   </Card>
-);
+));
+
+StatsCard.displayName = 'StatsCard';
 
 const StatsCards = () => {
   const newProposals = useNewProposals();
@@ -52,4 +55,4 @@ const StatsCards = () => {
   );
 };
 
-export default StatsCards;
+export default memo(StatsCards);
