@@ -25,6 +25,9 @@ const ActionButtons = ({
   if (type === 'proposal' && !hasCoverLetter) {
     return (
       <div className="flex gap-3 mt-6">
+        <Button onClick={onApply} className="flex-1">
+          Apply Now
+        </Button>
         <Button 
           variant="outline" 
           onClick={onDecline}
@@ -39,9 +42,6 @@ const ActionButtons = ({
           ) : (
             "Not Interested"
           )}
-        </Button>
-        <Button onClick={onApply} className="flex-1">
-          Apply Now
         </Button>
       </div>
     );
