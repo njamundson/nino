@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { NotificationPopover } from './NotificationPopover';
 import { UserMenu } from './UserMenu';
 
@@ -10,4 +11,4 @@ const DashboardHeader = () => {
   );
 };
 
-export default DashboardHeader;
+export default memo(DashboardHeader);
