@@ -1,4 +1,4 @@
-import { Application } from "@/integrations/supabase/types/opportunity";
+import { Application } from "@/integrations/supabase/types/application";
 import { formatDistanceToNow } from "date-fns";
 import { ProposalStatusBadge } from "../ProposalStatusBadge";
 

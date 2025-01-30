@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Application } from "@/integrations/supabase/types/opportunity";
+import { Application } from "@/integrations/supabase/types/application";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useState } from "react";
 import { ProposalStatusBadge } from "./ProposalStatusBadge";

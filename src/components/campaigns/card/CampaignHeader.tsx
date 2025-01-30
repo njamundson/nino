@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Application } from "@/integrations/supabase/types/opportunity";
+import { Application } from "@/integrations/supabase/types/application";
 
 interface CampaignHeaderProps {
   title: string;

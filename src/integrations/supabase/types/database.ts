@@ -1,6 +1,6 @@
 import { Profile } from './auth';
 import { Brand, BrandManager, BrandLoginHistory, BrandNotificationSettings } from './brand';
-import { Creator, CreatorProfile } from './creator';
+import { Creator } from './creator';
 import { Message, MessageProfile, MessageReaction, TypingStatus } from './messaging';
 import { Opportunity } from './opportunity';
 import { Application } from './application';

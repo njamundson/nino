@@ -1,4 +1,5 @@
 import { Brand } from './brand';
+import { Application } from './application';
 
 export interface Opportunity {
   id: string;

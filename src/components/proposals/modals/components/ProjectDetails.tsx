@@ -1,6 +1,6 @@
 import { Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
-import { Application } from "@/integrations/supabase/types/opportunity";
+import { Application } from "@/integrations/supabase/types/application";
 
 interface ProjectDetailsProps {
   application: Application;

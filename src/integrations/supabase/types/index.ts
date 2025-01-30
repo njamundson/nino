@@ -4,4 +4,4 @@ export * from './creator';
 export * from './messaging';
 export * from './opportunity';
 export * from './database';
-export * from './application';
+export { Application } from './application';
