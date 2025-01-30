@@ -65,9 +65,6 @@ export interface Database {
       };
     };
     Views: {
-      creator_profiles: {
-        Row: CreatorProfile;
-      };
       message_profiles: {
         Row: MessageProfile;
       };

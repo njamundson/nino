@@ -1,25 +1,37 @@
 import { Badge } from "@/components/ui/badge";
-import { Application } from "@/integrations/supabase/types/application";
+import { Application } from "@/integrations/supabase/types";
 
-interface ProjectBadgesProps {
+export interface ProjectBadgesProps {
   applications: Application[];
+  currentCreatorId?: string;
+  isCompleted?: boolean;
 }
 
-const ProjectBadges = ({ applications }: ProjectBadgesProps) => {
-  const acceptedCount = applications.filter(app => app.status === 'accepted').length;
-  const pendingCount = applications.filter(app => app.status === 'pending').length;
-  const rejectedCount = applications.filter(app => app.status === 'rejected').length;
+const ProjectBadges = ({ applications, currentCreatorId, isCompleted }: ProjectBadgesProps) => {
+  const acceptedApplications = applications?.filter(app => app.status === 'accepted') || [];
+  const isAccepted = acceptedApplications.length > 0;
+  const isCurrentCreator = acceptedApplications.some(app => app.creator_id === currentCreatorId);
 
   return (
-    <div className="flex space-x-2">
-      {acceptedCount > 0 && (
-        <Badge variant="default">Accepted: {acceptedCount}</Badge>
-      )}
-      {pendingCount > 0 && (
-        <Badge variant="secondary">Pending: {pendingCount}</Badge>
-      )}
-      {rejectedCount > 0 && (
-        <Badge variant="destructive">Rejected: {rejectedCount}</Badge>
+    <div className="absolute top-4 right-4 z-10">
+      {isCompleted ? (
+        <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+          Completed
+        </Badge>
+      ) : isAccepted ? (
+        isCurrentCreator ? (
+          <Badge variant="default" className="bg-nino-primary text-white">
+            You're Hired!
+          </Badge>
+        ) : (
+          <Badge variant="default" className="bg-nino-primary text-white">
+            Creator Hired
+          </Badge>
+        )
+      ) : (
+        <Badge variant="secondary" className="bg-nino-bg text-nino-text">
+          Open
+        </Badge>
       )}
     </div>
   );
