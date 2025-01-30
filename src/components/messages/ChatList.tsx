@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "./chat-list/EmptyState";
 import { ChatListHeader } from "./chat-list/ChatListHeader";
