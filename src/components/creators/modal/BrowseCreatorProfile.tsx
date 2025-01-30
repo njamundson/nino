@@ -2,6 +2,7 @@ import { Creator } from "@/types/creator";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorImage from "./profile/CreatorImage";
 import CreatorSocialLinks from "./profile/CreatorSocialLinks";
+import { useNavigate } from "react-router-dom";
 
 interface BrowseCreatorProfileProps {
   creator: Creator;
@@ -13,14 +14,21 @@ interface BrowseCreatorProfileProps {
 const BrowseCreatorProfile = ({ 
   creator, 
   onClose, 
-  onInviteClick, 
-  onMessageClick 
+  onInviteClick,
 }: BrowseCreatorProfileProps) => {
+  const navigate = useNavigate();
+  
   if (!creator) return null;
 
   const fullName = creator.first_name && creator.last_name 
     ? `${creator.first_name} ${creator.last_name}`
     : creator.first_name || 'Creator';
+
+  const handleMessageClick = () => {
+    if (creator.user_id) {
+      navigate(`/messages?userId=${creator.user_id}&name=${encodeURIComponent(fullName)}`);
+    }
+  };
 
   return (
     <div className="h-full p-6">
@@ -40,12 +48,13 @@ const BrowseCreatorProfile = ({
               location={creator.location}
               instagram={creator.instagram}
               website={creator.website}
-              onMessageClick={onMessageClick}
+              onMessageClick={handleMessageClick}
               fullName={fullName}
             />
             <CreatorSocialLinks 
               instagram={creator.instagram}
               website={creator.website}
+              onMessageClick={handleMessageClick}
             />
           </div>
 
