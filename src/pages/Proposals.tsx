@@ -36,16 +36,14 @@ const Proposals = () => {
   if (error) {
     toast({
       title: "Error",
-      description: "Failed to load proposals. Please refresh the page.",
+      description: "Failed to load invitations. Please refresh the page.",
       variant: "destructive",
     });
   }
 
-  // Only show brand invitations that haven't been responded to yet
+  // Filter for brand invitations (initiated by brand) that don't have a cover letter yet
   const pendingInvitations = applications?.filter((app: Application) => 
-    app.status !== 'accepted' && 
-    app.initiated_by === 'brand' && 
-    !app.cover_letter
+    app.initiated_by === 'brand' && !app.cover_letter
   ) || [];
 
   return (
@@ -56,7 +54,7 @@ const Proposals = () => {
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <PageHeader 
-        title="Project Invitations" 
+        title="Pending Invitations" 
         description="Review and respond to project invitations from brands"
       />
       

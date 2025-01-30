@@ -41,12 +41,9 @@ const Applications = () => {
     });
   }
 
-  // Filter out accepted applications and only show creator-initiated ones
-  // or brand invitations that have been responded to with a cover letter
+  // Filter for applications that have a cover letter (meaning the creator has actually applied)
   const userApplications = applications?.filter((app: Application) => 
-    app.status !== 'accepted' && 
-    (app.initiated_by === 'creator' || 
-    (app.initiated_by === 'brand' && app.cover_letter))
+    app.cover_letter && app.initiated_by === 'creator'
   ) || [];
 
   return (
