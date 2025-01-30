@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, UserRound, XCircle, ChevronDown } from "lucide-react";
+import { MessageCircle, UserRound } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -22,10 +22,9 @@ interface CreatorSectionProps {
   };
   onChatClick: () => void;
   onViewCreator: () => void;
-  onCancelClick: () => void;
 }
 
-const CreatorSection = ({ creator, onChatClick, onViewCreator, onCancelClick }: CreatorSectionProps) => {
+const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
   // Since first_name is required in the database, we can be confident it exists
@@ -102,22 +101,6 @@ const CreatorSection = ({ creator, onChatClick, onViewCreator, onCancelClick }: 
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>View Profile</p>
-                    </TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={onCancelClick}
-                        className="rounded-full hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <XCircle className="w-5 h-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Cancel Booking</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
