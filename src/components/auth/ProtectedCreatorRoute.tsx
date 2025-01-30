@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProtectedCreatorRouteProps {
   children: React.ReactNode;
@@ -90,7 +91,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     // Initial check
     initializeAuth();
 
-    // Set up auth state listener with debounced handler
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       if (event === 'SIGNED_OUT') {
@@ -117,9 +118,17 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <LoadingSpinner />
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="flex items-center justify-center min-h-screen"
+        >
+          <LoadingSpinner />
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
@@ -131,7 +140,28 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     return <Navigate to="/onboarding/creator" replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <Suspense fallback={
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className="flex items-center justify-center min-h-screen"
+      >
+        <LoadingSpinner />
+      </motion.div>
+    }>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        {children}
+      </motion.div>
+    </Suspense>
+  );
 };
 
 export default ProtectedCreatorRoute;
