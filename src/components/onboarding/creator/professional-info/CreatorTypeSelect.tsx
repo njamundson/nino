@@ -5,18 +5,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CREATOR_TYPES } from "@/types/creator";
+import { CREATOR_TYPES, CreatorType } from "@/types/creator";
 
 export interface CreatorTypeSelectProps {
-  creatorType: string;
-  onUpdateField: (field: string, value: string) => void;
+  creatorType: CreatorType;
+  onUpdateField: (field: string, value: CreatorType) => void;
 }
 
 const CreatorTypeSelect = ({ creatorType, onUpdateField }: CreatorTypeSelectProps) => {
   return (
     <Select
       value={creatorType}
-      onValueChange={(value) => onUpdateField("creatorType", value)}
+      onValueChange={(value: CreatorType) => onUpdateField("creator_type", value)}
       required
     >
       <SelectTrigger className="h-12 bg-gray-50/50 border-0 focus:ring-1 focus:ring-black rounded-xl text-base">
@@ -29,7 +29,7 @@ const CreatorTypeSelect = ({ creatorType, onUpdateField }: CreatorTypeSelectProp
             value={type}
             className="text-base"
           >
-            {type.charAt(0).toUpperCase() + type.slice(1)}
+            {type}
           </SelectItem>
         ))}
       </SelectContent>
