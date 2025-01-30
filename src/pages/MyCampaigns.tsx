@@ -20,6 +20,10 @@ interface Campaign {
   location: string | null;
   payment_details: string | null;
   compensation_details: string | null;
+  requirements: string[] | null;
+  perks: string[] | null;
+  deliverables: string[] | null;
+  image_url: string | null;
   applications?: Application[];
 }
 
@@ -54,6 +58,10 @@ const MyCampaigns = () => {
           location,
           payment_details,
           compensation_details,
+          requirements,
+          perks,
+          deliverables,
+          image_url,
           applications (
             id,
             opportunity_id,
