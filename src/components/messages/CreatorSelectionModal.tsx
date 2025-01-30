@@ -36,6 +36,7 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
           last_name,
           profile_image_url
         `)
+        .eq('onboarding_completed', true)
         .not('user_id', 'is', null);
 
       if (error) {
