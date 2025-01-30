@@ -17,7 +17,6 @@ interface ProposalCardProps {
 
 const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) => {
   const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Determine the display status - if it's in the Applied tab and has a cover letter, 
@@ -53,14 +52,6 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
 
   const handleViewDetails = () => {
     setShowModal(true);
-  };
-
-  const handleMessageBrand = () => {
-    if (application.opportunity?.brand?.user_id) {
-      navigate(`/creator/messages?userId=${application.opportunity.brand.user_id}`);
-    } else {
-      toast.error("Unable to message brand at this time");
-    }
   };
 
   return (
@@ -104,16 +95,6 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
                 >
                   View Details
                 </Button>
-                {application.status === 'accepted' && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleMessageBrand}
-                    className="border-white/30 text-white hover:bg-white/20"
-                  >
-                    Message Brand
-                  </Button>
-                )}
               </div>
             </div>
           </div>
