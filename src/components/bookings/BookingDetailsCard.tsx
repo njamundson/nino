@@ -150,96 +150,94 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
   };
 
   return (
-    <>
-      <Card className="overflow-hidden bg-white border border-gray-100 rounded-2xl transition-all duration-300">
-        <div className="p-6 space-y-6">
-          <div className="flex justify-between items-start">
-            <ProjectDetails opportunity={booking.opportunity} />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => setShowDeleteDialog(true)}
-            >
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          </div>
-          
-          <CompensationDetails 
-            payment_details={booking.opportunity.payment_details}
-            compensation_details={booking.opportunity.compensation_details}
-            deliverables={booking.opportunity.deliverables}
-            requirements={booking.opportunity.requirements}
-          />
-
-          <CreatorSection 
-            creator={booking.creator}
-            onChatClick={() => onChatClick(booking.creator.user_id)}
-            onViewCreator={() => setShowCreatorModal(true)}
-          />
+    <Card className="overflow-hidden bg-white border border-gray-100 rounded-2xl transition-all duration-300">
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-start">
+          <ProjectDetails opportunity={booking.opportunity} />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={() => setShowDeleteDialog(true)}
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
         </div>
+        
+        <CompensationDetails 
+          payment_details={booking.opportunity.payment_details}
+          compensation_details={booking.opportunity.compensation_details}
+          deliverables={booking.opportunity.deliverables}
+          requirements={booking.opportunity.requirements}
+        />
 
-        {/* Cancel Booking Dialog */}
-        <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to cancel this project? The creator will be notified.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleCancelBooking}
-                className="bg-destructive hover:bg-destructive/90"
-              >
-                Confirm
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <CreatorSection 
+          creator={booking.creator}
+          onChatClick={() => onChatClick(booking.creator.user_id)}
+          onViewCreator={() => setShowCreatorModal(true)}
+        />
+      </div>
 
-        {/* Delete Campaign Dialog */}
-        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Campaign</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete this entire campaign? This will cancel the booking with the creator and remove the campaign. This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDeleteCampaign}
-                className="bg-destructive hover:bg-destructive/90"
-              >
-                Delete Campaign
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+      {/* Cancel Booking Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this project? The creator will be notified.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelBooking}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-        {/* Creator Profile Modal */}
-        <Dialog
-          open={showCreatorModal}
-          onOpenChange={setShowCreatorModal}
-        >
-          <DialogContent className="max-w-4xl h-[80vh] p-0">
-            <BookedCreatorProfile
-              creator={modalCreator}
-              onClose={() => setShowCreatorModal(false)}
-              onMessageClick={() => onChatClick(booking.creator.user_id)}
-              onCancelBooking={() => {
-                setShowCreatorModal(false);
-                setShowCancelDialog(true);
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      </Card>
-    </>
+      {/* Delete Campaign Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Campaign</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this entire campaign? This will cancel the booking with the creator and remove the campaign. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteCampaign}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Delete Campaign
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Creator Profile Modal */}
+      <Dialog
+        open={showCreatorModal}
+        onOpenChange={setShowCreatorModal}
+      >
+        <DialogContent className="max-w-4xl h-[80vh] p-0">
+          <BookedCreatorProfile
+            creator={modalCreator}
+            onClose={() => setShowCreatorModal(false)}
+            onMessageClick={() => onChatClick(booking.creator.user_id)}
+            onCancelBooking={() => {
+              setShowCreatorModal(false);
+              setShowCancelDialog(true);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    </Card>
   );
 };
 
