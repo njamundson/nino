@@ -14,9 +14,9 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useState, memo, useCallback } from "react";
+import { motion } from "framer-motion";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/creator/dashboard" },
@@ -47,7 +47,7 @@ const Logo = memo(() => (
 Logo.displayName = 'Logo';
 
 const SidebarContent = memo(({ handleNavigation, location, handleSignOut }: any) => (
-  <div className="h-full bg-white flex flex-col rounded-3xl shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] border border-gray-100/50">
+  <div className="h-full bg-white flex flex-col rounded-xl shadow-sm border border-gray-100/50">
     <div className="p-6 flex justify-start border-b border-gray-100/50">
       <Logo />
     </div>
@@ -92,7 +92,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -117,27 +117,46 @@ const Sidebar = () => {
 
   const handleNavigation = useCallback(() => {
     if (isMobile) {
-      setIsOpen(false);
+      setIsMobileMenuOpen(false);
     }
   }, [isMobile]);
 
   if (isMobile) {
     return (
       <>
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="fixed top-4 left-4 z-50">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-72">
-            <SidebarContent 
-              handleNavigation={handleNavigation}
-              location={location}
-              handleSignOut={handleSignOut}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed top-4 left-4 z-50"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          <Menu className="h-6 w-6" />
+        </Button>
+
+        {isMobileMenuOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
+              onClick={() => setIsMobileMenuOpen(false)}
             />
-          </SheetContent>
-        </Sheet>
+            <motion.div 
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -100, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 z-40 w-64 p-4"
+            >
+              <SidebarContent 
+                handleNavigation={handleNavigation}
+                location={location}
+                handleSignOut={handleSignOut}
+              />
+            </motion.div>
+          </>
+        )}
       </>
     );
   }
