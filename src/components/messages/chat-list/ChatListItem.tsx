@@ -7,6 +7,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface ChatListItemProps {
   chat: any;
@@ -25,9 +37,22 @@ export const ChatListItem = ({
   onSelect,
   onDelete,
 }: ChatListItemProps) => {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
   const fullName = chat.otherUser.firstName && chat.otherUser.lastName 
     ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
     : 'Unnamed User';
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete();
+    setIsDeleteDialogOpen(false);
+  };
 
   return (
     <div
@@ -66,16 +91,39 @@ export const ChatListItem = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete();
-                }}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete conversation
-              </DropdownMenuItem>
+              <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <DropdownMenuItem
+                    className="text-red-600"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      handleDelete(e as unknown as React.MouseEvent);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete conversation
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Conversation</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete this conversation? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={confirmDelete}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
