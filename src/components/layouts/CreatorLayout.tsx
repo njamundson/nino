@@ -4,29 +4,31 @@ import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
-import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface CreatorLayoutProps {
   children: ReactNode;
 }
 
-// Memoize the header to prevent unnecessary re-renders
+// Memoize components to prevent unnecessary re-renders
 const MemoizedHeader = memo(DashboardHeader);
 const MemoizedSidebar = memo(Sidebar);
 
-// Memoized loading component for better performance
-const PageLoader = memo(() => (
+// Optimized page transition component
+const PageTransition = memo(({ children }: { children: ReactNode }) => (
   <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className="flex items-center justify-center min-h-[60vh]"
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -10 }}
+    transition={{ 
+      duration: 0.2,
+      ease: [0.25, 0.1, 0.25, 1.0]
+    }}
   >
-    <LoadingSpinner size="lg" className="text-nino-primary/40" />
+    {children}
   </motion.div>
 ));
 
-PageLoader.displayName = 'PageLoader';
+PageTransition.displayName = 'PageTransition';
 
 const CreatorLayout = ({ children }: CreatorLayoutProps) => {
   const location = useLocation();
@@ -46,22 +48,15 @@ const CreatorLayout = ({ children }: CreatorLayoutProps) => {
           </div>
         </div>
 
+        {/* Implement smooth page transitions */}
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={location.pathname}
-            className="p-4 pt-28 md:p-8 md:pt-32"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ 
-              duration: 0.2,
-              ease: [0.25, 0.1, 0.25, 1.0]
-            }}
-          >
-            <Suspense fallback={<PageLoader />}>
-              {children}
-            </Suspense>
-          </motion.div>
+          <PageTransition key={location.pathname}>
+            <main className="p-4 pt-28 md:p-8 md:pt-32">
+              <Suspense fallback={null}>
+                {children}
+              </Suspense>
+            </main>
+          </PageTransition>
         </AnimatePresence>
       </div>
     </div>

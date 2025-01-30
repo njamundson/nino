@@ -1,11 +1,11 @@
 import { Card } from "@/components/ui/card";
 import BookingCard from "./BookingCard";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 
 interface BookingsListProps {
   onChatClick: (creatorId: string) => void;
@@ -16,7 +16,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  const { data: bookings, isLoading, refetch } = useQuery({
+  const { data: bookings, refetch } = useQuery({
     queryKey: ['active-bookings'],
     queryFn: async () => {
       try {
@@ -58,6 +58,8 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       }
     },
     refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
+    suspense: false,
+    useErrorBoundary: false
   });
 
   // Set up real-time subscription for booking updates
@@ -84,30 +86,32 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
     };
   }, [refetch]);
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-[400px] w-full" />
-        <Skeleton className="h-[400px] w-full" />
-      </div>
-    );
-  }
-
   if (!bookings || bookings.length === 0) {
     return (
-      <Card className="p-8">
-        <div className="text-center text-muted-foreground py-8">
-          <p className="text-lg font-medium">No active bookings yet</p>
-          <p className="text-sm mt-2">
-            When you get accepted for projects, they will appear here
-          </p>
-        </div>
-      </Card>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <Card className="p-8">
+          <div className="text-center text-muted-foreground py-8">
+            <p className="text-lg font-medium">No active bookings yet</p>
+            <p className="text-sm mt-2">
+              When you get accepted for projects, they will appear here
+            </p>
+          </div>
+        </Card>
+      </motion.div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
       <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
         {bookings.map((booking: any) => (
           <BookingCard
@@ -118,7 +122,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           />
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

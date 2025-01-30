@@ -1,24 +1,43 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import CreatorLayout from "@/components/layouts/CreatorLayout";
 import ProtectedCreatorRoute from "@/components/auth/ProtectedCreatorRoute";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
 
-// Lazy load page components with better chunk naming
-const Dashboard = lazy(() => import("@/pages/Dashboard" /* webpackChunkName: "creator-dashboard" */));
-const Projects = lazy(() => import("@/pages/Projects" /* webpackChunkName: "creator-projects" */));
-const Proposals = lazy(() => import("@/pages/Proposals" /* webpackChunkName: "creator-proposals" */));
-const Bookings = lazy(() => import("@/pages/Bookings" /* webpackChunkName: "creator-bookings" */));
-const Messages = lazy(() => import("@/pages/Messages" /* webpackChunkName: "creator-messages" */));
-const Settings = lazy(() => import("@/pages/Settings" /* webpackChunkName: "creator-settings" */));
-const CompletedProjects = lazy(() => import("@/pages/CompletedProjects" /* webpackChunkName: "creator-completed" */));
+// Implement code splitting with preloading for faster transitions
+const Dashboard = lazy(() => {
+  const module = import("@/pages/Dashboard");
+  return module;
+});
 
-// Optimized loading component
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[60vh]">
-    <LoadingSpinner size="lg" className="text-nino-primary/40" />
-  </div>
-);
+const Projects = lazy(() => {
+  const module = import("@/pages/Projects");
+  return module;
+});
+
+const Proposals = lazy(() => {
+  const module = import("@/pages/Proposals");
+  return module;
+});
+
+const Bookings = lazy(() => {
+  const module = import("@/pages/Bookings");
+  return module;
+});
+
+const Messages = lazy(() => {
+  const module = import("@/pages/Messages");
+  return module;
+});
+
+const Settings = lazy(() => {
+  const module = import("@/pages/Settings");
+  return module;
+});
+
+const CompletedProjects = lazy(() => {
+  const module = import("@/pages/CompletedProjects");
+  return module;
+});
 
 export const creatorRoutes = [
   {
@@ -34,9 +53,7 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Dashboard />
-          </Suspense>
+          <Dashboard />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -46,9 +63,7 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Projects />
-          </Suspense>
+          <Projects />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -58,9 +73,7 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Suspense fallback={<PageLoader />}>
-            <CompletedProjects />
-          </Suspense>
+          <CompletedProjects />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -70,9 +83,7 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Proposals />
-          </Suspense>
+          <Proposals />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -82,9 +93,7 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Bookings />
-          </Suspense>
+          <Bookings />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -94,9 +103,7 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Messages />
-          </Suspense>
+          <Messages />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
@@ -106,9 +113,7 @@ export const creatorRoutes = [
     element: (
       <ProtectedCreatorRoute>
         <CreatorLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Settings />
-          </Suspense>
+          <Settings />
         </CreatorLayout>
       </ProtectedCreatorRoute>
     ),
