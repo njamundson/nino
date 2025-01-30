@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
 import EmptyProjects from "./EmptyProjects";
+import { Opportunity } from "@/integrations/supabase/types/opportunity";
 
 const ProjectsList = () => {
   const { toast } = useToast();
@@ -26,7 +27,6 @@ const ProjectsList = () => {
           return [];
         }
 
-        // Get all open opportunities and their applications
         const { data: opportunities, error } = await supabase
           .from('opportunities')
           .select(`
@@ -38,7 +38,16 @@ const ProjectsList = () => {
               location,
               description,
               website,
-              instagram
+              instagram,
+              user_id,
+              phone_number,
+              support_email,
+              profile_image_url,
+              sms_notifications_enabled,
+              two_factor_enabled,
+              created_at,
+              updated_at,
+              onboarding_completed
             ),
             applications!left (
               id,
@@ -60,11 +69,10 @@ const ProjectsList = () => {
           return [];
         }
 
-        // Add creator_id to each opportunity for the current user
         const opportunitiesWithCreatorId = opportunities.map(opp => ({
           ...opp,
           current_creator_id: creator.id
-        }));
+        })) as Opportunity[];
 
         console.log("Fetched available projects:", opportunitiesWithCreatorId);
         return opportunitiesWithCreatorId;

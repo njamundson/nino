@@ -2,7 +2,8 @@ import { Profile } from './auth';
 import { Brand, BrandManager, BrandLoginHistory, BrandNotificationSettings } from './brand';
 import { Creator, CreatorProfile } from './creator';
 import { Message, MessageProfile, MessageReaction, TypingStatus } from './messaging';
-import { Opportunity, Application } from './opportunity';
+import { Opportunity } from './opportunity';
+import { Application } from './application';
 
 export interface Database {
   public: {
