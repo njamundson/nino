@@ -105,6 +105,36 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   const pendingApplications = applications.filter(app => app.status === 'pending');
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
   const isInactive = campaign.status === 'inactive';
+  const isCompleted = campaign.status === 'completed';
+
+  const getStatusBadgeProps = () => {
+    if (isCompleted) {
+      return {
+        variant: "secondary" as const,
+        className: "bg-gray-100 text-gray-700",
+        children: "Completed"
+      };
+    }
+    if (isInactive) {
+      return {
+        variant: "destructive" as const,
+        className: "bg-red-100 text-red-700",
+        children: "Inactive"
+      };
+    }
+    if (acceptedApplications.length > 0) {
+      return {
+        variant: "default" as const,
+        className: "bg-nino-primary text-white",
+        children: "Creator Hired"
+      };
+    }
+    return {
+      variant: "secondary" as const,
+      className: "bg-nino-bg text-nino-text",
+      children: "Open"
+    };
+  };
 
   return (
     <>
@@ -123,24 +153,26 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
               )}
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onEdit(campaign)}>
-                  Edit campaign
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-red-600"
-                  onClick={handleDelete}
-                >
-                  Delete campaign
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {!isCompleted && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onEdit(campaign)}>
+                    Edit campaign
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-red-600"
+                    onClick={handleDelete}
+                  >
+                    Delete campaign
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -174,21 +206,15 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                 </Badge>
               )}
               <Badge
-                variant={isInactive ? "destructive" : acceptedApplications.length > 0 ? "default" : "secondary"}
-                className={`px-2 py-0.5 ${
-                  isInactive 
-                    ? "bg-red-100 text-red-700"
-                    : acceptedApplications.length > 0
-                    ? "bg-nino-primary text-white" 
-                    : "bg-nino-bg text-nino-text"
-                }`}
+                variant={getStatusBadgeProps().variant}
+                className={getStatusBadgeProps().className}
               >
-                {isInactive ? "Inactive" : acceptedApplications.length > 0 ? "Creator Hired" : "Open"}
+                {getStatusBadgeProps().children}
               </Badge>
             </div>
           </div>
 
-          {!isInactive && pendingApplications.length > 0 && (
+          {!isCompleted && !isInactive && pendingApplications.length > 0 && (
             <div className="pt-4 border-t border-gray-100">
               <ApplicationsHeader
                 count={pendingApplications.length}
