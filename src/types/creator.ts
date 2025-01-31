@@ -13,12 +13,12 @@ export interface CreatorData {
   profile_image_url: string | null;
   notifications_enabled?: boolean;
   onboarding_completed?: boolean;
+  profile_id?: string | null;
 }
 
 export interface Creator extends CreatorData {
   created_at: string;
   updated_at: string;
-  profile_id: string | null;
 }
 
 export const CREATOR_TYPES = [

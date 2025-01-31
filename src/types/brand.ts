@@ -13,14 +13,11 @@ export interface BrandData {
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;
   onboarding_completed?: boolean;
-  created_at?: string;
-  updated_at?: string;
 }
 
 export interface Brand extends BrandData {
   created_at: string;
   updated_at: string;
-  onboarding_completed: boolean;
 }
 
 export interface BrandSettings extends Brand {

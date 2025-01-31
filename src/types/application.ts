@@ -10,9 +10,10 @@ export interface Application {
   creator_id: string;
   status: ApplicationStatus;
   cover_letter: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   initiated_by: InitiatedBy;
   opportunity?: Opportunity;
   creator?: Creator;
+  is_invitation?: boolean;
 }
