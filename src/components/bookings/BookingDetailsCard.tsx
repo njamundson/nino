@@ -40,16 +40,20 @@ interface BookingDetailsCardProps {
       requirements?: string[] | null;
     };
     creator: {
+      id: string;
       bio: string | null;
+      location: string | null;
       specialties: string[] | null;
       display_name: string;
-      profile_image_url: string | null;
-      user_id: string;
-      id: string;
       instagram: string | null;
       website: string | null;
-      location: string | null;
-      creator_type: string | null;
+      profile_image_url: string | null;
+      creator_type: CreatorType;
+      user_id: string;
+      first_name: string | null;
+      last_name: string | null;
+      created_at: string;
+      updated_at: string;
     };
     created_at: string;
   };
@@ -140,6 +144,8 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
     profile_image_url: booking.creator.profile_image_url,
     creator_type: (booking.creator.creator_type as CreatorType) || 'solo',
     user_id: booking.creator.user_id,
+    first_name: booking.creator.first_name,
+    last_name: booking.creator.last_name,
     created_at: booking.created_at,
     updated_at: booking.created_at,
     profile_id: null

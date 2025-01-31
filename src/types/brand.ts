@@ -12,11 +12,11 @@ export interface BrandSettings {
   profile_image_url: string | null;
   first_name: string | null;
   last_name: string | null;
-  sms_notifications_enabled: boolean;
-  two_factor_enabled: boolean;
   created_at: string;
   updated_at: string;
   onboarding_completed: boolean;
+  sms_notifications_enabled: boolean;
+  two_factor_enabled: boolean;
   email_notifications_enabled: boolean;
   push_notifications_enabled: boolean;
   application_notifications_enabled: boolean;
