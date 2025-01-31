@@ -81,7 +81,6 @@ const ChatInput = ({
         .from('chat-attachments')
         .getPublicUrl(fileName);
 
-      // Update the message text directly instead of using a callback
       setNewMessage(`${newMessage ? newMessage + '\n' : ''}![Image](${publicUrl})`);
 
       toast({

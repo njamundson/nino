@@ -27,8 +27,6 @@ export const ChatContainer = ({
     data: messages,
     newMessage,
     setNewMessage,
-    isRecording,
-    setIsRecording,
     editingMessage,
     setEditingMessage,
     handleSendMessage,
@@ -44,7 +42,7 @@ export const ChatContainer = ({
         .from('creators')
         .select('profile_image_url')
         .eq('user_id', selectedChat)
-        .single();
+        .maybeSingle();
 
       if (creatorProfile) {
         setSenderProfileImage(creatorProfile.profile_image_url);
@@ -76,8 +74,6 @@ export const ChatContainer = ({
             newMessage={newMessage}
             setNewMessage={setNewMessage}
             handleSendMessage={handleSendMessage}
-            isRecording={isRecording}
-            setIsRecording={setIsRecording}
             selectedChat={selectedChat}
             editingMessage={editingMessage}
             setEditingMessage={setEditingMessage}
