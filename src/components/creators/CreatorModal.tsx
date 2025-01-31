@@ -61,7 +61,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
           return [];
         }
 
-        // Then fetch the brand data
+        // Then fetch the brand data using maybeSingle to handle no results gracefully
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
@@ -95,6 +95,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
         return [];
       }
     },
+    enabled: isOpen && showCampaigns,
   });
 
   const handleInvite = async (opportunityId: string) => {
@@ -103,6 +104,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
     try {
       setIsInviting(true);
 
+      // Check for existing invitation
       const { data: existingInvite, error: checkError } = await supabase
         .from('applications')
         .select('id, status')
@@ -126,6 +128,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
         }
       }
 
+      // Create the invitation
       const { error: inviteError } = await supabase
         .from('applications')
         .insert({
