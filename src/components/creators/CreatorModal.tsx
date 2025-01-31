@@ -20,6 +20,8 @@ interface Creator {
   creator_type: CreatorType | null;
   profile_image_url: string | null;
   display_name: string;
+  first_name: string | null;
+  last_name: string | null;
 }
 
 interface CreatorModalProps {
@@ -164,6 +166,8 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
     profile_image_url: creator.profile_image_url,
     creator_type: creator.creator_type as CreatorType || 'solo',
     display_name: creator.display_name,
+    first_name: creator.first_name || '',
+    last_name: creator.last_name || '',
     user_id: '', 
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

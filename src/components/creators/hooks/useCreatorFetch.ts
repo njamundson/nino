@@ -1,22 +1,16 @@
-import { useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { CreatorData, CreatorType } from "@/types/creator";
 
-interface UseCreatorFetchProps {
-  filterConditions: {
-    specialties: string[];
-    creatorType: string | null;
-    locations: string[];
-  };
-  CREATORS_PER_PAGE: number;
-}
+export const useCreatorFetch = (searchTerm: string = "") => {
+  return useInfiniteQuery({
+    queryKey: ["creators", searchTerm],
+    queryFn: async ({ pageParam = 0 }) => {
+      const from = pageParam * 12;
+      const to = from + 11;
 
-export const useCreatorFetch = ({ filterConditions, CREATORS_PER_PAGE }: UseCreatorFetchProps) => {
-  const fetchCreators = useCallback(async ({ pageParam = 0 }) => {
-    try {
       let query = supabase
-        .from('creators')
+        .from("creators")
         .select(`
           id,
           user_id,
@@ -31,41 +25,25 @@ export const useCreatorFetch = ({ filterConditions, CREATORS_PER_PAGE }: UseCrea
           website,
           profile_image_url
         `)
-        .eq('onboarding_completed', true)
-        .range(
-          pageParam * CREATORS_PER_PAGE, 
-          (pageParam + 1) * CREATORS_PER_PAGE - 1
-        );
+        .range(from, to);
 
-      if (filterConditions.specialties.length > 0) {
-        query = query.contains('specialties', filterConditions.specialties);
+      if (searchTerm) {
+        query = query.ilike("display_name", `%${searchTerm}%`);
       }
 
-      if (filterConditions.creatorType) {
-        query = query.eq('creator_type', filterConditions.creatorType);
-      }
+      const { data: creators, error } = await query;
 
-      if (filterConditions.locations.length > 0 && filterConditions.locations[0] !== "") {
-        query = query.in('location', filterConditions.locations);
-      }
-
-      const { data: creatorsData, error: fetchError } = await query;
-
-      if (fetchError) {
-        console.error("Error fetching creators:", fetchError);
-        throw fetchError;
-      }
-
-      if (!creatorsData) {
+      if (error) {
+        console.error("Error fetching creators:", error);
         return { creators: [], nextPage: null };
       }
 
-      const formattedCreators: CreatorData[] = creatorsData.map(creator => ({
+      const formattedCreators: CreatorData[] = creators.map((creator) => ({
         id: creator.id,
         user_id: creator.user_id,
         display_name: creator.display_name || 'Creator',
-        first_name: creator.first_name,
-        last_name: creator.last_name,
+        first_name: creator.first_name || '',
+        last_name: creator.last_name || '',
         bio: creator.bio || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
@@ -73,26 +51,15 @@ export const useCreatorFetch = ({ filterConditions, CREATORS_PER_PAGE }: UseCrea
         instagram: creator.instagram || '',
         website: creator.website || '',
         profile_image_url: creator.profile_image_url || '',
+        notifications_enabled: true,
+        onboarding_completed: true
       }));
-      
-      const hasMore = formattedCreators.length === CREATORS_PER_PAGE;
+
       return {
         creators: formattedCreators,
-        nextPage: hasMore ? pageParam + 1 : null
+        nextPage: creators.length === 12 ? pageParam + 1 : null,
       };
-    } catch (error) {
-      console.error("Error in fetchCreators:", error);
-      throw error;
-    }
-  }, [filterConditions, CREATORS_PER_PAGE]);
-
-  return useInfiniteQuery({
-    queryKey: ['creators', filterConditions],
-    queryFn: fetchCreators,
+    },
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 0,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
-    retry: 2,
   });
 };
