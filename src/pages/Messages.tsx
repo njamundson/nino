@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/useAuth";
 import BrandChatContainer from "@/components/messages/brand/BrandChatContainer";
 import ChatList from "@/components/messages/ChatList";
 
