@@ -13,6 +13,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,6 +45,9 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
       return;
     }
 
+    // Reset error state when trying to upload a new image
+    setImageError(false);
+    
     // Create an immediate preview
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
@@ -61,7 +65,6 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
         description: "Failed to upload image. Please try again.",
         variant: "destructive",
       });
-      // Keep the preview even if upload fails, so user can try again
     }
   };
 
@@ -70,6 +73,7 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
   };
 
   const handleImageError = () => {
+    setImageError(true);
     if (imageRef.current) {
       imageRef.current.src = '/placeholder.svg';
       toast({
@@ -89,6 +93,11 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
     };
   }, [previewUrl]);
 
+  // Reset error state when uploadedImage changes
+  useEffect(() => {
+    setImageError(false);
+  }, [uploadedImage]);
+
   const displayImage = previewUrl || uploadedImage;
 
   return (
@@ -101,12 +110,12 @@ const ImageUpload = ({ uploadedImage, isUploading, onImageUpload }: ImageUploadP
             transition-all duration-300 ease-in-out
             group-hover:border-nino-primary/30 group-hover:bg-gray-50/50
             backdrop-blur-sm
-            ${displayImage ? 'border-nino-primary/20 shadow-sm border-solid' : 'border-gray-200'}
+            ${displayImage && !imageError ? 'border-nino-primary/20 shadow-sm border-solid' : 'border-gray-200'}
             ${isUploading ? 'animate-pulse' : ''}
           `}
           onClick={handleChangeImage}
         >
-          {displayImage ? (
+          {displayImage && !imageError ? (
             <div className="relative w-full h-full overflow-hidden rounded-xl">
               <img 
                 ref={imageRef}
