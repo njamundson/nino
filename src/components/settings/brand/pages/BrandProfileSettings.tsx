@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
 import ProfileImageSection from "../../profile/ProfileImageSection";
 import BrandProfileForm from "../BrandProfileForm";
@@ -19,17 +18,6 @@ const BrandProfileSettings = ({ onBack }: BrandProfileSettingsProps) => {
     handleUpdateField,
     handleSave,
   } = useBrandSettings();
-
-  const onSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const formData = new FormData();
-    Object.entries(brandData).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        formData.append(key, value.toString());
-      }
-    });
-    await handleSave(formData);
-  };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -59,18 +47,11 @@ const BrandProfileSettings = ({ onBack }: BrandProfileSettingsProps) => {
 
         <div className="pt-6 border-t border-gray-100">
           <Button
-            onClick={onSave}
+            onClick={() => handleSave()}
             disabled={loading}
-            className="w-full bg-black hover:bg-black/90 text-white rounded-xl h-12 text-base font-medium transition-all duration-200 hover:scale-[0.98]"
+            className="w-full bg-nino-primary hover:bg-nino-primary/90 text-white rounded-xl h-12 text-base font-medium transition-all duration-200 hover:scale-[0.98]"
           >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving Changes...
-              </>
-            ) : (
-              "Save Changes"
-            )}
+            {loading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </Card>

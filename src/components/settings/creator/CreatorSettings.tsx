@@ -18,6 +18,18 @@ const CreatorSettings = () => {
     setCreatorData(prev => ({ ...prev, [field]: value }));
   };
 
+  const formattedData = {
+    firstName: creatorData.first_name || '',
+    lastName: creatorData.last_name || '',
+    bio: creatorData.bio || '',
+    location: creatorData.location || '',
+    instagram: creatorData.instagram || '',
+    website: creatorData.website || '',
+    specialties: creatorData.specialties || [],
+    creatorType: creatorData.creator_type || 'solo',
+    notifications_enabled: creatorData.notifications_enabled
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="space-y-12 animate-fadeIn">
@@ -34,7 +46,7 @@ const CreatorSettings = () => {
 
           <CreatorProfileForm
             loading={loading}
-            creatorData={creatorData}
+            creatorData={formattedData}
             onUpdateField={handleUpdateField}
           />
 

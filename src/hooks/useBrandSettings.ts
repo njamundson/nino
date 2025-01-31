@@ -46,7 +46,13 @@ export const useBrandSettings = () => {
           .from('brands')
           .select(`
             *,
-            brand_notification_settings (*)
+            brand_notification_settings (
+              email_enabled,
+              push_enabled,
+              message_notifications,
+              application_updates,
+              marketing_updates
+            )
           `)
           .eq('user_id', user.id)
           .single();
@@ -54,14 +60,21 @@ export const useBrandSettings = () => {
         if (error) throw error;
 
         if (brand) {
-          const notificationSettings = brand.brand_notification_settings?.[0] || {};
+          const notificationSettings = brand.brand_notification_settings?.[0] || {
+            email_enabled: true,
+            push_enabled: true,
+            message_notifications: true,
+            application_updates: true,
+            marketing_updates: false
+          };
+
           setBrandData({
             ...brand,
-            email_notifications_enabled: notificationSettings.email_enabled ?? true,
-            push_notifications_enabled: notificationSettings.push_enabled ?? true,
-            message_notifications_enabled: notificationSettings.message_notifications ?? true,
-            application_notifications_enabled: notificationSettings.application_updates ?? true,
-            marketing_notifications_enabled: notificationSettings.marketing_updates ?? false,
+            email_notifications_enabled: notificationSettings.email_enabled,
+            push_notifications_enabled: notificationSettings.push_enabled,
+            message_notifications_enabled: notificationSettings.message_notifications,
+            application_notifications_enabled: notificationSettings.application_updates,
+            marketing_notifications_enabled: notificationSettings.marketing_updates,
           });
           setProfileImage(brand.profile_image_url);
         }
