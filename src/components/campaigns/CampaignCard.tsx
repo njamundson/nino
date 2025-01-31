@@ -85,18 +85,13 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     }
   };
 
-  // Filter applications to only show valid submissions
-  const applications = (campaign.applications || []).filter(app => 
-    app.cover_letter !== null && 
-    app.cover_letter !== '' && 
-    app.status !== 'cancelled'
-  );
+  // Get all valid applications (not cancelled)
+  const applications = campaign.applications || [];
+  console.log('All applications:', applications);
   
-  const validApplications = applications.filter(
-    app => app.cover_letter && 
-          app.cover_letter !== '' && 
-          app.status === 'pending'
-  );
+  // Filter for pending applications
+  const validApplications = applications.filter(app => app.status === 'pending');
+  console.log('Pending applications:', validApplications);
 
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
   const isInactive = campaign.status === 'inactive';
@@ -130,9 +125,6 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
       children: "Open"
     };
   };
-
-  console.log('Campaign applications:', campaign.applications);
-  console.log('Filtered valid applications:', validApplications);
 
   return (
     <>
