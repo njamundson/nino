@@ -63,25 +63,30 @@ export const useApplicationActions = ({ opportunityId }: UseApplicationActionsPr
     try {
       console.log('Processing application rejection:', applicationId);
       
+      // Delete the application instead of just updating status
       const { error } = await supabase
         .from('applications')
         .delete()
         .eq('id', applicationId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error rejecting application:', error);
+        throw error;
+      }
 
       // Invalidate relevant queries to refresh the UI
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
         queryClient.invalidateQueries({ queryKey: ['applications'] }),
-        queryClient.invalidateQueries({ queryKey: ['opportunities'] })
+        queryClient.invalidateQueries({ queryKey: ['opportunities'] }),
+        queryClient.invalidateQueries({ queryKey: ['my-applications'] })
       ]);
 
       console.log('Application rejected successfully');
       toast.success("Application rejected successfully");
       return true;
     } catch (error) {
-      console.error('Error rejecting application:', error);
+      console.error('Error in handleRejectApplication:', error);
       toast.error("Failed to reject application. Please try again.");
       return false;
     } finally {
