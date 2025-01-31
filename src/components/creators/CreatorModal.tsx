@@ -39,13 +39,29 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
     queryFn: async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return [];
+        if (!user) {
+          toast.error("You must be logged in to view campaigns");
+          return [];
+        }
 
+        // First check if the user is associated with a creator account
+        const { data: creator } = await supabase
+          .from('creators')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (creator) {
+          toast.error("Creators cannot invite other creators to campaigns");
+          return [];
+        }
+
+        // Then fetch the brand data
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
           .eq('user_id', user.id)
-          .maybeSingle(); // Changed from single() to maybeSingle()
+          .maybeSingle();
 
         if (brandError) {
           console.error('Error fetching brand:', brandError);
@@ -55,6 +71,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
         if (!brand) {
           console.log('No brand found for user');
+          toast.error("No brand account found");
           return [];
         }
 
@@ -90,7 +107,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
         .select('id, status')
         .eq('opportunity_id', opportunityId)
         .eq('creator_id', creator.id)
-        .maybeSingle(); // Changed from single() to maybeSingle()
+        .maybeSingle();
 
       if (checkError) {
         console.error("Error checking existing invitation:", checkError);
