@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Calendar } from "lucide-react";
+import { Calendar, ListChecks, MoreVertical } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -12,6 +12,14 @@ import CampaignHeader from "./card/CampaignHeader";
 import CampaignBadges from "./card/CampaignBadges";
 import ExpandedApplications from "./card/ExpandedApplications";
 import { Application } from "@/integrations/supabase/types/application";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface CampaignCardProps {
   campaign: {
@@ -81,13 +89,19 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     }
   };
 
-  // Filter applications to only show valid submissions (has cover letter and not cancelled)
+  // Filter applications to only show valid submissions
   const applications = (campaign.applications || []).filter(app => 
     app.cover_letter !== null && 
     app.cover_letter !== '' && 
     app.status !== 'cancelled'
   );
   
+  const validApplications = applications.filter(
+    app => app.cover_letter && 
+          app.cover_letter !== '' && 
+          app.status === 'pending'
+  );
+
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
   const isInactive = campaign.status === 'inactive';
   const isCompleted = campaign.status === 'completed';
@@ -125,15 +139,40 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     <>
       <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300">
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-          <CampaignHeader
-            title={campaign.title}
-            location={campaign.location}
-            isCompleted={isCompleted}
-            applications={applications}
-            onEdit={() => onEdit(campaign)}
-            onDelete={handleDelete}
-            onViewCreator={handleViewCreator}
-          />
+          <div className="flex items-start justify-between">
+            <div className="space-y-1 flex-1 min-w-0">
+              <h3 className="text-lg sm:text-xl font-semibold text-nino-text truncate pr-2">
+                {campaign.title}
+              </h3>
+              {campaign.location && (
+                <p className="text-nino-gray flex items-center gap-1.5 text-sm sm:text-base">
+                  <Calendar className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">{campaign.location}</span>
+                </p>
+              )}
+            </div>
+
+            {!isCompleted && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0 flex-shrink-0">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white">
+                  <DropdownMenuItem onClick={() => onEdit(campaign)}>
+                    Edit campaign
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-red-600"
+                    onClick={handleDelete}
+                  >
+                    Delete campaign
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
 
           <div className="space-y-4">
             <div>
@@ -159,20 +198,51 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
             />
           </div>
 
-          {!isCompleted && !isInactive && applications.length > 0 && (
+          {!isCompleted && !isInactive && (
             <div className="pt-4 border-t border-gray-100">
-              <ApplicationsHeader
-                count={applications.length}
-                isExpanded={isApplicationsExpanded}
-                onToggle={() => setIsApplicationsExpanded(!isApplicationsExpanded)}
-              />
-              
-              {isApplicationsExpanded && (
-                <ExpandedApplications
-                  applications={applications}
-                  onViewCreator={handleViewCreator}
-                />
-              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-between hover:bg-gray-50"
+                  >
+                    <span className="flex items-center gap-2">
+                      <ListChecks className="h-4 w-4" />
+                      <span>Applications ({validApplications.length})</span>
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 bg-white">
+                  {validApplications.length > 0 ? (
+                    <>
+                      <div className="px-2 py-1.5 text-sm font-semibold">
+                        Pending Applications
+                      </div>
+                      <DropdownMenuSeparator />
+                      {validApplications.map((application) => (
+                        <DropdownMenuItem
+                          key={application.id}
+                          className="flex items-center gap-2 p-2 cursor-pointer"
+                          onClick={() => handleViewCreator(application.creator, application)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">
+                              {application.creator?.first_name} {application.creator?.last_name}
+                            </p>
+                            <p className="text-sm text-gray-500 truncate">
+                              Pending Review
+                            </p>
+                          </div>
+                        </DropdownMenuItem>
+                      ))}
+                    </>
+                  ) : (
+                    <div className="px-2 py-1.5 text-sm text-gray-500">
+                      No applications yet
+                    </div>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
         </div>
