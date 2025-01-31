@@ -16,8 +16,7 @@ import { useState } from "react";
 
 interface CreatorSectionProps {
   creator: {
-    first_name: string;
-    last_name: string | null;
+    display_name: string;
     profile_image_url: string | null;
   };
   onChatClick: () => void;
@@ -26,11 +25,6 @@ interface CreatorSectionProps {
 
 const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  
-  // Since first_name is required in the database, we can be confident it exists
-  const creatorName = creator.last_name 
-    ? `${creator.first_name} ${creator.last_name}`
-    : creator.first_name;
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -56,18 +50,18 @@ const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionP
                 {creator.profile_image_url ? (
                   <img 
                     src={creator.profile_image_url}
-                    alt={creatorName}
+                    alt={creator.display_name}
                     className="w-12 h-12 rounded-full object-cover ring-2 ring-white"
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-nino-primary/10 flex items-center justify-center ring-2 ring-white">
                     <span className="text-lg font-medium text-nino-primary">
-                      {creator.first_name[0].toUpperCase()}
+                      {creator.display_name[0].toUpperCase()}
                     </span>
                   </div>
                 )}
                 <div>
-                  <h4 className="font-medium text-gray-900">{creatorName}</h4>
+                  <h4 className="font-medium text-gray-900">{creator.display_name}</h4>
                 </div>
               </div>
               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
