@@ -38,37 +38,17 @@ export const useChatList = (currentUserId: string | undefined) => {
             sender_id,
             receiver_id,
             read,
-            sender:profiles!sender_profile_id (
+            sender:sender_profile_id (
               id,
               first_name,
               last_name,
-              creator:creators (
-                id,
-                first_name,
-                last_name,
-                profile_image_url
-              ),
-              brand:brands (
-                id,
-                company_name,
-                profile_image_url
-              )
+              user_id
             ),
-            receiver:profiles!receiver_profile_id (
+            receiver:receiver_profile_id (
               id,
               first_name,
               last_name,
-              creator:creators (
-                id,
-                first_name,
-                last_name,
-                profile_image_url
-              ),
-              brand:brands (
-                id,
-                company_name,
-                profile_image_url
-              )
+              user_id
             )
           `)
           .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
@@ -79,23 +59,37 @@ export const useChatList = (currentUserId: string | undefined) => {
         if (mounted) {
           const conversationsMap = new Map();
           
-          messages?.forEach((msg: any) => {
+          for (const msg of messages || []) {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
             const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
             
-            // Get name and profile image based on user type (creator or brand)
+            if (!otherUser?.user_id) continue;
+
+            // Fetch additional user info
+            const { data: creatorData } = await supabase
+              .from('creators')
+              .select('first_name, last_name, profile_image_url')
+              .eq('user_id', otherUser.user_id)
+              .single();
+
+            const { data: brandData } = await supabase
+              .from('brands')
+              .select('company_name, profile_image_url')
+              .eq('user_id', otherUser.user_id)
+              .single();
+
             let firstName = '', lastName = '', profileImage = null;
-            
-            if (otherUser?.creator) {
-              firstName = otherUser.creator.first_name;
-              lastName = otherUser.creator.last_name;
-              profileImage = otherUser.creator.profile_image_url;
-            } else if (otherUser?.brand) {
-              firstName = otherUser.brand.company_name;
-              profileImage = otherUser.brand.profile_image_url;
+
+            if (creatorData) {
+              firstName = creatorData.first_name;
+              lastName = creatorData.last_name;
+              profileImage = creatorData.profile_image_url;
+            } else if (brandData) {
+              firstName = brandData.company_name;
+              profileImage = brandData.profile_image_url;
             } else {
-              firstName = otherUser?.first_name || '';
-              lastName = otherUser?.last_name || '';
+              firstName = otherUser.first_name || '';
+              lastName = otherUser.last_name || '';
             }
 
             // Only update the map if this is a more recent message for this conversation
@@ -111,7 +105,7 @@ export const useChatList = (currentUserId: string | undefined) => {
                 }
               });
             }
-          });
+          }
 
           setChats(Array.from(conversationsMap.values()));
         }
