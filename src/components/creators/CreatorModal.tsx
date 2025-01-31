@@ -82,7 +82,14 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
         const { data: opportunities, error: oppsError } = await supabase
           .from('opportunities')
-          .select('*')
+          .select(`
+            *,
+            applications (
+              id,
+              status,
+              creator_id
+            )
+          `)
           .eq('brand_id', brand.id)
           .eq('status', 'open');
 
@@ -108,28 +115,15 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
     try {
       setIsInviting(true);
 
-      // Check for existing invitation
-      const { data: existingInvite, error: checkError } = await supabase
-        .from('applications')
-        .select('id, status')
-        .eq('opportunity_id', opportunityId)
-        .eq('creator_id', creator.id)
-        .maybeSingle();
+      // Check for existing application
+      const opportunity = campaigns?.find(c => c.id === opportunityId);
+      const existingApplication = opportunity?.applications?.find(
+        app => app.creator_id === creator.id
+      );
 
-      if (checkError) {
-        console.error("Error checking existing invitation:", checkError);
-        toast.error("Failed to check existing invitations");
+      if (existingApplication) {
+        toast.error("Creator has already applied to your campaign");
         return;
-      }
-
-      if (existingInvite) {
-        if (existingInvite.status === 'invited') {
-          toast.error("Creator has already been invited to this campaign");
-          return;
-        } else if (existingInvite.status === 'accepted') {
-          toast.error("Creator is already part of this campaign");
-          return;
-        }
       }
 
       // Create the invitation
