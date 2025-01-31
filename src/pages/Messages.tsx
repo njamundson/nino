@@ -14,6 +14,7 @@ const Messages = () => {
   );
   const [selectedFirstName, setSelectedFirstName] = useState<string | null>(null);
   const [selectedLastName, setSelectedLastName] = useState<string | null>(null);
+  const [selectedProfileImage, setSelectedProfileImage] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -29,11 +30,13 @@ const Messages = () => {
   const handleSelectChat = async (
     userId: string, 
     firstName: string, 
-    lastName: string
+    lastName: string,
+    profileImage: string | null
   ) => {
     setSelectedUserId(userId);
     setSelectedFirstName(firstName);
     setSelectedLastName(lastName);
+    setSelectedProfileImage(profileImage);
   };
 
   return (
@@ -57,6 +60,7 @@ const Messages = () => {
               selectedChat={selectedUserId}
               selectedFirstName={selectedFirstName}
               selectedLastName={selectedLastName}
+              selectedProfileImage={selectedProfileImage}
               currentUserId={currentUser?.id}
               onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
             />

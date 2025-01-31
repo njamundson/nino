@@ -3,14 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ChatListHeader } from "./chat-list/ChatListHeader";
 import { ChatListItem } from "./chat-list/ChatListItem";
-import { CreatorSelectionModal } from "./chat-list/CreatorSelectionModal";
+import CreatorSelectionModal from "./chat-list/CreatorSelectionModal";
 import { useChatList } from "@/hooks/messages/useChatList";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Card } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 
 interface ChatListProps {
-  onSelectChat: (userId: string) => void;
+  onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
   selectedUserId?: string;
 }
 
@@ -30,7 +30,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         if (error) throw error;
         setCurrentUser(user);
 
-        // Check if the user is a brand
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
@@ -57,7 +56,9 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   }, [toast]);
 
   const filteredChats = chats?.filter((chat) =>
-    chat.otherUser.name.toLowerCase().includes(searchQuery.toLowerCase())
+    `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {
@@ -104,7 +105,13 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             key={chat.otherUser.id}
             chat={chat}
             isSelected={selectedUserId === chat.otherUser.id}
-            onClick={() => onSelectChat(chat.otherUser.id)}
+            currentUserId={currentUser?.id}
+            onSelect={() => onSelectChat(
+              chat.otherUser.id,
+              chat.otherUser.firstName,
+              chat.otherUser.lastName,
+              chat.otherUser.profileImage
+            )}
           />
         ))}
       </div>

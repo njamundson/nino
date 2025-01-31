@@ -1,10 +1,21 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatListItemProps {
-  chat: any;
+  chat: {
+    otherUser: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      profileImage: string | null;
+    };
+    content: string;
+    created_at: string;
+    sender_id: string;
+    read: boolean;
+  };
   isSelected: boolean;
-  currentUserId: string | undefined;
-  formatTime: (dateString: string) => string;
+  currentUserId?: string;
+  formatTime?: (dateString: string) => string;
   onSelect: () => void;
 }
 
@@ -12,16 +23,15 @@ export const ChatListItem = ({
   chat,
   isSelected,
   currentUserId,
-  formatTime,
   onSelect,
 }: ChatListItemProps) => {
-  const fullName = chat.otherUser.firstName && chat.otherUser.lastName 
-    ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
-    : 'Unnamed User';
+  const fullName = `${chat.otherUser.firstName} ${chat.otherUser.lastName}`.trim();
+  const initials = `${chat.otherUser.firstName[0] || ''}${chat.otherUser.lastName[0] || ''}`.toUpperCase();
 
-  const initials = chat.otherUser.firstName && chat.otherUser.lastName
-    ? `${chat.otherUser.firstName[0]}${chat.otherUser.lastName[0]}`
-    : '';
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <div
