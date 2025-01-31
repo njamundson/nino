@@ -104,8 +104,8 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
                   ) : null}
                 </div>
 
-                {/* Show action buttons for pending applications */}
-                {application.status === 'pending' && (
+                {/* Show action buttons for both pending and invited applications */}
+                {(application.status === 'pending' || application.status === 'invited') && (
                   <div className="pt-4">
                     <ActionButtons
                       onAccept={onAccept}
