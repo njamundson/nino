@@ -103,17 +103,17 @@ const BrandChatInput = ({
   };
 
   return (
-    <div className="p-4 border-t bg-white/50 backdrop-blur-xl">
-      <div className="relative">
+    <div className="p-4 bg-white/80 backdrop-blur-xl border-t border-gray-100">
+      <div className="relative max-w-4xl mx-auto">
         <Textarea
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Type a message..."
-          className="pr-24 resize-none bg-white"
+          className="pr-24 resize-none bg-white/60 backdrop-blur-sm rounded-2xl border-gray-200 shadow-sm transition-all duration-200 focus:shadow-md focus:bg-white focus:border-gray-300 hover:border-gray-300"
           rows={1}
         />
-        <div className="absolute right-2 bottom-1.5 flex gap-2">
+        <div className="absolute right-2 bottom-1.5 flex gap-1.5">
           <input
             type="file"
             ref={fileInputRef}
@@ -124,23 +124,23 @@ const BrandChatInput = ({
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8"
+            className="h-8 w-8 rounded-full hover:bg-gray-100 transition-colors duration-200"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
           >
             {isUploading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-gray-600" />
             ) : (
-              <Image className="h-4 w-4" />
+              <Image className="h-4 w-4 text-gray-600" />
             )}
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8"
+            className="h-8 w-8 rounded-full hover:bg-gray-100 transition-colors duration-200"
             onClick={handleSendMessage}
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-4 w-4 text-gray-600" />
           </Button>
         </div>
       </div>
