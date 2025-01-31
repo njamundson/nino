@@ -18,22 +18,21 @@ const ProposalsTabs = ({
 }: ProposalsTabsProps) => {
   const isMobile = useIsMobile();
 
-  // Filter out any accepted applications since they should be in Bookings
+  // Filter out accepted applications since they should be in Bookings
   const activeApplications = myApplications.filter(app => app.status !== 'accepted');
 
   // Show brand-initiated applications in Pending tab
   const pendingInvitations = activeApplications.filter(app => 
     app.initiated_by === 'brand' && 
-    (app.status === 'invited' || app.status === 'pending')
+    (app.status === 'invited' || app.status === 'pending') &&
+    !app.cover_letter // Only show invitations that haven't been responded to yet
   );
   
-  // Show creator-initiated applications in Applied tab
+  // Show creator-initiated applications and responded-to invitations in Applied tab
   const userApplications = activeApplications.filter(app => 
-    app.initiated_by === 'creator'
+    app.initiated_by === 'creator' || 
+    (app.initiated_by === 'brand' && app.cover_letter) // Include brand invitations that have been responded to
   );
-
-  console.log('Pending invitations:', pendingInvitations);
-  console.log('User applications:', userApplications);
 
   return (
     <Tabs defaultValue="pending" className="w-full">

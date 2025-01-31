@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Clock, Check, X } from "lucide-react";
+import { Clock, Check, X, Mail } from "lucide-react";
 
 interface ProposalStatusBadgeProps {
   status: string;
@@ -9,11 +9,16 @@ export const ProposalStatusBadge = ({ status }: ProposalStatusBadgeProps) => {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'pending':
-      case 'invited':
         return {
           icon: Clock,
-          text: status === 'invited' ? 'Invited' : 'Pending',
+          text: 'Pending',
           className: 'bg-gradient-to-b from-nino-text/80 to-nino-text/90 text-nino-white'
+        };
+      case 'invited':
+        return {
+          icon: Mail,
+          text: 'Invited',
+          className: 'bg-gradient-to-b from-nino-primary/90 to-nino-primary text-nino-white'
         };
       case 'accepted':
         return {
