@@ -3,10 +3,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import CreatorModal from "@/components/creators/CreatorModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { CreatorType } from "@/types/creator";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import BrowseCreatorProfile from "@/components/creators/modal/BrowseCreatorProfile";
 
 interface ChatHeaderProps {
   senderFirstName?: string;
@@ -25,10 +30,10 @@ export const ChatHeader = ({
 }: ChatHeaderProps) => {
   const isMobile = useIsMobile();
   const hasSelectedChat = Boolean(senderFirstName || senderLastName);
-  const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const { data: creatorData } = useQuery({
-    queryKey: ['creator-for-invite', senderUserId],
+    queryKey: ['creator-for-chat', senderUserId],
     queryFn: async () => {
       if (!senderUserId) return null;
       
@@ -89,26 +94,27 @@ export const ChatHeader = ({
           </div>
           
           {hasSelectedChat && creatorData && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsCreatorModalOpen(true)}
-              className="gap-2 text-nino-primary hover:bg-nino-primary/10"
-            >
-              <UserPlus className="w-4 h-4" />
-              Invite to Campaign
-            </Button>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 text-nino-primary hover:bg-nino-primary/10"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  View Profile
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="p-0 w-full sm:w-[800px]">
+                <BrowseCreatorProfile 
+                  creator={creatorData}
+                  onClose={() => setIsOpen(false)}
+                />
+              </SheetContent>
+            </Sheet>
           )}
         </div>
       </div>
-
-      {creatorData && (
-        <CreatorModal
-          creator={creatorData}
-          isOpen={isCreatorModalOpen}
-          onClose={() => setIsCreatorModalOpen(false)}
-        />
-      )}
     </div>
   );
 };
