@@ -21,10 +21,10 @@ const ProposalsTabs = ({
   // Filter out any accepted applications since they should be in Bookings
   const activeApplications = myApplications.filter(app => app.status !== 'accepted');
 
-  // Show brand-initiated applications in Pending tab until they have a cover letter
+  // Show brand-initiated applications in Pending tab
   const pendingInvitations = activeApplications.filter(app => 
     app.initiated_by === 'brand' && 
-    !app.cover_letter // Only move to Applied when they submit a cover letter
+    (app.status === 'invited' || app.status === 'pending')
   );
   
   // Show creator-initiated applications and brand invitations that have a cover letter
