@@ -10,7 +10,7 @@ export interface CreatorData {
   creator_type: CreatorType;
   instagram: string;
   website: string;
-  profile_image_url: string;
+  profile_image_url: string | null;
   notifications_enabled?: boolean;
   onboarding_completed?: boolean;
 }
