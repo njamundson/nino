@@ -36,20 +36,20 @@ const ProfessionalSettings = ({ onBack }: ProfessionalSettingsProps) => {
         <div className="space-y-8">
           <div className="bg-nino-white rounded-2xl p-8 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-6">
             <CreatorTypeSelect
-              creatorType={creatorData.creatorType}
+              creatorType={creatorData.creator_type}
               onUpdateField={handleUpdateField}
             />
 
             <div className="space-y-2">
               <Label className="text-sm font-medium text-nino-text">Skills & Expertise</Label>
               <SkillsSelection
-                skills={creatorData.specialties}
+                skills={creatorData.specialties || []}
                 onUpdateSkills={(skills) => handleUpdateField("specialties", skills)}
               />
             </div>
 
             <LocationField
-              location={creatorData.location}
+              location={creatorData.location || ''}
               onUpdateField={handleUpdateField}
             />
           </div>
@@ -58,7 +58,7 @@ const ProfessionalSettings = ({ onBack }: ProfessionalSettingsProps) => {
             <div className="space-y-2">
               <Label className="text-sm font-medium text-nino-text">Instagram Username</Label>
               <Input
-                value={creatorData.instagram}
+                value={creatorData.instagram || ''}
                 onChange={(e) => handleUpdateField("instagram", e.target.value)}
                 className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-nino-primary rounded-xl"
               />
@@ -67,7 +67,7 @@ const ProfessionalSettings = ({ onBack }: ProfessionalSettingsProps) => {
             <div className="space-y-2">
               <Label className="text-sm font-medium text-nino-text">Website</Label>
               <Input
-                value={creatorData.website}
+                value={creatorData.website || ''}
                 onChange={(e) => handleUpdateField("website", e.target.value)}
                 className="bg-gray-50/50 border-0 focus:ring-2 focus:ring-nino-primary rounded-xl"
               />

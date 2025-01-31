@@ -8,6 +8,14 @@ interface CreatorOnboardingFormProps {
   onComplete?: (data: CreatorData) => Promise<void>;
 }
 
+interface StepProps {
+  creatorData: CreatorData;
+  onUpdateField: (field: keyof CreatorData, value: any) => void;
+  onNext?: () => void;
+  onBack?: () => void;
+  onComplete?: () => Promise<void>;
+}
+
 const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
   const [step, setStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
@@ -38,20 +46,23 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
   };
 
   const renderStep = () => {
+    const stepProps: StepProps = {
+      creatorData,
+      onUpdateField: updateField,
+    };
+
     switch (step) {
       case 'basic':
         return (
           <BasicInfoStep
-            data={creatorData}
-            onUpdateField={updateField}
+            {...stepProps}
             onNext={() => setStep('professional')}
           />
         );
       case 'professional':
         return (
           <ProfessionalInfoStep
-            data={creatorData}
-            onUpdateField={updateField}
+            {...stepProps}
             onNext={() => setStep('social')}
             onBack={() => setStep('basic')}
           />
@@ -59,8 +70,7 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
       case 'social':
         return (
           <SocialLinksStep
-            data={creatorData}
-            onUpdateField={updateField}
+            {...stepProps}
             onBack={() => setStep('professional')}
             onComplete={handleComplete}
           />
