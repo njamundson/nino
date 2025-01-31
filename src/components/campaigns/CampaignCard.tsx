@@ -224,8 +224,21 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                         <div
                           key={application.id}
                           onClick={() => handleViewCreator(application.creator, application)}
-                          className="flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+                          className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
                         >
+                          <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                            {application.creator?.profile_image_url ? (
+                              <img
+                                src={application.creator.profile_image_url}
+                                alt={`${application.creator?.first_name}'s profile`}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                {application.creator?.first_name?.[0]}
+                              </div>
+                            )}
+                          </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-gray-900 truncate">
                               {application.creator?.first_name} {application.creator?.last_name}
