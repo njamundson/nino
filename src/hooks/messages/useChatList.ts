@@ -41,6 +41,7 @@ export const useChatList = (currentUserId: string | undefined) => {
             receiver_id,
             read,
             sender:profiles!sender_profile_id (
+              id,
               first_name,
               last_name,
               creator:creators (
@@ -48,6 +49,7 @@ export const useChatList = (currentUserId: string | undefined) => {
               )
             ),
             receiver:profiles!receiver_profile_id (
+              id,
               first_name,
               last_name,
               creator:creators (
