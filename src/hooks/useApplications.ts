@@ -44,6 +44,7 @@ export const useApplications = (brandId?: string) => {
       .subscribe();
 
     return () => {
+      console.log('Cleaning up subscriptions');
       supabase.removeChannel(channel);
       supabase.removeChannel(opportunityChannel);
     };
