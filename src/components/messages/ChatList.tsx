@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { EmptyState } from "./chat-list/EmptyState";
 import { ChatListHeader } from "./chat-list/ChatListHeader";
 import { ChatListItem } from "./chat-list/ChatListItem";
-import CreatorSelectionModal from "./CreatorSelectionModal";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { CreatorSelectionModal } from "./chat-list/CreatorSelectionModal";
 import { useChatList } from "@/hooks/messages/useChatList";
-import { supabase } from "@/integrations/supabase/client";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Card } from "@/components/ui/card";
+import { MessageSquare } from "lucide-react";
 
 interface ChatListProps {
-  onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
-  selectedUserId: string | null;
+  onSelectChat: (userId: string) => void;
+  selectedUserId?: string;
 }
 
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
@@ -30,11 +31,16 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         setCurrentUser(user);
 
         // Check if the user is a brand
-        const { data: brand } = await supabase
+        const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
+
+        if (brandError) {
+          console.error('Error checking brand status:', brandError);
+          return;
+        }
 
         setIsBrand(!!brand);
       } catch (error) {
@@ -50,37 +56,42 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
     fetchCurrentUser();
   }, [toast]);
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    }
-  };
-
-  const filteredChats = chats.filter(chat => {
-    if (!chat?.otherUser) return false;
-    const fullName = `${chat.otherUser.firstName} ${chat.otherUser.lastName}`.toLowerCase();
-    return fullName.includes(searchQuery.toLowerCase());
-  });
+  const filteredChats = chats?.filter((chat) =>
+    chat.otherUser.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <LoadingSpinner size="md" />
+      <div className="flex-1 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!chats || chats.length === 0) {
+    return (
+      <div className="flex-1 p-6">
+        <Card className="p-6">
+          <div className="flex flex-col items-center justify-center text-center space-y-4">
+            <div className="rounded-full bg-gray-100 p-3">
+              <MessageSquare className="w-6 h-6 text-gray-400" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-medium">No messages yet</h3>
+              <p className="text-sm text-gray-500">
+                {isBrand 
+                  ? "Start a conversation with a creator"
+                  : "Brands will appear here when they message you"}
+              </p>
+            </div>
+          </div>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full border-r border-gray-100">
       <ChatListHeader 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -88,27 +99,14 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       />
 
       <div className="flex-1 overflow-y-auto bg-white">
-        {filteredChats.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div className="divide-y divide-gray-50">
-            {filteredChats.map((chat) => (
-              <ChatListItem
-                key={chat.otherUser.id}
-                chat={chat}
-                isSelected={selectedUserId === chat.otherUser.id}
-                currentUserId={currentUser?.id}
-                formatTime={formatTime}
-                onSelect={() => onSelectChat(
-                  chat.otherUser.id,
-                  chat.otherUser.firstName,
-                  chat.otherUser.lastName,
-                  chat.otherUser.profileImage
-                )}
-              />
-            ))}
-          </div>
-        )}
+        {filteredChats?.map((chat) => (
+          <ChatListItem
+            key={chat.otherUser.id}
+            chat={chat}
+            isSelected={selectedUserId === chat.otherUser.id}
+            onClick={() => onSelectChat(chat.otherUser.id)}
+          />
+        ))}
       </div>
 
       {isBrand && (
