@@ -21,6 +21,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
     queryKey: ['brand-active-bookings'],
     queryFn: async () => {
       try {
+        console.log("Fetching brand bookings...");
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           console.log("No authenticated user found");
@@ -53,6 +54,8 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           return [];
         }
 
+        console.log("Found brand:", brand);
+
         const { data, error } = await supabase
           .from('applications')
           .select(`
@@ -67,16 +70,21 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           .eq('opportunity.brand_id', brand.id)
           .in('opportunity.status', ['active', 'open']);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching applications:', error);
+          throw error;
+        }
+
+        console.log("Fetched bookings:", data);
         return data || [];
       } catch (error) {
         console.error('Error fetching brand bookings:', error);
         throw error;
       }
     },
-    refetchInterval: 1000 * 60 * 5,
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
     retry: 3,
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60, // Consider data stale after 1 minute
   });
 
   // Set up real-time subscription for booking updates
