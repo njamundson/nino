@@ -3,8 +3,7 @@ import PersonalInfoFields from "./basic-info/PersonalInfoFields";
 
 interface BasicInfoStepProps {
   profileImage: string | null;
-  firstName: string;
-  lastName: string;
+  displayName: string;
   bio: string;
   location: string;
   onUpdateField: (field: string, value: string) => void;
@@ -13,8 +12,7 @@ interface BasicInfoStepProps {
 
 const BasicInfoStep = ({
   profileImage,
-  firstName,
-  lastName,
+  displayName,
   bio,
   location,
   onUpdateField,
@@ -35,8 +33,7 @@ const BasicInfoStep = ({
       />
 
       <PersonalInfoFields
-        firstName={firstName}
-        lastName={lastName}
+        displayName={displayName}
         bio={bio}
         location={location}
         onUpdateField={onUpdateField}

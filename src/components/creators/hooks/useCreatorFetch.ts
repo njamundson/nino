@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { CreatorData } from "@/types/creator";
+import { CreatorData, CreatorType } from "@/types/creator";
 
 interface UseCreatorFetchProps {
   filterConditions: {
@@ -15,11 +15,6 @@ interface UseCreatorFetchProps {
 export const useCreatorFetch = ({ filterConditions, CREATORS_PER_PAGE }: UseCreatorFetchProps) => {
   const fetchCreators = useCallback(async ({ pageParam = 0 }) => {
     try {
-      console.log("Fetching creators with filters:", { 
-        ...filterConditions,
-        page: pageParam
-      });
-
       let query = supabase
         .from('creators')
         .select(`
@@ -70,7 +65,7 @@ export const useCreatorFetch = ({ filterConditions, CREATORS_PER_PAGE }: UseCrea
         bio: creator.bio || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
-        creator_type: creator.creator_type || 'solo',
+        creator_type: creator.creator_type as CreatorType || 'solo',
         instagram: creator.instagram || '',
         website: creator.website || '',
         profile_image_url: creator.profile_image_url || '',
@@ -92,8 +87,8 @@ export const useCreatorFetch = ({ filterConditions, CREATORS_PER_PAGE }: UseCrea
     queryFn: fetchCreators,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
     retry: 2,
   });
 };
