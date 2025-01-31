@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Calendar, ListChecks, MoreVertical } from "lucide-react";
+import { Calendar, ListChecks, MoreVertical, ChevronDown, ChevronUp } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -15,8 +15,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface CampaignCardProps {
   campaign: {
@@ -39,6 +43,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions({
     opportunityId: campaign.id,
@@ -85,11 +90,9 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     }
   };
 
-  // Get all valid applications (not cancelled or rejected)
   const applications = campaign.applications || [];
   console.log('All applications:', applications);
   
-  // Filter for pending applications
   const validApplications = applications.filter(app => 
     app.status === 'pending' || app.status === 'invited'
   );
@@ -193,8 +196,12 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
 
           {!isCompleted && !isInactive && (
             <div className="pt-4 border-t border-gray-100">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              <Collapsible
+                open={isExpanded}
+                onOpenChange={setIsExpanded}
+                className="w-full"
+              >
+                <CollapsibleTrigger asChild>
                   <Button 
                     variant="ghost" 
                     className="w-full justify-between hover:bg-gray-50"
@@ -203,39 +210,40 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                       <ListChecks className="h-4 w-4" />
                       <span>Applications ({validApplications.length})</span>
                     </span>
+                    {isExpanded ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 bg-white">
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2">
                   {validApplications.length > 0 ? (
-                    <>
-                      <div className="px-2 py-1.5 text-sm font-semibold">
-                        Applications
-                      </div>
-                      <DropdownMenuSeparator />
+                    <div className="mt-2 space-y-2">
                       {validApplications.map((application) => (
-                        <DropdownMenuItem
+                        <div
                           key={application.id}
-                          className="flex items-center gap-2 p-2 cursor-pointer"
                           onClick={() => handleViewCreator(application.creator, application)}
+                          className="flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">
+                            <p className="font-medium text-gray-900 truncate">
                               {application.creator?.first_name} {application.creator?.last_name}
                             </p>
-                            <p className="text-sm text-gray-500 truncate">
+                            <p className="text-sm text-gray-500">
                               {application.status === 'invited' ? 'Invited' : 'Pending Review'}
                             </p>
                           </div>
-                        </DropdownMenuItem>
+                        </div>
                       ))}
-                    </>
+                    </div>
                   ) : (
-                    <div className="px-2 py-1.5 text-sm text-gray-500">
+                    <div className="py-3 text-center text-sm text-gray-500">
                       No applications yet
                     </div>
                   )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           )}
         </div>
