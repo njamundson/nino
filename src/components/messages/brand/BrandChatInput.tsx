@@ -37,7 +37,9 @@ const BrandChatInput = ({
 
   const handleSendWithImage = () => {
     if (uploadedImageUrl) {
-      setNewMessage(`${newMessage ? newMessage + '\n' : ''}![Image](${uploadedImageUrl})`);
+      // Only append the image URL when actually sending
+      const messageToSend = `${newMessage ? newMessage + '\n' : ''}![Image](${uploadedImageUrl})`;
+      setNewMessage(messageToSend);
       setImagePreview(null);
       setUploadedImageUrl(null);
     }
@@ -82,14 +84,14 @@ const BrandChatInput = ({
         return;
       }
 
-      // Create preview
+      // Create preview immediately
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
 
-      // Sanitize filename to remove non-ASCII characters
+      // Sanitize filename
       const sanitizedName = file.name.replace(/[^\x00-\x7F]/g, '');
       const fileExt = sanitizedName.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
@@ -137,6 +139,24 @@ const BrandChatInput = ({
     <div className="p-3 bg-white/80 backdrop-blur-xl border-t border-gray-100">
       <div className="relative max-w-4xl mx-auto">
         <div className="relative">
+          {imagePreview && (
+            <div className="absolute bottom-full mb-2 left-0">
+              <div className="relative bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <img src={imagePreview} alt="Preview" className="max-w-[200px] max-h-[200px] object-cover rounded-2xl" />
+                <button
+                  onClick={() => {
+                    setImagePreview(null);
+                    setUploadedImageUrl(null);
+                  }}
+                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 rounded-full p-1 transition-colors duration-200"
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
           <Textarea
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -145,22 +165,6 @@ const BrandChatInput = ({
             className="min-h-[40px] max-h-[200px] pr-24 resize-none bg-white/60 backdrop-blur-sm rounded-full border-gray-200 shadow-sm transition-all duration-200 focus:shadow-md focus:bg-white focus:border-gray-300 hover:border-gray-300 py-2.5 px-4 text-[15px] leading-5"
             rows={1}
           />
-          {imagePreview && (
-            <div className="absolute bottom-full mb-2 left-0 bg-white rounded-lg shadow-sm border border-gray-200 p-2">
-              <img src={imagePreview} alt="Preview" className="max-w-[100px] max-h-[100px] rounded" />
-              <button
-                onClick={() => {
-                  setImagePreview(null);
-                  setUploadedImageUrl(null);
-                }}
-                className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-sm border border-gray-200 hover:bg-gray-50"
-              >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          )}
           <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
             <input
               type="file"
