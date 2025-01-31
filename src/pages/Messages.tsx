@@ -6,14 +6,12 @@ import ChatList from "@/components/messages/ChatList";
 const Messages = () => {
   const { user } = useAuth();
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
-  const [selectedFirstName, setSelectedFirstName] = useState("");
-  const [selectedLastName, setSelectedLastName] = useState("");
+  const [selectedDisplayName, setSelectedDisplayName] = useState("");
   const [selectedProfileImage, setSelectedProfileImage] = useState<string | null>(null);
 
-  const handleSelectChat = (userId: string, firstName: string, lastName: string, profileImage: string | null) => {
+  const handleSelectChat = (userId: string, displayName: string, profileImage: string | null) => {
     setSelectedChat(userId);
-    setSelectedFirstName(firstName);
-    setSelectedLastName(lastName);
+    setSelectedDisplayName(displayName);
     setSelectedProfileImage(profileImage);
   };
 
@@ -29,13 +27,11 @@ const Messages = () => {
           selectedUserId={selectedChat}
         />
       </div>
-      
       {selectedChat && (
         <div className="hidden md:block w-2/3">
           <BrandChatContainer
             selectedChat={selectedChat}
-            selectedFirstName={selectedFirstName}
-            selectedLastName={selectedLastName}
+            selectedDisplayName={selectedDisplayName}
             selectedProfileImage={selectedProfileImage}
             currentUserId={user?.id}
             onMobileBack={handleMobileBack}

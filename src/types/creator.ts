@@ -44,3 +44,34 @@ export interface Message {
     display_name: string;
   };
 }
+
+export const CREATOR_TYPES = [
+  { value: 'solo', label: 'Solo Creator' },
+  { value: 'agency', label: 'Agency' },
+  { value: 'brand', label: 'Brand' }
+] as const;
+
+export const CREATOR_SPECIALTIES = [
+  'Photography',
+  'Videography',
+  'Content Creation',
+  'Social Media',
+  'Writing',
+  'Design',
+  'Marketing',
+  'Consulting'
+] as const;
+
+export const validateInstagramHandle = (handle: string): boolean => {
+  const instagramRegex = /^@?[a-zA-Z0-9._]+$/;
+  return instagramRegex.test(handle);
+};
+
+export const validateWebsiteUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
