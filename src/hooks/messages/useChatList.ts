@@ -47,6 +47,11 @@ export const useChatList = (currentUserId: string | undefined) => {
                 first_name,
                 last_name,
                 profile_image_url
+              ),
+              brand:brands (
+                id,
+                company_name,
+                profile_image_url
               )
             ),
             receiver:profiles!receiver_profile_id (
@@ -57,6 +62,11 @@ export const useChatList = (currentUserId: string | undefined) => {
                 id,
                 first_name,
                 last_name,
+                profile_image_url
+              ),
+              brand:brands (
+                id,
+                company_name,
                 profile_image_url
               )
             )
@@ -73,11 +83,20 @@ export const useChatList = (currentUserId: string | undefined) => {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
             const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
             
-            // First try to get creator names, then fall back to profile names
-            const creatorInfo = otherUser?.creator;
-            const firstName = creatorInfo?.first_name || otherUser?.first_name || '';
-            const lastName = creatorInfo?.last_name || otherUser?.last_name || '';
-            const profileImage = creatorInfo?.profile_image_url || null;
+            // Get name and profile image based on user type (creator or brand)
+            let firstName = '', lastName = '', profileImage = null;
+            
+            if (otherUser?.creator) {
+              firstName = otherUser.creator.first_name;
+              lastName = otherUser.creator.last_name;
+              profileImage = otherUser.creator.profile_image_url;
+            } else if (otherUser?.brand) {
+              firstName = otherUser.brand.company_name;
+              profileImage = otherUser.brand.profile_image_url;
+            } else {
+              firstName = otherUser?.first_name || '';
+              lastName = otherUser?.last_name || '';
+            }
 
             // Only update the map if this is a more recent message for this conversation
             if (!conversationsMap.has(otherUserId) || 
