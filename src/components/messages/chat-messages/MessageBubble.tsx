@@ -149,20 +149,20 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
 
   return (
     <div className={cn(
-      "group relative max-w-[80%] animate-fadeIn mb-8",
+      "group relative max-w-[65%] animate-fadeIn mb-6",
       isCurrentUser ? "ml-auto" : "mr-auto"
     )}>
       <div
         className={cn(
-          "px-4 py-2.5 shadow-sm transition-all duration-200",
+          "px-3.5 py-2 shadow-sm transition-all duration-200 text-[15px] leading-[1.35]",
           isCurrentUser 
-            ? "bg-[#0B84FE] text-white rounded-[20px] rounded-tr-[4px]" 
-            : "bg-[#E9E9EB] text-[#1C1C1E] rounded-[20px] rounded-tl-[4px]"
+            ? "bg-[#0B84FE] text-white rounded-[16px] rounded-tr-[4px]" 
+            : "bg-[#E9E9EB] text-[#1C1C1E] rounded-[16px] rounded-tl-[4px]"
         )}
       >
         {message.content}
         <p className={cn(
-          "text-[11px] mt-1 select-none",
+          "text-[11px] mt-0.5 select-none",
           isCurrentUser ? "text-white/70" : "text-[#8E8E93]"
         )}>
           {new Date(message.created_at).toLocaleTimeString([], { 
@@ -181,20 +181,20 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              "absolute -bottom-6 flex gap-1 items-center",
+              "absolute -bottom-5 flex gap-1 items-center",
               isCurrentUser ? "right-2" : "left-2"
             )}
           >
             <motion.div 
               layout
-              className="bg-white rounded-full px-2 py-1 shadow-md flex items-center gap-1"
+              className="bg-white rounded-full px-2 py-0.5 shadow-md flex items-center gap-1"
             >
               {reactions.map(({ emoji, count }, index) => (
                 <motion.span
                   key={index}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="text-sm"
+                  className="text-xs"
                 >
                   {emoji}{count > 1 && count}
                 </motion.span>
@@ -205,7 +205,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
       </AnimatePresence>
 
       <div className={cn(
-        "absolute bottom-0 translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-1 pt-2 z-10",
+        "absolute bottom-0 translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-1 pt-1.5 z-10",
         isCurrentUser ? "left-0" : "right-0"
       )}>
         <DropdownMenu>
@@ -213,9 +213,9 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
             <Button
               variant="secondary"
               size="icon"
-              className="h-8 w-8 rounded-full bg-white shadow-md hover:bg-gray-50"
+              className="h-7 w-7 rounded-full bg-white shadow-md hover:bg-gray-50"
             >
-              <Smile className="h-4 w-4 text-gray-600" />
+              <Smile className="h-3.5 w-3.5 text-gray-600" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
@@ -229,7 +229,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
                 variant="ghost"
                 size="icon"
                 className={cn(
-                  "h-8 w-8 hover:bg-gray-100 rounded-full",
+                  "h-7 w-7 hover:bg-gray-100 rounded-full",
                   userReaction === emoji && "bg-gray-100"
                 )}
                 onClick={() => handleReaction(emoji)}
