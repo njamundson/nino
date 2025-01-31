@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from "react-router-dom";
-import { BrandProfile, UserProfile } from '../UserMenu';
+import { BrandSettings } from '@/types/brand';
+import { UserProfile } from '@/types/user';
 
 export const useProfileData = () => {
   const location = useLocation();
   const isBrandDashboard = location.pathname.startsWith("/brand");
 
-  return useQuery<BrandProfile | UserProfile | null>({
+  return useQuery<BrandSettings | UserProfile | null>({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -16,7 +17,7 @@ export const useProfileData = () => {
       if (isBrandDashboard) {
         const { data: brandData, error: brandError } = await supabase
           .from('brands')
-          .select('profile_image_url, company_name')
+          .select('*')
           .eq('user_id', user.id)
           .maybeSingle();
         
@@ -25,20 +26,7 @@ export const useProfileData = () => {
           return null;
         }
 
-        let profileImageUrl = null;
-        if (brandData?.profile_image_url) {
-          const { data: { publicUrl } } = supabase
-            .storage
-            .from('profile-images')
-            .getPublicUrl(brandData.profile_image_url);
-          profileImageUrl = publicUrl;
-        }
-        
-        return {
-          ...brandData,
-          profile_image_url: profileImageUrl,
-          display_name: brandData?.company_name || '',
-        } as BrandProfile;
+        return brandData as BrandSettings;
       }
       
       const { data, error } = await supabase
@@ -52,10 +40,7 @@ export const useProfileData = () => {
         return null;
       }
       
-      return {
-        ...data,
-        display_name: data?.display_name || '',
-      } as UserProfile;
+      return data as UserProfile;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes

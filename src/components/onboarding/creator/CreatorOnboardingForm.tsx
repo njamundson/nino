@@ -37,10 +37,10 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
       case 'professional':
         return (
           <ProfessionalInfoStep
-            creator_type={creatorData.creator_type}
-            skills={creatorData.specialties}
+            creatorType={creatorData.creator_type}
+            specialties={creatorData.specialties || []}
             onUpdateField={updateField}
-            onUpdateSkills={(skills) => updateField('specialties', skills)}
+            onUpdateSpecialties={(specialties) => updateField('specialties', specialties)}
           />
         );
       case 'social':
