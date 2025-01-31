@@ -80,9 +80,19 @@ const ViewApplicationModal = ({
     }
   };
 
-  const handleApplicationSubmit = () => {
-    onClose();
-    queryClient.invalidateQueries({ queryKey: ['applications'] });
+  const handleApplicationSubmit = async () => {
+    try {
+      onClose();
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['applications'] }),
+        queryClient.invalidateQueries({ queryKey: ['my-applications'] }),
+        queryClient.invalidateQueries({ queryKey: ['opportunities'] })
+      ]);
+      toast.success("Application submitted successfully");
+    } catch (error) {
+      console.error('Error handling application submit:', error);
+      toast.error("Failed to update application status");
+    }
   };
 
   if (showApplicationForm && application.opportunity) {
@@ -110,7 +120,6 @@ const ViewApplicationModal = ({
 
         <ProjectDetails application={application} />
 
-        {/* Only show action buttons for proposals (invitations from brands) */}
         {type === 'proposal' && (
           <ActionButtons
             type={type}

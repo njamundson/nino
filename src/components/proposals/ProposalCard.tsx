@@ -35,8 +35,11 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
 
         if (error) throw error;
 
-        queryClient.invalidateQueries({ queryKey: ['applications'] });
-        queryClient.invalidateQueries({ queryKey: ['my-applications'] });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['applications'] }),
+          queryClient.invalidateQueries({ queryKey: ['my-applications'] }),
+          queryClient.invalidateQueries({ queryKey: ['opportunities'] })
+        ]);
         
         toast.success("Application rejected");
       } else {
