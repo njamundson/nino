@@ -1,6 +1,8 @@
 import { Application } from './application';
 import { Brand } from './brand';
 
+export type OpportunityStatus = 'open' | 'active' | 'completed';
+
 export interface Opportunity {
   id: string;
   brand_id: string;
@@ -8,7 +10,7 @@ export interface Opportunity {
   description: string | null;
   start_date: string | null;
   end_date: string | null;
-  status: 'open' | 'active' | 'completed';
+  status: OpportunityStatus;
   requirements: string[] | null;
   perks: string[] | null;
   compensation_type: string | null;

@@ -4,12 +4,12 @@ export interface CreatorData {
   id: string;
   user_id: string;
   display_name: string;
-  bio: string;
-  location: string;
-  specialties: string[];
+  bio: string | null;
+  location: string | null;
+  specialties: string[] | null;
   creator_type: CreatorType;
-  instagram: string;
-  website: string;
+  instagram: string | null;
+  website: string | null;
   profile_image_url: string | null;
   notifications_enabled?: boolean;
   onboarding_completed?: boolean;
@@ -29,24 +29,6 @@ export interface UserProfile {
   updated_at: string;
 }
 
-export interface Message {
-  id: string;
-  content: string;
-  created_at: string;
-  sender_id: string;
-  receiver_id: string;
-  read: boolean;
-  message_type: string;
-  updated_at: string;
-  media_url: string | null;
-  media_type: string | null;
-  sender_profile_id: string | null;
-  receiver_profile_id: string | null;
-  profiles: {
-    display_name: string;
-  };
-}
-
 export const CREATOR_TYPES = [
   { value: 'solo', label: 'Solo Creator' },
   { value: 'agency', label: 'Agency' },
@@ -63,17 +45,3 @@ export const CREATOR_SPECIALTIES = [
   'Marketing',
   'Consulting'
 ] as const;
-
-export const validateInstagramHandle = (handle: string): boolean => {
-  const instagramRegex = /^@?[a-zA-Z0-9._]+$/;
-  return instagramRegex.test(handle);
-};
-
-export const validateWebsiteUrl = (url: string): boolean => {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-};
