@@ -1,8 +1,8 @@
 export interface Message {
   id: string;
-  content: string;
   sender_id: string;
   receiver_id: string;
+  content: string;
   read: boolean;
   message_type: string;
   media_url: string | null;
@@ -11,15 +11,7 @@ export interface Message {
   updated_at: string;
   sender_profile_id: string | null;
   receiver_profile_id: string | null;
-  deleted_at?: string;
-  is_edited?: boolean;
-  profiles: {
-    first_name: string;
-    last_name: string;
+  profiles?: {
+    display_name: string;
   };
-  reactions?: {
-    id: string;
-    emoji: string;
-    user_id: string;
-  }[];
 }
