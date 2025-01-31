@@ -11,7 +11,7 @@ interface ChatHeaderProps {
   senderFirstName?: string;
   senderLastName?: string;
   senderProfileImage?: string | null;
-  senderUserId?: string;
+  senderUserId?: string | null;
   onMobileBack?: () => void;
 }
 
@@ -40,7 +40,7 @@ const ChatHeader = ({
   onMobileBack,
 }: ChatHeaderProps) => {
   const isMobile = useIsMobile();
-  const hasSelectedChat = Boolean(senderFirstName || senderLastName);
+  const hasSelectedChat = Boolean(senderUserId);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
   const { data: creatorData } = useQuery({
@@ -79,6 +79,12 @@ const ChatHeader = ({
     enabled: Boolean(senderUserId),
   });
 
+  const displayName = hasSelectedChat 
+    ? creatorData 
+      ? `${creatorData.first_name} ${creatorData.last_name}`
+      : `${senderFirstName || ''} ${senderLastName || ''}`
+    : "Select a conversation";
+
   return (
     <div className="border-b border-gray-100 bg-white">
       <div className="h-[72px] px-6 flex items-center justify-between">
@@ -96,11 +102,11 @@ const ChatHeader = ({
           
           <div className="flex flex-col">
             <h3 className="text-sm font-medium leading-none">
-              {hasSelectedChat ? `${senderFirstName} ${senderLastName}` : "Select a conversation"}
+              {displayName}
             </h3>
-            {hasSelectedChat && (
+            {hasSelectedChat && creatorData && (
               <p className="text-sm text-gray-500 mt-1">
-                {creatorData?.location || "Location not specified"}
+                {creatorData.location || "Location not specified"}
               </p>
             )}
           </div>
@@ -121,7 +127,7 @@ const ChatHeader = ({
 
       {creatorData && (
         <CreatorModal
-          creator={creatorData}
+          creator={creatorData as any}
           isOpen={isCreatorModalOpen}
           onClose={() => setIsCreatorModalOpen(false)}
         />
