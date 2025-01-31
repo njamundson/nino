@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Application } from "@/integrations/supabase/types/application";
 
 export const useApplications = (brandId?: string) => {
   return useQuery({
@@ -34,7 +35,7 @@ export const useApplications = (brandId?: string) => {
           }
 
           console.log('Fetched brand applications:', data);
-          return data || [];
+          return (data as Application[]) || [];
         }
 
         // Get the creator profile for the current user
@@ -54,8 +55,7 @@ export const useApplications = (brandId?: string) => {
           return [];
         }
 
-        // Fetch all applications for the creator, including both their submissions
-        // and invitations from brands
+        // Fetch all applications for the creator
         const { data, error } = await supabase
           .from('applications')
           .select(`
@@ -76,14 +76,15 @@ export const useApplications = (brandId?: string) => {
 
         console.log('Raw applications data:', data);
 
-        // Add is_invitation flag based on who initiated the application
-        const applicationsWithFlag = data?.map(app => ({
+        // Ensure initiated_by is properly typed
+        const typedApplications = data?.map(app => ({
           ...app,
+          initiated_by: app.initiated_by as 'brand' | 'creator',
           is_invitation: app.initiated_by === 'brand'
         })) || [];
 
-        console.log('Processed applications with flags:', applicationsWithFlag);
-        return applicationsWithFlag;
+        console.log('Processed applications with flags:', typedApplications);
+        return typedApplications;
       } catch (error) {
         console.error('Error in useApplications:', error);
         throw error;

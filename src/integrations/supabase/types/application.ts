@@ -9,7 +9,8 @@ export interface Application {
   cover_letter: string | null;
   created_at: string;
   updated_at: string;
-  initiated_by?: 'creator' | 'brand';
+  initiated_by: 'creator' | 'brand';
   creator?: Creator;
   opportunity?: Opportunity;
+  is_invitation?: boolean;
 }
