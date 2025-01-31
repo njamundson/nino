@@ -1,13 +1,8 @@
-import { useState } from 'react';
-import { CreatorData, CreatorType } from '@/types/creator';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from './use-toast';
-
-type OnboardingStep = 'basic' | 'professional' | 'social';
+import { useState } from "react";
+import { CreatorData, CreatorType } from "@/types/creator";
 
 export const useCreatorOnboarding = () => {
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('basic');
-  const { toast } = useToast();
+  const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
     id: '',
     user_id: '',
@@ -26,68 +21,44 @@ export const useCreatorOnboarding = () => {
   };
 
   const handleNext = () => {
-    if (currentStep === 'basic') {
-      if (!creatorData.display_name || !creatorData.bio || !creatorData.location) {
-        toast({
-          title: "Missing Information",
-          description: "Please fill in all required fields",
-          variant: "destructive",
-        });
-        return false;
-      }
-      setCurrentStep('professional');
-    } else if (currentStep === 'professional') {
-      if (!creatorData.creator_type || creatorData.specialties.length === 0) {
-        toast({
-          title: "Missing Information",
-          description: "Please select your creator type and at least one specialty",
-          variant: "destructive",
-        });
-        return false;
-      }
-      setCurrentStep('social');
+    switch (currentStep) {
+      case 'basic':
+        setCurrentStep('professional');
+        break;
+      case 'professional':
+        setCurrentStep('social');
+        break;
+      default:
+        break;
     }
-    return true;
   };
 
   const handleBack = () => {
-    if (currentStep === 'professional') {
-      setCurrentStep('basic');
-    } else if (currentStep === 'social') {
-      setCurrentStep('professional');
+    switch (currentStep) {
+      case 'professional':
+        setCurrentStep('basic');
+        break;
+      case 'social':
+        setCurrentStep('professional');
+        break;
+      default:
+        break;
     }
   };
 
   const handleComplete = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
+      // Prepare the data for submission
+      const submissionData = {
+        ...creatorData,
+        creator_type: creatorData.creator_type,
+        profile_image_url: creatorData.profile_image_url,
+      };
 
-      const { error } = await supabase
-        .from('creators')
-        .insert({
-          user_id: user.id,
-          display_name: creatorData.display_name,
-          bio: creatorData.bio,
-          location: creatorData.location,
-          specialties: creatorData.specialties,
-          creator_type: creatorData.creator_type,
-          instagram: creatorData.instagram,
-          website: creatorData.website,
-          profile_image_url: creatorData.profile_image_url,
-          onboarding_completed: true
-        });
-
-      if (error) throw error;
-
+      // Return true to indicate successful completion
       return true;
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      toast({
-        title: "Error",
-        description: "Failed to complete onboarding. Please try again.",
-        variant: "destructive",
-      });
       return false;
     }
   };

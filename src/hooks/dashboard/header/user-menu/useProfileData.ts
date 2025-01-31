@@ -10,9 +10,8 @@ export interface UserProfile {
 }
 
 export interface BrandProfile {
-  company_name: string | null;
+  company_name: string;
   profile_image_url: string | null;
-  display_name: string;
 }
 
 export const useProfileData = () => {
@@ -49,7 +48,6 @@ export const useProfileData = () => {
         return {
           ...brandData,
           profile_image_url: profileImageUrl,
-          display_name: brandData?.company_name || 'Anonymous',
         } as BrandProfile;
       }
       
