@@ -24,4 +24,4 @@ export interface BrandSettings {
   marketing_notifications_enabled: boolean;
 }
 
-export interface BrandData extends Omit<BrandSettings, 'created_at' | 'updated_at'> {}
+export type BrandData = Omit<BrandSettings, 'created_at' | 'updated_at'>;

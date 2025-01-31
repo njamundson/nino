@@ -8,4 +8,4 @@ export interface UserProfile {
   updated_at: string;
 }
 
-export { BrandSettings } from './brand';
+export type { BrandSettings } from './brand';

@@ -12,7 +12,6 @@ export interface Application {
   created_at: string | null;
   updated_at: string | null;
   initiated_by: 'brand' | 'creator';
-  opportunity?: Opportunity;
-  creator?: Creator;
-  is_invitation?: boolean;
+  opportunity: Opportunity;
+  creator: Creator;
 }

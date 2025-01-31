@@ -59,8 +59,8 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
   const [showCreatorModal, setShowCreatorModal] = useState(false);
   const { toast } = useToast();
   
-  const creatorName = booking.creator.profile ? 
-    `${booking.creator.profile.first_name} ${booking.creator.profile.last_name}` : 
+  const creatorName = booking.creator.display_name || 
+    `${booking.creator.first_name || ''} ${booking.creator.last_name || ''}`.trim() || 
     'Anonymous Creator';
 
   const handleChatClick = (e: React.MouseEvent) => {
@@ -106,17 +106,9 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
   };
 
   // Transform booking.creator into the format expected by CreatorModal
-  const modalCreator = {
-    id: booking.creator.id,
-    bio: booking.creator.bio || '',
-    location: booking.creator.location || '',
-    specialties: booking.creator.specialties || [],
-    instagram: booking.creator.instagram || '',
-    website: booking.creator.website || '',
-    first_name: booking.creator.profile?.first_name || '',
-    last_name: booking.creator.profile?.last_name || '',
-    profile_image_url: booking.creator.profile_image_url,
-    creator_type: (booking.creator.creator_type as CreatorType) || 'solo'
+  const modalCreator: Creator = {
+    ...booking.creator,
+    display_name: creatorName,
   };
 
   return (

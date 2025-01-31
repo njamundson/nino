@@ -17,7 +17,7 @@ export const useProfileData = () => {
       if (isBrandDashboard) {
         const { data: brandData, error: brandError } = await supabase
           .from('brands')
-          .select('*, company_name, profile_image_url')
+          .select('*')
           .eq('user_id', user.id)
           .maybeSingle();
         
@@ -26,26 +26,20 @@ export const useProfileData = () => {
           return null;
         }
 
-        let profileImageUrl = brandData.profile_image_url;
-        if (profileImageUrl) {
-          const { data: { publicUrl } } = supabase
-            .storage
-            .from('profile-images')
-            .getPublicUrl(profileImageUrl);
-          profileImageUrl = publicUrl;
-        }
-        
         return {
           ...brandData,
-          profile_image_url: profileImageUrl,
-          display_name: brandData.company_name || 'Brand',
+          email_notifications_enabled: true,
+          push_notifications_enabled: true,
+          application_notifications_enabled: true,
+          message_notifications_enabled: true,
+          marketing_notifications_enabled: false,
         } as BrandSettings;
       }
       
       const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*, creators!inner(display_name, first_name, last_name)')
-        .eq('id', user.id)
+        .from('creators')
+        .select('*')
+        .eq('user_id', user.id)
         .maybeSingle();
       
       if (profileError || !profileData) {
@@ -54,10 +48,13 @@ export const useProfileData = () => {
       }
       
       return {
-        ...profileData,
-        display_name: profileData.creators?.[0]?.display_name || '',
-        first_name: profileData.creators?.[0]?.first_name || '',
-        last_name: profileData.creators?.[0]?.last_name || '',
+        id: profileData.id,
+        display_name: profileData.display_name || `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim(),
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+        profile_image_url: profileData.profile_image_url,
+        created_at: profileData.created_at,
+        updated_at: profileData.updated_at,
       } as UserProfile;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
