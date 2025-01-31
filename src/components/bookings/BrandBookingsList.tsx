@@ -24,13 +24,31 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return [];
 
-        const { data: brand } = await supabase
+        const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (!brand) return [];
+        if (brandError) {
+          console.error('Error fetching brand:', brandError);
+          toast({
+            title: "Error",
+            description: "Failed to fetch brand profile",
+            variant: "destructive",
+          });
+          return [];
+        }
+
+        if (!brand) {
+          console.log("No brand record found");
+          toast({
+            title: "No Brand Profile",
+            description: "Please complete your brand profile setup",
+            variant: "destructive",
+          });
+          return [];
+        }
 
         const { data, error } = await supabase
           .from('applications')
