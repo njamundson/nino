@@ -22,18 +22,16 @@ export const useNotifications = () => {
         .select(`
           *,
           sender:profiles!messages_sender_profile_id_fkey(
-            first_name,
-            last_name
+            display_name
           ),
           receiver:profiles!messages_receiver_profile_id_fkey(
-            first_name,
-            last_name
+            display_name
           )
         `)
         .eq('receiver_id', user.id)
         .eq('read', false)
         .order('created_at', { ascending: false })
-        .limit(5); // Limit to 5 unread messages for better performance
+        .limit(5);
 
       if (messagesError) {
         console.error('Error fetching messages:', messagesError);
@@ -44,7 +42,7 @@ export const useNotifications = () => {
       const messageNotifications = (messages || []).map(message => ({
         id: message.id,
         type: 'message',
-        content: `New message from ${message.sender?.first_name} ${message.sender?.last_name}`,
+        content: `New message from ${message.sender?.display_name}`,
         created_at: message.created_at,
         read: message.read,
         action_url: '/messages'
@@ -57,8 +55,7 @@ export const useNotifications = () => {
           *,
           creator:creators (
             profile:profiles (
-              first_name,
-              last_name
+              display_name
             )
           ),
           opportunity:opportunities (
@@ -67,7 +64,7 @@ export const useNotifications = () => {
         `)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
-        .limit(5); // Limit to 5 pending applications
+        .limit(5);
 
       if (applicationsError) {
         console.error('Error fetching applications:', applicationsError);
@@ -78,7 +75,7 @@ export const useNotifications = () => {
       const applicationNotifications = (applications || []).map(application => ({
         id: application.id,
         type: 'application',
-        content: `New proposal from ${application.creator.profile.first_name} ${application.creator.profile.last_name} for "${application.opportunity.title}"`,
+        content: `New proposal from ${application.creator.profile.display_name} for "${application.opportunity.title}"`,
         created_at: application.created_at,
         read: false,
         action_url: '/brand/proposals'
@@ -88,10 +85,10 @@ export const useNotifications = () => {
       return [...messageNotifications, ...applicationNotifications]
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     },
-    staleTime: 1000 * 60, // 1 minute
-    gcTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5,
     retry: 1,
-    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
+    refetchInterval: 30000,
   });
 
   const dismissNotification = useMutation({
