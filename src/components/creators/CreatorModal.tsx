@@ -61,7 +61,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
           return [];
         }
 
-        // Then fetch the brand data using maybeSingle to handle no results gracefully
+        // Then fetch the brand data using maybeSingle
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
