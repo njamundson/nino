@@ -9,7 +9,7 @@ interface BrandChatInputProps {
   newMessage: string;
   setNewMessage: (message: string) => void;
   handleSendMessage: () => void;
-  selectedChat: string;
+  selectedChat: string | null;
   editingMessage?: any;
   setEditingMessage?: (message: any) => void;
 }
@@ -37,6 +37,27 @@ const BrandChatInput = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Only image files are allowed",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "Error",
+        description: "File size must be less than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setIsUploading(true);
 
@@ -50,27 +71,17 @@ const BrandChatInput = ({
         return;
       }
 
-      const { data: brand, error: brandError } = await supabase
-        .from('brands')
-        .select('profile_image_url')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (brandError) {
-        console.error('Error fetching brand:', brandError);
-        toast({
-          title: "Error",
-          description: "Failed to verify permissions",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const fileExt = file.name.split('.').pop();
+      // Sanitize filename to remove non-ASCII characters
+      const sanitizedName = file.name.replace(/[^\x00-\x7F]/g, '');
+      const fileExt = sanitizedName.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
+
+      const { error: uploadError, data } = await supabase.storage
         .from('chat-attachments')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          contentType: file.type,
+          upsert: false
+        });
 
       if (uploadError) {
         console.error('Upload error:', uploadError);
@@ -81,6 +92,7 @@ const BrandChatInput = ({
         .from('chat-attachments')
         .getPublicUrl(fileName);
 
+      // Add image markdown to message
       setNewMessage(`${newMessage ? newMessage + '\n' : ''}![Image](${publicUrl})`);
 
       toast({
