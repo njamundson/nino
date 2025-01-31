@@ -45,11 +45,16 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
         }
 
         // First check if the user is associated with a creator account
-        const { data: creator } = await supabase
+        const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
+
+        if (creatorError) {
+          console.error('Error checking creator status:', creatorError);
+          return [];
+        }
 
         if (creator) {
           toast.error("Creators cannot invite other creators to campaigns");
@@ -65,13 +70,11 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
         if (brandError) {
           console.error('Error fetching brand:', brandError);
-          toast.error("Failed to load brand information");
           return [];
         }
 
         if (!brand) {
           console.log('No brand found for user');
-          toast.error("No brand account found");
           return [];
         }
 
@@ -83,14 +86,12 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
         if (oppsError) {
           console.error('Error fetching opportunities:', oppsError);
-          toast.error("Failed to load campaigns");
           return [];
         }
 
         return opportunities || [];
       } catch (error) {
         console.error('Error in campaign query:', error);
-        toast.error("Failed to load campaigns");
         return [];
       }
     },
@@ -125,7 +126,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
         }
       }
 
-      const { error } = await supabase
+      const { error: inviteError } = await supabase
         .from('applications')
         .insert({
           opportunity_id: opportunityId,
@@ -134,8 +135,8 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
           initiated_by: 'brand'
         });
 
-      if (error) {
-        console.error("Error inviting creator:", error);
+      if (inviteError) {
+        console.error("Error inviting creator:", inviteError);
         toast.error("Failed to invite creator");
         return;
       }
