@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -110,19 +110,18 @@ const ChatHeader = ({
               </p>
             )}
           </div>
-          
-          {hasSelectedChat && creatorData && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsCreatorModalOpen(true)}
-              className="gap-2 text-nino-primary hover:bg-nino-primary/10"
-            >
-              <UserPlus className="w-4 h-4" />
-              View Profile
-            </Button>
-          )}
         </div>
+        
+        {hasSelectedChat && creatorData && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsCreatorModalOpen(true)}
+            className="text-nino-primary hover:bg-nino-primary/10"
+          >
+            <UserCircle className="w-5 h-5" />
+          </Button>
+        )}
       </div>
 
       {creatorData && (
