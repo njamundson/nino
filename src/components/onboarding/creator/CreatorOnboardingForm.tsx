@@ -2,14 +2,20 @@ import { useState } from 'react';
 import BasicInfoStep from './BasicInfoStep';
 import ProfessionalInfoStep from './ProfessionalInfoStep';
 import SocialLinksStep from './SocialLinksStep';
-import { CreatorData } from '@/types/creator';
+import { CreatorData, CreatorType } from '@/types/creator';
 
-const CreatorOnboardingForm = () => {
+interface CreatorOnboardingFormProps {
+  onComplete?: (data: CreatorData) => Promise<void>;
+}
+
+const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
   const [step, setStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
     id: '',
     user_id: '',
     display_name: '',
+    first_name: '',
+    last_name: '',
     bio: null,
     location: null,
     specialties: [],
@@ -25,29 +31,38 @@ const CreatorOnboardingForm = () => {
     setCreatorData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleComplete = async () => {
+    if (onComplete) {
+      await onComplete(creatorData);
+    }
+  };
+
   const renderStep = () => {
     switch (step) {
       case 'basic':
         return (
           <BasicInfoStep
-            creatorData={creatorData}
+            data={creatorData}
             onUpdateField={updateField}
+            onNext={() => setStep('professional')}
           />
         );
       case 'professional':
         return (
           <ProfessionalInfoStep
-            creatorType={creatorData.creator_type}
-            skills={creatorData.specialties || []}
+            data={creatorData}
             onUpdateField={updateField}
-            onUpdateSkills={(skills) => updateField('specialties', skills)}
+            onNext={() => setStep('social')}
+            onBack={() => setStep('basic')}
           />
         );
       case 'social':
         return (
           <SocialLinksStep
-            creatorData={creatorData}
+            data={creatorData}
             onUpdateField={updateField}
+            onBack={() => setStep('professional')}
+            onComplete={handleComplete}
           />
         );
       default:

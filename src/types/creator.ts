@@ -4,6 +4,8 @@ export interface CreatorData {
   id: string;
   user_id: string;
   display_name: string;
+  first_name: string | null;
+  last_name: string | null;
   bio: string | null;
   location: string | null;
   specialties: string[] | null;

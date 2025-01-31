@@ -17,30 +17,48 @@ export const useProfileData = () => {
       if (isBrandDashboard) {
         const { data: brandData, error: brandError } = await supabase
           .from('brands')
-          .select('*')
+          .select('*, company_name, profile_image_url')
           .eq('user_id', user.id)
           .maybeSingle();
         
-        if (brandError) {
+        if (brandError || !brandData) {
           console.error('Error fetching brand profile:', brandError);
           return null;
         }
 
-        return brandData as BrandSettings;
+        let profileImageUrl = brandData.profile_image_url;
+        if (profileImageUrl) {
+          const { data: { publicUrl } } = supabase
+            .storage
+            .from('profile-images')
+            .getPublicUrl(profileImageUrl);
+          profileImageUrl = publicUrl;
+        }
+        
+        return {
+          ...brandData,
+          profile_image_url: profileImageUrl,
+          display_name: brandData.company_name || 'Brand',
+        } as BrandSettings;
       }
       
-      const { data, error } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, creators!inner(display_name, first_name, last_name)')
         .eq('id', user.id)
         .maybeSingle();
       
-      if (error) {
-        console.error('Error fetching profile:', error);
+      if (profileError || !profileData) {
+        console.error('Error fetching profile:', profileError);
         return null;
       }
       
-      return data as UserProfile;
+      return {
+        ...profileData,
+        display_name: profileData.creators?.[0]?.display_name || '',
+        first_name: profileData.creators?.[0]?.first_name || '',
+        last_name: profileData.creators?.[0]?.last_name || '',
+      } as UserProfile;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes

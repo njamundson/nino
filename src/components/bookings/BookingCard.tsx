@@ -29,6 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import CreatorModal from "@/components/creators/CreatorModal";
 import { CreatorType } from "@/types/creator";
+import { Creator } from "@/types/creator";
 
 interface BookingCardProps {
   booking: {
@@ -44,25 +45,11 @@ interface BookingCardProps {
       deliverables?: string[] | null;
       requirements?: string[] | null;
     };
-    creator: {
-      bio: string | null;
-      specialties: string[] | null;
-      profile: {
-        first_name: string | null;
-        last_name: string | null;
-      } | null;
-      profile_image_url: string | null;
-      user_id: string;
-      id: string;
-      instagram: string | null;
-      website: string | null;
-      location: string | null;
-      creator_type: string | null;
-    };
+    creator: Creator;
     created_at: string;
   };
   onChatClick: (userId: string) => void;
-  onViewCreator: (creator: any) => void;
+  onViewCreator: (creator: Creator) => void;
   onRefresh?: () => void;
 }
 
