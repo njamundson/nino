@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface ChatUser {
   id: string;
@@ -21,7 +20,6 @@ export const useChatList = (currentUserId: string | undefined) => {
   const [chats, setChats] = useState<ChatUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     let mounted = true;
@@ -45,7 +43,9 @@ export const useChatList = (currentUserId: string | undefined) => {
               first_name,
               last_name,
               creator:creators (
-                profile_image_url
+                profile_image_url,
+                first_name,
+                last_name
               )
             ),
             receiver:profiles!receiver_profile_id (
@@ -53,7 +53,9 @@ export const useChatList = (currentUserId: string | undefined) => {
               first_name,
               last_name,
               creator:creators (
-                profile_image_url
+                profile_image_url,
+                first_name,
+                last_name
               )
             )
           `)
@@ -69,14 +71,18 @@ export const useChatList = (currentUserId: string | undefined) => {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
             const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
             
+            // Prioritize creator names over profile names
+            const firstName = otherUser?.creator?.first_name || otherUser?.first_name || '';
+            const lastName = otherUser?.creator?.last_name || otherUser?.last_name || '';
+            
             if (!conversationsMap.has(otherUserId) || 
                 new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
               conversationsMap.set(otherUserId, {
                 ...msg,
                 otherUser: {
                   id: otherUserId,
-                  firstName: otherUser?.first_name || '',
-                  lastName: otherUser?.last_name || '',
+                  firstName,
+                  lastName,
                   profileImage: otherUser?.creator?.profile_image_url || null
                 }
               });
