@@ -19,6 +19,10 @@ export const ChatListItem = ({
     ? `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
     : 'Unnamed User';
 
+  const initials = chat.otherUser.firstName && chat.otherUser.lastName
+    ? `${chat.otherUser.firstName[0]}${chat.otherUser.lastName[0]}`
+    : '';
+
   return (
     <div
       className={`group relative px-6 py-4 cursor-pointer hover:bg-gray-50/50 transition-colors ${
@@ -28,9 +32,12 @@ export const ChatListItem = ({
     >
       <div className="flex items-start space-x-3">
         <Avatar className="h-10 w-10">
-          <AvatarImage src={chat.otherUser.profileImage || ''} />
-          <AvatarFallback>
-            {`${chat.otherUser.firstName?.[0] || ''}${chat.otherUser.lastName?.[0] || ''}`}
+          <AvatarImage 
+            src={chat.otherUser.profileImage || ''} 
+            alt={fullName}
+          />
+          <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
+            {initials}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
