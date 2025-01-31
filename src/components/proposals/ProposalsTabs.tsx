@@ -27,10 +27,9 @@ const ProposalsTabs = ({
     (app.status === 'invited' || app.status === 'pending')
   );
   
-  // Show creator-initiated applications and brand invitations that have a cover letter
+  // Show creator-initiated applications in Applied tab
   const userApplications = activeApplications.filter(app => 
-    app.initiated_by === 'creator' || 
-    (app.initiated_by === 'brand' && app.cover_letter)
+    app.initiated_by === 'creator'
   );
 
   console.log('Pending invitations:', pendingInvitations);

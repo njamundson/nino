@@ -1,5 +1,6 @@
 import { Application } from "@/integrations/supabase/types/application";
 import ProposalCard from "./ProposalCard";
+import EmptyProposals from "./EmptyProposals";
 
 interface ProposalsListProps {
   applications: Application[];
@@ -13,8 +14,8 @@ const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: Propos
     return <div>Loading...</div>;
   }
 
-  if (applications.length === 0) {
-    return <div>No applications found.</div>;
+  if (!applications || applications.length === 0) {
+    return <EmptyProposals type={type} />;
   }
 
   return (
