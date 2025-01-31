@@ -85,13 +85,15 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
     }
   };
 
-  // Get all valid applications (not cancelled)
+  // Get all valid applications (not cancelled or rejected)
   const applications = campaign.applications || [];
   console.log('All applications:', applications);
   
   // Filter for pending applications
-  const validApplications = applications.filter(app => app.status === 'pending');
-  console.log('Pending applications:', validApplications);
+  const validApplications = applications.filter(app => 
+    app.status === 'pending' || app.status === 'invited'
+  );
+  console.log('Valid applications:', validApplications);
 
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
   const isInactive = campaign.status === 'inactive';
@@ -207,7 +209,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                   {validApplications.length > 0 ? (
                     <>
                       <div className="px-2 py-1.5 text-sm font-semibold">
-                        Pending Applications
+                        Applications
                       </div>
                       <DropdownMenuSeparator />
                       {validApplications.map((application) => (
@@ -221,7 +223,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                               {application.creator?.first_name} {application.creator?.last_name}
                             </p>
                             <p className="text-sm text-gray-500 truncate">
-                              Pending Review
+                              {application.status === 'invited' ? 'Invited' : 'Pending Review'}
                             </p>
                           </div>
                         </DropdownMenuItem>
