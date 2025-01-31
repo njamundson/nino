@@ -12,29 +12,29 @@ const ProjectBadges = ({ applications, currentCreatorId, isCompleted }: ProjectB
   const isAccepted = acceptedApplications.length > 0;
   const isCurrentCreator = acceptedApplications.some(app => app.creator_id === currentCreatorId);
 
-  return (
-    <div className="absolute top-4 right-4 z-10">
-      {isCompleted ? (
+  // Only render badges for completed or accepted states
+  if (isCompleted) {
+    return (
+      <div className="absolute top-4 right-4 z-10">
         <Badge variant="secondary" className="bg-gray-100 text-gray-700">
           Completed
         </Badge>
-      ) : isAccepted ? (
-        isCurrentCreator ? (
-          <Badge variant="default" className="bg-nino-primary text-white">
-            You're Hired!
-          </Badge>
-        ) : (
-          <Badge variant="default" className="bg-nino-primary text-white">
-            Creator Hired
-          </Badge>
-        )
-      ) : (
-        <Badge variant="secondary" className="bg-nino-bg text-nino-text">
-          Open
+      </div>
+    );
+  }
+
+  if (isAccepted) {
+    return (
+      <div className="absolute top-4 right-4 z-10">
+        <Badge variant="default" className="bg-nino-primary text-white">
+          {isCurrentCreator ? "You're Hired!" : "Creator Hired"}
         </Badge>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
+
+  // Return null when the project is open (no badge)
+  return null;
 };
 
 export default ProjectBadges;
