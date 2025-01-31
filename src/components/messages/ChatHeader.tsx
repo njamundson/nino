@@ -1,8 +1,7 @@
-import { ChevronLeft, UserPlus } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { UserPlus } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { CreatorType } from "@/types/creator";
@@ -13,15 +12,15 @@ interface ChatHeaderProps {
   senderLastName?: string;
   senderProfileImage?: string | null;
   senderUserId?: string;
-  onBack?: () => void;
+  onMobileBack?: () => void;
 }
 
-export const ChatHeader = ({ 
-  senderFirstName, 
+const ChatHeader = ({
+  senderFirstName,
   senderLastName,
   senderProfileImage,
   senderUserId,
-  onBack 
+  onMobileBack,
 }: ChatHeaderProps) => {
   const isMobile = useIsMobile();
   const hasSelectedChat = Boolean(senderFirstName || senderLastName);
@@ -31,10 +30,25 @@ export const ChatHeader = ({
     queryKey: ['creator-for-chat', senderUserId],
     queryFn: async () => {
       if (!senderUserId) return null;
-      
+
       const { data: creator, error } = await supabase
         .from('creators')
-        .select('*')
+        .select(`
+          id,
+          first_name,
+          last_name,
+          bio,
+          location,
+          instagram,
+          website,
+          specialties,
+          creator_type,
+          profile_image_url,
+          profile:profiles(
+            first_name,
+            last_name
+          )
+        `)
         .eq('user_id', senderUserId)
         .single();
 
@@ -43,49 +57,35 @@ export const ChatHeader = ({
         return null;
       }
 
-      return creator ? {
-        ...creator,
-        creator_type: creator.creator_type as CreatorType || 'solo'
-      } : null;
+      return creator as CreatorType;
     },
-    enabled: !!senderUserId
+    enabled: Boolean(senderUserId),
   });
 
-  const initials = hasSelectedChat 
-    ? `${senderFirstName?.[0] || ''}${senderLastName?.[0] || ''}`
-    : '';
-
-  const fullName = hasSelectedChat 
-    ? `${senderFirstName || ''} ${senderLastName || ''}`.trim()
-    : 'Messages';
-
   return (
-    <div className="border-b border-gray-100 p-6 bg-white/50 backdrop-blur-xl">
-      <div className="flex flex-col space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {isMobile && onBack && (
-              <button 
-                onClick={onBack}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
-              </button>
+    <div className="border-b border-gray-100 bg-white">
+      <div className="h-[72px] px-6 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {isMobile && onMobileBack && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onMobileBack}
+              className="mr-2"
+            >
+              Back
+            </Button>
+          )}
+          
+          <div className="flex flex-col">
+            <h3 className="text-sm font-medium leading-none">
+              {hasSelectedChat ? `${senderFirstName} ${senderLastName}` : "Select a conversation"}
+            </h3>
+            {hasSelectedChat && (
+              <p className="text-sm text-gray-500 mt-1">
+                {creatorData?.location || "Location not specified"}
+              </p>
             )}
-            <div className="flex items-center gap-3">
-              {hasSelectedChat ? (
-                <Avatar className="h-8 w-8">
-                  <AvatarImage 
-                    src={senderProfileImage || ''} 
-                    alt={fullName}
-                  />
-                  <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
-              ) : null}
-              <h1 className="text-2xl font-semibold text-gray-900">
-                {fullName}
-              </h1>
-            </div>
           </div>
           
           {hasSelectedChat && creatorData && (
@@ -112,3 +112,5 @@ export const ChatHeader = ({
     </div>
   );
 };
+
+export default ChatHeader;

@@ -6,6 +6,7 @@ import ChatList from "@/components/messages/ChatList";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Messages = () => {
   const [searchParams] = useSearchParams();
@@ -16,16 +17,30 @@ const Messages = () => {
   const [selectedLastName, setSelectedLastName] = useState<string | null>(null);
   const [selectedProfileImage, setSelectedProfileImage] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUser(user);
+      try {
+        setIsLoading(true);
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load user data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
     getUser();
-  }, []);
+  }, [toast]);
 
   const handleSelectChat = async (
     userId: string, 
@@ -38,6 +53,20 @@ const Messages = () => {
     setSelectedLastName(lastName);
     setSelectedProfileImage(profileImage);
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-6rem)] flex flex-col">
+        <PageHeader
+          title="Messages"
+          description="Connect and communicate with brands."
+        />
+        <div className="flex-1 flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-6rem)] flex flex-col overflow-hidden">
