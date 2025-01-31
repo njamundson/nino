@@ -59,7 +59,7 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
         .from("creators")
         .select("id")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (creatorError || !creator) {
         console.error('Error fetching creator:', creatorError);
@@ -127,7 +127,7 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
         description: "Your application has been submitted successfully!",
       });
 
-      // Refresh the applications data
+      // Immediately invalidate the applications query to trigger a refetch
       await queryClient.invalidateQueries({ queryKey: ['applications'] });
 
       // Close the modal

@@ -43,7 +43,7 @@ export const useApplications = (brandId?: string) => {
           .from('creators')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (creatorError) {
           console.error('Error fetching creator:', creatorError);
@@ -90,6 +90,7 @@ export const useApplications = (brandId?: string) => {
         throw error;
       }
     },
-    enabled: true
+    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
   });
 };
