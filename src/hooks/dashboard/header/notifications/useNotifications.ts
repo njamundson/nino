@@ -22,12 +22,10 @@ export const useNotifications = () => {
         .select(`
           *,
           sender:profiles!messages_sender_profile_id_fkey(
-            first_name,
-            last_name
+            display_name
           ),
           receiver:profiles!messages_receiver_profile_id_fkey(
-            first_name,
-            last_name
+            display_name
           )
         `)
         .eq('receiver_id', user.id)
@@ -55,9 +53,9 @@ export const useNotifications = () => {
         .select(`
           *,
           creator:creators (
+            display_name,
             profile:profiles (
-              first_name,
-              last_name
+              display_name
             )
           ),
           opportunity:opportunities (
@@ -76,7 +74,7 @@ export const useNotifications = () => {
       const applicationNotifications = (applications || []).map(application => ({
         id: application.id,
         type: 'application',
-        content: `New proposal from ${application.creator.profile.first_name} ${application.creator.profile.last_name} for "${application.opportunity.title}"`,
+        content: `New proposal from ${application.creator.display_name} for "${application.opportunity.title}"`,
         created_at: application.created_at,
         read: false,
         action_url: '/brand/proposals'
