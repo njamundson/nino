@@ -16,7 +16,7 @@ export const useApplicationActions = ({ opportunityId }: UseApplicationActionsPr
     try {
       console.log('Processing application acceptance:', applicationId);
       
-      // Update application status to accepted
+      // Start a transaction by using multiple updates
       const { error: applicationError } = await supabase
         .from('applications')
         .update({ status: 'accepted' })
@@ -41,10 +41,13 @@ export const useApplicationActions = ({ opportunityId }: UseApplicationActionsPr
       // Invalidate relevant queries to refresh the UI
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
-        queryClient.invalidateQueries({ queryKey: ['active-bookings'] })
+        queryClient.invalidateQueries({ queryKey: ['active-bookings'] }),
+        queryClient.invalidateQueries({ queryKey: ['applications'] }),
+        queryClient.invalidateQueries({ queryKey: ['opportunities'] })
       ]);
 
       console.log('Application accepted successfully');
+      toast.success("Application accepted successfully");
       return true;
     } catch (error) {
       console.error('Error in handleAcceptApplication:', error);
@@ -68,9 +71,14 @@ export const useApplicationActions = ({ opportunityId }: UseApplicationActionsPr
       if (error) throw error;
 
       // Invalidate relevant queries to refresh the UI
-      await queryClient.invalidateQueries({ queryKey: ['my-campaigns'] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['my-campaigns'] }),
+        queryClient.invalidateQueries({ queryKey: ['applications'] }),
+        queryClient.invalidateQueries({ queryKey: ['opportunities'] })
+      ]);
 
       console.log('Application rejected successfully');
+      toast.success("Application rejected successfully");
       return true;
     } catch (error) {
       console.error('Error rejecting application:', error);

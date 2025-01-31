@@ -1,8 +1,54 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/integrations/supabase/types/application";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useApplications = (brandId?: string) => {
+  const queryClient = useQueryClient();
+
+  // Set up real-time subscription
+  useEffect(() => {
+    console.log('Setting up applications subscription');
+    const channel = supabase
+      .channel('applications-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'applications'
+        },
+        (payload) => {
+          console.log('Application change detected:', payload);
+          queryClient.invalidateQueries({ queryKey: ['applications', brandId] });
+        }
+      )
+      .subscribe();
+
+    // Also listen for opportunity status changes
+    const opportunityChannel = supabase
+      .channel('opportunity-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'opportunities'
+        },
+        (payload) => {
+          console.log('Opportunity change detected:', payload);
+          queryClient.invalidateQueries({ queryKey: ['applications', brandId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+      supabase.removeChannel(opportunityChannel);
+    };
+  }, [queryClient, brandId]);
+
   return useQuery({
     queryKey: ['applications', brandId],
     queryFn: async () => {
