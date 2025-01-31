@@ -24,19 +24,18 @@ const BrandChatInput = ({
 }: BrandChatInputProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendWithImage();
+      handleSend();
     }
   };
 
-  const handleSendWithImage = () => {
-    if (!newMessage.trim() && !uploadedImageUrl) {
+  const handleSend = () => {
+    if (!newMessage.trim() && !imagePreview) {
       toast({
         title: "Error",
         description: "Please enter a message or upload an image",
@@ -44,17 +43,9 @@ const BrandChatInput = ({
       });
       return;
     }
-
-    if (uploadedImageUrl) {
-      // Silently append image URL to message before sending
-      const messageToSend = `${newMessage.trim() ? newMessage + '\n' : ''}![Image](${uploadedImageUrl})`;
-      setNewMessage(messageToSend);
-    }
     
     handleSendMessage();
-    // Clear image state after sending
     setImagePreview(null);
-    setUploadedImageUrl(null);
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +110,8 @@ const BrandChatInput = ({
         .from('chat-attachments')
         .getPublicUrl(fileName);
 
-      setUploadedImageUrl(publicUrl);
+      // Set the message with the image URL in markdown format
+      setNewMessage(`${newMessage ? newMessage + '\n' : ''}![Image](${publicUrl})`);
 
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -129,7 +121,6 @@ const BrandChatInput = ({
         variant: "destructive",
       });
       setImagePreview(null);
-      setUploadedImageUrl(null);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -142,6 +133,22 @@ const BrandChatInput = ({
     <div className="p-3 bg-white/80 backdrop-blur-xl border-t border-gray-100">
       <div className="relative max-w-4xl mx-auto">
         <div className="relative flex flex-col gap-2">
+          {imagePreview && (
+            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200">
+              <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+              <button
+                onClick={() => {
+                  setImagePreview(null);
+                  setNewMessage('');
+                }}
+                className="absolute top-1 right-1 bg-black/50 rounded-full p-1 hover:bg-black/70 transition-colors"
+              >
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
           <div className="relative">
             <Textarea
               value={newMessage}
@@ -151,24 +158,6 @@ const BrandChatInput = ({
               className="min-h-[40px] max-h-[200px] pr-24 resize-none bg-white/60 backdrop-blur-sm rounded-full border-gray-200 shadow-sm transition-all duration-200 focus:shadow-md focus:bg-white focus:border-gray-300 hover:border-gray-300 py-2.5 px-4 text-[15px] leading-5"
               rows={1}
             />
-            {imagePreview && (
-              <div className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gray-200">
-                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                  <button
-                    onClick={() => {
-                      setImagePreview(null);
-                      setUploadedImageUrl(null);
-                    }}
-                    className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity"
-                  >
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
             <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
               <input
                 type="file"
@@ -194,7 +183,7 @@ const BrandChatInput = ({
                 size="icon"
                 variant="ghost"
                 className="h-7 w-7 rounded-full hover:bg-gray-100 transition-colors duration-200"
-                onClick={handleSendWithImage}
+                onClick={handleSend}
               >
                 <Send className="h-3.5 w-3.5 text-gray-600" />
               </Button>

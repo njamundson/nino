@@ -23,19 +23,53 @@ const ChatInput = ({
   setEditingMessage,
 }: ChatInputProps) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      handleSend();
     }
+  };
+
+  const handleSend = () => {
+    if (!newMessage.trim() && !imagePreview) {
+      toast({
+        title: "Error",
+        description: "Please enter a message or upload an image",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    handleSendMessage();
+    setImagePreview(null);
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Only image files are allowed",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "Error",
+        description: "File size must be less than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       setIsUploading(true);
@@ -50,30 +84,25 @@ const ChatInput = ({
         return;
       }
 
-      const { data: creator, error: creatorError } = await supabase
-        .from('creators')
-        .select('profile_image_url')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      // Create preview immediately
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
 
-      if (creatorError) {
-        console.error('Error fetching creator:', creatorError);
-        toast({
-          title: "Error",
-          description: "Failed to verify permissions",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const fileExt = file.name.split('.').pop();
+      const sanitizedName = file.name.replace(/[^\x00-\x7F]/g, '');
+      const fileExt = sanitizedName.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
+
+      const { error: uploadError, data } = await supabase.storage
         .from('chat-attachments')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          contentType: file.type,
+          upsert: false
+        });
 
       if (uploadError) {
-        console.error('Upload error:', uploadError);
         throw uploadError;
       }
 
@@ -81,12 +110,9 @@ const ChatInput = ({
         .from('chat-attachments')
         .getPublicUrl(fileName);
 
+      // Set the message with the image URL in markdown format
       setNewMessage(`${newMessage ? newMessage + '\n' : ''}![Image](${publicUrl})`);
 
-      toast({
-        title: "Success",
-        description: "Image uploaded successfully",
-      });
     } catch (error) {
       console.error('Error uploading file:', error);
       toast({
@@ -94,6 +120,7 @@ const ChatInput = ({
         description: "Failed to upload image. Please try again.",
         variant: "destructive",
       });
+      setImagePreview(null);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -105,11 +132,27 @@ const ChatInput = ({
   return (
     <div className="p-4 border-t bg-white/50 backdrop-blur-xl">
       <div className="relative">
+        {imagePreview && (
+          <div className="absolute left-2 bottom-full mb-2 w-20 h-20 rounded-lg overflow-hidden border border-gray-200">
+            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+            <button
+              onClick={() => {
+                setImagePreview(null);
+                setNewMessage('');
+              }}
+              className="absolute top-1 right-1 bg-black/50 rounded-full p-1 hover:bg-black/70 transition-colors"
+            >
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
         <Textarea
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyPress}
-          placeholder="Type a message..."
+          placeholder={imagePreview ? "Add a message or send just the image..." : "Type a message..."}
           className="pr-24 resize-none bg-white"
           rows={1}
         />
@@ -138,7 +181,7 @@ const ChatInput = ({
             size="icon"
             variant="ghost"
             className="h-8 w-8"
-            onClick={handleSendMessage}
+            onClick={handleSend}
           >
             <Send className="h-4 w-4" />
           </Button>
