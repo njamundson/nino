@@ -90,14 +90,18 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
                       Submitted for: {application.opportunity.title}
                     </p>
                   )}
-                  {application.cover_letter && (
+                  {application.status === 'invited' ? (
+                    <p className="text-sm text-gray-600">
+                      This creator has been invited to apply
+                    </p>
+                  ) : application.cover_letter ? (
                     <div className="space-y-1">
                       <p className="text-sm font-medium text-gray-700">Cover Letter:</p>
                       <p className="text-sm text-gray-600 whitespace-pre-wrap">
                         {application.cover_letter}
                       </p>
                     </div>
-                  )}
+                  ) : null}
                 </div>
 
                 {application.status === 'pending' && (
