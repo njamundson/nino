@@ -10,13 +10,15 @@ export const useCreatorSettings = () => {
     id: '',
     user_id: '',
     display_name: '',
-    bio: '',
-    location: '',
+    bio: null,
+    location: null,
     specialties: [],
-    instagram: '',
-    website: '',
+    instagram: null,
+    website: null,
     profile_image_url: null,
     creator_type: 'solo',
+    notifications_enabled: true,
+    onboarding_completed: false
   });
   const { toast } = useToast();
 
@@ -38,15 +40,16 @@ export const useCreatorSettings = () => {
           setCreatorData({
             id: creator.id,
             user_id: creator.user_id,
-            display_name: creator.display_name || '',
-            bio: creator.bio || '',
-            location: creator.location || '',
-            specialties: creator.specialties || [],
-            instagram: creator.instagram || '',
-            website: creator.website || '',
+            display_name: creator.display_name,
+            bio: creator.bio,
+            location: creator.location,
+            specialties: creator.specialties,
+            instagram: creator.instagram,
+            website: creator.website,
             profile_image_url: creator.profile_image_url,
-            creator_type: creator.creator_type as CreatorType || 'solo',
+            creator_type: creator.creator_type as CreatorType,
             notifications_enabled: creator.notifications_enabled,
+            onboarding_completed: creator.onboarding_completed
           });
           setProfileImage(creator.profile_image_url);
         }
@@ -81,6 +84,7 @@ export const useCreatorSettings = () => {
           profile_image_url: profileImage,
           creator_type: creatorData.creator_type,
           notifications_enabled: creatorData.notifications_enabled,
+          onboarding_completed: creatorData.onboarding_completed
         })
         .eq('user_id', user.id);
 

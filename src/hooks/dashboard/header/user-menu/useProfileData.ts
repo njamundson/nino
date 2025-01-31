@@ -1,18 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation } from "react-router-dom";
-
-export interface UserProfile {
-  id: string;
-  display_name: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface BrandProfile {
-  company_name: string;
-  profile_image_url: string | null;
-}
+import { BrandProfile, UserProfile } from '../UserMenu';
 
 export const useProfileData = () => {
   const location = useLocation();
@@ -48,6 +37,7 @@ export const useProfileData = () => {
         return {
           ...brandData,
           profile_image_url: profileImageUrl,
+          display_name: brandData?.company_name || '',
         } as BrandProfile;
       }
       
@@ -62,7 +52,10 @@ export const useProfileData = () => {
         return null;
       }
       
-      return data as UserProfile;
+      return {
+        ...data,
+        display_name: data?.display_name || '',
+      } as UserProfile;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
