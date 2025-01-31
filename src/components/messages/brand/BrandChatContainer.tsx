@@ -56,8 +56,6 @@ export const BrandChatContainer = ({
     }
   }, [selectedChat, selectedProfileImage]);
 
-  const lastMessage = messages?.[messages.length - 1];
-
   return (
     <Card className="flex flex-col h-[calc(100vh-14rem)] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
       <BrandChatHeader
@@ -66,7 +64,6 @@ export const BrandChatContainer = ({
         senderProfileImage={senderProfileImage}
         senderUserId={selectedChat}
         onMobileBack={onMobileBack}
-        lastMessageTime={lastMessage?.created_at}
       />
       <div className="flex-1 overflow-hidden">
         <BrandChatMessages

@@ -1,7 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { UserCircle } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import CreatorModal from "@/components/creators/CreatorModal";
+import { CreatorType } from "@/types/creator";
 
 interface BrandChatHeaderProps {
   senderFirstName?: string;
@@ -9,7 +13,23 @@ interface BrandChatHeaderProps {
   senderProfileImage?: string | null;
   senderUserId?: string | null;
   onMobileBack?: () => void;
-  lastMessageTime?: string;
+}
+
+interface CreatorData {
+  id: string;
+  first_name: string;
+  last_name: string;
+  bio: string | null;
+  location: string | null;
+  instagram: string | null;
+  website: string | null;
+  specialties: string[] | null;
+  creator_type: CreatorType;
+  profile_image_url: string | null;
+  profile: {
+    first_name: string | null;
+    last_name: string | null;
+  };
 }
 
 const BrandChatHeader = ({
@@ -18,39 +38,99 @@ const BrandChatHeader = ({
   senderProfileImage,
   senderUserId,
   onMobileBack,
-  lastMessageTime,
 }: BrandChatHeaderProps) => {
-  const fullName = `${senderFirstName || ''} ${senderLastName || ''}`.trim();
-  const initials = `${senderFirstName?.[0] || ''}${senderLastName?.[0] || ''}`.toUpperCase();
+  const isMobile = useIsMobile();
+  const hasSelectedChat = Boolean(senderUserId);
+  const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
+
+  const { data: creatorData } = useQuery({
+    queryKey: ['creator-for-chat', senderUserId],
+    queryFn: async () => {
+      if (!senderUserId) return null;
+
+      const { data: creator, error } = await supabase
+        .from('creators')
+        .select(`
+          id,
+          first_name,
+          last_name,
+          bio,
+          location,
+          instagram,
+          website,
+          specialties,
+          creator_type,
+          profile_image_url,
+          profile:profiles(
+            first_name,
+            last_name
+          )
+        `)
+        .eq('user_id', senderUserId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching creator:', error);
+        return null;
+      }
+
+      return creator as CreatorData;
+    },
+    enabled: Boolean(senderUserId),
+  });
+
+  const displayName = hasSelectedChat 
+    ? creatorData 
+      ? `${creatorData.first_name} ${creatorData.last_name}`
+      : `${senderFirstName || ''} ${senderLastName || ''}`
+    : "Select a conversation";
 
   return (
-    <div className="flex items-center justify-between p-4 border-b">
-      <div className="flex items-center gap-2">
-        {onMobileBack && (
+    <div className="border-b border-gray-100 bg-white">
+      <div className="h-[72px] px-6 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {isMobile && onMobileBack && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onMobileBack}
+              className="mr-2"
+            >
+              Back
+            </Button>
+          )}
+          
+          <div className="flex flex-col">
+            <h3 className="text-sm font-medium leading-none">
+              {displayName}
+            </h3>
+            {hasSelectedChat && creatorData && (
+              <p className="text-sm text-gray-500 mt-1">
+                {creatorData.location || "Location not specified"}
+              </p>
+            )}
+          </div>
+        </div>
+        
+        {hasSelectedChat && creatorData && (
           <Button
             variant="ghost"
             size="icon"
-            className="mr-2 md:hidden"
-            onClick={onMobileBack}
+            onClick={() => setIsCreatorModalOpen(true)}
+            className="text-nino-primary hover:bg-nino-primary/10"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <UserCircle className="w-5 h-5" />
           </Button>
         )}
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={senderProfileImage || ''} alt={fullName} />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
-        <div className="flex items-center justify-between flex-1">
-          <h3 className="text-sm font-medium leading-none">
-            {fullName}
-          </h3>
-          {lastMessageTime && (
-            <span className="text-xs text-gray-500 ml-2">
-              {formatDistanceToNow(new Date(lastMessageTime), { addSuffix: true })}
-            </span>
-          )}
-        </div>
       </div>
+
+      {creatorData && (
+        <CreatorModal
+          creator={creatorData as any}
+          isOpen={isCreatorModalOpen}
+          onClose={() => setIsCreatorModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
