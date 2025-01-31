@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { CREATOR_SPECIALTIES } from "@/types/creator-constants";
+import { CREATOR_SPECIALTIES } from "@/types/creator";
 
 export interface SkillsSelectionProps {
   skills: string[];

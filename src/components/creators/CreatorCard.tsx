@@ -28,21 +28,17 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
     navigate(`/brand/messages?userId=${creator.user_id}`);
   };
 
-  const modalCreator: CreatorData = {
+  const modalCreator = {
     id: creator.id,
-    user_id: creator.user_id,
-    display_name: creator.display_name,
-    first_name: creator.first_name,
-    last_name: creator.last_name,
     bio: creator.bio,
     location: creator.location,
     specialties: creator.specialties,
     instagram: creator.instagram,
     website: creator.website,
+    first_name: creator.firstName,
+    last_name: creator.lastName,
     profile_image_url: creator.profile_image_url,
-    creator_type: creator.creator_type,
-    notifications_enabled: creator.notifications_enabled,
-    onboarding_completed: creator.onboarding_completed
+    creator_type: creator.creatorType
   };
 
   return (

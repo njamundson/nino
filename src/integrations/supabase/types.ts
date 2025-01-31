@@ -269,10 +269,8 @@ export type Database = {
           company_name: string | null
           created_at: string
           description: string | null
-          first_name: string | null
           id: string
           instagram: string | null
-          last_name: string | null
           location: string | null
           onboarding_completed: boolean | null
           phone_number: string | null
@@ -289,10 +287,8 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           description?: string | null
-          first_name?: string | null
           id?: string
           instagram?: string | null
-          last_name?: string | null
           location?: string | null
           onboarding_completed?: boolean | null
           phone_number?: string | null
@@ -309,10 +305,8 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           description?: string | null
-          first_name?: string | null
           id?: string
           instagram?: string | null
-          last_name?: string | null
           location?: string | null
           onboarding_completed?: boolean | null
           phone_number?: string | null
@@ -415,8 +409,7 @@ export type Database = {
           bio: string | null
           created_at: string
           creator_type: string | null
-          display_name: string
-          first_name: string | null
+          first_name: string
           id: string
           instagram: string | null
           last_name: string | null
@@ -434,8 +427,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           creator_type?: string | null
-          display_name: string
-          first_name?: string | null
+          first_name: string
           id?: string
           instagram?: string | null
           last_name?: string | null
@@ -453,8 +445,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           creator_type?: string | null
-          display_name?: string
-          first_name?: string | null
+          first_name?: string
           id?: string
           instagram?: string | null
           last_name?: string | null
@@ -665,20 +656,23 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
-          display_name: string | null
+          first_name: string | null
           id: string
+          last_name: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
-          display_name?: string | null
+          first_name?: string | null
           id: string
+          last_name?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
-          display_name?: string | null
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -714,9 +708,10 @@ export type Database = {
           bio: string | null
           created_at: string | null
           creator_type: string | null
-          display_name: string | null
+          first_name: string | null
           id: string | null
           instagram: string | null
+          last_name: string | null
           location: string | null
           profile_id: string | null
           profile_image_url: string | null
@@ -724,36 +719,6 @@ export type Database = {
           updated_at: string | null
           user_id: string | null
           website: string | null
-        }
-        Insert: {
-          bio?: string | null
-          created_at?: string | null
-          creator_type?: string | null
-          display_name?: string | null
-          id?: string | null
-          instagram?: string | null
-          location?: string | null
-          profile_id?: string | null
-          profile_image_url?: string | null
-          specialties?: string[] | null
-          updated_at?: string | null
-          user_id?: string | null
-          website?: string | null
-        }
-        Update: {
-          bio?: string | null
-          created_at?: string | null
-          creator_type?: string | null
-          display_name?: string | null
-          id?: string | null
-          instagram?: string | null
-          location?: string | null
-          profile_id?: string | null
-          profile_image_url?: string | null
-          specialties?: string[] | null
-          updated_at?: string | null
-          user_id?: string | null
-          website?: string | null
         }
         Relationships: [
           {
@@ -774,10 +739,12 @@ export type Database = {
           media_url: string | null
           message_type: string | null
           read: boolean | null
-          receiver_display_name: string | null
+          receiver_first_name: string | null
           receiver_id: string | null
-          sender_display_name: string | null
+          receiver_last_name: string | null
+          sender_first_name: string | null
           sender_id: string | null
+          sender_last_name: string | null
           updated_at: string | null
         }
         Relationships: []

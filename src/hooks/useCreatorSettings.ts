@@ -1,65 +1,81 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CreatorData, CreatorType } from "@/types/creator";
 
 export const useCreatorSettings = () => {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [creatorData, setCreatorData] = useState<CreatorData>({
-    id: '',
-    user_id: '',
-    display_name: '',
-    bio: null,
-    location: null,
-    specialties: [],
-    instagram: null,
-    website: null,
-    profile_image_url: null,
-    creator_type: 'solo',
-    notifications_enabled: true,
-    onboarding_completed: false
+  const [creatorData, setCreatorData] = useState({
+    firstName: "",
+    lastName: "",
+    bio: "",
+    location: "",
+    instagram: "",
+    website: "",
+    specialties: [] as string[],
+    creatorType: "solo",
+    notifications_enabled: false,
   });
-  const { toast } = useToast();
 
   useEffect(() => {
     const fetchCreatorData = async () => {
       try {
+        setLoading(true);
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        
+        if (!user) {
+          console.error('No authenticated user found');
+          return;
+        }
 
-        const { data: creator, error } = await supabase
+        // Get profile data
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          throw profileError;
+        }
+
+        // Get creator data
+        const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('*')
           .eq('user_id', user.id)
           .single();
 
-        if (error) throw error;
+        if (creatorError) {
+          console.error('Error fetching creator:', creatorError);
+          throw creatorError;
+        }
 
-        if (creator) {
+        if (profile && creator) {
           setCreatorData({
-            id: creator.id,
-            user_id: creator.user_id,
-            display_name: creator.display_name,
-            bio: creator.bio,
-            location: creator.location,
-            specialties: creator.specialties,
-            instagram: creator.instagram,
-            website: creator.website,
-            profile_image_url: creator.profile_image_url,
-            creator_type: creator.creator_type as CreatorType,
-            notifications_enabled: creator.notifications_enabled,
-            onboarding_completed: creator.onboarding_completed
+            firstName: profile.first_name || "",
+            lastName: profile.last_name || "",
+            bio: creator.bio || "",
+            location: creator.location || "",
+            instagram: creator.instagram || "",
+            website: creator.website || "",
+            specialties: creator.specialties || [],
+            creatorType: creator.creator_type || "solo",
+            notifications_enabled: creator.notifications_enabled || false,
           });
           setProfileImage(creator.profile_image_url);
         }
       } catch (error) {
-        console.error('Error fetching creator data:', error);
+        console.error('Error in fetchCreatorData:', error);
         toast({
           title: "Error",
-          description: "Failed to load creator data",
+          description: "Failed to load creator data. Please try again.",
           variant: "destructive",
         });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -67,38 +83,63 @@ export const useCreatorSettings = () => {
   }, [toast]);
 
   const handleSave = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
+      
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
 
-      const { error } = await supabase
+      // Update profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          first_name: creatorData.firstName,
+          last_name: creatorData.lastName,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Get creator record
+      const { data: creator, error: creatorError } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (creatorError) throw creatorError;
+      if (!creator) throw new Error('Creator profile not found');
+
+      // Update creator
+      const { error: updateError } = await supabase
         .from('creators')
         .update({
-          display_name: creatorData.display_name,
           bio: creatorData.bio,
           location: creatorData.location,
-          specialties: creatorData.specialties,
           instagram: creatorData.instagram,
           website: creatorData.website,
+          specialties: creatorData.specialties,
+          creator_type: creatorData.creatorType,
           profile_image_url: profileImage,
-          creator_type: creatorData.creator_type,
           notifications_enabled: creatorData.notifications_enabled,
-          onboarding_completed: creatorData.onboarding_completed
+          updated_at: new Date().toISOString(),
         })
-        .eq('user_id', user.id);
+        .eq('id', creator.id);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
       toast({
         title: "Success",
-        description: "Settings saved successfully",
+        description: "Profile updated successfully",
       });
     } catch (error) {
-      console.error('Error saving settings:', error);
+      console.error('Error in handleSave:', error);
       toast({
         title: "Error",
-        description: "Failed to save settings",
+        description: "Failed to save changes. Please try again.",
         variant: "destructive",
       });
     } finally {

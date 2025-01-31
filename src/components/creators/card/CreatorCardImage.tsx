@@ -26,7 +26,7 @@ const CreatorCardImage = ({ creator, onInvite, isInviting }: CreatorCardImagePro
     <div className="relative aspect-[3/4] w-full overflow-hidden group">
       <img
         src={imageUrl}
-        alt={creator.display_name || 'Creator'}
+        alt={creator.firstName}
         onError={handleImageError}
         className="h-full w-full object-cover transition-all duration-300 group-hover:scale-105"
       />
@@ -38,7 +38,7 @@ const CreatorCardImage = ({ creator, onInvite, isInviting }: CreatorCardImagePro
           </p>
         )}
         <h3 className="text-xl font-semibold mb-2">
-          {creator.display_name || 'Creator'}
+          {creator.firstName}
         </h3>
         {creator.specialties && creator.specialties.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">

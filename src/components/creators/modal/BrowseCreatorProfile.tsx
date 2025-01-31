@@ -18,13 +18,17 @@ const BrowseCreatorProfile = ({
 }: BrowseCreatorProfileProps) => {
   if (!creator) return null;
 
+  const fullName = creator.first_name && creator.last_name 
+    ? `${creator.first_name} ${creator.last_name}`
+    : creator.first_name || 'Creator';
+
   return (
     <div className="h-full p-6">
       <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-6 h-full">
         <div className="relative h-full">
           <CreatorImage 
             profileImageUrl={creator.profile_image_url} 
-            fullName={creator.display_name} 
+            fullName={fullName} 
           />
         </div>
         
@@ -37,7 +41,7 @@ const BrowseCreatorProfile = ({
               instagram={creator.instagram}
               website={creator.website}
               onMessageClick={onMessageClick}
-              fullName={creator.display_name}
+              fullName={fullName}
             />
             <CreatorSocialLinks 
               instagram={creator.instagram}

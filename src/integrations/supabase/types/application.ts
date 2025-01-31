@@ -1,16 +1,16 @@
-import { Creator } from '@/types/creator';
+import { Creator } from './creator';
 import { Opportunity } from './opportunity';
 
 export interface Application {
   id: string;
   opportunity_id: string;
   creator_id: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'invited';
+  status: string;
   cover_letter: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-  initiated_by: 'brand' | 'creator';
-  opportunity?: Opportunity;
+  created_at: string;
+  updated_at: string;
+  initiated_by: 'creator' | 'brand';
   creator?: Creator;
+  opportunity?: Opportunity;
   is_invitation?: boolean;
 }

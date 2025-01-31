@@ -1,78 +1,55 @@
-import { useState } from 'react';
+import React from 'react';
+import { Card } from "@/components/ui/card";
 import BasicInfoStep from './BasicInfoStep';
 import ProfessionalInfoStep from './ProfessionalInfoStep';
 import SocialLinksStep from './SocialLinksStep';
-import { CreatorData, CreatorType } from '@/types/creator';
+import OnboardingNavigation from './navigation/OnboardingNavigation';
+import { useCreatorOnboarding } from '@/hooks/useCreatorOnboarding';
+import { CreatorData } from '@/types/creator';
 
 interface CreatorOnboardingFormProps {
-  onComplete?: (data: CreatorData) => Promise<void>;
-}
-
-interface StepProps {
-  creatorData: CreatorData;
-  onUpdateField: (field: keyof CreatorData, value: any) => void;
-  onNext?: () => void;
-  onBack?: () => void;
-  onComplete?: () => Promise<void>;
+  onComplete: (data: CreatorData) => Promise<void>;
 }
 
 const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
-  const [step, setStep] = useState<'basic' | 'professional' | 'social'>('basic');
-  const [creatorData, setCreatorData] = useState<CreatorData>({
-    id: '',
-    user_id: '',
-    display_name: '',
-    first_name: '',
-    last_name: '',
-    bio: null,
-    location: null,
-    specialties: [],
-    creator_type: 'solo',
-    instagram: null,
-    website: null,
-    profile_image_url: null,
-    notifications_enabled: true,
-    onboarding_completed: false
-  });
-
-  const updateField = (field: keyof CreatorData, value: any) => {
-    setCreatorData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleComplete = async () => {
-    if (onComplete) {
-      await onComplete(creatorData);
-    }
-  };
+  const {
+    currentStep,
+    creatorData,
+    updateField,
+    handleNext,
+    handleBack,
+    handleComplete,
+  } = useCreatorOnboarding();
 
   const renderStep = () => {
-    const stepProps: StepProps = {
-      creatorData,
-      onUpdateField: updateField,
-    };
-
-    switch (step) {
+    switch (currentStep) {
       case 'basic':
         return (
           <BasicInfoStep
-            {...stepProps}
-            onNext={() => setStep('professional')}
+            firstName={creatorData.firstName}
+            lastName={creatorData.lastName}
+            bio={creatorData.bio}
+            location={creatorData.location}
+            profileImage={creatorData.profileImage}
+            onUpdateField={updateField}
+            onUpdateImage={(url) => updateField('profileImage', url)}
           />
         );
       case 'professional':
         return (
           <ProfessionalInfoStep
-            {...stepProps}
-            onNext={() => setStep('social')}
-            onBack={() => setStep('basic')}
+            creatorType={creatorData.creatorType}
+            skills={creatorData.specialties}
+            onUpdateField={updateField}
+            onUpdateSkills={(skills) => updateField('specialties', skills)}
           />
         );
       case 'social':
         return (
           <SocialLinksStep
-            {...stepProps}
-            onBack={() => setStep('professional')}
-            onComplete={handleComplete}
+            instagram={creatorData.instagram}
+            website={creatorData.website}
+            onUpdateField={updateField}
           />
         );
       default:
@@ -80,10 +57,24 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
     }
   };
 
+  const handleFormComplete = async () => {
+    const success = await handleComplete();
+    if (success) {
+      await onComplete(creatorData);
+    }
+  };
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto p-6 bg-nino-white shadow-lg rounded-xl">
       {renderStep()}
-    </div>
+      <OnboardingNavigation
+        currentStep={currentStep}
+        onNext={handleNext}
+        onBack={handleBack}
+        onComplete={handleFormComplete}
+        isLastStep={currentStep === 'social'}
+      />
+    </Card>
   );
 };
 

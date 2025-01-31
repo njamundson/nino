@@ -29,7 +29,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import CreatorModal from "@/components/creators/CreatorModal";
 import { CreatorType } from "@/types/creator";
-import { Creator } from "@/types/creator";
 
 interface BookingCardProps {
   booking: {
@@ -45,11 +44,25 @@ interface BookingCardProps {
       deliverables?: string[] | null;
       requirements?: string[] | null;
     };
-    creator: Creator;
+    creator: {
+      bio: string | null;
+      specialties: string[] | null;
+      profile: {
+        first_name: string | null;
+        last_name: string | null;
+      } | null;
+      profile_image_url: string | null;
+      user_id: string;
+      id: string;
+      instagram: string | null;
+      website: string | null;
+      location: string | null;
+      creator_type: string | null;
+    };
     created_at: string;
   };
   onChatClick: (userId: string) => void;
-  onViewCreator: (creator: Creator) => void;
+  onViewCreator: (creator: any) => void;
   onRefresh?: () => void;
 }
 
@@ -59,8 +72,8 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
   const [showCreatorModal, setShowCreatorModal] = useState(false);
   const { toast } = useToast();
   
-  const creatorName = booking.creator.display_name || 
-    `${booking.creator.first_name || ''} ${booking.creator.last_name || ''}`.trim() || 
+  const creatorName = booking.creator.profile ? 
+    `${booking.creator.profile.first_name} ${booking.creator.profile.last_name}` : 
     'Anonymous Creator';
 
   const handleChatClick = (e: React.MouseEvent) => {
@@ -106,9 +119,17 @@ const BookingCard = ({ booking, onChatClick, onViewCreator, onRefresh }: Booking
   };
 
   // Transform booking.creator into the format expected by CreatorModal
-  const modalCreator: Creator = {
-    ...booking.creator,
-    display_name: creatorName,
+  const modalCreator = {
+    id: booking.creator.id,
+    bio: booking.creator.bio || '',
+    location: booking.creator.location || '',
+    specialties: booking.creator.specialties || [],
+    instagram: booking.creator.instagram || '',
+    website: booking.creator.website || '',
+    first_name: booking.creator.profile?.first_name || '',
+    last_name: booking.creator.profile?.last_name || '',
+    profile_image_url: booking.creator.profile_image_url,
+    creator_type: (booking.creator.creator_type as CreatorType) || 'solo'
   };
 
   return (

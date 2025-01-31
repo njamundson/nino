@@ -9,7 +9,6 @@ import EmptyCampaigns from "@/components/campaigns/EmptyCampaigns";
 import EditCampaignModal from "@/components/campaigns/EditCampaignModal";
 import { motion } from "framer-motion";
 import { Application } from "@/integrations/supabase/types/application";
-import { Creator } from "@/types/creator";
 
 interface Campaign {
   id: string;
@@ -74,7 +73,6 @@ const MyCampaigns = () => {
             initiated_by,
             creator:creators (
               id,
-              user_id,
               bio,
               location,
               specialties,
@@ -82,11 +80,8 @@ const MyCampaigns = () => {
               website,
               creator_type,
               profile_image_url,
-              display_name,
-              notifications_enabled,
-              onboarding_completed,
-              created_at,
-              updated_at
+              first_name,
+              last_name
             )
           )
         `)

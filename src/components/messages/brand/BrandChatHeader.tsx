@@ -17,8 +17,8 @@ interface BrandChatHeaderProps {
 
 interface CreatorData {
   id: string;
-  first_name: string | null;
-  last_name: string | null;
+  first_name: string;
+  last_name: string;
   bio: string | null;
   location: string | null;
   instagram: string | null;
@@ -26,7 +26,10 @@ interface CreatorData {
   specialties: string[] | null;
   creator_type: CreatorType;
   profile_image_url: string | null;
-  display_name: string;
+  profile: {
+    first_name: string | null;
+    last_name: string | null;
+  };
 }
 
 const BrandChatHeader = ({
@@ -58,7 +61,10 @@ const BrandChatHeader = ({
           specialties,
           creator_type,
           profile_image_url,
-          display_name
+          profile:profiles(
+            first_name,
+            last_name
+          )
         `)
         .eq('user_id', senderUserId)
         .single();
@@ -75,7 +81,7 @@ const BrandChatHeader = ({
 
   const displayName = hasSelectedChat 
     ? creatorData 
-      ? creatorData.display_name
+      ? `${creatorData.first_name} ${creatorData.last_name}`
       : `${senderFirstName || ''} ${senderLastName || ''}`
     : "Select a conversation";
 
@@ -120,7 +126,7 @@ const BrandChatHeader = ({
 
       {creatorData && (
         <CreatorModal
-          creator={creatorData}
+          creator={creatorData as any}
           isOpen={isCreatorModalOpen}
           onClose={() => setIsCreatorModalOpen(false)}
         />

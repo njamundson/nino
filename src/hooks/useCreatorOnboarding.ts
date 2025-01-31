@@ -1,19 +1,25 @@
 import { useState } from "react";
-import { CreatorData, CreatorType } from "@/types/creator";
+import { useToast } from "@/hooks/use-toast";
+import { CreatorData } from "@/types/creator";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useCreatorOnboarding = () => {
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
-    id: '',
-    user_id: '',
-    display_name: '',
-    bio: '',
-    location: '',
+    id: crypto.randomUUID(),
+    user_id: '', // This will be set when saving to the database
+    firstName: "",
+    lastName: "",
+    bio: "",
     specialties: [],
-    instagram: '',
-    website: '',
-    profile_image_url: null,
-    creator_type: 'solo',
+    instagram: "",
+    website: "",
+    location: "",
+    profileImage: null,
+    creatorType: "solo",
+    profile: null,
+    profile_image_url: null
   });
 
   const updateField = (field: keyof CreatorData, value: any) => {
@@ -21,44 +27,72 @@ export const useCreatorOnboarding = () => {
   };
 
   const handleNext = () => {
-    switch (currentStep) {
-      case 'basic':
-        setCurrentStep('professional');
-        break;
-      case 'professional':
-        setCurrentStep('social');
-        break;
-      default:
-        break;
+    if (currentStep === 'basic') {
+      if (!creatorData.bio || !creatorData.location) {
+        toast({
+          title: "Required Fields Missing",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        });
+        return;
+      }
+      setCurrentStep('professional');
+    } else if (currentStep === 'professional') {
+      if (!creatorData.creatorType || creatorData.specialties.length === 0) {
+        toast({
+          title: "Required Fields Missing",
+          description: "Please select your creator type and at least one specialty.",
+          variant: "destructive",
+        });
+        return;
+      }
+      setCurrentStep('social');
     }
   };
 
   const handleBack = () => {
-    switch (currentStep) {
-      case 'professional':
-        setCurrentStep('basic');
-        break;
-      case 'social':
-        setCurrentStep('professional');
-        break;
-      default:
-        break;
+    if (currentStep === 'social') {
+      setCurrentStep('professional');
+    } else if (currentStep === 'professional') {
+      setCurrentStep('basic');
     }
   };
 
   const handleComplete = async () => {
     try {
-      // Prepare the data for submission
-      const submissionData = {
-        ...creatorData,
-        creator_type: creatorData.creator_type,
-        profile_image_url: creatorData.profile_image_url,
-      };
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("No authenticated session");
+      }
 
-      // Return true to indicate successful completion
+      // Update creator profile and mark onboarding as complete
+      const { error } = await supabase
+        .from('creators')
+        .update({
+          bio: creatorData.bio,
+          location: creatorData.location,
+          instagram: creatorData.instagram,
+          website: creatorData.website,
+          specialties: creatorData.specialties,
+          creator_type: creatorData.creatorType,
+          profile_image_url: creatorData.profileImage,
+          onboarding_completed: true,
+          first_name: creatorData.firstName,
+          last_name: creatorData.lastName
+        })
+        .eq('user_id', session.user.id);
+
+      if (error) throw error;
+
       return true;
     } catch (error) {
       console.error('Error completing onboarding:', error);
+      toast({
+        title: "Error",
+        description: "Failed to complete onboarding. Please try again.",
+        variant: "destructive",
+      });
       return false;
     }
   };

@@ -10,7 +10,7 @@ import { Search, Loader2 } from "lucide-react";
 interface CreatorSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (userId: string, displayName: string, profileImage: string | null) => void;
+  onSelect: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
 }
 
 const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionModalProps) => {
@@ -19,14 +19,24 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
   const { data: creators, isLoading } = useQuery({
     queryKey: ["creators-for-messages"],
     queryFn: async () => {
+      const { data: brandProfiles } = await supabase
+        .from('brands')
+        .select('user_id');
+
+      const brandProfileIds = brandProfiles
+        ?.map(b => b.user_id)
+        .filter(id => id !== null && id !== undefined);
+
       const { data, error } = await supabase
         .from('creators')
         .select(`
           id,
           user_id,
-          display_name,
+          first_name,
+          last_name,
           profile_image_url
         `)
+        .eq('onboarding_completed', true)
         .not('user_id', 'is', null);
 
       if (error) {
@@ -39,17 +49,12 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
   });
 
   const filteredCreators = creators?.filter((creator) => {
-    const name = creator.display_name?.toLowerCase().trim() || '';
-    return name.includes(searchQuery.toLowerCase());
+    const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.toLowerCase().trim();
+    return fullName.includes(searchQuery.toLowerCase());
   });
 
-  const getInitials = (displayName: string) => {
-    return displayName
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  const getInitials = (firstName: string | null, lastName: string | null) => {
+    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
   return (
@@ -83,7 +88,8 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   onClick={() => {
                     onSelect(
                       creator.user_id,
-                      creator.display_name,
+                      creator.first_name || '',
+                      creator.last_name || '',
                       creator.profile_image_url
                     );
                     onClose();
@@ -92,12 +98,12 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={creator.profile_image_url || ""} />
                     <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
-                      {getInitials(creator.display_name)}
+                      {getInitials(creator.first_name, creator.last_name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {creator.display_name}
+                      {creator.first_name} {creator.last_name}
                     </p>
                   </div>
                 </div>

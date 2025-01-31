@@ -38,7 +38,7 @@ const CreatorDashboard = () => {
       transition={{ duration: 0.3, ease: "easeOut" }}
       layout
     >
-      <DashboardWelcome firstName={creator.display_name} />
+      <DashboardWelcome firstName={creator.first_name} />
       <div className="space-y-6 md:space-y-8">
         <DashboardStats />
         <DashboardSections />

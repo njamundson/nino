@@ -1,158 +1,93 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { BrandSettings } from "@/types/brand";
 
 export const useBrandSettings = () => {
-  const [loading, setLoading] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [brandData, setBrandData] = useState<BrandSettings>({
-    id: '',
-    user_id: '',
-    company_name: '',
-    brand_type: '',
-    description: '',
+    user_id: "",
+    company_name: "",
+    brand_type: "",
+    description: "",
     website: null,
     instagram: null,
-    location: '',
+    location: "",
     phone_number: null,
     support_email: null,
     profile_image_url: null,
-    sms_notifications_enabled: true,
+    sms_notifications_enabled: false,
     two_factor_enabled: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    onboarding_completed: false,
     email_notifications_enabled: true,
     push_notifications_enabled: true,
     application_notifications_enabled: true,
     message_notifications_enabled: true,
     marketing_notifications_enabled: false
   });
-
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const handleUpdateField = (field: keyof BrandSettings, value: any) => {
-    setBrandData(prev => ({ ...prev, [field]: value }));
-  };
+  const updateBrandSettings = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const updatedData = {
+        brand_type: String(formData.get("brand_type") || ""),
+        company_name: String(formData.get("company_name") || ""),
+        description: String(formData.get("description") || ""),
+        website: String(formData.get("website") || ""),
+        instagram: String(formData.get("instagram") || ""),
+        location: String(formData.get("location") || ""),
+        phone_number: String(formData.get("phone_number") || ""),
+        support_email: String(formData.get("support_email") || ""),
+      };
 
-  useEffect(() => {
-    const fetchBrandData = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+      const { error } = await supabase
+        .from("brands")
+        .update(updatedData)
+        .eq("user_id", (await supabase.auth.getUser()).data.user?.id);
 
-        const { data: brand, error } = await supabase
-          .from('brands')
-          .select(`
-            *,
-            brand_notification_settings (
-              email_enabled,
-              push_enabled,
-              message_notifications,
-              application_updates,
-              marketing_updates
-            )
-          `)
-          .eq('user_id', user.id)
-          .single();
-
-        if (error) throw error;
-
-        if (brand) {
-          const notificationSettings = brand.brand_notification_settings?.[0] || {
-            email_enabled: true,
-            push_enabled: true,
-            message_notifications: true,
-            application_updates: true,
-            marketing_updates: false
-          };
-
-          setBrandData({
-            ...brand,
-            email_notifications_enabled: notificationSettings.email_enabled,
-            push_notifications_enabled: notificationSettings.push_enabled,
-            message_notifications_enabled: notificationSettings.message_notifications,
-            application_notifications_enabled: notificationSettings.application_updates,
-            marketing_notifications_enabled: notificationSettings.marketing_updates,
-          });
-          setProfileImage(brand.profile_image_url);
-        }
-      } catch (error) {
-        console.error('Error fetching brand data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load brand data",
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchBrandData();
-  }, [toast]);
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-
-      const { error: brandError } = await supabase
-        .from('brands')
-        .update({
-          company_name: brandData.company_name,
-          brand_type: brandData.brand_type,
-          description: brandData.description,
-          website: brandData.website,
-          instagram: brandData.instagram,
-          location: brandData.location,
-          phone_number: brandData.phone_number,
-          support_email: brandData.support_email,
-          profile_image_url: profileImage,
-          sms_notifications_enabled: brandData.sms_notifications_enabled,
-          two_factor_enabled: brandData.two_factor_enabled,
-          onboarding_completed: brandData.onboarding_completed
-        })
-        .eq('user_id', user.id);
-
-      if (brandError) throw brandError;
-
-      const { error: notificationError } = await supabase
-        .from('brand_notification_settings')
-        .upsert({
-          brand_id: brandData.id,
-          push_enabled: brandData.push_notifications_enabled,
-          email_enabled: brandData.email_notifications_enabled,
-          message_notifications: brandData.message_notifications_enabled,
-          application_updates: brandData.application_notifications_enabled,
-          marketing_updates: brandData.marketing_notifications_enabled,
-        });
-
-      if (notificationError) throw notificationError;
-
+      if (error) throw error;
+      return updatedData;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["brandSettings"] });
       toast({
         title: "Success",
-        description: "Settings saved successfully",
+        description: "Brand settings updated successfully",
       });
-    } catch (error) {
-      console.error('Error saving settings:', error);
+    },
+    onError: (error) => {
+      console.error("Error updating brand settings:", error);
       toast({
         title: "Error",
-        description: "Failed to save settings",
+        description: "Failed to update brand settings",
         variant: "destructive",
       });
+    },
+  });
+
+  const handleUpdateField = (field: string, value: any) => {
+    setBrandData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async (formData: FormData) => {
+    setLoading(true);
+    try {
+      await updateBrandSettings.mutateAsync(formData);
     } finally {
       setLoading(false);
     }
   };
 
   return {
-    loading,
-    profileImage,
     brandData,
-    setProfileImage,
     setBrandData,
+    profileImage,
+    setProfileImage,
+    loading,
     handleSave,
-    handleUpdateField
+    updateBrandSettings,
+    handleUpdateField,
   };
 };

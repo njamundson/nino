@@ -22,16 +22,17 @@ export const useNotifications = () => {
         .select(`
           *,
           sender:profiles!messages_sender_profile_id_fkey(
-            display_name
+            first_name,
+            last_name
           ),
           receiver:profiles!messages_receiver_profile_id_fkey(
-            display_name
+            first_name,
+            last_name
           )
         `)
         .eq('receiver_id', user.id)
         .eq('read', false)
-        .order('created_at', { ascending: false })
-        .limit(5);
+        .order('created_at', { ascending: false });
 
       if (messagesError) {
         console.error('Error fetching messages:', messagesError);
@@ -41,11 +42,11 @@ export const useNotifications = () => {
       // Transform messages into notifications
       const messageNotifications = (messages || []).map(message => ({
         id: message.id,
-        type: 'message',
-        content: `New message from ${message.sender?.display_name}`,
+        type: message.message_type === 'invitation' ? 'invitation' : 'message',
+        content: message.content,
         created_at: message.created_at,
         read: message.read,
-        action_url: '/messages'
+        action_url: message.message_type === 'invitation' ? '/creator/projects' : '/messages'
       }));
 
       // Then, get unread applications (proposals)
@@ -55,7 +56,8 @@ export const useNotifications = () => {
           *,
           creator:creators (
             profile:profiles (
-              display_name
+              first_name,
+              last_name
             )
           ),
           opportunity:opportunities (
@@ -63,8 +65,7 @@ export const useNotifications = () => {
           )
         `)
         .eq('status', 'pending')
-        .order('created_at', { ascending: false })
-        .limit(5);
+        .order('created_at', { ascending: false });
 
       if (applicationsError) {
         console.error('Error fetching applications:', applicationsError);
@@ -75,7 +76,7 @@ export const useNotifications = () => {
       const applicationNotifications = (applications || []).map(application => ({
         id: application.id,
         type: 'application',
-        content: `New proposal from ${application.creator.profile.display_name} for "${application.opportunity.title}"`,
+        content: `New proposal from ${application.creator.profile.first_name} ${application.creator.profile.last_name} for "${application.opportunity.title}"`,
         created_at: application.created_at,
         read: false,
         action_url: '/brand/proposals'
@@ -83,17 +84,15 @@ export const useNotifications = () => {
 
       // Combine and sort all notifications by date
       return [...messageNotifications, ...applicationNotifications]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 5); // Limit to 5 most recent notifications
     },
-    staleTime: 1000 * 60,
-    gcTime: 1000 * 60 * 5,
     retry: 1,
-    refetchInterval: 30000,
   });
 
   const dismissNotification = useMutation({
     mutationFn: async (notification: { id: string, type: string }) => {
-      if (notification.type === 'message') {
+      if (notification.type === 'message' || notification.type === 'invitation') {
         const { error } = await supabase
           .from('messages')
           .update({ read: true })

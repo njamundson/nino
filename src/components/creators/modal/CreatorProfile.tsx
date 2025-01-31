@@ -25,6 +25,10 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
 
   if (!creator) return null;
 
+  const fullName = creator.first_name && creator.last_name 
+    ? `${creator.first_name} ${creator.last_name}`
+    : creator.first_name || 'Creator';
+
   const onAccept = () => {
     setShowAcceptDialog(true);
   };
@@ -55,7 +59,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
           <div className="relative h-full">
             <CreatorImage 
               profileImageUrl={creator.profile_image_url} 
-              fullName={creator.display_name || 'Creator'} 
+              fullName={fullName} 
             />
           </div>
           
@@ -68,7 +72,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
                 instagram={creator.instagram}
                 website={creator.website}
                 onMessageClick={onMessageClick}
-                fullName={creator.display_name || 'Creator'}
+                fullName={fullName}
               />
               <CreatorSocialLinks 
                 instagram={creator.instagram}
@@ -122,7 +126,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
         onConfirm={onConfirmAccept}
-        creatorName={creator.display_name || 'Creator'}
+        creatorName={fullName}
         isProcessing={isProcessing}
       />
     </div>

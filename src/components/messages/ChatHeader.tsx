@@ -8,7 +8,8 @@ import CreatorModal from "@/components/creators/CreatorModal";
 import { CreatorType } from "@/types/creator";
 
 interface ChatHeaderProps {
-  senderDisplayName?: string;
+  senderFirstName?: string;
+  senderLastName?: string;
   senderProfileImage?: string | null;
   senderUserId?: string | null;
   onMobileBack?: () => void;
@@ -16,6 +17,8 @@ interface ChatHeaderProps {
 
 interface CreatorData {
   id: string;
+  first_name: string;
+  last_name: string;
   bio: string | null;
   location: string | null;
   instagram: string | null;
@@ -23,13 +26,15 @@ interface CreatorData {
   specialties: string[] | null;
   creator_type: CreatorType;
   profile_image_url: string | null;
-  display_name: string;
-  first_name: string | null;
-  last_name: string | null;
+  profile: {
+    first_name: string | null;
+    last_name: string | null;
+  };
 }
 
 const ChatHeader = ({
-  senderDisplayName,
+  senderFirstName,
+  senderLastName,
   senderProfileImage,
   senderUserId,
   onMobileBack,
@@ -47,6 +52,8 @@ const ChatHeader = ({
         .from('creators')
         .select(`
           id,
+          first_name,
+          last_name,
           bio,
           location,
           instagram,
@@ -54,9 +61,10 @@ const ChatHeader = ({
           specialties,
           creator_type,
           profile_image_url,
-          display_name,
-          first_name,
-          last_name
+          profile:profiles(
+            first_name,
+            last_name
+          )
         `)
         .eq('user_id', senderUserId)
         .single();
@@ -73,8 +81,8 @@ const ChatHeader = ({
 
   const displayName = hasSelectedChat 
     ? creatorData 
-      ? creatorData.display_name
-      : senderDisplayName
+      ? `${creatorData.first_name} ${creatorData.last_name}`
+      : `${senderFirstName || ''} ${senderLastName || ''}`
     : "Select a conversation";
 
   return (
@@ -118,7 +126,7 @@ const ChatHeader = ({
 
       {creatorData && (
         <CreatorModal
-          creator={creatorData}
+          creator={creatorData as any}
           isOpen={isCreatorModalOpen}
           onClose={() => setIsCreatorModalOpen(false)}
         />

@@ -7,11 +7,24 @@ interface CreatorInfoProps {
 }
 
 export const CreatorInfo = ({ creator }: CreatorInfoProps) => {
+  const getDisplayName = () => {
+    console.log("Creator data in display name:", creator);
+    
+    // Check direct first_name property
+    if (creator.first_name) {
+      return `${creator.first_name} ${creator.last_name || ''}`.trim();
+    }
+    
+    return 'Creator';
+  };
+
+  const displayName = getDisplayName();
+
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <h2 className="text-3xl font-semibold text-gray-900">
-          {creator.display_name}
+          {displayName}
         </h2>
       </div>
       {creator?.location && (

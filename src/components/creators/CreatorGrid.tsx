@@ -1,10 +1,10 @@
-import { useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import CreatorCard from "./CreatorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { CreatorData } from "@/types/creator";
+import { CreatorData, CreatorType } from "@/types/creator";
 import { motion } from "framer-motion";
-import { useCreatorFilters } from "./hooks/useCreatorFilters";
-import { useCreatorFetch } from "./hooks/useCreatorFetch";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 interface CreatorGridProps {
   selectedSpecialties: string[];
@@ -20,22 +20,113 @@ const CreatorGrid = ({
   selectedLocations,
 }: CreatorGridProps) => {
   const isMobile = useIsMobile();
-  const { filterConditions } = useCreatorFilters({
-    selectedSpecialties,
-    selectedCreatorType,
-    selectedLocations,
-  });
-  
-  const { 
+  const [error, setError] = useState<Error | null>(null);
+
+  const filterConditions = useMemo(() => ({
+    specialties: selectedSpecialties,
+    creatorType: selectedCreatorType,
+    locations: selectedLocations,
+  }), [selectedSpecialties, selectedCreatorType, selectedLocations]);
+
+  const baseQuery = useMemo(() => {
+    return supabase
+      .from('creators')
+      .select(`
+        id,
+        user_id,
+        first_name,
+        last_name,
+        bio,
+        location,
+        specialties,
+        creator_type,
+        instagram,
+        website,
+        profile_image_url
+      `)
+      .eq('onboarding_completed', true);
+  }, []);
+
+  const fetchCreators = useCallback(async ({ pageParam = 0 }) => {
+    try {
+      console.log("Fetching creators with filters:", { 
+        ...filterConditions,
+        page: pageParam
+      });
+
+      let query = baseQuery.range(
+        pageParam * CREATORS_PER_PAGE, 
+        (pageParam + 1) * CREATORS_PER_PAGE - 1
+      );
+
+      if (filterConditions.specialties.length > 0) {
+        query = query.contains('specialties', filterConditions.specialties);
+      }
+
+      if (filterConditions.creatorType) {
+        query = query.eq('creator_type', filterConditions.creatorType);
+      }
+
+      if (filterConditions.locations.length > 0 && filterConditions.locations[0] !== "") {
+        query = query.in('location', filterConditions.locations);
+      }
+
+      const { data: creatorsData, error: fetchError } = await query;
+
+      if (fetchError) {
+        console.error("Error fetching creators:", fetchError);
+        throw fetchError;
+      }
+
+      if (!creatorsData) {
+        return { creators: [], nextPage: null };
+      }
+
+      const formattedCreators: CreatorData[] = creatorsData.map(creator => ({
+        id: creator.id,
+        user_id: creator.user_id,
+        firstName: creator.first_name || '',
+        lastName: creator.last_name || '',
+        bio: creator.bio || '',
+        location: creator.location || '',
+        specialties: creator.specialties || [],
+        creatorType: (creator.creator_type || 'solo') as CreatorType,
+        instagram: creator.instagram || '',
+        website: creator.website || '',
+        profileImage: creator.profile_image_url || '',
+        profile_image_url: creator.profile_image_url || '',
+        profile: {
+          first_name: creator.first_name || '',
+          last_name: creator.last_name || ''
+        }
+      }));
+      
+      const hasMore = formattedCreators.length === CREATORS_PER_PAGE;
+      return {
+        creators: formattedCreators,
+        nextPage: hasMore ? pageParam + 1 : null
+      };
+    } catch (error) {
+      console.error("Error in fetchCreators:", error);
+      setError(error instanceof Error ? error : new Error('An error occurred'));
+      throw error;
+    }
+  }, [baseQuery, filterConditions]);
+
+  const {
     data,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    error 
-  } = useCreatorFetch({
-    filterConditions,
-    CREATORS_PER_PAGE
+  } = useInfiniteQuery({
+    queryKey: ['creators', filterConditions],
+    queryFn: fetchCreators,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0,
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes (increased from 10)
+    retry: 2, // Limit retries to reduce unnecessary API calls
   });
 
   // Memoize the flattened creators array
@@ -76,7 +167,7 @@ const CreatorGrid = ({
       <div className={`grid grid-cols-1 ${
         isMobile ? 'gap-4' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6'
       }`}>
-        {allCreators.map((creator: CreatorData, index: number) => (
+        {allCreators.map((creator, index) => (
           <motion.div
             key={creator.id}
             initial={{ opacity: 0, y: 20 }}

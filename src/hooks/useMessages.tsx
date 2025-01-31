@@ -2,8 +2,8 @@ import { useMessageQueries } from "./messages/useMessageQueries";
 import { useMessageActions } from "./messages/useMessageActions";
 import { useMessageSubscription } from "./messages/useMessageSubscription";
 
-export const useMessages = (selectedChat: string) => {
-  const { data, isLoading, error, setMessages } = useMessageQueries(selectedChat);
+export const useMessages = (userId: string) => {
+  const { data, isLoading, error, setMessages } = useMessageQueries(userId);
   const {
     newMessage,
     setNewMessage,
@@ -12,9 +12,9 @@ export const useMessages = (selectedChat: string) => {
     handleSendMessage,
     handleDeleteMessage,
     handleReaction
-  } = useMessageActions(selectedChat);
+  } = useMessageActions(userId);
 
-  useMessageSubscription(selectedChat);
+  useMessageSubscription(userId);
 
   return {
     data,

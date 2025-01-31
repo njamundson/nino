@@ -1,38 +1,31 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useState } from "react";
-import CreatorSelectionModal from "./CreatorSelectionModal";
-import { useNavigate } from "react-router-dom";
+import CreatorSelectionModal from "../CreatorSelectionModal";
 
-const NewChatButton = () => {
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
+interface NewChatButtonProps {
+  onStartChat?: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
+}
 
-  const handleCreatorSelect = (
-    userId: string,
-    displayName: string,
-    profileImage: string | null
-  ) => {
-    navigate(`/brand/messages?userId=${userId}`);
-  };
+export const NewChatButton = ({ onStartChat }: NewChatButtonProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
       <Button
-        onClick={() => setShowModal(true)}
-        className="w-full bg-nino-primary hover:bg-nino-primary/90"
+        variant="outline"
+        size="icon"
+        className="shrink-0"
+        onClick={() => setIsModalOpen(true)}
       >
-        <Plus className="w-4 h-4 mr-2" />
-        New Message
+        <Plus className="h-4 w-4" />
       </Button>
 
       <CreatorSelectionModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onSelect={handleCreatorSelect}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={onStartChat}
       />
     </>
   );
 };
-
-export default NewChatButton;
