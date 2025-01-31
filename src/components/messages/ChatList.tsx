@@ -17,6 +17,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
+  const [isBrand, setIsBrand] = useState(false);
   const { toast } = useToast();
 
   const { chats, isLoading } = useChatList(currentUser?.id);
@@ -27,6 +28,15 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error) throw error;
         setCurrentUser(user);
+
+        // Check if the user is a brand
+        const { data: brand } = await supabase
+          .from('brands')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+
+        setIsBrand(!!brand);
       } catch (error) {
         console.error('Error fetching current user:', error);
         toast({
@@ -74,7 +84,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       <ChatListHeader 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onNewChat={() => setIsModalOpen(true)}
+        onNewChat={isBrand ? () => setIsModalOpen(true) : undefined}
       />
 
       <div className="flex-1 overflow-y-auto bg-white">
@@ -101,11 +111,13 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         )}
       </div>
 
-      <CreatorSelectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSelect={onSelectChat}
-      />
+      {isBrand && (
+        <CreatorSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSelect={onSelectChat}
+        />
+      )}
     </div>
   );
 };
