@@ -19,20 +19,37 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         if (!user) return;
 
         const { data, error } = await supabase
-          .from('chats')
+          .from('messages')
           .select(`
-            *,
-            users:users (
+            id,
+            sender_id,
+            receiver_id,
+            content,
+            created_at,
+            profiles:creators!creator_id(
               id,
               display_name,
               profile_image_url
             )
           `)
-          .eq('user_id', user.id);
+          .eq('sender_id', user.id)
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        setChats(data);
+        // Group messages by user and get latest message
+        const uniqueChats = data?.reduce((acc: any[], curr) => {
+          const existingChat = acc.find(chat => 
+            chat.profiles.id === curr.profiles.id
+          );
+          
+          if (!existingChat) {
+            acc.push(curr);
+          }
+          return acc;
+        }, []);
+
+        setChats(uniqueChats || []);
       } catch (error) {
         console.error("Error fetching chats:", error);
       } finally {
@@ -52,15 +69,15 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
       {chats.map(chat => (
         <div
           key={chat.id}
-          className={`flex items-center p-3 cursor-pointer ${selectedUserId === chat.users.id ? 'bg-gray-100' : ''}`}
-          onClick={() => handleSelectChat(chat.users.id, chat.users.display_name, chat.users.profile_image_url)}
+          className={`flex items-center p-3 cursor-pointer ${selectedUserId === chat.profiles.id ? 'bg-gray-100' : ''}`}
+          onClick={() => onSelectChat(chat.profiles.id, chat.profiles.display_name, chat.profiles.profile_image_url)}
         >
           <Avatar className="h-10 w-10">
-            <AvatarImage src={chat.users.profile_image_url || ""} />
-            <AvatarFallback>{chat.users.display_name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={chat.profiles.profile_image_url || ""} />
+            <AvatarFallback>{chat.profiles.display_name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="ml-3">
-            <p className="font-medium">{chat.users.display_name}</p>
+            <p className="font-medium">{chat.profiles.display_name}</p>
           </div>
         </div>
       ))}
