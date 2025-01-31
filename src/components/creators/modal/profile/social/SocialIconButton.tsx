@@ -19,7 +19,7 @@ const SocialIconButton = ({
       <Tooltip>
         <TooltipTrigger asChild>
           <button 
-            className={`p-3 rounded-2xl ${isActive ? 'bg-white/40 cursor-pointer' : 'bg-white/20 cursor-not-allowed'} transition-all duration-300 shadow-sm backdrop-blur-sm`}
+            className={`p-3 rounded-2xl ${isActive ? 'bg-white/40 cursor-pointer' : 'bg-white/20 cursor-not-allowed'} backdrop-blur-sm`}
             onClick={onClick}
             disabled={!isActive}
           >
