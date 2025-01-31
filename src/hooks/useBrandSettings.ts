@@ -18,17 +18,23 @@ export const useBrandSettings = () => {
     phone_number: null,
     support_email: null,
     profile_image_url: null,
-    push_enabled: true,
-    email_enabled: true,
-    message_notifications: true,
-    application_updates: true,
-    marketing_updates: false,
     sms_notifications_enabled: true,
     two_factor_enabled: false,
-    onboarding_completed: false
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    onboarding_completed: false,
+    email_notifications_enabled: true,
+    push_notifications_enabled: true,
+    application_notifications_enabled: true,
+    message_notifications_enabled: true,
+    marketing_notifications_enabled: false
   });
 
   const { toast } = useToast();
+
+  const handleUpdateField = (field: keyof BrandSettings, value: any) => {
+    setBrandData(prev => ({ ...prev, [field]: value }));
+  };
 
   useEffect(() => {
     const fetchBrandData = async () => {
@@ -51,11 +57,11 @@ export const useBrandSettings = () => {
           const notificationSettings = brand.brand_notification_settings?.[0] || {};
           setBrandData({
             ...brand,
-            push_enabled: notificationSettings.push_enabled ?? true,
-            email_enabled: notificationSettings.email_enabled ?? true,
-            message_notifications: notificationSettings.message_notifications ?? true,
-            application_updates: notificationSettings.application_updates ?? true,
-            marketing_updates: notificationSettings.marketing_updates ?? false,
+            email_notifications_enabled: notificationSettings.email_enabled ?? true,
+            push_notifications_enabled: notificationSettings.push_enabled ?? true,
+            message_notifications_enabled: notificationSettings.message_notifications ?? true,
+            application_notifications_enabled: notificationSettings.application_updates ?? true,
+            marketing_notifications_enabled: notificationSettings.marketing_updates ?? false,
           });
           setProfileImage(brand.profile_image_url);
         }
@@ -102,11 +108,11 @@ export const useBrandSettings = () => {
         .from('brand_notification_settings')
         .upsert({
           brand_id: brandData.id,
-          push_enabled: brandData.push_enabled,
-          email_enabled: brandData.email_enabled,
-          message_notifications: brandData.message_notifications,
-          application_updates: brandData.application_updates,
-          marketing_updates: brandData.marketing_updates,
+          push_enabled: brandData.push_notifications_enabled,
+          email_enabled: brandData.email_notifications_enabled,
+          message_notifications: brandData.message_notifications_enabled,
+          application_updates: brandData.application_notifications_enabled,
+          marketing_updates: brandData.marketing_notifications_enabled,
         });
 
       if (notificationError) throw notificationError;
@@ -134,5 +140,6 @@ export const useBrandSettings = () => {
     setProfileImage,
     setBrandData,
     handleSave,
+    handleUpdateField
   };
 };

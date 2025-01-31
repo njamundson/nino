@@ -1,4 +1,4 @@
-export interface BrandData {
+export interface BrandSettings {
   id: string;
   user_id: string;
   company_name: string | null;
@@ -12,7 +12,9 @@ export interface BrandData {
   profile_image_url: string | null;
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;
-  onboarding_completed?: boolean;
+  created_at: string;
+  updated_at: string;
+  onboarding_completed: boolean;
   email_notifications_enabled: boolean;
   push_notifications_enabled: boolean;
   application_notifications_enabled: boolean;
@@ -20,15 +22,4 @@ export interface BrandData {
   marketing_notifications_enabled: boolean;
 }
 
-export interface Brand extends BrandData {
-  created_at: string;
-  updated_at: string;
-}
-
-export interface BrandSettings extends Brand {
-  push_enabled: boolean;
-  email_enabled: boolean;
-  message_notifications: boolean;
-  application_updates: boolean;
-  marketing_updates: boolean;
-}
+export interface BrandData extends Omit<BrandSettings, 'created_at' | 'updated_at'> {}
