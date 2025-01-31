@@ -43,9 +43,10 @@ export const useChatList = (currentUserId: string | undefined) => {
               first_name,
               last_name,
               creator:creators (
-                profile_image_url,
+                id,
                 first_name,
-                last_name
+                last_name,
+                profile_image_url
               )
             ),
             receiver:profiles!receiver_profile_id (
@@ -53,9 +54,10 @@ export const useChatList = (currentUserId: string | undefined) => {
               first_name,
               last_name,
               creator:creators (
-                profile_image_url,
+                id,
                 first_name,
-                last_name
+                last_name,
+                profile_image_url
               )
             )
           `)
@@ -71,9 +73,10 @@ export const useChatList = (currentUserId: string | undefined) => {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
             const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
             
-            // Prioritize creator names over profile names
-            const firstName = otherUser?.creator?.first_name || otherUser?.first_name || '';
-            const lastName = otherUser?.creator?.last_name || otherUser?.last_name || '';
+            // Always use creator names if available
+            const creatorInfo = otherUser?.creator;
+            const firstName = creatorInfo?.first_name || otherUser?.first_name || '';
+            const lastName = creatorInfo?.last_name || otherUser?.last_name || '';
             
             if (!conversationsMap.has(otherUserId) || 
                 new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
@@ -83,7 +86,7 @@ export const useChatList = (currentUserId: string | undefined) => {
                   id: otherUserId,
                   firstName,
                   lastName,
-                  profileImage: otherUser?.creator?.profile_image_url || null
+                  profileImage: creatorInfo?.profile_image_url || null
                 }
               });
             }
