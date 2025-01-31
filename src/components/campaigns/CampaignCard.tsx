@@ -9,6 +9,7 @@ import { useApplicationActions } from "@/hooks/useApplicationActions";
 import AcceptDialog from "./modals/profile/AcceptDialog";
 import { Application } from "@/integrations/supabase/types/application";
 import { Button } from "@/components/ui/button";
+import CampaignBadges from "./card/CampaignBadges";
 import {
   DropdownMenu,
   DropdownMenuContent,
