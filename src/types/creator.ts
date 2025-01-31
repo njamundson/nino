@@ -28,7 +28,6 @@ export const CREATOR_SPECIALTIES = [
   'Public Relations/Writer'
 ] as const;
 
-// This interface matches the database schema and is used for API responses
 export interface Creator {
   id: string;
   user_id: string;
@@ -39,7 +38,7 @@ export interface Creator {
   website: string | null;
   creator_type: CreatorType | null;
   profile_image_url: string | null;
-  display_name: string | null;
+  display_name: string;
   profile?: {
     display_name: string | null;
   } | null;
