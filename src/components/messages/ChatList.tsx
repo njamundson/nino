@@ -30,7 +30,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         if (error) throw error;
         setCurrentUser(user);
 
-        // Check if user is a brand
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
@@ -106,6 +105,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             key={chat.otherUser.id}
             chat={chat}
             isSelected={selectedUserId === chat.otherUser.id}
+            currentUserId={currentUser?.id}
             onSelect={() => onSelectChat(
               chat.otherUser.id,
               chat.otherUser.firstName,

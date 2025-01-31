@@ -15,7 +15,6 @@ interface ChatListItemProps {
   };
   isSelected: boolean;
   currentUserId?: string;
-  formatTime?: (dateString: string) => string;
   onSelect: () => void;
 }
 
