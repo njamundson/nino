@@ -73,11 +73,13 @@ export const useChatList = (currentUserId: string | undefined) => {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
             const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
             
-            // Always use creator names if available
+            // First try to get creator names, then fall back to profile names
             const creatorInfo = otherUser?.creator;
             const firstName = creatorInfo?.first_name || otherUser?.first_name || '';
             const lastName = creatorInfo?.last_name || otherUser?.last_name || '';
-            
+            const profileImage = creatorInfo?.profile_image_url || null;
+
+            // Only update the map if this is a more recent message for this conversation
             if (!conversationsMap.has(otherUserId) || 
                 new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
               conversationsMap.set(otherUserId, {
@@ -86,7 +88,7 @@ export const useChatList = (currentUserId: string | undefined) => {
                   id: otherUserId,
                   firstName,
                   lastName,
-                  profileImage: creatorInfo?.profile_image_url || null
+                  profileImage
                 }
               });
             }
