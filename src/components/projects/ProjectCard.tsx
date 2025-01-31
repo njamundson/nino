@@ -27,25 +27,48 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
   const { data: hasApplied } = useQuery({
     queryKey: ['application-status', opportunity.id],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log("No user found");
+          return false;
+        }
 
-      const { data: creator } = await supabase
-        .from('creators')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        // Get the creator record for the current user
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (!creator) return false;
+        if (creatorError) {
+          console.error("Error fetching creator:", creatorError);
+          return false;
+        }
 
-      const { data: application } = await supabase
-        .from('applications')
-        .select('id')
-        .eq('opportunity_id', opportunity.id)
-        .eq('creator_id', creator.id)
-        .maybeSingle();
+        if (!creator) {
+          console.log("No creator record found");
+          return false;
+        }
 
-      return !!application;
+        // Check if there's an existing application
+        const { data: application, error: applicationError } = await supabase
+          .from('applications')
+          .select('id')
+          .eq('opportunity_id', opportunity.id)
+          .eq('creator_id', creator.id)
+          .maybeSingle();
+
+        if (applicationError) {
+          console.error("Error checking application:", applicationError);
+          return false;
+        }
+
+        return !!application;
+      } catch (error) {
+        console.error("Error in hasApplied query:", error);
+        return false;
+      }
     },
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
   });
