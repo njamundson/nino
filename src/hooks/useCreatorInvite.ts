@@ -26,7 +26,7 @@ export const useCreatorInvite = () => {
       }
 
       if (existingInvite) {
-        if (existingInvite.status === 'invited') {
+        if (existingInvite.status === 'invited' || existingInvite.status === 'pending') {
           toast.error("Creator has already been invited to this campaign");
           return false;
         } else if (existingInvite.status === 'accepted') {
@@ -48,7 +48,7 @@ export const useCreatorInvite = () => {
         return false;
       }
 
-      // Start a transaction to create both the application and notification
+      // Get creator details for notification
       const { data: creator } = await supabase
         .from('creators')
         .select('user_id')
@@ -60,13 +60,14 @@ export const useCreatorInvite = () => {
         return false;
       }
 
-      // Create the application
+      // Create the application with correct status and initiated_by
       const { error: applicationError } = await supabase
         .from('applications')
         .insert({
           opportunity_id: opportunityId,
           creator_id: creatorId,
-          status: 'invited'
+          status: 'invited',
+          initiated_by: 'brand'
         });
 
       if (applicationError) {
