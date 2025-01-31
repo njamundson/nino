@@ -6,6 +6,10 @@ import ProjectModal from "./ProjectModal";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/integrations/supabase/types/opportunity";
 import ProjectBadges from "./card/ProjectBadges";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProjectCardProps {
   opportunity: Opportunity & { current_creator_id?: string };
@@ -18,6 +22,33 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Check if the current creator has already applied
+  const { data: hasApplied } = useQuery({
+    queryKey: ['application-status', opportunity.id],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+
+      const { data: creator } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!creator) return false;
+
+      const { data: application } = await supabase
+        .from('applications')
+        .select('id')
+        .eq('opportunity_id', opportunity.id)
+        .eq('creator_id', creator.id)
+        .maybeSingle();
+
+      return !!application;
+    },
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+  });
   
   const handleViewDetails = () => {
     setIsLoading(true);
@@ -60,6 +91,18 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           isCompleted={isCompleted}
           currentCreatorId={opportunity.current_creator_id}
         />
+
+        {hasApplied && (
+          <div className="absolute top-4 left-4 z-10">
+            <Badge 
+              variant="secondary" 
+              className="bg-green-100 text-green-800 border-0 flex items-center gap-1.5"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Applied
+            </Badge>
+          </div>
+        )}
 
         <div className="absolute bottom-6 left-6 right-6 text-white">
           <div className="flex flex-col gap-4">
