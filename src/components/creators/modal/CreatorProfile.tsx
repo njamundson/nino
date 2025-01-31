@@ -104,6 +104,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
                   ) : null}
                 </div>
 
+                {/* Show action buttons for pending applications */}
                 {application.status === 'pending' && (
                   <div className="pt-4">
                     <ActionButtons
