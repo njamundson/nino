@@ -3,11 +3,16 @@ export const CREATOR_SPECIALTIES = [
   "Videography",
   "Content Creation",
   "Social Media",
+  "Blogging",
+  "Vlogging",
   "Writing",
   "Graphic Design",
   "Web Design",
   "Animation",
   "Music",
+  "Podcasting",
+  "Streaming",
+  "Gaming",
   "Fashion",
   "Beauty",
   "Fitness",
@@ -15,9 +20,8 @@ export const CREATOR_SPECIALTIES = [
   "Travel",
   "Lifestyle",
   "Tech",
-  "Gaming",
-  "Education",
   "Business",
+  "Education",
   "Entertainment"
 ] as const;
 
