@@ -2,12 +2,21 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CreatorData, CreatorType } from "@/types/creator";
 
-export const useCreatorFetch = (searchTerm: string = "") => {
+interface CreatorFetchProps {
+  filterConditions: {
+    specialties: string[];
+    creatorType: string;
+    locations: string[];
+  };
+  CREATORS_PER_PAGE: number;
+}
+
+export const useCreatorFetch = ({ filterConditions, CREATORS_PER_PAGE }: CreatorFetchProps) => {
   return useInfiniteQuery({
-    queryKey: ["creators", searchTerm],
+    queryKey: ["creators", filterConditions],
     queryFn: async ({ pageParam = 0 }) => {
-      const from = pageParam * 12;
-      const to = from + 11;
+      const from = pageParam * CREATORS_PER_PAGE;
+      const to = from + (CREATORS_PER_PAGE - 1);
 
       let query = supabase
         .from("creators")
@@ -23,12 +32,22 @@ export const useCreatorFetch = (searchTerm: string = "") => {
           creator_type,
           instagram,
           website,
-          profile_image_url
+          profile_image_url,
+          notifications_enabled,
+          onboarding_completed
         `)
         .range(from, to);
 
-      if (searchTerm) {
-        query = query.ilike("display_name", `%${searchTerm}%`);
+      if (filterConditions.specialties.length > 0) {
+        query = query.contains('specialties', filterConditions.specialties);
+      }
+
+      if (filterConditions.creatorType) {
+        query = query.eq('creator_type', filterConditions.creatorType);
+      }
+
+      if (filterConditions.locations.length > 0) {
+        query = query.in('location', filterConditions.locations);
       }
 
       const { data: creators, error } = await query;
@@ -51,15 +70,16 @@ export const useCreatorFetch = (searchTerm: string = "") => {
         instagram: creator.instagram || '',
         website: creator.website || '',
         profile_image_url: creator.profile_image_url || '',
-        notifications_enabled: true,
-        onboarding_completed: true
+        notifications_enabled: creator.notifications_enabled ?? true,
+        onboarding_completed: creator.onboarding_completed ?? false
       }));
 
       return {
         creators: formattedCreators,
-        nextPage: creators.length === 12 ? pageParam + 1 : null,
+        nextPage: creators.length === CREATORS_PER_PAGE ? pageParam + 1 : null,
       };
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0
   });
 };

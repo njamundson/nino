@@ -1,10 +1,8 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useMemo } from "react";
 import CreatorCard from "./CreatorCard";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { CreatorData, CreatorType } from "@/types/creator";
+import { CreatorData } from "@/types/creator";
 import { motion } from "framer-motion";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCreatorFilters } from "./hooks/useCreatorFilters";
 import { useCreatorFetch } from "./hooks/useCreatorFetch";
 
@@ -78,7 +76,7 @@ const CreatorGrid = ({
       <div className={`grid grid-cols-1 ${
         isMobile ? 'gap-4' : 'sm:grid-cols-2 lg:grid-cols-3 gap-6'
       }`}>
-        {allCreators.map((creator, index) => (
+        {allCreators.map((creator: CreatorData, index: number) => (
           <motion.div
             key={creator.id}
             initial={{ opacity: 0, y: 20 }}
