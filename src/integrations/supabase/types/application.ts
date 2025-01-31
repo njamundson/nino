@@ -1,5 +1,5 @@
-import { Creator } from './creator';
-import { Opportunity } from './opportunity';
+import { Creator } from "./creator";
+import { Opportunity } from "./opportunity";
 
 export interface Application {
   id: string;
@@ -7,10 +7,10 @@ export interface Application {
   creator_id: string;
   status: string;
   cover_letter: string | null;
-  created_at: string;
-  updated_at: string;
-  initiated_by: 'creator' | 'brand';
-  creator?: Creator;
-  opportunity?: Opportunity;
+  created_at: string | null;
+  updated_at: string | null;
+  initiated_by: "brand" | "creator";
   is_invitation?: boolean;
+  opportunity?: Opportunity;
+  creator?: Creator;
 }

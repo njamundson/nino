@@ -3,10 +3,10 @@ export interface CreatorData {
   user_id: string;
   display_name: string;
   bio: string;
+  location: string;
   specialties: string[];
   instagram: string;
   website: string;
-  location: string;
   profile_image_url: string | null;
   creator_type: CreatorType;
   notifications_enabled?: boolean;
