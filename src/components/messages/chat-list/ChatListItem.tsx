@@ -53,7 +53,7 @@ export const ChatListItem = ({
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center mb-1">
             <h3 className="text-sm font-medium text-gray-900 truncate">
-              {fullName}
+              {chat.sender_id === currentUserId ? "You" : fullName}
             </h3>
             <span className="text-xs text-gray-500">
               {formatTime(chat.created_at)}
