@@ -51,14 +51,19 @@ export const ChatListItem = ({
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-sm font-medium text-gray-900">
+              {fullName}
+            </span>
+            <span className="text-xs text-gray-500">
+              {formatTime(chat.created_at)}
+            </span>
+          </div>
           <p className={`text-sm truncate ${
             !chat.read && chat.sender_id !== currentUserId ? "font-medium text-gray-900" : "text-gray-500"
           }`}>
             {chat.content}
           </p>
-          <span className="text-xs text-gray-500">
-            {formatTime(chat.created_at)}
-          </span>
         </div>
       </div>
     </div>
