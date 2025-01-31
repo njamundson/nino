@@ -10,6 +10,8 @@ export interface BrandSettings {
   phone_number: string | null;
   support_email: string | null;
   profile_image_url: string | null;
+  first_name: string | null;
+  last_name: string | null;
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;
   created_at: string;

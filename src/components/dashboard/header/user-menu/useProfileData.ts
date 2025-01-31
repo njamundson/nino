@@ -17,14 +17,7 @@ export const useProfileData = () => {
       if (isBrandDashboard) {
         const { data: brandData, error: brandError } = await supabase
           .from('brands')
-          .select(`
-            id,
-            user_id,
-            company_name,
-            first_name,
-            last_name,
-            profile_image_url
-          `)
+          .select('*')
           .eq('user_id', user.id)
           .maybeSingle();
         
@@ -52,14 +45,7 @@ export const useProfileData = () => {
       
       const { data: profileData, error: profileError } = await supabase
         .from('creators')
-        .select(`
-          id,
-          user_id,
-          first_name,
-          last_name,
-          display_name,
-          profile_image_url
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
       
@@ -69,8 +55,13 @@ export const useProfileData = () => {
       }
       
       return {
-        ...profileData,
+        id: profileData.id,
         display_name: profileData.display_name || `${profileData.first_name} ${profileData.last_name}`.trim(),
+        first_name: profileData.first_name,
+        last_name: profileData.last_name,
+        profile_image_url: profileData.profile_image_url,
+        created_at: profileData.created_at,
+        updated_at: profileData.updated_at,
       } as UserProfile;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes

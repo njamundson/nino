@@ -3,6 +3,9 @@ export interface UserProfile {
   display_name: string | null;
   first_name: string | null;
   last_name: string | null;
+  profile_image_url: string | null;
   created_at: string;
   updated_at: string;
 }
+
+export { BrandSettings } from './brand';
