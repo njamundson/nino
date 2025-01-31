@@ -11,6 +11,7 @@ interface ChatContainerProps {
   selectedChat: string | null;
   selectedFirstName?: string;
   selectedLastName?: string;
+  selectedProfileImage?: string | null;
   currentUserId?: string;
   onMobileBack?: () => void;
 }
@@ -19,10 +20,11 @@ export const ChatContainer = ({
   selectedChat,
   selectedFirstName,
   selectedLastName,
+  selectedProfileImage,
   currentUserId,
   onMobileBack,
 }: ChatContainerProps) => {
-  const [senderProfileImage, setSenderProfileImage] = useState<string | null>(null);
+  const [senderProfileImage, setSenderProfileImage] = useState<string | null>(selectedProfileImage);
   const {
     data: messages,
     newMessage,
@@ -49,8 +51,10 @@ export const ChatContainer = ({
       }
     };
 
-    fetchProfileImage();
-  }, [selectedChat]);
+    if (!selectedProfileImage) {
+      fetchProfileImage();
+    }
+  }, [selectedChat, selectedProfileImage]);
 
   return (
     <Card className="flex flex-col h-[calc(100vh-14rem)] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
