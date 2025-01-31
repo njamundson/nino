@@ -22,7 +22,10 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
     queryFn: async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return [];
+        if (!user) {
+          console.log("No authenticated user found");
+          return [];
+        }
 
         const { data: brand, error: brandError } = await supabase
           .from('brands')
