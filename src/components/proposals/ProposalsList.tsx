@@ -1,6 +1,8 @@
 import { Application } from "@/integrations/supabase/types/application";
 import ProposalCard from "./ProposalCard";
 import EmptyProposals from "./EmptyProposals";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { motion } from "framer-motion";
 
 interface ProposalsListProps {
   applications: Application[];
@@ -9,9 +11,18 @@ interface ProposalsListProps {
   type: 'proposal' | 'application';
 }
 
-const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: ProposalsListProps) => {
+const ProposalsList = ({ 
+  applications, 
+  isLoading, 
+  onUpdateStatus, 
+  type 
+}: ProposalsListProps) => {
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[200px]">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (!applications || applications.length === 0) {
@@ -19,7 +30,12 @@ const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: Propos
   }
 
   return (
-    <div className="grid gap-6">
+    <motion.div 
+      className="grid gap-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {applications.map((application) => (
         <ProposalCard
           key={application.id}
@@ -28,7 +44,7 @@ const ProposalsList = ({ applications, isLoading, onUpdateStatus, type }: Propos
           onUpdateStatus={onUpdateStatus}
         />
       ))}
-    </div>
+    </motion.div>
   );
 };
 

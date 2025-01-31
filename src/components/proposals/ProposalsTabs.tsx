@@ -2,10 +2,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Send, Inbox } from "lucide-react";
 import ProposalsList from "./ProposalsList";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Application } from "@/integrations/supabase/types/application";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProposalsTabsProps {
-  pendingProposals: any[];
-  myApplications: any[];
+  pendingProposals: Application[];
+  myApplications: Application[];
   isLoading: boolean;
   onUpdateStatus: (applicationId: string, status: 'accepted' | 'rejected') => void;
 }
@@ -17,33 +21,54 @@ const ProposalsTabs = ({
   onUpdateStatus
 }: ProposalsTabsProps) => {
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
 
-  // Filter out accepted applications since they should be in Bookings
-  const activeApplications = myApplications.filter(app => app.status !== 'accepted');
+  // Set up real-time subscription for applications
+  useEffect(() => {
+    const channel = supabase
+      .channel('applications-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'applications'
+        },
+        () => {
+          // Refetch applications data when changes occur
+          queryClient.invalidateQueries({ queryKey: ['applications'] });
+        }
+      )
+      .subscribe();
 
-  // Show brand-initiated applications in Pending tab
-  const pendingInvitations = activeApplications.filter(app => 
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  // Filter for brand invitations (initiated by brand) that haven't been responded to
+  const pendingInvitations = pendingProposals.filter(app => 
     app.initiated_by === 'brand' && 
-    (app.status === 'invited' || app.status === 'pending') &&
-    !app.cover_letter // Only show invitations that haven't been responded to yet
+    app.status === 'invited' &&
+    !app.cover_letter
   );
   
-  // Show creator-initiated applications and responded-to invitations in Applied tab
-  const userApplications = activeApplications.filter(app => 
-    app.initiated_by === 'creator' || 
-    (app.initiated_by === 'brand' && app.cover_letter) // Include brand invitations that have been responded to
+  // Filter for submitted applications and responded invitations
+  const activeApplications = myApplications.filter(app => 
+    (app.initiated_by === 'creator' && app.status === 'pending') || 
+    (app.initiated_by === 'brand' && app.cover_letter && app.status === 'pending')
   );
 
   return (
-    <Tabs defaultValue="pending" className="w-full">
+    <Tabs defaultValue="invitations" className="w-full">
       <TabsList className="grid w-full grid-cols-2 p-1 rounded-full bg-nino-bg">
         <TabsTrigger 
-          value="pending" 
+          value="invitations" 
           className="rounded-full data-[state=active]:bg-white flex items-center justify-center gap-2 transition-all duration-300 px-3 py-2"
         >
           <Inbox className="w-4 h-4 shrink-0" />
           <span className={`${isMobile ? 'text-xs' : 'text-sm'} whitespace-nowrap`}>
-            Pending Invitations ({pendingInvitations.length})
+            Invitations ({pendingInvitations.length})
           </span>
         </TabsTrigger>
         <TabsTrigger 
@@ -52,12 +77,12 @@ const ProposalsTabs = ({
         >
           <Send className="w-4 h-4 shrink-0" />
           <span className={`${isMobile ? 'text-xs' : 'text-sm'} whitespace-nowrap`}>
-            Applied ({userApplications.length})
+            Applications ({activeApplications.length})
           </span>
         </TabsTrigger>
       </TabsList>
       
-      <TabsContent value="pending" className="mt-4">
+      <TabsContent value="invitations" className="mt-4">
         <ProposalsList
           applications={pendingInvitations}
           isLoading={isLoading}
@@ -68,7 +93,7 @@ const ProposalsTabs = ({
       
       <TabsContent value="applications" className="mt-4">
         <ProposalsList
-          applications={userApplications}
+          applications={activeApplications}
           isLoading={isLoading}
           onUpdateStatus={onUpdateStatus}
           type="application"
