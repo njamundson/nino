@@ -18,11 +18,11 @@ export interface Message {
 
 export interface MessageProfile {
   id: string;
-  sender_id: string;
-  receiver_id: string;
-  content: string;
-  read: boolean;
-  message_type: string;
+  sender_id: string | null;
+  receiver_id: string | null;
+  content: string | null;
+  read: boolean | null;
+  message_type: string | null;
   media_url: string | null;
   media_type: string | null;
   created_at: string;

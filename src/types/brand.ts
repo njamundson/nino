@@ -21,9 +21,9 @@ export interface Brand extends BrandData {
 }
 
 export interface BrandSettings extends Brand {
-  email_notifications_enabled: boolean;
-  push_notifications_enabled: boolean;
-  application_notifications_enabled: boolean;
-  message_notifications_enabled: boolean;
-  marketing_notifications_enabled: boolean;
+  push_enabled: boolean;
+  email_enabled: boolean;
+  message_notifications: boolean;
+  application_updates: boolean;
+  marketing_updates: boolean;
 }

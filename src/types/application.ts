@@ -1,8 +1,8 @@
-import { Creator } from './creator';
-import { Opportunity } from './opportunity';
+import { Creator } from "./creator";
+import { Opportunity } from "./opportunity";
 
-export type ApplicationStatus = 'pending' | 'accepted' | 'rejected' | 'invited';
-export type InitiatedBy = 'brand' | 'creator';
+export type ApplicationStatus = "pending" | "accepted" | "rejected" | "invited";
+export type InitiatedBy = "brand" | "creator";
 
 export interface Application {
   id: string;
