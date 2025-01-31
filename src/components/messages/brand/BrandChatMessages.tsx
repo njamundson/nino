@@ -7,9 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { useMessages } from "@/hooks/useMessages";
 
 export interface BrandChatMessagesProps {
-  messages: Message[];
+  messages?: Message[];
   isTyping?: boolean;
   currentUserId?: string;
   onReaction?: (messageId: string, emoji: string) => void;
@@ -17,7 +18,6 @@ export interface BrandChatMessagesProps {
 }
 
 const BrandChatMessages = ({
-  messages,
   isTyping,
   currentUserId,
   onReaction = () => {},
@@ -30,6 +30,8 @@ const BrandChatMessages = ({
   const { ref: inViewRef, inView } = useInView({
     threshold: 0.5,
   });
+
+  const { data: messages = [] } = useMessages(selectedChat || '');
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     messagesEndRef.current?.scrollIntoView({ behavior });

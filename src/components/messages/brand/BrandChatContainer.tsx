@@ -21,18 +21,19 @@ const BrandChatContainer = ({
   return (
     <div className="flex flex-col h-full">
       <BrandChatHeader
-        senderDisplayName={selectedDisplayName}
+        senderFirstName={selectedDisplayName}
+        senderLastName=""
         senderProfileImage={selectedProfileImage}
         senderUserId={selectedChat}
         onMobileBack={onMobileBack}
       />
       <BrandChatMessages
         currentUserId={currentUserId}
-        selectedUserId={selectedChat}
+        selectedChat={selectedChat}
       />
       <BrandChatInput
         currentUserId={currentUserId}
-        selectedUserId={selectedChat}
+        selectedChat={selectedChat}
       />
     </div>
   );
