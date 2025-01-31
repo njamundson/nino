@@ -1,15 +1,28 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import ProtectedCreatorRoute from "@/components/auth/ProtectedCreatorRoute";
 import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Projects = lazy(() => import("@/pages/Projects"));
-const Proposals = lazy(() => import("@/pages/Proposals"));
-const Applications = lazy(() => import("@/pages/Applications"));
-const Bookings = lazy(() => import("@/pages/Bookings"));
-const Messages = lazy(() => import("@/pages/Messages"));
-const Settings = lazy(() => import("@/pages/Settings"));
-const CompletedProjects = lazy(() => import("@/pages/CompletedProjects"));
+// Wrap each lazy-loaded component with Suspense and a loading fallback
+const LazyComponent = (Component: React.LazyExoticComponent<() => JSX.Element>) => (
+  <Suspense fallback={
+    <div className="flex items-center justify-center min-h-screen">
+      <LoadingSpinner />
+    </div>
+  }>
+    <Component />
+  </Suspense>
+);
+
+// Lazy load components with explicit chunknames
+const Dashboard = lazy(() => import("@/pages/Dashboard" /* webpackChunkName: "dashboard" */));
+const Projects = lazy(() => import("@/pages/Projects" /* webpackChunkName: "projects" */));
+const Proposals = lazy(() => import("@/pages/Proposals" /* webpackChunkName: "proposals" */));
+const Applications = lazy(() => import("@/pages/Applications" /* webpackChunkName: "applications" */));
+const Bookings = lazy(() => import("@/pages/Bookings" /* webpackChunkName: "bookings" */));
+const Messages = lazy(() => import("@/pages/Messages" /* webpackChunkName: "messages" */));
+const Settings = lazy(() => import("@/pages/Settings" /* webpackChunkName: "settings" */));
+const CompletedProjects = lazy(() => import("@/pages/CompletedProjects" /* webpackChunkName: "completed-projects" */));
 
 export const creatorRoutes = [
   {
@@ -24,7 +37,7 @@ export const creatorRoutes = [
     path: "dashboard",
     element: (
       <ProtectedCreatorRoute>
-        <Dashboard />
+        {LazyComponent(Dashboard)}
       </ProtectedCreatorRoute>
     ),
   },
@@ -32,7 +45,7 @@ export const creatorRoutes = [
     path: "projects",
     element: (
       <ProtectedCreatorRoute>
-        <Projects />
+        {LazyComponent(Projects)}
       </ProtectedCreatorRoute>
     ),
   },
@@ -40,7 +53,7 @@ export const creatorRoutes = [
     path: "completed-projects",
     element: (
       <ProtectedCreatorRoute>
-        <CompletedProjects />
+        {LazyComponent(CompletedProjects)}
       </ProtectedCreatorRoute>
     ),
   },
@@ -48,7 +61,7 @@ export const creatorRoutes = [
     path: "proposals",
     element: (
       <ProtectedCreatorRoute>
-        <Proposals />
+        {LazyComponent(Proposals)}
       </ProtectedCreatorRoute>
     ),
   },
@@ -56,7 +69,7 @@ export const creatorRoutes = [
     path: "applications",
     element: (
       <ProtectedCreatorRoute>
-        <Applications />
+        {LazyComponent(Applications)}
       </ProtectedCreatorRoute>
     ),
   },
@@ -64,7 +77,7 @@ export const creatorRoutes = [
     path: "bookings",
     element: (
       <ProtectedCreatorRoute>
-        <Bookings />
+        {LazyComponent(Bookings)}
       </ProtectedCreatorRoute>
     ),
   },
@@ -72,7 +85,7 @@ export const creatorRoutes = [
     path: "messages",
     element: (
       <ProtectedCreatorRoute>
-        <Messages />
+        {LazyComponent(Messages)}
       </ProtectedCreatorRoute>
     ),
   },
@@ -80,7 +93,7 @@ export const creatorRoutes = [
     path: "settings",
     element: (
       <ProtectedCreatorRoute>
-        <Settings />
+        {LazyComponent(Settings)}
       </ProtectedCreatorRoute>
     ),
   },
