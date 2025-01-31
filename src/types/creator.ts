@@ -10,6 +10,7 @@ export interface CreatorData {
   profile_image_url: string | null;
   creator_type: CreatorType;
   notifications_enabled?: boolean;
+  onboarding_completed?: boolean;
 }
 
 export type CreatorType = 'solo' | 'couple' | 'family' | 'group';

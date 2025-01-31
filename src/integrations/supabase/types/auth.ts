@@ -9,5 +9,5 @@ export interface UserProfile {
   id: string;
   created_at: string;
   updated_at: string;
-  display_name: string | null;
+  display_name: string;
 }

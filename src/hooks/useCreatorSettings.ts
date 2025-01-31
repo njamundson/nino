@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { CreatorData } from "@/types/creator";
+import { useToast } from "@/hooks/use-toast";
+import { CreatorData, CreatorType } from "@/types/creator";
 
 export const useCreatorSettings = () => {
   const [loading, setLoading] = useState(false);
@@ -18,6 +18,7 @@ export const useCreatorSettings = () => {
     profile_image_url: null,
     creator_type: 'solo',
   });
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchCreatorData = async () => {
@@ -44,49 +45,23 @@ export const useCreatorSettings = () => {
             instagram: creator.instagram || '',
             website: creator.website || '',
             profile_image_url: creator.profile_image_url,
-            creator_type: creator.creator_type || 'solo',
+            creator_type: creator.creator_type as CreatorType || 'solo',
+            notifications_enabled: creator.notifications_enabled,
           });
           setProfileImage(creator.profile_image_url);
         }
       } catch (error) {
         console.error('Error fetching creator data:', error);
-        toast.error("Failed to load creator data");
+        toast({
+          title: "Error",
+          description: "Failed to load creator data",
+          variant: "destructive",
+        });
       }
     };
 
     fetchCreatorData();
-  }, []);
-
-  const handleSave = async () => {
-    try {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-
-      const { error } = await supabase
-        .from('creators')
-        .update({
-          display_name: creatorData.display_name,
-          bio: creatorData.bio,
-          location: creatorData.location,
-          specialties: creatorData.specialties,
-          instagram: creatorData.instagram,
-          website: creatorData.website,
-          profile_image_url: profileImage,
-          creator_type: creatorData.creator_type,
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast.success("Settings saved successfully");
-    } catch (error) {
-      console.error('Error saving settings:', error);
-      toast.error("Failed to save settings");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [toast]);
 
   return {
     loading,
@@ -94,6 +69,5 @@ export const useCreatorSettings = () => {
     creatorData,
     setProfileImage,
     setCreatorData,
-    handleSave,
   };
 };
