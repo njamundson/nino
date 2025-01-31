@@ -7,12 +7,8 @@ export interface CreatorData {
   instagram: string;
   website: string;
   location: string;
-  profileImage: string | null;
-  creatorType: CreatorType;
   profile_image_url: string | null;
-  profile?: {
-    display_name: string | null;
-  } | null;
+  creator_type: CreatorType;
   notifications_enabled?: boolean;
 }
 
@@ -39,9 +35,6 @@ export interface Creator {
   creator_type: CreatorType | null;
   profile_image_url: string | null;
   display_name: string;
-  profile?: {
-    display_name: string | null;
-  } | null;
   created_at: string;
   updated_at: string;
   profile_id: string | null;
