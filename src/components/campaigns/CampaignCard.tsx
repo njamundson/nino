@@ -3,14 +3,10 @@ import { Calendar, ListChecks, MoreVertical } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 import { useState } from "react";
-import ApplicationsHeader from "./card/applications/ApplicationsHeader";
 import CreatorProfile from "@/components/creators/modal/CreatorProfile";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useApplicationActions } from "@/hooks/useApplicationActions";
 import AcceptDialog from "./modals/profile/AcceptDialog";
-import CampaignHeader from "./card/CampaignHeader";
-import CampaignBadges from "./card/CampaignBadges";
-import ExpandedApplications from "./card/ExpandedApplications";
 import { Application } from "@/integrations/supabase/types/application";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,7 +35,6 @@ interface CampaignCardProps {
 }
 
 const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
-  const [isApplicationsExpanded, setIsApplicationsExpanded] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<any>(null);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
@@ -134,6 +129,9 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
       children: "Open"
     };
   };
+
+  console.log('Campaign applications:', campaign.applications);
+  console.log('Filtered valid applications:', validApplications);
 
   return (
     <>
