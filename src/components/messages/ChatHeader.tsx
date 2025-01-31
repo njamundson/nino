@@ -5,6 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import CreatorModal from "@/components/creators/CreatorModal";
+import { CreatorType } from "@/types/creator";
 
 interface ChatHeaderProps {
   senderFirstName?: string;
@@ -18,16 +19,16 @@ interface CreatorData {
   id: string;
   first_name: string;
   last_name: string;
-  bio: string;
-  location: string;
-  instagram: string;
-  website: string;
-  specialties: string[];
-  creator_type: string;
-  profile_image_url: string;
+  bio: string | null;
+  location: string | null;
+  instagram: string | null;
+  website: string | null;
+  specialties: string[] | null;
+  creator_type: CreatorType;
+  profile_image_url: string | null;
   profile: {
-    first_name: string;
-    last_name: string;
+    first_name: string | null;
+    last_name: string | null;
   };
 }
 
