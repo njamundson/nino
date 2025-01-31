@@ -1,12 +1,9 @@
-import { Label } from "@/components/ui/label";
-import CreatorTypeSelect from "./professional-info/CreatorTypeSelect";
-import SkillsSelection from "./professional-info/SkillsSelection";
-import { CreatorType } from "@/types/creator";
+import { CreatorType, CreatorData } from '@/types/creator';
 
 interface ProfessionalInfoStepProps {
   creatorType: CreatorType;
   skills: string[];
-  onUpdateField: (field: string, value: any) => void;
+  onUpdateField: (field: keyof CreatorData, value: any) => void;
   onUpdateSkills: (skills: string[]) => void;
 }
 
@@ -14,37 +11,32 @@ const ProfessionalInfoStep = ({
   creatorType,
   skills,
   onUpdateField,
-  onUpdateSkills,
+  onUpdateSkills
 }: ProfessionalInfoStepProps) => {
   return (
-    <div className="space-y-8 animate-fadeIn">
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl font-medium text-nino-text">Professional Details</h1>
-        <p className="text-nino-gray text-sm">Tell us about your expertise</p>
+    <div>
+      <h2 className="text-2xl font-semibold">Professional Information</h2>
+      <div className="mt-4">
+        <label className="block text-sm font-medium">Creator Type</label>
+        <select
+          value={creatorType}
+          onChange={(e) => onUpdateField('creator_type', e.target.value)}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+        >
+          <option value="solo">Solo Creator</option>
+          <option value="agency">Agency</option>
+          <option value="brand">Brand</option>
+        </select>
       </div>
-
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Label className="text-base flex items-center gap-1">
-            Creator Type
-            <span className="text-red-500">*</span>
-          </Label>
-          <CreatorTypeSelect 
-            creatorType={creatorType} 
-            onUpdateField={onUpdateField} 
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label className="text-base flex items-center gap-1">
-            Skills
-            <span className="text-red-500">*</span>
-          </Label>
-          <SkillsSelection 
-            skills={skills} 
-            onUpdateSkills={onUpdateSkills} 
-          />
-        </div>
+      <div className="mt-4">
+        <label className="block text-sm font-medium">Skills</label>
+        <input
+          type="text"
+          value={skills.join(', ')}
+          onChange={(e) => onUpdateSkills(e.target.value.split(',').map(skill => skill.trim()))}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+          placeholder="Enter your skills, separated by commas"
+        />
       </div>
     </div>
   );
