@@ -3,8 +3,7 @@ import LocationField from "./fields/LocationField";
 import BioField from "./fields/BioField";
 
 interface PersonalInfoFieldsProps {
-  firstName: string;
-  lastName: string;
+  displayName: string;
   bio: string;
   location: string;
   onUpdateField: (field: string, value: string) => void;
@@ -12,8 +11,7 @@ interface PersonalInfoFieldsProps {
 }
 
 const PersonalInfoFields = ({
-  firstName,
-  lastName,
+  displayName,
   bio,
   location,
   onUpdateField,
@@ -22,8 +20,7 @@ const PersonalInfoFields = ({
   return (
     <>
       <FullNameField
-        firstName={firstName}
-        lastName={lastName}
+        displayName={displayName}
         onUpdateField={onUpdateField}
       />
 
