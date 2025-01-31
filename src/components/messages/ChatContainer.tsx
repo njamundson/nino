@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { ChatHeader } from "@/components/messages/ChatHeader";
+import ChatHeader from "@/components/messages/ChatHeader";
 import ChatMessages from "@/components/messages/ChatMessages";
 import ChatInput from "@/components/messages/ChatInput";
 import { Message } from "@/types/message";
@@ -63,7 +63,7 @@ export const ChatContainer = ({
         senderLastName={selectedLastName}
         senderProfileImage={senderProfileImage}
         senderUserId={selectedChat}
-        onBack={onMobileBack}
+        onMobileBack={onMobileBack}
       />
       <div className="flex-1 overflow-hidden">
         <ChatMessages

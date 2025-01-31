@@ -4,7 +4,6 @@ import { UserPlus } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { CreatorType } from "@/types/creator";
 import CreatorModal from "@/components/creators/CreatorModal";
 
 interface ChatHeaderProps {
@@ -13,6 +12,23 @@ interface ChatHeaderProps {
   senderProfileImage?: string | null;
   senderUserId?: string;
   onMobileBack?: () => void;
+}
+
+interface CreatorData {
+  id: string;
+  first_name: string;
+  last_name: string;
+  bio: string;
+  location: string;
+  instagram: string;
+  website: string;
+  specialties: string[];
+  creator_type: string;
+  profile_image_url: string;
+  profile: {
+    first_name: string;
+    last_name: string;
+  };
 }
 
 const ChatHeader = ({
@@ -57,7 +73,7 @@ const ChatHeader = ({
         return null;
       }
 
-      return creator as CreatorType;
+      return creator as CreatorData;
     },
     enabled: Boolean(senderUserId),
   });
