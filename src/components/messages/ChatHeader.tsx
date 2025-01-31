@@ -8,8 +8,7 @@ import CreatorModal from "@/components/creators/CreatorModal";
 import { CreatorType } from "@/types/creator";
 
 interface ChatHeaderProps {
-  senderFirstName?: string;
-  senderLastName?: string;
+  senderDisplayName?: string;
   senderProfileImage?: string | null;
   senderUserId?: string | null;
   onMobileBack?: () => void;
@@ -17,8 +16,6 @@ interface ChatHeaderProps {
 
 interface CreatorData {
   id: string;
-  first_name: string;
-  last_name: string;
   bio: string | null;
   location: string | null;
   instagram: string | null;
@@ -26,15 +23,14 @@ interface CreatorData {
   specialties: string[] | null;
   creator_type: CreatorType;
   profile_image_url: string | null;
+  display_name: string;
   profile: {
-    first_name: string | null;
-    last_name: string | null;
+    display_name: string | null;
   };
 }
 
 const ChatHeader = ({
-  senderFirstName,
-  senderLastName,
+  senderDisplayName,
   senderProfileImage,
   senderUserId,
   onMobileBack,
@@ -52,8 +48,6 @@ const ChatHeader = ({
         .from('creators')
         .select(`
           id,
-          first_name,
-          last_name,
           bio,
           location,
           instagram,
@@ -61,9 +55,9 @@ const ChatHeader = ({
           specialties,
           creator_type,
           profile_image_url,
+          display_name,
           profile:profiles(
-            first_name,
-            last_name
+            display_name
           )
         `)
         .eq('user_id', senderUserId)
@@ -81,8 +75,8 @@ const ChatHeader = ({
 
   const displayName = hasSelectedChat 
     ? creatorData 
-      ? `${creatorData.first_name} ${creatorData.last_name}`
-      : `${senderFirstName || ''} ${senderLastName || ''}`
+      ? creatorData.display_name
+      : senderDisplayName
     : "Select a conversation";
 
   return (
@@ -126,7 +120,7 @@ const ChatHeader = ({
 
       {creatorData && (
         <CreatorModal
-          creator={creatorData as any}
+          creator={creatorData}
           isOpen={isCreatorModalOpen}
           onClose={() => setIsCreatorModalOpen(false)}
         />

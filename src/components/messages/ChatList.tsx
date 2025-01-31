@@ -26,10 +26,23 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             receiver_id,
             content,
             created_at,
-            profiles:creators!creator_id(
+            sender:profiles!sender_profile_id(
               id,
               display_name,
-              profile_image_url
+              creator:creators(
+                id,
+                display_name,
+                profile_image_url
+              )
+            ),
+            receiver:profiles!receiver_profile_id(
+              id,
+              display_name,
+              creator:creators(
+                id,
+                display_name,
+                profile_image_url
+              )
             )
           `)
           .eq('sender_id', user.id)
@@ -40,7 +53,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         // Group messages by user and get latest message
         const uniqueChats = data?.reduce((acc: any[], curr) => {
           const existingChat = acc.find(chat => 
-            chat.profiles.id === curr.profiles.id
+            chat.sender?.id === curr.sender?.id
           );
           
           if (!existingChat) {
@@ -66,21 +79,28 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   return (
     <div>
-      {chats.map(chat => (
-        <div
-          key={chat.id}
-          className={`flex items-center p-3 cursor-pointer ${selectedUserId === chat.profiles.id ? 'bg-gray-100' : ''}`}
-          onClick={() => onSelectChat(chat.profiles.id, chat.profiles.display_name, chat.profiles.profile_image_url)}
-        >
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={chat.profiles.profile_image_url || ""} />
-            <AvatarFallback>{chat.profiles.display_name.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <div className="ml-3">
-            <p className="font-medium">{chat.profiles.display_name}</p>
+      {chats.map(chat => {
+        const otherUser = chat.sender;
+        const creatorInfo = otherUser?.creator?.[0];
+        const displayName = creatorInfo?.display_name || otherUser?.display_name || 'Unknown User';
+        const profileImage = creatorInfo?.profile_image_url;
+
+        return (
+          <div
+            key={chat.id}
+            className={`flex items-center p-3 cursor-pointer ${selectedUserId === otherUser?.id ? 'bg-gray-100' : ''}`}
+            onClick={() => onSelectChat(otherUser?.id, displayName, profileImage)}
+          >
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={profileImage || ""} />
+              <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="ml-3">
+              <p className="font-medium">{displayName}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

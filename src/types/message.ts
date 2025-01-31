@@ -11,7 +11,10 @@ export interface Message {
   updated_at: string;
   sender_profile_id: string | null;
   receiver_profile_id: string | null;
-  profiles?: {
+  sender?: {
+    display_name: string;
+  };
+  receiver?: {
     display_name: string;
   };
 }

@@ -28,9 +28,11 @@ export const useMessageQueries = (userId: string) => {
           media_type,
           sender_profile_id,
           receiver_profile_id,
-          profiles:profiles!sender_profile_id (
-            first_name,
-            last_name
+          sender:profiles!sender_profile_id (
+            display_name
+          ),
+          receiver:profiles!receiver_profile_id (
+            display_name
           )
         `)
         .or(`and(sender_id.eq.${user.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${user.id})`)
@@ -40,8 +42,8 @@ export const useMessageQueries = (userId: string) => {
       return data as Message[];
     },
     enabled: Boolean(userId),
-    staleTime: 1000 * 60, // Consider data stale after 1 minute
-    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes (renamed from cacheTime)
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5,
   });
 
   const setMessages = (updater: Message[] | ((prev: Message[] | undefined) => Message[])) => {
