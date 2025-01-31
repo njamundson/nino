@@ -38,17 +38,27 @@ export const useChatList = (currentUserId: string | undefined) => {
             sender_id,
             receiver_id,
             read,
-            sender:sender_profile_id (
+            sender:profiles!sender_profile_id (
               id,
               first_name,
               last_name,
-              user_id
+              creator:creators (
+                id,
+                first_name,
+                last_name,
+                profile_image_url
+              )
             ),
-            receiver:receiver_profile_id (
+            receiver:profiles!receiver_profile_id (
               id,
               first_name,
               last_name,
-              user_id
+              creator:creators (
+                id,
+                first_name,
+                last_name,
+                profile_image_url
+              )
             )
           `)
           .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
@@ -59,38 +69,15 @@ export const useChatList = (currentUserId: string | undefined) => {
         if (mounted) {
           const conversationsMap = new Map();
           
-          for (const msg of messages || []) {
+          messages?.forEach((msg: any) => {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
             const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
             
-            if (!otherUser?.user_id) continue;
-
-            // Fetch additional user info
-            const { data: creatorData } = await supabase
-              .from('creators')
-              .select('first_name, last_name, profile_image_url')
-              .eq('user_id', otherUser.user_id)
-              .single();
-
-            const { data: brandData } = await supabase
-              .from('brands')
-              .select('company_name, profile_image_url')
-              .eq('user_id', otherUser.user_id)
-              .single();
-
-            let firstName = '', lastName = '', profileImage = null;
-
-            if (creatorData) {
-              firstName = creatorData.first_name;
-              lastName = creatorData.last_name;
-              profileImage = creatorData.profile_image_url;
-            } else if (brandData) {
-              firstName = brandData.company_name;
-              profileImage = brandData.profile_image_url;
-            } else {
-              firstName = otherUser.first_name || '';
-              lastName = otherUser.last_name || '';
-            }
+            // First try to get creator names, then fall back to profile names
+            const creatorInfo = otherUser?.creator;
+            const firstName = creatorInfo?.first_name || otherUser?.first_name || '';
+            const lastName = creatorInfo?.last_name || otherUser?.last_name || '';
+            const profileImage = creatorInfo?.profile_image_url || null;
 
             // Only update the map if this is a more recent message for this conversation
             if (!conversationsMap.has(otherUserId) || 
@@ -105,7 +92,7 @@ export const useChatList = (currentUserId: string | undefined) => {
                 }
               });
             }
-          }
+          });
 
           setChats(Array.from(conversationsMap.values()));
         }
