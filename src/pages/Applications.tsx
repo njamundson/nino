@@ -2,13 +2,13 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import PageHeader from "@/components/shared/PageHeader";
 import { useApplications } from "@/hooks/useApplications";
-import { Application } from "@/integrations/supabase/types/application";
 import { motion } from "framer-motion";
 import ProposalsList from "@/components/proposals/ProposalsList";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Applications = () => {
   const { toast } = useToast();
-  const { data: applications, isLoading: isLoadingApplications, error } = useApplications();
+  const { data: applications, isLoading, error } = useApplications();
 
   const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected') => {
     try {
@@ -34,6 +34,7 @@ const Applications = () => {
   };
 
   if (error) {
+    console.error('Error loading applications:', error);
     toast({
       title: "Error",
       description: "Failed to load applications. Please refresh the page.",
@@ -43,12 +44,17 @@ const Applications = () => {
 
   // Filter for applications that have a cover letter (meaning the creator has actually applied)
   // and ensure initiated_by is properly typed
-  const userApplications = (applications || []).map(app => ({
-    ...app,
-    initiated_by: app.initiated_by as "creator" | "brand"
-  })).filter(app => 
-    app.cover_letter && app.initiated_by === 'creator'
+  const userApplications = (applications || []).filter(app => 
+    app.cover_letter && (app.initiated_by === 'creator' || app.initiated_by === 'brand')
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <motion.div 
@@ -65,7 +71,7 @@ const Applications = () => {
       <div className="mt-6">
         <ProposalsList
           applications={userApplications}
-          isLoading={isLoadingApplications}
+          isLoading={isLoading}
           onUpdateStatus={handleUpdateApplicationStatus}
           type="application"
         />
