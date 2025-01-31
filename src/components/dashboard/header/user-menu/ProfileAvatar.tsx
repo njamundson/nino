@@ -1,15 +1,20 @@
 import { memo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BrandProfile, UserProfile } from '../UserMenu';
+import { BrandSettings, UserProfile } from '@/types/user';
 
 interface ProfileAvatarProps {
-  profile: BrandProfile | UserProfile | null;
+  profile: BrandSettings | UserProfile | null;
 }
 
 const ProfileAvatar = ({ profile }: ProfileAvatarProps) => {
   const getProfileImage = () => {
     if (!profile) return "";
-    return 'profile_image_url' in profile ? profile.profile_image_url || "" : "";
+    return profile.profile_image_url || "";
+  };
+
+  const getInitials = () => {
+    if (!profile) return "";
+    return `${profile.first_name?.[0] || ''}${profile.last_name?.[0] || ''}`;
   };
 
   return (
@@ -19,7 +24,7 @@ const ProfileAvatar = ({ profile }: ProfileAvatarProps) => {
         alt="Profile" 
       />
       <AvatarFallback className="bg-nino-primary text-nino-white">
-        {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+        {getInitials()}
       </AvatarFallback>
     </Avatar>
   );

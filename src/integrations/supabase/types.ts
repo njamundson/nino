@@ -269,8 +269,10 @@ export type Database = {
           company_name: string | null
           created_at: string
           description: string | null
+          first_name: string | null
           id: string
           instagram: string | null
+          last_name: string | null
           location: string | null
           onboarding_completed: boolean | null
           phone_number: string | null
@@ -287,8 +289,10 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           description?: string | null
+          first_name?: string | null
           id?: string
           instagram?: string | null
+          last_name?: string | null
           location?: string | null
           onboarding_completed?: boolean | null
           phone_number?: string | null
@@ -305,8 +309,10 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           description?: string | null
+          first_name?: string | null
           id?: string
           instagram?: string | null
+          last_name?: string | null
           location?: string | null
           onboarding_completed?: boolean | null
           phone_number?: string | null
@@ -410,8 +416,10 @@ export type Database = {
           created_at: string
           creator_type: string | null
           display_name: string
+          first_name: string | null
           id: string
           instagram: string | null
+          last_name: string | null
           location: string | null
           notifications_enabled: boolean | null
           onboarding_completed: boolean | null
@@ -427,8 +435,10 @@ export type Database = {
           created_at?: string
           creator_type?: string | null
           display_name: string
+          first_name?: string | null
           id?: string
           instagram?: string | null
+          last_name?: string | null
           location?: string | null
           notifications_enabled?: boolean | null
           onboarding_completed?: boolean | null
@@ -444,8 +454,10 @@ export type Database = {
           created_at?: string
           creator_type?: string | null
           display_name?: string
+          first_name?: string | null
           id?: string
           instagram?: string | null
+          last_name?: string | null
           location?: string | null
           notifications_enabled?: boolean | null
           onboarding_completed?: boolean | null
