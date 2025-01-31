@@ -24,9 +24,6 @@ interface CreatorData {
   creator_type: CreatorType;
   profile_image_url: string | null;
   display_name: string;
-  profile: {
-    display_name: string | null;
-  };
 }
 
 const ChatHeader = ({
@@ -55,10 +52,7 @@ const ChatHeader = ({
           specialties,
           creator_type,
           profile_image_url,
-          display_name,
-          profile:profiles(
-            display_name
-          )
+          display_name
         `)
         .eq('user_id', senderUserId)
         .single();

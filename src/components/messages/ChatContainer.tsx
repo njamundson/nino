@@ -9,8 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface ChatContainerProps {
   selectedChat: string | null;
-  selectedFirstName?: string;
-  selectedLastName?: string;
+  selectedDisplayName?: string;
   selectedProfileImage?: string | null;
   currentUserId?: string;
   onMobileBack?: () => void;
@@ -18,8 +17,7 @@ interface ChatContainerProps {
 
 export const ChatContainer = ({
   selectedChat,
-  selectedFirstName,
-  selectedLastName,
+  selectedDisplayName,
   selectedProfileImage,
   currentUserId,
   onMobileBack,
@@ -59,8 +57,7 @@ export const ChatContainer = ({
   return (
     <Card className="flex flex-col h-[calc(100vh-16rem)] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden mb-6">
       <ChatHeader
-        senderFirstName={selectedFirstName}
-        senderLastName={selectedLastName}
+        senderDisplayName={selectedDisplayName}
         senderProfileImage={senderProfileImage}
         senderUserId={selectedChat}
         onMobileBack={onMobileBack}
