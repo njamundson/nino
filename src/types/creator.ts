@@ -1,3 +1,5 @@
+export type CreatorType = 'solo' | 'agency' | 'brand';
+
 export interface CreatorData {
   id: string;
   user_id: string;
@@ -5,54 +7,15 @@ export interface CreatorData {
   bio: string;
   location: string;
   specialties: string[];
+  creator_type: CreatorType;
   instagram: string;
   website: string;
-  profile_image_url: string | null;
-  creator_type: CreatorType;
+  profile_image_url: string;
   notifications_enabled?: boolean;
   onboarding_completed?: boolean;
 }
 
-export type CreatorType = 'solo' | 'couple' | 'family' | 'group';
-
-export const CREATOR_TYPES = ['solo', 'couple', 'family', 'group'] as const;
-
-export const CREATOR_SPECIALTIES = [
-  'UGC Creator',
-  'Videographer',
-  'Photographer',
-  'Model/Talent',
-  'Public Relations/Writer'
-] as const;
-
-export interface Creator {
-  id: string;
-  user_id: string;
-  bio: string | null;
-  location: string | null;
-  specialties: string[] | null;
-  instagram: string | null;
-  website: string | null;
-  creator_type: CreatorType | null;
-  profile_image_url: string | null;
-  display_name: string;
+export interface Creator extends CreatorData {
   created_at: string;
   updated_at: string;
-  profile_id: string | null;
-  onboarding_completed?: boolean;
-  notifications_enabled?: boolean;
 }
-
-export const validateInstagramHandle = (handle: string): boolean => {
-  const username = handle.startsWith('@') ? handle.slice(1) : handle;
-  return /^[a-zA-Z0-9._]{1,30}$/.test(username);
-};
-
-export const validateWebsiteUrl = (url: string): boolean => {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-};
