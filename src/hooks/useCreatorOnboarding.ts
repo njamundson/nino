@@ -17,9 +17,8 @@ export const useCreatorOnboarding = () => {
     specialties: [],
     instagram: '',
     website: '',
-    profileImage: '',
-    creatorType: 'solo',
     profile_image_url: null,
+    creator_type: 'solo',
   });
 
   const updateField = (field: keyof CreatorData, value: any) => {
@@ -38,7 +37,7 @@ export const useCreatorOnboarding = () => {
       }
       setCurrentStep('professional');
     } else if (currentStep === 'professional') {
-      if (!creatorData.creatorType || creatorData.specialties.length === 0) {
+      if (!creatorData.creator_type || creatorData.specialties.length === 0) {
         toast({
           title: "Missing Information",
           description: "Please select your creator type and at least one specialty",
@@ -72,10 +71,10 @@ export const useCreatorOnboarding = () => {
           bio: creatorData.bio,
           location: creatorData.location,
           specialties: creatorData.specialties,
-          creator_type: creatorData.creatorType,
+          creator_type: creatorData.creator_type,
           instagram: creatorData.instagram,
           website: creatorData.website,
-          profile_image_url: creatorData.profileImage,
+          profile_image_url: creatorData.profile_image_url,
           onboarding_completed: true
         });
 
