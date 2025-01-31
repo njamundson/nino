@@ -409,10 +409,9 @@ export type Database = {
           bio: string | null
           created_at: string
           creator_type: string | null
-          first_name: string
+          display_name: string
           id: string
           instagram: string | null
-          last_name: string | null
           location: string | null
           notifications_enabled: boolean | null
           onboarding_completed: boolean | null
@@ -427,10 +426,9 @@ export type Database = {
           bio?: string | null
           created_at?: string
           creator_type?: string | null
-          first_name: string
+          display_name: string
           id?: string
           instagram?: string | null
-          last_name?: string | null
           location?: string | null
           notifications_enabled?: boolean | null
           onboarding_completed?: boolean | null
@@ -445,10 +443,9 @@ export type Database = {
           bio?: string | null
           created_at?: string
           creator_type?: string | null
-          first_name?: string
+          display_name?: string
           id?: string
           instagram?: string | null
-          last_name?: string | null
           location?: string | null
           notifications_enabled?: boolean | null
           onboarding_completed?: boolean | null
