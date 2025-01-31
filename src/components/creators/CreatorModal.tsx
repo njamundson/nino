@@ -19,8 +19,7 @@ interface Creator {
   specialties: string[] | null;
   creator_type: CreatorType | null;
   profile_image_url: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  display_name: string;
 }
 
 interface CreatorModalProps {
@@ -164,12 +163,10 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
     location: creator.location || '',
     profile_image_url: creator.profile_image_url,
     creator_type: creator.creator_type as CreatorType || 'solo',
-    first_name: creator.first_name,
-    last_name: creator.last_name,
+    display_name: creator.display_name,
     user_id: '', 
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    profile_id: null,
     notifications_enabled: true,
     onboarding_completed: true
   };

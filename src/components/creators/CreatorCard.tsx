@@ -31,12 +31,12 @@ const CreatorCard = ({ creator, onInvite }: CreatorCardProps) => {
   const modalCreator = {
     id: creator.id,
     user_id: creator.user_id,
+    display_name: creator.display_name,
     bio: creator.bio,
     location: creator.location,
     specialties: creator.specialties,
     instagram: creator.instagram,
     website: creator.website,
-    display_name: creator.display_name,
     profile_image_url: creator.profile_image_url,
     creator_type: creator.creator_type
   };
