@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProfileData {
   firstName: string;
@@ -10,6 +10,8 @@ interface ProfileData {
   instagram: string;
   website: string;
   skills: string[];
+  creatorType: string;
+  notifications_enabled?: boolean;
 }
 
 export const useProfileData = () => {
@@ -23,6 +25,8 @@ export const useProfileData = () => {
     instagram: "",
     website: "",
     skills: [],
+    creatorType: "solo",
+    notifications_enabled: true,
   });
   const { toast } = useToast();
 
@@ -42,7 +46,7 @@ export const useProfileData = () => {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .maybeSingle();
+        .single();
 
       if (profileError) throw profileError;
 
@@ -50,7 +54,7 @@ export const useProfileData = () => {
         .from('creators')
         .select('*')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .single();
 
       if (creatorError) throw creatorError;
 
@@ -62,62 +66,16 @@ export const useProfileData = () => {
         instagram: creatorData?.instagram || "",
         website: creatorData?.website || "",
         skills: creatorData?.specialties || [],
+        creatorType: creatorData?.creator_type || "solo",
+        notifications_enabled: creatorData?.notifications_enabled,
       });
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast({
         title: "Error",
-        description: "Failed to load profile data. Please try again.",
+        description: "Failed to load profile data",
         variant: "destructive",
       });
-    }
-  };
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          first_name: profileData.firstName,
-          last_name: profileData.lastName,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
-      if (profileError) throw profileError;
-
-      const { error: creatorError } = await supabase
-        .from('creators')
-        .update({
-          bio: profileData.bio,
-          location: profileData.location,
-          instagram: profileData.instagram,
-          website: profileData.website,
-          specialties: profileData.skills,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user.id);
-
-      if (creatorError) throw creatorError;
-
-      setIsEditing(false);
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-      });
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -131,6 +89,5 @@ export const useProfileData = () => {
     loading,
     profileData,
     setProfileData,
-    handleSave,
   };
 };

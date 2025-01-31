@@ -21,19 +21,13 @@ export const useNotifications = () => {
         .from('messages')
         .select(`
           *,
-          sender:profiles!messages_sender_profile_id_fkey(
-            first_name,
-            last_name
-          ),
-          receiver:profiles!messages_receiver_profile_id_fkey(
-            first_name,
-            last_name
-          )
+          sender:profiles(first_name, last_name),
+          receiver:profiles(first_name, last_name)
         `)
         .eq('receiver_id', user.id)
         .eq('read', false)
         .order('created_at', { ascending: false })
-        .limit(5); // Limit to 5 unread messages for better performance
+        .limit(5);
 
       if (messagesError) {
         console.error('Error fetching messages:', messagesError);
@@ -44,7 +38,7 @@ export const useNotifications = () => {
       const messageNotifications = (messages || []).map(message => ({
         id: message.id,
         type: 'message',
-        content: `New message from ${message.sender?.first_name} ${message.sender?.last_name}`,
+        content: `New message from ${message.sender?.first_name || ''} ${message.sender?.last_name || ''}`,
         created_at: message.created_at,
         read: message.read,
         action_url: '/messages'
@@ -56,10 +50,8 @@ export const useNotifications = () => {
         .select(`
           *,
           creator:creators (
-            profile:profiles (
-              first_name,
-              last_name
-            )
+            first_name,
+            last_name
           ),
           opportunity:opportunities (
             title
@@ -67,7 +59,7 @@ export const useNotifications = () => {
         `)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
-        .limit(5); // Limit to 5 pending applications
+        .limit(5);
 
       if (applicationsError) {
         console.error('Error fetching applications:', applicationsError);
@@ -78,7 +70,7 @@ export const useNotifications = () => {
       const applicationNotifications = (applications || []).map(application => ({
         id: application.id,
         type: 'application',
-        content: `New proposal from ${application.creator.profile.first_name} ${application.creator.profile.last_name} for "${application.opportunity.title}"`,
+        content: `New proposal from ${application.creator?.first_name || ''} ${application.creator?.last_name || ''} for "${application.opportunity?.title}"`,
         created_at: application.created_at,
         read: false,
         action_url: '/brand/proposals'

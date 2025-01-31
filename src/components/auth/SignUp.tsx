@@ -44,7 +44,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
         password,
         options: {
           data: {
-            first_name: data.firstName || 'Anonymous', // Provide default value
+            first_name: data.firstName || 'Anonymous',
             last_name: data.lastName || '',
           },
         },
@@ -64,31 +64,42 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       }
 
       if (authData.user) {
+        // Create profile first
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: authData.user.id,
+            first_name: data.firstName || 'Anonymous',
+            last_name: data.lastName || '',
+            display_name: `${data.firstName || 'Anonymous'} ${data.lastName || ''}`.trim()
+          });
+
+        if (profileError) throw profileError;
+
         // Create initial profile based on user type
         if (userType === 'brand') {
           const { error: brandError } = await supabase
             .from('brands')
             .insert({
               user_id: authData.user.id,
+              first_name: data.firstName || 'Anonymous',
+              last_name: data.lastName || '',
             });
 
           if (brandError) throw brandError;
           
           navigate('/onboarding/brand');
         } else {
-          // For creators, ensure first_name is set
           const { error: creatorError } = await supabase
             .from('creators')
             .insert({
               user_id: authData.user.id,
-              first_name: data.firstName || 'Anonymous', // Ensure first_name is set
+              first_name: data.firstName || 'Anonymous',
               last_name: data.lastName || '',
+              display_name: `${data.firstName || 'Anonymous'} ${data.lastName || ''}`.trim()
             });
 
-          if (creatorError) {
-            console.error('Creator profile creation error:', creatorError);
-            throw creatorError;
-          }
+          if (creatorError) throw creatorError;
           
           navigate('/onboarding/creator');
         }
