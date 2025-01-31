@@ -13,6 +13,11 @@ export interface BrandData {
   sms_notifications_enabled: boolean;
   two_factor_enabled: boolean;
   onboarding_completed?: boolean;
+  email_notifications_enabled: boolean;
+  push_notifications_enabled: boolean;
+  application_notifications_enabled: boolean;
+  message_notifications_enabled: boolean;
+  marketing_notifications_enabled: boolean;
 }
 
 export interface Brand extends BrandData {
