@@ -13,8 +13,7 @@ const Messages = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(
     searchParams.get("userId")
   );
-  const [selectedFirstName, setSelectedFirstName] = useState<string | null>(null);
-  const [selectedLastName, setSelectedLastName] = useState<string | null>(null);
+  const [selectedDisplayName, setSelectedDisplayName] = useState<string | null>(null);
   const [selectedProfileImage, setSelectedProfileImage] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,13 +43,11 @@ const Messages = () => {
 
   const handleSelectChat = async (
     userId: string, 
-    firstName: string, 
-    lastName: string,
+    displayName: string,
     profileImage: string | null
   ) => {
     setSelectedUserId(userId);
-    setSelectedFirstName(firstName);
-    setSelectedLastName(lastName);
+    setSelectedDisplayName(displayName);
     setSelectedProfileImage(profileImage);
   };
 
@@ -87,8 +84,7 @@ const Messages = () => {
           <div className="md:col-span-2">
             <BrandChatContainer
               selectedChat={selectedUserId}
-              selectedFirstName={selectedFirstName}
-              selectedLastName={selectedLastName}
+              selectedDisplayName={selectedDisplayName}
               selectedProfileImage={selectedProfileImage}
               currentUserId={currentUser?.id}
               onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
