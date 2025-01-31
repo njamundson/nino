@@ -127,8 +127,11 @@ const ApplicationForm = ({ opportunity, onBack, onClose, onModalClose }: Applica
         description: "Your application has been submitted successfully!",
       });
 
-      // Immediately invalidate the applications query to trigger a refetch
-      await queryClient.invalidateQueries({ queryKey: ['applications'] });
+      // Immediately invalidate both queries to trigger a refetch
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['applications'] }),
+        queryClient.invalidateQueries({ queryKey: ['my-applications'] })
+      ]);
 
       // Close the modal
       onModalClose();
