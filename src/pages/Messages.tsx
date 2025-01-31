@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import PageHeader from "@/components/shared/PageHeader";
-import ChatContainer from "@/components/messages/ChatContainer";
+import { BrandChatContainer } from "@/components/messages/brand/BrandChatContainer";
 import ChatList from "@/components/messages/ChatList";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -59,7 +59,7 @@ const Messages = () => {
       <div className="h-[calc(100vh-6rem)] flex flex-col">
         <PageHeader
           title="Messages"
-          description="Connect and communicate with brands."
+          description="Connect and communicate with creators."
         />
         <div className="flex-1 flex items-center justify-center">
           <LoadingSpinner />
@@ -72,7 +72,7 @@ const Messages = () => {
     <div className="h-[calc(100vh-6rem)] flex flex-col overflow-hidden">
       <PageHeader
         title="Messages"
-        description="Connect and communicate with brands."
+        description="Connect and communicate with creators."
       />
       
       <div className="flex-1 container px-0 pb-6 overflow-hidden">
@@ -85,7 +85,7 @@ const Messages = () => {
           </div>
           
           <div className="md:col-span-2">
-            <ChatContainer
+            <BrandChatContainer
               selectedChat={selectedUserId}
               selectedFirstName={selectedFirstName}
               selectedLastName={selectedLastName}
