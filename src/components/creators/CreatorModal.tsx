@@ -70,11 +70,13 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
         if (brandError) {
           console.error('Error fetching brand:', brandError);
+          toast.error("Error fetching brand information");
           return [];
         }
 
         if (!brand) {
           console.log('No brand found for user');
+          toast.error("No brand profile found");
           return [];
         }
 
@@ -86,12 +88,14 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
         if (oppsError) {
           console.error('Error fetching opportunities:', oppsError);
+          toast.error("Error fetching campaigns");
           return [];
         }
 
         return opportunities || [];
       } catch (error) {
         console.error('Error in campaign query:', error);
+        toast.error("An unexpected error occurred");
         return [];
       }
     },
