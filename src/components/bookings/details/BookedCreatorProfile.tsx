@@ -18,9 +18,7 @@ const BookedCreatorProfile = ({
 }: BookedCreatorProfileProps) => {
   if (!creator) return null;
 
-  const fullName = creator.first_name && creator.last_name 
-    ? `${creator.first_name} ${creator.last_name}`
-    : creator.first_name || 'Creator';
+  const fullName = creator.display_name || 'Creator';
 
   return (
     <div className="h-full p-6 overflow-hidden">

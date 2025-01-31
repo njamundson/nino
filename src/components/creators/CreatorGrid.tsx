@@ -85,8 +85,7 @@ const CreatorGrid = ({
       const formattedCreators: CreatorData[] = creatorsData.map(creator => ({
         id: creator.id,
         user_id: creator.user_id,
-        firstName: creator.first_name || '',
-        lastName: creator.last_name || '',
+        display_name: creator.display_name || 'Creator',
         bio: creator.bio || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
