@@ -81,10 +81,10 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
 
           {application && (
             <div className="mt-4">
-              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div className="bg-gray-50 rounded-xl p-6 space-y-4 max-h-[400px] overflow-y-auto">
                 <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
                 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {application.opportunity?.title && (
                     <p className="text-sm text-gray-500">
                       Submitted for: {application.opportunity.title}
@@ -95,17 +95,17 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
                       This creator has been invited to apply
                     </p>
                   ) : application.cover_letter ? (
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       <p className="text-sm font-medium text-gray-700">Cover Letter:</p>
-                      <p className="text-sm text-gray-600 whitespace-pre-wrap">
+                      <div className="text-sm text-gray-600 whitespace-pre-wrap bg-white rounded-lg p-4 border border-gray-100">
                         {application.cover_letter}
-                      </p>
+                      </div>
                     </div>
                   ) : null}
                 </div>
 
                 {application.status === 'pending' && (
-                  <div className="pt-2">
+                  <div className="pt-4">
                     <ActionButtons
                       onAccept={onAccept}
                       onReject={onReject}
