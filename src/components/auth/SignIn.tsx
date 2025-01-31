@@ -37,13 +37,19 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
 
       if (error) {
         console.error('Sign in error:', error);
-        toast({
-          variant: "destructive",
-          title: "Sign in failed",
-          description: error.message === "Invalid login credentials" 
-            ? "Invalid email or password. Please try again."
-            : "An error occurred during sign in. Please try again.",
-        });
+        if (error.message === "Invalid login credentials") {
+          toast({
+            variant: "destructive",
+            title: "Invalid credentials",
+            description: "The email or password you entered is incorrect. Please try again.",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Sign in failed",
+            description: "An error occurred during sign in. Please try again.",
+          });
+        }
         return;
       }
 
