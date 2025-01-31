@@ -230,18 +230,18 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                             {application.creator?.profile_image_url ? (
                               <img
                                 src={application.creator.profile_image_url}
-                                alt={`${application.creator?.first_name}'s profile`}
+                                alt={`${application.creator?.display_name}'s profile`}
                                 className="h-full w-full object-cover"
                               />
                             ) : (
                               <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-400">
-                                {application.creator?.first_name?.[0]}
+                                {application.creator?.display_name?.[0]}
                               </div>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-gray-900 truncate">
-                              {application.creator?.first_name} {application.creator?.last_name}
+                              {application.creator?.display_name}
                             </p>
                             <p className="text-sm text-gray-500">
                               {application.status === 'invited' ? 'Invited' : 'Pending Review'}
@@ -279,7 +279,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
         isOpen={showAcceptDialog}
         onOpenChange={setShowAcceptDialog}
         onConfirm={handleAccept}
-        creatorName={`${selectedCreator?.first_name || ''} ${selectedCreator?.last_name || ''}`}
+        creatorName={selectedCreator?.display_name || ''}
         isProcessing={isProcessing}
       />
     </>

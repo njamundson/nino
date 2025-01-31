@@ -17,7 +17,7 @@ const ExpandedApplications = ({ applications, onViewCreator }: ExpandedApplicati
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="min-w-0">
               <p className="font-medium truncate">
-                {application.creator?.first_name} {application.creator?.last_name}
+                {application.creator?.display_name}
               </p>
               {application.creator?.location && (
                 <p className="text-sm text-gray-500 truncate">
