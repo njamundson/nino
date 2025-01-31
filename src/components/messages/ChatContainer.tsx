@@ -38,14 +38,14 @@ export const ChatContainer = ({
     const fetchProfileImage = async () => {
       if (!selectedChat) return;
       
-      const { data: creatorProfile } = await supabase
+      const { data: creator } = await supabase
         .from('creators')
         .select('profile_image_url')
         .eq('user_id', selectedChat)
         .maybeSingle();
 
-      if (creatorProfile) {
-        setSenderProfileImage(creatorProfile.profile_image_url);
+      if (creator) {
+        setSenderProfileImage(creator.profile_image_url);
       }
     };
 
@@ -54,36 +54,29 @@ export const ChatContainer = ({
 
   return (
     <Card className="flex flex-col h-[calc(100vh-14rem)] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
-      {selectedChat ? (
-        <>
-          <ChatHeader
-            senderFirstName={selectedFirstName}
-            senderLastName={selectedLastName}
-            senderProfileImage={senderProfileImage}
-            onBack={onMobileBack}
-          />
-          <div className="flex-1 overflow-hidden">
-            <ChatMessages
-              messages={messages}
-              currentUserId={currentUserId}
-              selectedChat={selectedChat}
-              onReaction={handleReaction}
-            />
-          </div>
-          <ChatInput
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            handleSendMessage={handleSendMessage}
-            selectedChat={selectedChat}
-            editingMessage={editingMessage}
-            setEditingMessage={setEditingMessage}
-          />
-        </>
-      ) : (
-        <div className="flex-1 flex items-center justify-center text-gray-500">
-          <p className="text-sm">Select a conversation to start messaging</p>
-        </div>
-      )}
+      <ChatHeader
+        senderFirstName={selectedFirstName}
+        senderLastName={selectedLastName}
+        senderProfileImage={senderProfileImage}
+        senderUserId={selectedChat}
+        onBack={onMobileBack}
+      />
+      <div className="flex-1 overflow-hidden">
+        <ChatMessages
+          messages={messages}
+          currentUserId={currentUserId}
+          selectedChat={selectedChat}
+          onReaction={handleReaction}
+        />
+      </div>
+      <ChatInput
+        newMessage={newMessage}
+        setNewMessage={setNewMessage}
+        handleSendMessage={handleSendMessage}
+        selectedChat={selectedChat}
+        editingMessage={editingMessage}
+        setEditingMessage={setEditingMessage}
+      />
     </Card>
   );
 };

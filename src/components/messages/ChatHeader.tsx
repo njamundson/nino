@@ -24,7 +24,7 @@ export const ChatHeader = ({
   onBack 
 }: ChatHeaderProps) => {
   const isMobile = useIsMobile();
-  const hasSelectedChat = Boolean(senderFirstName && senderLastName);
+  const hasSelectedChat = Boolean(senderFirstName || senderLastName);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
   const { data: creatorData } = useQuery({
@@ -55,6 +55,10 @@ export const ChatHeader = ({
     ? `${senderFirstName?.[0] || ''}${senderLastName?.[0] || ''}`
     : '';
 
+  const fullName = hasSelectedChat 
+    ? `${senderFirstName || ''} ${senderLastName || ''}`.trim()
+    : 'Messages';
+
   return (
     <div className="border-b border-gray-100 p-6 bg-white/50 backdrop-blur-xl">
       <div className="flex flex-col space-y-3">
@@ -68,19 +72,20 @@ export const ChatHeader = ({
                 <ChevronLeft className="w-5 h-5 text-gray-600" />
               </button>
             )}
-            {hasSelectedChat ? (
-              <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
+              {hasSelectedChat ? (
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={senderProfileImage || ''} alt={`${senderFirstName} ${senderLastName}`} />
+                  <AvatarImage 
+                    src={senderProfileImage || ''} 
+                    alt={fullName}
+                  />
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  {`${senderFirstName} ${senderLastName}`}
-                </h1>
-              </div>
-            ) : (
-              <h1 className="text-2xl font-semibold text-gray-900">Messages</h1>
-            )}
+              ) : null}
+              <h1 className="text-2xl font-semibold text-gray-900">
+                {fullName}
+              </h1>
+            </div>
           </div>
           
           {hasSelectedChat && creatorData && (
