@@ -34,8 +34,7 @@ const CreatorGrid = ({
       .select(`
         id,
         user_id,
-        first_name,
-        last_name,
+        display_name,
         bio,
         location,
         specialties,
@@ -85,8 +84,7 @@ const CreatorGrid = ({
       const formattedCreators: CreatorData[] = creatorsData.map(creator => ({
         id: creator.id,
         user_id: creator.user_id,
-        firstName: creator.first_name || '',
-        lastName: creator.last_name || '',
+        display_name: creator.display_name || 'Creator',
         bio: creator.bio || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
@@ -96,8 +94,7 @@ const CreatorGrid = ({
         profileImage: creator.profile_image_url || '',
         profile_image_url: creator.profile_image_url || '',
         profile: {
-          first_name: creator.first_name || '',
-          last_name: creator.last_name || ''
+          display_name: creator.display_name
         }
       }));
       

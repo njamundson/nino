@@ -18,17 +18,13 @@ const BookedCreatorProfile = ({
 }: BookedCreatorProfileProps) => {
   if (!creator) return null;
 
-  const fullName = creator.first_name && creator.last_name 
-    ? `${creator.first_name} ${creator.last_name}`
-    : creator.first_name || 'Creator';
-
   return (
     <div className="h-full p-6 overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-6 h-full">
         <div className="relative h-full max-h-[600px] overflow-hidden rounded-2xl">
           <CreatorImage 
             profileImageUrl={creator.profile_image_url} 
-            fullName={fullName} 
+            fullName={creator.display_name || 'Creator'} 
           />
         </div>
         
@@ -41,7 +37,7 @@ const BookedCreatorProfile = ({
               instagram={creator.instagram}
               website={creator.website}
               onMessageClick={onMessageClick}
-              fullName={fullName}
+              fullName={creator.display_name || 'Creator'}
             />
             <CreatorSocialLinks 
               instagram={creator.instagram}

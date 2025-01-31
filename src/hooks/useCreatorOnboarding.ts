@@ -1,25 +1,25 @@
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { CreatorData } from "@/types/creator";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from 'react';
+import { CreatorData, CreatorType } from '@/types/creator';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from './use-toast';
+
+type OnboardingStep = 'basic' | 'professional' | 'social';
 
 export const useCreatorOnboarding = () => {
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>('basic');
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
-    id: crypto.randomUUID(),
-    user_id: '', // This will be set when saving to the database
-    firstName: "",
-    lastName: "",
-    bio: "",
+    id: '',
+    user_id: '',
+    display_name: '',
+    bio: '',
+    location: '',
     specialties: [],
-    instagram: "",
-    website: "",
-    location: "",
-    profileImage: null,
-    creatorType: "solo",
-    profile: null,
-    profile_image_url: null
+    instagram: '',
+    website: '',
+    profileImage: '',
+    creatorType: 'solo',
+    profile_image_url: null,
   });
 
   const updateField = (field: keyof CreatorData, value: any) => {
@@ -28,60 +28,56 @@ export const useCreatorOnboarding = () => {
 
   const handleNext = () => {
     if (currentStep === 'basic') {
-      if (!creatorData.bio || !creatorData.location) {
+      if (!creatorData.display_name || !creatorData.bio || !creatorData.location) {
         toast({
-          title: "Required Fields Missing",
-          description: "Please fill in all required fields.",
+          title: "Missing Information",
+          description: "Please fill in all required fields",
           variant: "destructive",
         });
-        return;
+        return false;
       }
       setCurrentStep('professional');
     } else if (currentStep === 'professional') {
       if (!creatorData.creatorType || creatorData.specialties.length === 0) {
         toast({
-          title: "Required Fields Missing",
-          description: "Please select your creator type and at least one specialty.",
+          title: "Missing Information",
+          description: "Please select your creator type and at least one specialty",
           variant: "destructive",
         });
-        return;
+        return false;
       }
       setCurrentStep('social');
     }
+    return true;
   };
 
   const handleBack = () => {
-    if (currentStep === 'social') {
-      setCurrentStep('professional');
-    } else if (currentStep === 'professional') {
+    if (currentStep === 'professional') {
       setCurrentStep('basic');
+    } else if (currentStep === 'social') {
+      setCurrentStep('professional');
     }
   };
 
   const handleComplete = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error("No authenticated session");
-      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
 
-      // Update creator profile and mark onboarding as complete
       const { error } = await supabase
         .from('creators')
-        .update({
+        .insert({
+          user_id: user.id,
+          display_name: creatorData.display_name,
           bio: creatorData.bio,
           location: creatorData.location,
-          instagram: creatorData.instagram,
-          website: creatorData.website,
           specialties: creatorData.specialties,
           creator_type: creatorData.creatorType,
+          instagram: creatorData.instagram,
+          website: creatorData.website,
           profile_image_url: creatorData.profileImage,
-          onboarding_completed: true,
-          first_name: creatorData.firstName,
-          last_name: creatorData.lastName
-        })
-        .eq('user_id', session.user.id);
+          onboarding_completed: true
+        });
 
       if (error) throw error;
 
