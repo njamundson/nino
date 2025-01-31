@@ -114,28 +114,11 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
       {/* Action buttons outside the scrollable area */}
       {(application?.status === 'pending' || application?.status === 'invited') && (
         <div className="p-6 border-t border-gray-100 mt-auto">
-          <div className="flex justify-between gap-4">
-            <button
-              onClick={onReject}
-              disabled={isProcessing}
-              className="flex-1 px-8 py-3 rounded-full border-2 border-gray-200 text-gray-700 font-medium 
-                       hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 
-                       disabled:opacity-50 disabled:cursor-not-allowed
-                       focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2"
-            >
-              Reject
-            </button>
-            <button
-              onClick={onAccept}
-              disabled={isProcessing}
-              className="flex-1 px-8 py-3 rounded-full bg-nino-primary text-white font-medium 
-                       hover:bg-nino-primary/90 active:scale-[0.98] transition-all duration-200
-                       disabled:opacity-50 disabled:cursor-not-allowed shadow-sm
-                       focus:outline-none focus:ring-2 focus:ring-nino-primary focus:ring-offset-2"
-            >
-              Accept
-            </button>
-          </div>
+          <ActionButtons
+            onAccept={onAccept}
+            onReject={onReject}
+            isProcessing={isProcessing}
+          />
         </div>
       )}
 
