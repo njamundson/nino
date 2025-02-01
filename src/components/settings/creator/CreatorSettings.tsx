@@ -1,63 +1,155 @@
-import { useCreatorSettings } from "@/hooks/useCreatorSettings";
-import CreatorProfileForm from "./CreatorProfileForm";
-import ProfileImageSection from "../profile/ProfileImageSection";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-const CreatorSettings = () => {
-  const {
+export const useCreatorSettings = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [creatorData, setCreatorData] = useState({
+    display_name: "",
+    bio: "",
+    location: "",
+    instagram: "",
+    website: "",
+    specialties: [] as string[],
+    creatorType: "solo",
+    notifications_enabled: false,
+  });
+
+  useEffect(() => {
+    const fetchCreatorData = async () => {
+      try {
+        setLoading(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          console.error('No authenticated user found');
+          return;
+        }
+
+        // Get profile data
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('display_name')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          throw profileError;
+        }
+
+        // Get creator data
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (creatorError) {
+          console.error('Error fetching creator:', creatorError);
+          throw creatorError;
+        }
+
+        if (profile && creator) {
+          setCreatorData({
+            display_name: profile.display_name || "",
+            bio: creator.bio || "",
+            location: creator.location || "",
+            instagram: creator.instagram || "",
+            website: creator.website || "",
+            specialties: creator.specialties || [],
+            creatorType: creator.creator_type || "solo",
+            notifications_enabled: creator.notifications_enabled || false,
+          });
+          setProfileImage(creator.profile_image_url);
+        }
+      } catch (error) {
+        console.error('Error in fetchCreatorData:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load creator data. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCreatorData();
+  }, [toast]);
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
+
+      // Update profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          display_name: creatorData.display_name,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Get creator record
+      const { data: creator, error: creatorError } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (creatorError) throw creatorError;
+      if (!creator) throw new Error('Creator profile not found');
+
+      // Update creator
+      const { error: updateError } = await supabase
+        .from('creators')
+        .update({
+          bio: creatorData.bio,
+          location: creatorData.location,
+          instagram: creatorData.instagram,
+          website: creatorData.website,
+          specialties: creatorData.specialties,
+          creator_type: creatorData.creatorType,
+          profile_image_url: profileImage,
+          notifications_enabled: creatorData.notifications_enabled,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', creator.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    } catch (error) {
+      console.error('Error in handleSave:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save changes. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
     loading,
     profileImage,
     creatorData,
     setProfileImage,
     setCreatorData,
     handleSave,
-  } = useCreatorSettings();
-
-  const handleUpdateField = (field: string, value: any) => {
-    setCreatorData(prev => ({ ...prev, [field]: value }));
   };
-
-  return (
-    <div className="max-w-4xl mx-auto">
-      <div className="space-y-12 animate-fadeIn">
-        <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl font-medium text-nino-text tracking-tight">Creator Profile</h1>
-          <p className="text-nino-gray text-lg">Manage your personal information and settings</p>
-        </div>
-
-        <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-12 shadow-[0_2px_40px_-12px_rgba(0,0,0,0.1)] space-y-12">
-          <ProfileImageSection 
-            profileImage={profileImage} 
-            setProfileImage={setProfileImage}
-          />
-
-          <CreatorProfileForm
-            loading={loading}
-            creatorData={creatorData}
-            onUpdateField={handleUpdateField}
-          />
-
-          <div className="pt-6 border-t border-gray-100">
-            <Button
-              onClick={handleSave}
-              disabled={loading}
-              className="w-full bg-black hover:bg-black/90 text-white rounded-xl h-12 text-base font-medium transition-all duration-200 hover:scale-[0.98]"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving Changes...
-                </>
-              ) : (
-                "Save Changes"
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 };
-
-export default CreatorSettings;
