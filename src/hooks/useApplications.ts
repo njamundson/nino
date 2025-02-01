@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/types/application";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { CreatorType } from "@/types/creator";
 
 export const useApplications = (brandId?: string) => {
   const queryClient = useQueryClient();
@@ -79,7 +80,15 @@ export const useApplications = (brandId?: string) => {
           }
 
           console.log('Fetched brand applications:', data);
-          return data as Application[];
+          return data.map((app: any) => ({
+            ...app,
+            creator: {
+              ...app.creator,
+              profileImage: app.creator.profile_image_url,
+              creatorType: app.creator.creator_type as CreatorType,
+              creator_type: app.creator.creator_type as CreatorType
+            }
+          })) as Application[];
         }
 
         const { data: creator, error: creatorError } = await supabase
@@ -121,7 +130,13 @@ export const useApplications = (brandId?: string) => {
         const typedApplications = data?.map(app => ({
           ...app,
           initiated_by: app.initiated_by as 'brand' | 'creator',
-          is_invitation: app.initiated_by === 'brand'
+          is_invitation: app.initiated_by === 'brand',
+          creator: {
+            ...app.creator,
+            profileImage: app.creator.profile_image_url,
+            creatorType: app.creator.creator_type as CreatorType,
+            creator_type: app.creator.creator_type as CreatorType
+          }
         })) || [];
 
         console.log('Processed applications with flags:', typedApplications);

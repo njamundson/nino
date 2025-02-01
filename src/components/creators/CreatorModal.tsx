@@ -169,7 +169,9 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
     updated_at: new Date().toISOString(),
     profile_id: null,
     notifications_enabled: true,
-    onboarding_completed: true
+    onboarding_completed: true,
+    profileImage: creator.profile_image_url,
+    creatorType: creator.creator_type as CreatorType || 'solo'
   };
 
   return (
