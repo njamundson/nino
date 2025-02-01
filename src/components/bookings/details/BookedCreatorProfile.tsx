@@ -25,7 +25,7 @@ const BookedCreatorProfile = ({
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-6 h-full">
         <div className="relative h-full max-h-[600px] overflow-hidden rounded-2xl">
           <CreatorImage 
-            profileImageUrl={creator.profile_image_url} 
+            profileImageUrl={creator.profileImage} 
             fullName={fullName} 
           />
         </div>

@@ -4,9 +4,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CalendarX } from "lucide-react";
 import BookingDetailsCard from "./details/BookingDetailsCard";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import BookedCreatorProfile from "./details/BookedCreatorProfile";
+import { Creator } from "@/types/creator";
+import { mapCreatorData } from "@/utils/creatorUtils";
 
 interface BrandBookingsListProps {
   onChatClick: (creatorId: string) => void;
@@ -16,6 +20,8 @@ interface BrandBookingsListProps {
 const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProps) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   
   const { data: bookings, isLoading, refetch, isError } = useQuery({
     queryKey: ['brand-active-bookings'],
@@ -90,6 +96,17 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         variant: "destructive",
       });
     }
+  };
+
+  const handleViewCreator = (creator: any) => {
+    const mappedCreator = mapCreatorData(creator);
+    setSelectedCreator(mappedCreator);
+    setIsProfileOpen(true);
+  };
+
+  const handleMessageCreator = (creatorId: string) => {
+    setIsProfileOpen(false);
+    onChatClick(creatorId);
   };
 
   useEffect(() => {
@@ -168,19 +185,33 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   }
 
   return (
-    <div className="space-y-6">
-      {bookings.map((booking: any) => (
-        <BookingDetailsCard
-          key={booking.id}
-          booking={booking}
-          creator={booking.creator}
-          onChatClick={() => onChatClick(booking.creator.user_id)}
-          onViewCreator={() => onViewCreator(booking.creator)}
-          onRefresh={refetch}
-          onDelete={() => handleDelete(booking.id)}
-        />
-      ))}
-    </div>
+    <>
+      <div className="space-y-6">
+        {bookings.map((booking: any) => (
+          <BookingDetailsCard
+            key={booking.id}
+            booking={booking}
+            creator={booking.creator}
+            onChatClick={() => onChatClick(booking.creator.user_id)}
+            onViewCreator={() => handleViewCreator(booking.creator)}
+            onRefresh={refetch}
+            onDelete={() => handleDelete(booking.id)}
+          />
+        ))}
+      </div>
+
+      <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+        <DialogContent className="max-w-4xl h-[90vh] p-0">
+          {selectedCreator && (
+            <BookedCreatorProfile
+              creator={selectedCreator}
+              onClose={() => setIsProfileOpen(false)}
+              onMessageClick={() => selectedCreator.user_id && handleMessageCreator(selectedCreator.user_id)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
