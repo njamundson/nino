@@ -20,13 +20,11 @@ const RecentMessages = () => {
         .select(`
           *,
           sender:profiles!messages_sender_profile_id_fkey(
-            first_name,
-            last_name,
+            display_name,
             id
           ),
           receiver:profiles!messages_receiver_profile_id_fkey(
-            first_name,
-            last_name,
+            display_name,
             id
           )
         `)
@@ -90,12 +88,12 @@ const RecentMessages = () => {
               <Avatar className="w-8 h-8">
                 <AvatarImage src={message.sender?.profile_image_url} />
                 <AvatarFallback className="bg-nino-primary/10 text-nino-primary text-xs">
-                  {message.sender?.first_name?.[0]}{message.sender?.last_name?.[0]}
+                  {message.sender?.display_name?.[0]}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-nino-text truncate">
-                  {message.sender?.first_name} {message.sender?.last_name}
+                  {message.sender?.display_name}
                 </p>
                 <p className="text-sm text-nino-gray line-clamp-2">
                   {formatMessagePreview(message.content)}
