@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Application } from "@/integrations/supabase/types/application";
+import { Application } from "@/types/application";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useApplications = (brandId?: string) => {
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription
   useEffect(() => {
     console.log('Setting up applications subscription');
     const channel = supabase
@@ -26,7 +25,6 @@ export const useApplications = (brandId?: string) => {
       )
       .subscribe();
 
-    // Also listen for opportunity status changes
     const opportunityChannel = supabase
       .channel('opportunity-changes')
       .on(
@@ -61,7 +59,6 @@ export const useApplications = (brandId?: string) => {
           return [];
         }
 
-        // If brandId is provided, fetch applications for that brand
         if (brandId) {
           const { data, error } = await supabase
             .from('applications')
@@ -82,10 +79,9 @@ export const useApplications = (brandId?: string) => {
           }
 
           console.log('Fetched brand applications:', data);
-          return (data as Application[]) || [];
+          return data as Application[];
         }
 
-        // Get the creator profile for the current user
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('id')
@@ -102,7 +98,6 @@ export const useApplications = (brandId?: string) => {
           return [];
         }
 
-        // Fetch all applications for the creator
         const { data, error } = await supabase
           .from('applications')
           .select(`
@@ -123,7 +118,6 @@ export const useApplications = (brandId?: string) => {
 
         console.log('Raw applications data:', data);
 
-        // Ensure initiated_by is properly typed
         const typedApplications = data?.map(app => ({
           ...app,
           initiated_by: app.initiated_by as 'brand' | 'creator',
@@ -131,7 +125,7 @@ export const useApplications = (brandId?: string) => {
         })) || [];
 
         console.log('Processed applications with flags:', typedApplications);
-        return typedApplications;
+        return typedApplications as Application[];
       } catch (error) {
         console.error('Error in useApplications:', error);
         throw error;

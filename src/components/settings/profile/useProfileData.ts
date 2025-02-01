@@ -3,8 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface ProfileData {
-  firstName: string;
-  lastName: string;
+  display_name: string;
   bio: string;
   location: string;
   instagram: string;
@@ -18,8 +17,7 @@ export const useProfileData = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
-    firstName: "",
-    lastName: "",
+    display_name: "",
     bio: "",
     location: "",
     instagram: "",
@@ -59,8 +57,7 @@ export const useProfileData = () => {
       if (creatorError) throw creatorError;
 
       setProfileData({
-        firstName: profileData?.first_name || "",
-        lastName: profileData?.last_name || "",
+        display_name: profileData?.display_name || "",
         bio: creatorData?.bio || "",
         location: creatorData?.location || "",
         instagram: creatorData?.instagram || "",
