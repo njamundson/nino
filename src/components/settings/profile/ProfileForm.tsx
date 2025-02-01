@@ -7,8 +7,7 @@ interface ProfileFormProps {
   isEditing: boolean;
   loading: boolean;
   profileData: {
-    firstName: string;
-    lastName: string;
+    display_name: string;
     bio: string;
     location: string;
     instagram: string;
@@ -28,27 +27,15 @@ const ProfileForm = ({
 }: ProfileFormProps) => {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstName">First Name</Label>
-          <Input
-            id="firstName"
-            value={profileData.firstName}
-            onChange={(e) => onUpdateField("firstName", e.target.value)}
-            disabled={!isEditing || loading}
-            className="bg-white/50"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="lastName">Last Name</Label>
-          <Input
-            id="lastName"
-            value={profileData.lastName}
-            onChange={(e) => onUpdateField("lastName", e.target.value)}
-            disabled={!isEditing || loading}
-            className="bg-white/50"
-          />
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="displayName">Display Name</Label>
+        <Input
+          id="displayName"
+          value={profileData.display_name}
+          onChange={(e) => onUpdateField("display_name", e.target.value)}
+          disabled={!isEditing || loading}
+          className="bg-white/50"
+        />
       </div>
 
       <div className="space-y-2">
@@ -100,6 +87,7 @@ const ProfileForm = ({
           <SkillsSelection
             skills={profileData.skills}
             onUpdateSkills={onUpdateSkills}
+            disabled={loading}
           />
         </div>
       )}
