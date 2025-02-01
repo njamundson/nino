@@ -6,8 +6,7 @@ interface ChatUser {
   id: string;
   otherUser: {
     id: string;
-    firstName: string;
-    lastName: string;
+    display_name: string;
     profileImage: string | null;
   };
   content: string;
@@ -40,23 +39,17 @@ export const useChatList = (currentUserId: string | undefined) => {
             read,
             sender:profiles!sender_profile_id (
               id,
-              first_name,
-              last_name,
+              display_name,
               creator:creators (
                 id,
-                first_name,
-                last_name,
                 profile_image_url
               )
             ),
             receiver:profiles!receiver_profile_id (
               id,
-              first_name,
-              last_name,
+              display_name,
               creator:creators (
                 id,
-                first_name,
-                last_name,
                 profile_image_url
               )
             )
@@ -73,21 +66,17 @@ export const useChatList = (currentUserId: string | undefined) => {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
             const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
             
-            // First try to get creator names, then fall back to profile names
-            const creatorInfo = otherUser?.creator;
-            const firstName = creatorInfo?.first_name || otherUser?.first_name || '';
-            const lastName = creatorInfo?.last_name || otherUser?.last_name || '';
+            const creatorInfo = otherUser?.creator?.[0];
+            const display_name = otherUser?.display_name || 'User';
             const profileImage = creatorInfo?.profile_image_url || null;
 
-            // Only update the map if this is a more recent message for this conversation
             if (!conversationsMap.has(otherUserId) || 
                 new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
               conversationsMap.set(otherUserId, {
                 ...msg,
                 otherUser: {
                   id: otherUserId,
-                  firstName,
-                  lastName,
+                  display_name,
                   profileImage
                 }
               });
