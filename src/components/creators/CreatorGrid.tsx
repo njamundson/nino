@@ -28,7 +28,6 @@ const CreatorGrid = () => {
     : [];
 
   const handleViewProfile = (creator: Creator) => {
-    // Logic to view the creator's profile
     console.log("Viewing profile for:", creator);
   };
 
