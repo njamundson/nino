@@ -40,17 +40,19 @@ export const useChatList = (currentUserId: string | undefined) => {
             sender:profiles!sender_profile_id (
               id,
               display_name,
-              creator:creators (
+              creators (
                 id,
-                profile_image_url
+                profile_image_url,
+                display_name
               )
             ),
             receiver:profiles!receiver_profile_id (
               id,
               display_name,
-              creator:creators (
+              creators (
                 id,
-                profile_image_url
+                profile_image_url,
+                display_name
               )
             )
           `)
@@ -66,9 +68,12 @@ export const useChatList = (currentUserId: string | undefined) => {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
             const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
             
-            const creatorInfo = otherUser?.creator?.[0];
-            const display_name = otherUser?.display_name || 'User';
-            const profileImage = creatorInfo?.profile_image_url || null;
+            // Get creator info from the nested creators array
+            const creatorInfo = otherUser?.creators?.[0];
+            
+            // Use creator's display name if available, fallback to profile display name
+            const display_name = creatorInfo?.display_name || otherUser?.display_name || 'Creator';
+            const profileImage = creatorInfo?.profile_image_url;
 
             if (!conversationsMap.has(otherUserId) || 
                 new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
