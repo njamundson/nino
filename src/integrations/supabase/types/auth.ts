@@ -1,15 +1,13 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
-
-export interface Profile {
+export interface UserProfile {
   id: string;
-  first_name: string | null;
-  last_name: string | null;
   created_at: string;
   updated_at: string;
+  display_name: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email?: string;
+  created_at: string;
+  profile?: UserProfile;
 }

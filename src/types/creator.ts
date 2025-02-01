@@ -1,8 +1,7 @@
 export interface CreatorData {
   id: string;
   user_id: string;
-  firstName: string;
-  lastName: string;
+  display_name: string;
   bio: string;
   specialties: string[];
   instagram: string;
@@ -12,8 +11,7 @@ export interface CreatorData {
   creatorType: CreatorType;
   profile_image_url: string | null;
   profile?: {
-    first_name: string | null;
-    last_name: string | null;
+    display_name: string | null;
   } | null;
   notifications_enabled?: boolean;
 }
@@ -41,11 +39,9 @@ export interface Creator {
   website: string | null;
   creator_type: CreatorType | null;
   profile_image_url: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  display_name: string;
   profile?: {
-    first_name: string | null;
-    last_name: string | null;
+    display_name: string | null;
   } | null;
   created_at: string;
   updated_at: string;
