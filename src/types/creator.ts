@@ -36,15 +36,17 @@ export interface Creator {
   specialties: string[] | null;
   instagram: string | null;
   website: string | null;
-  creator_type: CreatorType | null;
+  creator_type: CreatorType;
   profile_image_url: string | null;
   display_name: string;
   profile?: {
     display_name: string;
   } | null;
-  created_at: string;
-  updated_at: string;
-  profile_id: string | null;
+  profileImage: string | null;
+  creatorType: CreatorType;
+  created_at?: string;
+  updated_at?: string;
+  profile_id?: string | null;
   onboarding_completed?: boolean;
   notifications_enabled?: boolean;
 }

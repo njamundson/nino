@@ -7,11 +7,15 @@ interface CreatorGridItemProps {
 }
 
 const CreatorGridItem = ({ creator, onViewProfile }: CreatorGridItemProps) => {
+  const handleInvite = (creatorId: string) => {
+    console.log('Inviting creator:', creatorId);
+  };
+
   return (
     <div className="w-full">
       <CreatorCard
         creator={creator}
-        onViewProfile={() => onViewProfile(creator)}
+        onInvite={handleInvite}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Creator } from "@/types/creator";
+import { Creator, CreatorType } from "@/types/creator";
 
 export const useCreators = () => {
   return useQuery({
@@ -10,6 +10,7 @@ export const useCreators = () => {
         .from('creators')
         .select(`
           id,
+          user_id,
           display_name,
           bio,
           location,
@@ -29,14 +30,17 @@ export const useCreators = () => {
 
       return creators.map((creator): Creator => ({
         id: creator.id,
+        user_id: creator.user_id,
         bio: creator.bio || '',
         location: creator.location || '',
         specialties: creator.specialties || [],
-        creator_type: creator.creator_type || '',
+        creator_type: creator.creator_type as CreatorType,
         instagram: creator.instagram || '',
         website: creator.website || '',
-        profileImage: creator.profile_image_url || '',
-        profile_image_url: creator.profile_image_url || '',
+        profileImage: creator.profile_image_url,
+        profile_image_url: creator.profile_image_url,
+        display_name: creator.display_name || 'Creator',
+        creatorType: creator.creator_type as CreatorType,
         profile: {
           display_name: creator.profile?.display_name || creator.display_name || 'Creator'
         }
