@@ -37,7 +37,22 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           .select(`
             *,
             opportunity:opportunities(*),
-            creator:creators(*)
+            creator:creators(
+              id,
+              user_id,
+              bio,
+              location,
+              instagram,
+              website,
+              specialties,
+              creator_type,
+              profile_image_url,
+              display_name,
+              created_at,
+              updated_at,
+              profile_id,
+              notifications_enabled
+            )
           `)
           .eq('creator_id', creator.id)
           .eq('status', 'accepted')
@@ -116,7 +131,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           <BookingCard
             key={booking.id}
             creator={booking.creator}
-            onChatClick={() => onChatClick(booking.creator.user_id)}
+            onMessageClick={() => onChatClick(booking.creator.user_id)}
             onViewCreator={() => onViewCreator(booking.creator)}
           />
         ))}

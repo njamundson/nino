@@ -42,8 +42,7 @@ interface BookingDetailsCardProps {
     creator: {
       bio: string | null;
       specialties: string[] | null;
-      first_name: string;
-      last_name: string | null;
+      display_name: string;
       profile_image_url: string | null;
       user_id: string;
       id: string;
@@ -76,7 +75,7 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
 
       toast({
         title: "Booking Cancelled",
-        description: `The booking with ${booking.creator.first_name} ${booking.creator.last_name || ''} has been cancelled. They will be notified of this change.`,
+        description: `The booking with ${booking.creator.display_name} has been cancelled. They will be notified of this change.`,
       });
 
       setShowCancelDialog(false);
@@ -96,7 +95,6 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
 
   const handleDeleteCampaign = async () => {
     try {
-      // First update the application status to cancelled
       const { error: applicationError } = await supabase
         .from('applications')
         .update({ status: 'cancelled' })
@@ -104,7 +102,6 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
 
       if (applicationError) throw applicationError;
 
-      // Then update the opportunity status to cancelled
       const { error: opportunityError } = await supabase
         .from('opportunities')
         .update({ status: 'cancelled' })
@@ -139,8 +136,7 @@ const BookingDetailsCard = ({ booking, onChatClick, onViewCreator, onRefresh }: 
     specialties: booking.creator.specialties || [],
     instagram: booking.creator.instagram || '',
     website: booking.creator.website || '',
-    first_name: booking.creator.first_name,
-    last_name: booking.creator.last_name || '',
+    display_name: booking.creator.display_name,
     profile_image_url: booking.creator.profile_image_url,
     creator_type: (booking.creator.creator_type as CreatorType) || 'solo',
     user_id: booking.creator.user_id,
