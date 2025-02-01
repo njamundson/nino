@@ -1,5 +1,4 @@
-import { Card } from "@/components/ui/card";
-import BrandChatHeader from "@/components/messages/brand/BrandChatHeader";
+import ChatHeader from "@/components/messages/ChatHeader";
 import BrandChatMessages from "@/components/messages/brand/BrandChatMessages";
 import BrandChatInput from "@/components/messages/brand/BrandChatInput";
 import { Message } from "@/types/message";
@@ -55,8 +54,8 @@ export const BrandChatContainer = ({
   }, [selectedChat, selectedProfileImage]);
 
   return (
-    <Card className="flex flex-col h-[calc(100vh-14rem)] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
-      <BrandChatHeader
+    <div className="flex flex-col h-full">
+      <ChatHeader
         senderDisplayName={selectedDisplayName}
         senderProfileImage={senderProfileImage}
         senderUserId={selectedChat}
@@ -78,7 +77,7 @@ export const BrandChatContainer = ({
         editingMessage={editingMessage}
         setEditingMessage={setEditingMessage}
       />
-    </Card>
+    </div>
   );
 };
 

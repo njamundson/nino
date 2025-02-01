@@ -6,7 +6,6 @@ import { ChatListItem } from "./chat-list/ChatListItem";
 import CreatorSelectionModal from "./chat-list/CreatorSelectionModal";
 import { useChatList } from "@/hooks/messages/useChatList";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Card } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 
 interface ChatListProps {
@@ -56,54 +55,50 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   if (!chats || chats.length === 0) {
     return (
-      <Card className="h-full bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl p-6">
-        <div className="flex flex-col items-center justify-center text-center space-y-4">
-          <div className="rounded-full bg-gray-100 p-3">
-            <MessageSquare className="w-6 h-6 text-gray-400" />
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-medium">No messages yet</h3>
-            <p className="text-sm text-gray-500">
-              Start a conversation with a creator
-            </p>
-          </div>
+      <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
+        <div className="rounded-full bg-gray-100 p-3">
+          <MessageSquare className="w-6 h-6 text-gray-400" />
         </div>
-      </Card>
+        <div className="space-y-2">
+          <h3 className="font-medium">No messages yet</h3>
+          <p className="text-sm text-gray-500">
+            Start a conversation with a creator
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="h-full bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
-      <div className="flex flex-col h-full">
-        <ChatListHeader 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onNewChat={() => setIsModalOpen(true)}
-        />
+    <div className="flex flex-col h-full">
+      <ChatListHeader 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onNewChat={() => setIsModalOpen(true)}
+      />
 
-        <div className="flex-1 overflow-y-auto">
-          {filteredChats?.map((chat) => (
-            <ChatListItem
-              key={chat.otherUser.id}
-              chat={chat}
-              isSelected={selectedUserId === chat.otherUser.id}
-              currentUserId={currentUser?.id}
-              onSelect={() => onSelectChat(
-                chat.otherUser.id,
-                chat.otherUser.display_name,
-                chat.otherUser.profileImage
-              )}
-            />
-          ))}
-        </div>
-
-        <CreatorSelectionModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSelect={onSelectChat}
-        />
+      <div className="flex-1 overflow-y-auto">
+        {filteredChats?.map((chat) => (
+          <ChatListItem
+            key={chat.otherUser.id}
+            chat={chat}
+            isSelected={selectedUserId === chat.otherUser.id}
+            currentUserId={currentUser?.id}
+            onSelect={() => onSelectChat(
+              chat.otherUser.id,
+              chat.otherUser.display_name,
+              chat.otherUser.profileImage
+            )}
+          />
+        ))}
       </div>
-    </Card>
+
+      <CreatorSelectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={onSelectChat}
+      />
+    </div>
   );
 };
 

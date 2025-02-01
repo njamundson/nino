@@ -64,12 +64,14 @@ const Messages = () => {
         title="Messages"
         description="Chat with creators and manage your conversations"
       />
-      <div className="grid grid-cols-[350px_1fr] gap-6 h-full">
-        <ChatList 
-          onSelectChat={handleChatSelect} 
-          selectedUserId={selectedChat}
-        />
-        <Card className="bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
+      <Card className="grid grid-cols-[350px_1fr] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
+        <div className="border-r border-gray-100">
+          <ChatList 
+            onSelectChat={handleChatSelect} 
+            selectedUserId={selectedChat}
+          />
+        </div>
+        <div>
           {selectedChat ? (
             <BrandChatContainer
               selectedChat={selectedChat}
@@ -85,8 +87,8 @@ const Messages = () => {
               </div>
             </div>
           )}
-        </Card>
-      </div>
+        </div>
+      </Card>
     </div>
   );
 };
