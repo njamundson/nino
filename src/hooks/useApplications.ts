@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/types/application";
 import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreatorType } from "@/types/creator";
 import { mapCreatorData } from "@/utils/creatorUtils";
 
@@ -111,5 +111,8 @@ export const useApplications = (brandId?: string) => {
     }
   };
 
-  return fetchApplications;
+  return useQuery({
+    queryKey: ['applications', brandId],
+    queryFn: fetchApplications
+  });
 };
