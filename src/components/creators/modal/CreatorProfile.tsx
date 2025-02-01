@@ -25,9 +25,7 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
 
   if (!creator) return null;
 
-  const fullName = creator.first_name && creator.last_name 
-    ? `${creator.first_name} ${creator.last_name}`
-    : creator.first_name || 'Creator';
+  const fullName = creator.display_name || 'Creator';
 
   const onAccept = () => {
     setShowAcceptDialog(true);
@@ -111,7 +109,6 @@ const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, appli
         )}
       </div>
 
-      {/* Action buttons outside the scrollable area */}
       {(application?.status === 'pending' || application?.status === 'invited') && (
         <div className="p-6 border-t border-gray-100 mt-auto">
           <ActionButtons
