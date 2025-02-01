@@ -35,10 +35,8 @@ export const useProfileData = () => {
         }
         
         return {
-          ...brandData,
           profile_image_url: profileImageUrl,
-          first_name: brandData?.company_name?.charAt(0) || '',
-          last_name: brandData?.company_name?.charAt(1) || '',
+          display_name: brandData?.company_name || '',
         } as BrandProfile;
       }
       

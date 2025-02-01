@@ -11,7 +11,6 @@ import ProfileAvatar from "./user-menu/ProfileAvatar";
 import { useProfileData } from "./user-menu/useProfileData";
 
 export interface BrandProfile {
-  company_name: string | null;
   profile_image_url: string | null;
   display_name: string;
 }

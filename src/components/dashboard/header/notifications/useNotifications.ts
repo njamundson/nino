@@ -21,13 +21,12 @@ export const useNotifications = () => {
         .from('messages')
         .select(`
           *,
-          sender:profiles(display_name),
-          receiver:profiles(display_name)
+          sender:profiles!sender_profile_id(display_name),
+          receiver:profiles!receiver_profile_id(display_name)
         `)
         .eq('receiver_id', user.id)
         .eq('read', false)
-        .order('created_at', { ascending: false })
-        .limit(5);
+        .order('created_at', { ascending: false });
 
       if (messagesError) {
         console.error('Error fetching messages:', messagesError);
@@ -37,11 +36,11 @@ export const useNotifications = () => {
       // Transform messages into notifications
       const messageNotifications = (messages || []).map(message => ({
         id: message.id,
-        type: 'message',
+        type: message.message_type === 'invitation' ? 'invitation' : 'message',
         content: `New message from ${message.sender?.display_name || 'Unknown'}`,
         created_at: message.created_at,
         read: message.read,
-        action_url: '/messages'
+        action_url: message.message_type === 'invitation' ? '/creator/projects' : '/messages'
       }));
 
       // Then, get unread applications (proposals)
