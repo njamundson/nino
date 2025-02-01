@@ -11,7 +11,7 @@ export interface CreatorData {
   creatorType: CreatorType;
   profile_image_url: string | null;
   profile?: {
-    display_name: string | null;
+    display_name: string;
   } | null;
   notifications_enabled?: boolean;
 }
