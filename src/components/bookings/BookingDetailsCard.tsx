@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, User, RefreshCw } from "lucide-react";
 
 export interface BookingDetailsCardProps {
-  creator?: Creator;
+  creator: Creator;
   onCancel?: () => void;
   onDelete?: () => void;
   status?: string;
-  booking?: any;
+  booking: any;
   onChatClick?: () => void;
   onViewCreator?: () => void;
   onRefresh?: () => void;
@@ -30,9 +30,9 @@ export const BookingDetailsCard = ({
       <div className="space-y-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            {creator?.profileImage ? (
+            {creator?.profile_image_url ? (
               <img
-                src={creator.profileImage}
+                src={creator.profile_image_url}
                 alt={creator?.display_name}
                 className="w-12 h-12 rounded-full object-cover ring-2 ring-white"
               />

@@ -2,17 +2,26 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import BookingDetailsCard from "./BookingDetailsCard";
+import { Creator } from "@/types/creator";
 
-const BrandBookingsList = () => {
+interface BrandBookingsListProps {
+  onChatClick: (creatorId: string) => void;
+  onViewCreator: (creator: Creator) => void;
+}
+
+const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProps) => {
   const { toast } = useToast();
 
-  const { data: bookings, refetch } = useQuery("bookings", async () => {
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("*, creator(*)");
+  const { data: bookings, refetch } = useQuery({
+    queryKey: ['applications'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("applications")
+        .select("*, creator:creators(*), opportunity:opportunities(*)");
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    }
   });
 
   const handleDelete = async (applicationId: string) => {
