@@ -2,21 +2,19 @@ import ProfileImageUpload from "./basic-info/ProfileImageUpload";
 import PersonalInfoFields from "./basic-info/PersonalInfoFields";
 
 interface BasicInfoStepProps {
-  profileImage: string | null;
-  firstName: string;
-  lastName: string;
+  displayName: string;
   bio: string;
   location: string;
+  profileImage: string | null;
   onUpdateField: (field: string, value: string) => void;
   onUpdateImage: (image: string | null) => void;
 }
 
 const BasicInfoStep = ({
-  profileImage,
-  firstName,
-  lastName,
+  displayName,
   bio,
   location,
+  profileImage,
   onUpdateField,
   onUpdateImage,
 }: BasicInfoStepProps) => {
@@ -35,8 +33,7 @@ const BasicInfoStep = ({
       />
 
       <PersonalInfoFields
-        firstName={firstName}
-        lastName={lastName}
+        displayName={displayName}
         bio={bio}
         location={location}
         onUpdateField={onUpdateField}

@@ -26,8 +26,7 @@ const CreatorOnboardingForm = ({ onComplete }: CreatorOnboardingFormProps) => {
       case 'basic':
         return (
           <BasicInfoStep
-            firstName={creatorData.firstName}
-            lastName={creatorData.lastName}
+            displayName={creatorData.display_name}
             bio={creatorData.bio}
             location={creatorData.location}
             profileImage={creatorData.profileImage}
