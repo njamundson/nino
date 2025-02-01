@@ -2,32 +2,25 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, UserRound } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import BookedCreatorProfile from "./BookedCreatorProfile";
-import { Creator } from "@/types/creator";
 
 interface CreatorSectionProps {
-  creator: Creator;
+  creator: {
+    id: string;
+    first_name?: string;
+    last_name?: string | null;
+    profile_image_url: string | null;
+    display_name: string;
+  };
   onChatClick: () => void;
   onViewCreator: () => void;
-  onCancelBooking?: () => void;
 }
 
-const CreatorSection = ({ 
-  creator, 
-  onChatClick, 
-  onViewCreator,
-  onCancelBooking 
-}: CreatorSectionProps) => {
+const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionProps) => {
   const creatorName = creator.display_name;
 
   return (
@@ -80,24 +73,14 @@ const CreatorSection = ({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
-                    >
-                      <UserRound className="w-5 h-5" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl h-[90vh]">
-                    <BookedCreatorProfile 
-                      creator={creator}
-                      onMessageClick={onChatClick}
-                      onCancelBooking={onCancelBooking}
-                    />
-                  </DialogContent>
-                </Dialog>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onViewCreator}
+                  className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
+                >
+                  <UserRound className="w-5 h-5" />
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>View Profile</p>

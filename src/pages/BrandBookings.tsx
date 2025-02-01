@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import PageHeader from "@/components/shared/PageHeader";
 import BrandBookingsList from "@/components/bookings/BrandBookingsList";
 import { useNavigate } from "react-router-dom";
-import { Creator } from "@/types/creator";
 
 const BrandBookings = () => {
   const navigate = useNavigate();
@@ -11,9 +10,9 @@ const BrandBookings = () => {
     navigate(`/brand/messages?userId=${creatorId}`);
   };
 
-  const handleViewCreator = (creator: Creator) => {
+  const handleViewCreator = (creator: any) => {
     // Store creator data in state if needed for modal
-    console.log("Viewing creator:", creator);
+    // Open creator profile modal
   };
 
   return (

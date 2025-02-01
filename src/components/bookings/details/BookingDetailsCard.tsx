@@ -16,11 +16,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Creator } from "@/types/creator";
-import { mapCreatorData } from "@/utils/creatorUtils";
 
 interface BookingDetailsCardProps {
-  creator: Creator;
+  creator: {
+    id: string;
+    first_name?: string;
+    last_name?: string | null;
+    profile_image_url: string | null;
+    display_name: string;
+  };
   booking: {
     id: string;
     opportunity: {
