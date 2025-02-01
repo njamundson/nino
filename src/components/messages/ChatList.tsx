@@ -14,19 +14,6 @@ interface ChatListProps {
   selectedUserId?: string;
 }
 
-interface ChatUser {
-  id: string;
-  otherUser: {
-    id: string;
-    display_name: string;
-    profileImage: string | null;
-  };
-  content: string;
-  created_at: string;
-  sender_id: string;
-  read: boolean;
-}
-
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,7 +56,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   if (!chats || chats.length === 0) {
     return (
-      <Card className="p-6">
+      <Card className="h-full bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl p-6">
         <div className="flex flex-col items-center justify-center text-center space-y-4">
           <div className="rounded-full bg-gray-100 p-3">
             <MessageSquare className="w-6 h-6 text-gray-400" />
@@ -86,35 +73,37 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <ChatListHeader 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onNewChat={() => setIsModalOpen(true)}
-      />
+    <Card className="h-full bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
+      <div className="flex flex-col h-full">
+        <ChatListHeader 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onNewChat={() => setIsModalOpen(true)}
+        />
 
-      <div className="flex-1 overflow-y-auto">
-        {filteredChats?.map((chat) => (
-          <ChatListItem
-            key={chat.otherUser.id}
-            chat={chat}
-            isSelected={selectedUserId === chat.otherUser.id}
-            currentUserId={currentUser?.id}
-            onSelect={() => onSelectChat(
-              chat.otherUser.id,
-              chat.otherUser.display_name,
-              chat.otherUser.profileImage
-            )}
-          />
-        ))}
+        <div className="flex-1 overflow-y-auto">
+          {filteredChats?.map((chat) => (
+            <ChatListItem
+              key={chat.otherUser.id}
+              chat={chat}
+              isSelected={selectedUserId === chat.otherUser.id}
+              currentUserId={currentUser?.id}
+              onSelect={() => onSelectChat(
+                chat.otherUser.id,
+                chat.otherUser.display_name,
+                chat.otherUser.profileImage
+              )}
+            />
+          ))}
+        </div>
+
+        <CreatorSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSelect={onSelectChat}
+        />
       </div>
-
-      <CreatorSelectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSelect={onSelectChat}
-      />
-    </div>
+    </Card>
   );
 };
 
