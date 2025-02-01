@@ -17,33 +17,17 @@ interface ChatListProps {
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{ id: string } | null>(null);
-  const [isBrand, setIsBrand] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
 
-  const { chats, isLoading } = useChatList(currentUser?.id);
-
   useEffect(() => {
-    const fetchCurrentUser = async () => {
+    const getUser = async () => {
       try {
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error) throw error;
         setCurrentUser(user);
-
-        const { data: brand, error: brandError } = await supabase
-          .from('brands')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (brandError) {
-          console.error('Error checking brand status:', brandError);
-          return;
-        }
-
-        setIsBrand(!!brand);
       } catch (error) {
-        console.error('Error fetching current user:', error);
+        console.error('Error fetching user:', error);
         toast({
           title: "Error",
           description: "Failed to load user data",
@@ -51,9 +35,10 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         });
       }
     };
-
-    fetchCurrentUser();
+    getUser();
   }, [toast]);
+
+  const { chats, isLoading } = useChatList(currentUser?.id);
 
   const filteredChats = chats?.filter((chat) =>
     chat.otherUser.display_name
@@ -71,35 +56,31 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   if (!chats || chats.length === 0) {
     return (
-      <div className="flex-1 p-6">
-        <Card className="p-6">
-          <div className="flex flex-col items-center justify-center text-center space-y-4">
-            <div className="rounded-full bg-gray-100 p-3">
-              <MessageSquare className="w-6 h-6 text-gray-400" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-medium">No messages yet</h3>
-              <p className="text-sm text-gray-500">
-                {isBrand 
-                  ? "Start a conversation with a creator"
-                  : "Brands will appear here when they message you"}
-              </p>
-            </div>
+      <Card className="p-6">
+        <div className="flex flex-col items-center justify-center text-center space-y-4">
+          <div className="rounded-full bg-gray-100 p-3">
+            <MessageSquare className="w-6 h-6 text-gray-400" />
           </div>
-        </Card>
-      </div>
+          <div className="space-y-2">
+            <h3 className="font-medium">No messages yet</h3>
+            <p className="text-sm text-gray-500">
+              Start a conversation with a creator
+            </p>
+          </div>
+        </div>
+      </Card>
     );
   }
 
   return (
-    <div className="flex flex-col h-full border-r border-gray-100">
+    <div className="flex flex-col h-full">
       <ChatListHeader 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onNewChat={isBrand ? () => setIsModalOpen(true) : undefined}
+        onNewChat={() => setIsModalOpen(true)}
       />
 
-      <div className="flex-1 overflow-y-auto bg-white">
+      <div className="flex-1 overflow-y-auto">
         {filteredChats?.map((chat) => (
           <ChatListItem
             key={chat.otherUser.id}
@@ -115,13 +96,11 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         ))}
       </div>
 
-      {isBrand && (
-        <CreatorSelectionModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSelect={onSelectChat}
-        />
-      )}
+      <CreatorSelectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelect={onSelectChat}
+      />
     </div>
   );
 };

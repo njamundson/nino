@@ -12,7 +12,10 @@ interface BookingDetailsCardProps {
   onCancel?: () => void;
   onDelete?: () => void;
   status?: string;
-  booking?: any; // Add this to match BrandBookingsList usage
+  booking?: any;
+  onChatClick?: () => void;
+  onViewCreator?: () => void;
+  onRefresh?: () => void;
 }
 
 export const BookingDetailsCard = ({
@@ -20,7 +23,10 @@ export const BookingDetailsCard = ({
   onCancel,
   onDelete,
   status = "pending",
-  booking
+  booking,
+  onChatClick,
+  onViewCreator,
+  onRefresh
 }: BookingDetailsCardProps) => {
   return (
     <Card className="p-6 space-y-6">
