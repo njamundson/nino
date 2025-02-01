@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { CalendarX } from "lucide-react";
-import BookingDetailsCard from "./BookingDetailsCard";
+import BookingDetailsCard from "./details/BookingDetailsCard";
 
 interface BrandBookingsListProps {
   onChatClick: (creatorId: string) => void;
@@ -71,31 +71,6 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
     retry: 3,
     staleTime: 1000 * 60, // Consider data stale after 1 minute
   });
-
-  const handleDelete = async (bookingId: string) => {
-    try {
-      const { error } = await supabase
-        .from('applications')
-        .delete()
-        .eq('id', bookingId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Booking deleted successfully",
-      });
-
-      refetch();
-    } catch (error) {
-      console.error('Error deleting booking:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete booking",
-        variant: "destructive",
-      });
-    }
-  };
 
   useEffect(() => {
     const applicationsChannel = supabase
@@ -182,7 +157,6 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           onChatClick={() => onChatClick(booking.creator.user_id)}
           onViewCreator={() => onViewCreator(booking.creator)}
           onRefresh={refetch}
-          onDelete={() => handleDelete(booking.id)}
         />
       ))}
     </div>
