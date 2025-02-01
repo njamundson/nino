@@ -8,7 +8,8 @@ import CampaignSkeleton from "@/components/campaigns/CampaignSkeleton";
 import EmptyCampaigns from "@/components/campaigns/EmptyCampaigns";
 import EditCampaignModal from "@/components/campaigns/EditCampaignModal";
 import { motion } from "framer-motion";
-import { Application } from "@/integrations/supabase/types/application";
+import { Application } from "@/types/application";
+import { Creator } from "@/types/creator";
 
 interface Campaign {
   id: string;
@@ -24,7 +25,9 @@ interface Campaign {
   perks: string[] | null;
   deliverables: string[] | null;
   image_url: string | null;
-  applications?: Application[];
+  applications?: (Application & {
+    creator: Creator;
+  })[];
 }
 
 const MyCampaigns = () => {
@@ -73,6 +76,7 @@ const MyCampaigns = () => {
             initiated_by,
             creator:creators (
               id,
+              user_id,
               bio,
               location,
               specialties,
@@ -80,8 +84,7 @@ const MyCampaigns = () => {
               website,
               creator_type,
               profile_image_url,
-              first_name,
-              last_name
+              display_name
             )
           )
         `)

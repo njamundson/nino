@@ -99,6 +99,7 @@ const Settings = () => {
               loading={loading}
               creatorData={creatorData}
               onUpdateField={handleUpdateField}
+              isEditing={isEditing}
             />
             {isEditing && (
               <Button
