@@ -17,15 +17,16 @@ export const usePrefetchData = () => {
             .from('creators')
             .select(`
               id,
-              first_name,
-              last_name,
+              user_id,
+              display_name,
               bio,
               location,
               specialties,
               creator_type,
               instagram,
               website,
-              profile_image_url
+              profile_image_url,
+              profile:profiles(display_name)
             `)
             .eq('onboarding_completed', true);
 
