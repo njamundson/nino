@@ -25,9 +25,16 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
           id,
           user_id,
           display_name,
+          bio,
+          location,
+          specialties,
+          creator_type,
+          instagram,
+          website,
           profile_image_url
         `)
-        .not('user_id', 'is', null);
+        .not('user_id', 'is', null)
+        .eq('onboarding_completed', true);
 
       if (error) {
         console.error("Error fetching creators:", error);
