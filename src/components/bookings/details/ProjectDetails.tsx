@@ -10,16 +10,10 @@ interface ProjectDetailsProps {
     start_date: string | null;
     end_date: string | null;
     location: string | null;
-    payment_details: string | null;
-    compensation_details: string | null;
   };
 }
 
 const ProjectDetails = ({ opportunity }: ProjectDetailsProps) => {
-  const getStatusMessage = (status: string) => {
-    return status === 'open' ? 'Campaign is still hiring creators.' : 'Campaign is done hiring creators';
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-start">
@@ -31,7 +25,7 @@ const ProjectDetails = ({ opportunity }: ProjectDetailsProps) => {
             variant="secondary" 
             className="capitalize bg-nino-primary/10 text-nino-primary hover:bg-nino-primary/20"
           >
-            {getStatusMessage(opportunity.status)}
+            Active Booking
           </Badge>
         </div>
       </div>

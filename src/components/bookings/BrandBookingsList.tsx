@@ -1,5 +1,4 @@
 import { Card } from "@/components/ui/card";
-import BookingDetailsCard from "./BookingDetailsCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { CalendarX } from "lucide-react";
+import BookingDetailsCard from "./details/BookingDetailsCard";
 
 interface BrandBookingsListProps {
   onChatClick: (creatorId: string) => void;
@@ -21,12 +21,8 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
     queryKey: ['brand-active-bookings'],
     queryFn: async () => {
       try {
-        console.log("Fetching brand bookings...");
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.log("No authenticated user found");
-          return [];
-        }
+        if (!user) return [];
 
         const { data: brand, error: brandError } = await supabase
           .from('brands')
@@ -45,7 +41,6 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         }
 
         if (!brand) {
-          console.log("No brand record found");
           toast({
             title: "No Brand Profile",
             description: "Please complete your brand profile setup",
@@ -53,8 +48,6 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           });
           return [];
         }
-
-        console.log("Found brand:", brand);
 
         const { data, error } = await supabase
           .from('applications')
@@ -67,12 +60,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           .eq('opportunity.brand_id', brand.id)
           .in('opportunity.status', ['active', 'open']);
 
-        if (error) {
-          console.error('Error fetching applications:', error);
-          throw error;
-        }
-
-        console.log("Fetched bookings:", data);
+        if (error) throw error;
         return data || [];
       } catch (error) {
         console.error('Error fetching brand bookings:', error);
@@ -164,8 +152,8 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       {bookings.map((booking: any) => (
         <BookingDetailsCard
           key={booking.id}
-          creator={booking.creator}
           booking={booking}
+          creator={booking.creator}
           onChatClick={() => onChatClick(booking.creator.user_id)}
           onViewCreator={() => onViewCreator(booking.creator)}
           onRefresh={refetch}
