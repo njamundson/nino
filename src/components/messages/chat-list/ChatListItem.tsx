@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ImageIcon } from "lucide-react";
 
 interface ChatListItemProps {
   chat: {
@@ -35,6 +36,18 @@ export const ChatListItem = ({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const getMessagePreview = (content: string) => {
+    if (content.startsWith('![Image]') || content.includes('supabase.co/storage')) {
+      return (
+        <span className="flex items-center gap-1.5">
+          <ImageIcon className="w-3.5 h-3.5" />
+          Attachment
+        </span>
+      );
+    }
+    return content;
+  };
+
   return (
     <div
       className={`group relative px-6 py-4 cursor-pointer hover:bg-gray-50/50 transition-colors ${
@@ -64,7 +77,7 @@ export const ChatListItem = ({
           <p className={`text-sm truncate ${
             !chat.read && chat.sender_id !== currentUserId ? "font-medium text-gray-900" : "text-gray-500"
           }`}>
-            {chat.content}
+            {getMessagePreview(chat.content)}
           </p>
         </div>
       </div>
