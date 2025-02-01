@@ -1,16 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/types/application";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { CreatorType } from "@/types/creator";
+import { mapCreatorData } from "@/utils/creatorUtils";
 
 export const useApplications = (brandId?: string) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log('Setting up applications subscription');
-    const channel = supabase
+    const applicationsChannel = supabase
       .channel('applications-changes')
       .on(
         'postgres_changes',
@@ -19,134 +18,98 @@ export const useApplications = (brandId?: string) => {
           schema: 'public',
           table: 'applications'
         },
-        (payload) => {
-          console.log('Application change detected:', payload);
-          queryClient.invalidateQueries({ queryKey: ['applications', brandId] });
-        }
-      )
-      .subscribe();
-
-    const opportunityChannel = supabase
-      .channel('opportunity-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'opportunities'
-        },
-        (payload) => {
-          console.log('Opportunity change detected:', payload);
-          queryClient.invalidateQueries({ queryKey: ['applications', brandId] });
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['applications'] });
         }
       )
       .subscribe();
 
     return () => {
-      console.log('Cleaning up subscriptions');
-      supabase.removeChannel(channel);
-      supabase.removeChannel(opportunityChannel);
+      supabase.removeChannel(applicationsChannel);
     };
-  }, [queryClient, brandId]);
+  }, [queryClient]);
 
-  return useQuery({
-    queryKey: ['applications', brandId],
-    queryFn: async () => {
-      try {
-        console.log('Fetching applications...');
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.log('No authenticated user found');
-          return [];
-        }
+  const fetchApplications = async () => {
+    try {
+      console.log('Fetching applications...');
+      const { data: { user } } = await supabase.auth.getUser();
 
-        if (brandId) {
-          const { data, error } = await supabase
-            .from('applications')
-            .select(`
-              *,
-              opportunity:opportunities!inner (
-                *,
-                brand:brands (*)
-              ),
-              creator:creators!inner (*)
-            `)
-            .eq('status', 'pending')
-            .eq('opportunities.brand_id', brandId);
+      if (!user) {
+        console.log('No authenticated user found');
+        return [];
+      }
 
-          if (error) {
-            console.error('Error fetching brand applications:', error);
-            throw error;
-          }
-
-          console.log('Fetched brand applications:', data);
-          return data.map((app: any) => ({
-            ...app,
-            creator: {
-              ...app.creator,
-              profileImage: app.creator.profile_image_url,
-              creatorType: app.creator.creator_type as CreatorType,
-              creator_type: app.creator.creator_type as CreatorType
-            }
-          })) as Application[];
-        }
-
-        const { data: creator, error: creatorError } = await supabase
-          .from('creators')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (creatorError) {
-          console.error('Error fetching creator:', creatorError);
-          throw creatorError;
-        }
-
-        if (!creator) {
-          console.log('No creator profile found');
-          return [];
-        }
-
+      if (brandId) {
+        console.log('Fetching applications for brand:', brandId);
         const { data, error } = await supabase
           .from('applications')
           .select(`
             *,
-            opportunity:opportunities (
-              *,
-              brand:brands (*)
-            ),
-            creator:creators (*)
+            opportunity:opportunities(*),
+            creator:creators(*)
           `)
-          .eq('creator_id', creator.id)
+          .eq('opportunity.brand_id', brandId)
           .order('created_at', { ascending: false });
 
         if (error) {
-          console.error('Error fetching applications:', error);
+          console.error('Error fetching brand applications:', error);
           throw error;
         }
 
-        console.log('Raw applications data:', data);
-
-        const typedApplications = data?.map(app => ({
+        console.log('Fetched brand applications:', data);
+        return data.map((app: any) => ({
           ...app,
-          initiated_by: app.initiated_by as 'brand' | 'creator',
-          is_invitation: app.initiated_by === 'brand',
-          creator: {
-            ...app.creator,
-            profileImage: app.creator.profile_image_url,
-            creatorType: app.creator.creator_type as CreatorType,
-            creator_type: app.creator.creator_type as CreatorType
-          }
-        })) || [];
+          creator: mapCreatorData(app.creator)
+        })) as Application[];
+      }
 
-        console.log('Processed applications with flags:', typedApplications);
-        return typedApplications as Application[];
-      } catch (error) {
-        console.error('Error in useApplications:', error);
+      const { data: creator, error: creatorError } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (creatorError) {
+        console.error('Error fetching creator:', creatorError);
+        throw creatorError;
+      }
+
+      if (!creator) {
+        console.log('No creator profile found');
+        return [];
+      }
+
+      console.log('Fetching applications for creator:', creator.id);
+      const { data, error } = await supabase
+        .from('applications')
+        .select(`
+          *,
+          opportunity:opportunities(*),
+          creator:creators(*)
+        `)
+        .eq('creator_id', creator.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching creator applications:', error);
         throw error;
       }
-    },
-    refetchOnWindowFocus: true,
-    staleTime: 1000 * 60 * 5, // Consider data stale after 5 minutes
-  });
+
+      console.log('Fetched creator applications:', data);
+      const typedApplications = data?.map(app => ({
+        ...app,
+        initiated_by: app.initiated_by as 'brand' | 'creator',
+        is_invitation: app.initiated_by === 'brand',
+        creator: mapCreatorData(app.creator)
+      })) || [];
+
+      console.log('Processed applications with flags:', typedApplications);
+      return typedApplications;
+    } catch (error) {
+      console.error('Error in fetchApplications:', error);
+      throw error;
+    }
+  };
+
+  return fetchApplications;
 };

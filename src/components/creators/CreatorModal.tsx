@@ -9,6 +9,7 @@ import BrowseCreatorProfile from "./modal/BrowseCreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
 import { toast } from "sonner";
 import { CreatorType } from "@/types/creator";
+import { mapCreatorData } from "@/utils/creatorUtils";
 
 interface Creator {
   id: string;
@@ -154,7 +155,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
   if (!creator) return null;
 
-  const creatorData = {
+  const creatorData = mapCreatorData({
     id: creator.id,
     bio: creator.bio || '',
     specialties: creator.specialties || [],
@@ -170,9 +171,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
     profile_id: null,
     notifications_enabled: true,
     onboarding_completed: true,
-    profileImage: creator.profile_image_url,
-    creatorType: creator.creator_type as CreatorType || 'solo'
-  };
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
