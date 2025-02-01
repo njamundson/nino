@@ -6,9 +6,9 @@ import SkillsSelection from "../../onboarding/creator/professional-info/SkillsSe
 
 interface CreatorProfileFormProps {
   loading: boolean;
+  isEditing?: boolean;
   creatorData: {
-    firstName: string;
-    lastName: string;
+    display_name: string;
     bio: string;
     location: string;
     instagram: string;
@@ -22,34 +22,22 @@ interface CreatorProfileFormProps {
 
 const CreatorProfileForm = ({
   loading,
+  isEditing = false,
   creatorData,
   onUpdateField,
 }: CreatorProfileFormProps) => {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-sm font-medium text-[#282828]">First Name</Label>
-          <Input
-            id="firstName"
-            value={creatorData.firstName}
-            onChange={(e) => onUpdateField("firstName", e.target.value)}
-            disabled={loading}
-            className="bg-[#F9F6F2] border-0 focus:ring-2 focus:ring-[#A55549] rounded-xl text-[#282828]"
-            placeholder="Enter your first name"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-sm font-medium text-[#282828]">Last Name</Label>
-          <Input
-            id="lastName"
-            value={creatorData.lastName}
-            onChange={(e) => onUpdateField("lastName", e.target.value)}
-            disabled={loading}
-            className="bg-[#F9F6F2] border-0 focus:ring-2 focus:ring-[#A55549] rounded-xl text-[#282828]"
-            placeholder="Enter your last name"
-          />
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="displayName" className="text-sm font-medium text-[#282828]">Display Name</Label>
+        <Input
+          id="displayName"
+          value={creatorData.display_name}
+          onChange={(e) => onUpdateField("display_name", e.target.value)}
+          disabled={loading || !isEditing}
+          className="bg-[#F9F6F2] border-0 focus:ring-2 focus:ring-[#A55549] rounded-xl text-[#282828]"
+          placeholder="Enter your display name"
+        />
       </div>
 
       <div className="space-y-2">
@@ -58,7 +46,7 @@ const CreatorProfileForm = ({
           id="bio"
           value={creatorData.bio}
           onChange={(e) => onUpdateField("bio", e.target.value)}
-          disabled={loading}
+          disabled={loading || !isEditing}
           placeholder="Tell your story..."
           className="bg-[#F9F6F2] border-0 focus:ring-2 focus:ring-[#A55549] rounded-xl resize-none h-32 text-[#282828]"
         />
@@ -67,6 +55,7 @@ const CreatorProfileForm = ({
       <LocationField
         location={creatorData.location}
         onUpdateField={onUpdateField}
+        disabled={loading || !isEditing}
       />
 
       <div className="space-y-2">
@@ -74,6 +63,7 @@ const CreatorProfileForm = ({
         <SkillsSelection
           skills={creatorData.specialties}
           onUpdateSkills={(skills) => onUpdateField("specialties", skills)}
+          disabled={loading || !isEditing}
         />
       </div>
 
@@ -83,7 +73,7 @@ const CreatorProfileForm = ({
           id="instagram"
           value={creatorData.instagram}
           onChange={(e) => onUpdateField("instagram", e.target.value)}
-          disabled={loading}
+          disabled={loading || !isEditing}
           className="bg-[#F9F6F2] border-0 focus:ring-2 focus:ring-[#A55549] rounded-xl text-[#282828]"
           placeholder="@username"
         />
@@ -95,7 +85,7 @@ const CreatorProfileForm = ({
           id="website"
           value={creatorData.website}
           onChange={(e) => onUpdateField("website", e.target.value)}
-          disabled={loading}
+          disabled={loading || !isEditing}
           className="bg-[#F9F6F2] border-0 focus:ring-2 focus:ring-[#A55549] rounded-xl text-[#282828]"
           placeholder="https://yourwebsite.com"
         />
