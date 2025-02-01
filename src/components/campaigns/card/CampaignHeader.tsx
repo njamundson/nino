@@ -71,7 +71,7 @@ const CampaignHeader = ({
                 >
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">
-                      {application.creator?.first_name} {application.creator?.last_name}
+                      {application.creator?.display_name}
                     </p>
                     <p className="text-sm text-gray-500 truncate">
                       Pending Review
