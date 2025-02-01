@@ -41,7 +41,8 @@ const CreatorGrid = ({
         creator_type,
         instagram,
         website,
-        profile_image_url
+        profile_image_url,
+        profile:profiles(display_name)
       `)
       .eq('onboarding_completed', true);
   }, []);
@@ -94,7 +95,7 @@ const CreatorGrid = ({
         profileImage: creator.profile_image_url || '',
         profile_image_url: creator.profile_image_url || '',
         profile: {
-          display_name: creator.display_name || 'Creator'
+          display_name: creator.profile?.display_name || creator.display_name || 'Creator'
         }
       }));
       
