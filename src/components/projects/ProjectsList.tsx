@@ -72,13 +72,13 @@ const ProjectsList = () => {
           return [];
         }
 
-        const opportunitiesWithCreatorId = opportunities.map(opp => ({
+        const opportunitiesWithCreatorId = opportunities?.map(opp => ({
           ...opp,
           current_creator_id: creator.id
         })) as Opportunity[];
 
         console.log("Fetched available projects:", opportunitiesWithCreatorId);
-        return opportunitiesWithCreatorId;
+        return opportunitiesWithCreatorId || [];
       } catch (error) {
         console.error("Error in query:", error);
         toast({
