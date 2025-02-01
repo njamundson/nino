@@ -7,10 +7,10 @@ export interface Message {
   read: boolean;
   message_type: string;
   updated_at: string;
-  media_url: string | null;
-  media_type: string | null;
-  sender_profile_id: string | null;
-  receiver_profile_id: string | null;
+  media_url: string;
+  media_type: string;
+  sender_profile_id: string;
+  receiver_profile_id: string;
   profiles: {
     display_name: string;
   };

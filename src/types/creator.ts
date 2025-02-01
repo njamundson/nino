@@ -40,7 +40,7 @@ export interface Creator {
   profile_image_url: string | null;
   display_name: string;
   profile?: {
-    display_name: string | null;
+    display_name: string;
   } | null;
   created_at: string;
   updated_at: string;
