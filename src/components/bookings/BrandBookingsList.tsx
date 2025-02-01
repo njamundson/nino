@@ -67,10 +67,30 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         throw error;
       }
     },
-    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
+    refetchInterval: 1000 * 60 * 5,
     retry: 3,
-    staleTime: 1000 * 60, // Consider data stale after 1 minute
+    staleTime: 1000 * 60,
   });
+
+  const handleDelete = async (applicationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .delete()
+        .eq('id', applicationId);
+
+      if (error) throw error;
+      
+      refetch();
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the campaign",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     const applicationsChannel = supabase
@@ -157,6 +177,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           onChatClick={() => onChatClick(booking.creator.user_id)}
           onViewCreator={() => onViewCreator(booking.creator)}
           onRefresh={refetch}
+          onDelete={() => handleDelete(booking.id)}
         />
       ))}
     </div>
