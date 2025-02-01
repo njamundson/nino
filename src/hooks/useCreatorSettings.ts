@@ -7,8 +7,7 @@ export const useCreatorSettings = () => {
   const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [creatorData, setCreatorData] = useState({
-    firstName: "",
-    lastName: "",
+    displayName: "",
     bio: "",
     location: "",
     instagram: "",
@@ -32,7 +31,7 @@ export const useCreatorSettings = () => {
         // Get profile data
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('first_name, last_name')
+          .select('display_name')
           .eq('id', user.id)
           .single();
 
@@ -55,8 +54,7 @@ export const useCreatorSettings = () => {
 
         if (profile && creator) {
           setCreatorData({
-            firstName: profile.first_name || "",
-            lastName: profile.last_name || "",
+            displayName: profile.display_name || "",
             bio: creator.bio || "",
             location: creator.location || "",
             instagram: creator.instagram || "",
@@ -95,8 +93,7 @@ export const useCreatorSettings = () => {
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
-          first_name: creatorData.firstName,
-          last_name: creatorData.lastName,
+          display_name: creatorData.displayName,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);

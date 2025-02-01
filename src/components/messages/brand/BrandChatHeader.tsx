@@ -5,36 +5,17 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import CreatorModal from "@/components/creators/CreatorModal";
-import { CreatorType } from "@/types/creator";
+import { Creator } from "@/types/creator";
 
 interface BrandChatHeaderProps {
-  senderFirstName?: string;
-  senderLastName?: string;
+  senderDisplayName?: string;
   senderProfileImage?: string | null;
   senderUserId?: string | null;
   onMobileBack?: () => void;
 }
 
-interface CreatorData {
-  id: string;
-  first_name: string;
-  last_name: string;
-  bio: string | null;
-  location: string | null;
-  instagram: string | null;
-  website: string | null;
-  specialties: string[] | null;
-  creator_type: CreatorType;
-  profile_image_url: string | null;
-  profile: {
-    first_name: string | null;
-    last_name: string | null;
-  };
-}
-
 const BrandChatHeader = ({
-  senderFirstName,
-  senderLastName,
+  senderDisplayName,
   senderProfileImage,
   senderUserId,
   onMobileBack,
@@ -52,8 +33,7 @@ const BrandChatHeader = ({
         .from('creators')
         .select(`
           id,
-          first_name,
-          last_name,
+          display_name,
           bio,
           location,
           instagram,
@@ -61,9 +41,9 @@ const BrandChatHeader = ({
           specialties,
           creator_type,
           profile_image_url,
+          user_id,
           profile:profiles(
-            first_name,
-            last_name
+            display_name
           )
         `)
         .eq('user_id', senderUserId)
@@ -74,15 +54,15 @@ const BrandChatHeader = ({
         return null;
       }
 
-      return creator as CreatorData;
+      return creator as Creator;
     },
     enabled: Boolean(senderUserId),
   });
 
   const displayName = hasSelectedChat 
     ? creatorData 
-      ? `${creatorData.first_name} ${creatorData.last_name}`
-      : `${senderFirstName || ''} ${senderLastName || ''}`
+      ? creatorData.display_name
+      : senderDisplayName
     : "Select a conversation";
 
   return (
@@ -126,7 +106,7 @@ const BrandChatHeader = ({
 
       {creatorData && (
         <CreatorModal
-          creator={creatorData as any}
+          creator={creatorData}
           isOpen={isCreatorModalOpen}
           onClose={() => setIsCreatorModalOpen(false)}
         />
