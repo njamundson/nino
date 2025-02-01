@@ -7,15 +7,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Creator } from "@/types/creator";
 
 interface CreatorSectionProps {
-  creator: {
-    id: string;
-    first_name?: string;
-    last_name?: string | null;
-    profile_image_url: string | null;
-    display_name: string;
-  };
+  creator: Creator;
   onChatClick: () => void;
   onViewCreator: () => void;
 }
@@ -36,9 +31,9 @@ const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionP
 
       <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl group transition-all duration-200 ease-in-out">
         <div className="flex items-center gap-4">
-          {creator.profile_image_url ? (
+          {creator.profileImage ? (
             <img 
-              src={creator.profile_image_url}
+              src={creator.profileImage}
               alt={creatorName}
               className="w-12 h-12 rounded-full object-cover ring-2 ring-white"
             />

@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Creator } from "@/types/creator";
+import { mapCreatorData } from "@/utils/creatorUtils";
 
 interface BookingDetailsCardProps {
   creator: {
@@ -24,6 +26,13 @@ interface BookingDetailsCardProps {
     last_name?: string | null;
     profile_image_url: string | null;
     display_name: string;
+    bio?: string;
+    location?: string;
+    instagram?: string;
+    website?: string;
+    specialties?: string[];
+    creator_type?: string;
+    user_id?: string;
   };
   booking: {
     id: string;
@@ -55,6 +64,7 @@ const BookingDetailsCard = ({
   onDelete,
 }: BookingDetailsCardProps) => {
   const { toast } = useToast();
+  const mappedCreator = mapCreatorData(creator);
 
   const handleDelete = () => {
     if (onDelete) {
@@ -101,20 +111,15 @@ const BookingDetailsCard = ({
         </div>
       )}
 
-      {/* Campaign Details Section */}
       <ProjectDetails opportunity={booking.opportunity} />
-
-      {/* Compensation Details Section */}
       <CompensationDetails
         payment_details={booking.opportunity.payment_details}
         compensation_details={booking.opportunity.compensation_details}
         deliverables={booking.opportunity.deliverables}
         requirements={booking.opportunity.requirements}
       />
-
-      {/* Creator Section */}
       <CreatorSection 
-        creator={creator}
+        creator={mappedCreator}
         onChatClick={onChatClick}
         onViewCreator={onViewCreator}
       />
