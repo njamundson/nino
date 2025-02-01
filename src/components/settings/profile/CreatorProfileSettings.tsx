@@ -112,6 +112,7 @@ const CreatorProfileSettings = () => {
         title: "Success",
         description: "Profile updated successfully",
       });
+      setIsEditing(false);
     } catch (error) {
       console.error('Error in handleSave:', error);
       toast({
