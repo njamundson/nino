@@ -61,8 +61,6 @@ const CompletedProjectsList = () => {
               creator:creators (
                 id,
                 user_id,
-                first_name,
-                last_name,
                 bio,
                 location,
                 instagram,
@@ -70,6 +68,7 @@ const CompletedProjectsList = () => {
                 specialties,
                 creator_type,
                 profile_image_url,
+                display_name,
                 created_at,
                 updated_at,
                 profile_id,
@@ -113,7 +112,7 @@ const CompletedProjectsList = () => {
             created_at: app.created_at || opp.created_at,
             updated_at: app.updated_at || opp.updated_at,
             initiated_by: app.initiated_by || 'creator',
-            creator: app.creator as Creator // Ensure creator has all required fields
+            creator: app.creator as Creator
           }))
         })) as Opportunity[];
 

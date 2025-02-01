@@ -8,8 +8,7 @@ export interface Creator {
   website: string | null;
   creator_type: string;
   profile_image_url: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  display_name: string;
   created_at?: string;
   updated_at?: string;
   profile_id?: string | null;
