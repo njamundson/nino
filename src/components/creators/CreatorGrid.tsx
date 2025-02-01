@@ -1,31 +1,46 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import CreatorGridItem from "./grid/CreatorGridItem";
-import CreatorFilters from "./filters/CreatorFilters";
+import CreatorFilters from "./CreatorFilters";
 import { useCreators } from "./hooks/useCreators";
 import { Creator } from "@/types/creator";
 import { LoadingSpinner } from "../ui/loading-spinner";
 
 const CreatorGrid = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedType, setSelectedType] = useState("all");
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [selectedCreatorType, setSelectedCreatorType] = useState<string | null>(null);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const { data: creators, isLoading, error } = useCreators();
 
+  const handleSpecialtyChange = (specialty: string) => {
+    setSelectedSpecialties(prev => 
+      prev.includes(specialty) 
+        ? prev.filter(s => s !== specialty)
+        : [...prev, specialty]
+    );
+  };
+
+  const handleCreatorTypeChange = (type: string | null) => {
+    setSelectedCreatorType(type);
+  };
+
+  const handleLocationChange = (location: string) => {
+    setSelectedLocations(prev => 
+      prev.includes(location)
+        ? prev.filter(l => l !== location)
+        : [location]
+    );
+  };
+
   const filteredCreators = creators?.filter((creator) => {
-    const matchesSearch = creator.profile.display_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      creator.bio?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      creator.location?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = !selectedCreatorType || creator.creator_type === selectedCreatorType;
+    const matchesSpecialties = selectedSpecialties.length === 0 || 
+      selectedSpecialties.every(specialty => creator.specialties?.includes(specialty));
+    const matchesLocation = selectedLocations.length === 0 || 
+      selectedLocations.some(location => creator.location?.includes(location));
 
-    const matchesType = selectedType === "all" || creator.creator_type === selectedType;
-
-    return matchesSearch && matchesType;
+    return matchesType && matchesSpecialties && matchesLocation;
   });
-
-  const creatorTypes = creators
-    ? Array.from(new Set(creators.map((creator) => creator.creator_type)))
-        .filter(Boolean)
-        .sort()
-    : [];
 
   const handleViewProfile = (creator: Creator) => {
     console.log("Viewing profile for:", creator);
@@ -48,13 +63,14 @@ const CreatorGrid = () => {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <CreatorFilters
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedType={selectedType}
-        onTypeChange={setSelectedType}
-        creatorTypes={creatorTypes}
+        selectedSpecialties={selectedSpecialties}
+        selectedCreatorType={selectedCreatorType}
+        selectedLocations={selectedLocations}
+        onSpecialtyChange={handleSpecialtyChange}
+        onCreatorTypeChange={handleCreatorTypeChange}
+        onLocationChange={handleLocationChange}
       />
 
       <motion.div
