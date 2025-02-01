@@ -14,6 +14,19 @@ interface ChatListProps {
   selectedUserId?: string;
 }
 
+interface ChatUser {
+  id: string;
+  otherUser: {
+    id: string;
+    display_name: string;
+    profileImage: string | null;
+  };
+  content: string;
+  created_at: string;
+  sender_id: string;
+  read: boolean;
+}
+
 const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -4,8 +4,7 @@ interface ChatListItemProps {
   chat: {
     otherUser: {
       id: string;
-      firstName: string;
-      lastName: string;
+      display_name: string;
       profileImage: string | null;
     };
     content: string;
@@ -24,8 +23,12 @@ export const ChatListItem = ({
   currentUserId,
   onSelect,
 }: ChatListItemProps) => {
-  const fullName = `${chat.otherUser.firstName} ${chat.otherUser.lastName}`.trim();
-  const initials = `${chat.otherUser.firstName[0] || ''}${chat.otherUser.lastName[0] || ''}`.toUpperCase();
+  const displayName = chat.otherUser.display_name;
+  const initials = displayName
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase();
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -43,7 +46,7 @@ export const ChatListItem = ({
         <Avatar className="h-10 w-10">
           <AvatarImage 
             src={chat.otherUser.profileImage || ''} 
-            alt={fullName}
+            alt={displayName}
           />
           <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
             {initials}
@@ -52,7 +55,7 @@ export const ChatListItem = ({
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center mb-1">
             <span className="text-sm font-medium text-gray-900">
-              {fullName}
+              {displayName}
             </span>
             <span className="text-xs text-gray-500">
               {formatTime(chat.created_at)}
