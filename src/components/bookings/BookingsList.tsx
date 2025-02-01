@@ -6,10 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { Creator } from "@/types/creator";
 
 interface BookingsListProps {
   onChatClick: (creatorId: string) => void;
-  onViewCreator: (creator: any) => void;
+  onViewCreator: (creator: Creator) => void;
 }
 
 const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
@@ -36,10 +37,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           .select(`
             *,
             opportunity:opportunities(*),
-            creator:creators(
-              *,
-              profile:profiles(*)
-            )
+            creator:creators(*)
           `)
           .eq('creator_id', creator.id)
           .eq('status', 'accepted')
@@ -117,7 +115,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
         {bookings.map((booking: any) => (
           <BookingCard
             key={booking.id}
-            booking={booking}
+            creator={booking.creator}
             onChatClick={() => onChatClick(booking.creator.user_id)}
             onViewCreator={() => onViewCreator(booking.creator)}
           />
