@@ -58,7 +58,7 @@ const Messages = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-6rem)] p-4 flex flex-col">
+    <div className="h-[calc(100vh-8rem)] p-4 flex flex-col">
       <PageHeader
         title="Messages"
         description="Chat with creators and manage your conversations"
