@@ -34,8 +34,7 @@ const CreatorGrid = ({
       .select(`
         id,
         user_id,
-        first_name,
-        last_name,
+        display_name,
         bio,
         location,
         specialties,
@@ -95,8 +94,7 @@ const CreatorGrid = ({
         profileImage: creator.profile_image_url || '',
         profile_image_url: creator.profile_image_url || '',
         profile: {
-          first_name: creator.first_name || '',
-          last_name: creator.last_name || ''
+          display_name: creator.display_name || 'Creator'
         }
       }));
       

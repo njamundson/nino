@@ -28,7 +28,6 @@ export const CREATOR_SPECIALTIES = [
   'Public Relations/Writer'
 ] as const;
 
-// This interface matches the database schema and is used for API responses
 export interface Creator {
   id: string;
   user_id: string;
