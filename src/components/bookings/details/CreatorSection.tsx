@@ -2,11 +2,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, UserRound } from "lucide-react";
 import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import BookedCreatorProfile from "./BookedCreatorProfile";
 
 interface CreatorSectionProps {
   creator: {
@@ -18,9 +24,15 @@ interface CreatorSectionProps {
   };
   onChatClick: () => void;
   onViewCreator: () => void;
+  onCancelBooking?: () => void;
 }
 
-const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionProps) => {
+const CreatorSection = ({ 
+  creator, 
+  onChatClick, 
+  onViewCreator,
+  onCancelBooking 
+}: CreatorSectionProps) => {
   const creatorName = creator.display_name;
 
   return (
@@ -73,14 +85,24 @@ const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionP
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onViewCreator}
-                  className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
-                >
-                  <UserRound className="w-5 h-5" />
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
+                    >
+                      <UserRound className="w-5 h-5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl h-[90vh]">
+                    <BookedCreatorProfile 
+                      creator={creator}
+                      onMessageClick={onChatClick}
+                      onCancelBooking={onCancelBooking}
+                    />
+                  </DialogContent>
+                </Dialog>
               </TooltipTrigger>
               <TooltipContent>
                 <p>View Profile</p>
