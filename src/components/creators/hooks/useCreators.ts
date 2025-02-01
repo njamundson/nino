@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Creator } from "@/types/creator";
+import { mapCreatorData } from "@/utils/creatorUtils";
 
 export const useCreators = () => {
   return useQuery({
@@ -22,7 +24,9 @@ export const useCreators = () => {
         .eq('onboarding_completed', true);
 
       if (error) throw error;
-      return data;
+      
+      // Map the raw data to match the Creator type
+      return data.map(creator => mapCreatorData(creator));
     }
   });
 };
