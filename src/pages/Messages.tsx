@@ -14,7 +14,7 @@ const Messages = () => {
   const [showMobileChat, setShowMobileChat] = useState(false);
 
   const handleChatSelect = (
-    userId: string, 
+    userId: string,
     displayName: string,
     profileImage: string | null
   ) => {
@@ -48,9 +48,8 @@ const Messages = () => {
         ) : (
           <BrandChatContainer
             selectedChat={selectedChat}
-            selectedDisplayName={selectedDisplayName}
+            selectedDisplayName={selectedDisplayName || undefined}
             selectedProfileImage={selectedProfileImage}
-            currentUserId={selectedChat}
             onMobileBack={handleMobileBack}
           />
         )}
@@ -59,7 +58,7 @@ const Messages = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] p-4 flex flex-col">
+    <div className="h-[calc(100vh-6rem)] p-4 flex flex-col">
       <PageHeader
         title="Messages"
         description="Chat with creators and manage your conversations"
@@ -76,7 +75,7 @@ const Messages = () => {
           {selectedChat ? (
             <BrandChatContainer
               selectedChat={selectedChat}
-              selectedDisplayName={selectedDisplayName}
+              selectedDisplayName={selectedDisplayName || undefined}
               selectedProfileImage={selectedProfileImage}
               currentUserId={selectedChat}
             />
