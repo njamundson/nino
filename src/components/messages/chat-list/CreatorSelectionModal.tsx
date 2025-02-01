@@ -10,7 +10,7 @@ import { Search, Loader2 } from "lucide-react";
 interface CreatorSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
+  onSelect: (userId: string, displayName: string, profileImage: string | null) => void;
 }
 
 const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionModalProps) => {
@@ -24,8 +24,7 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
         .select(`
           id,
           user_id,
-          first_name,
-          last_name,
+          display_name,
           profile_image_url
         `)
         .not('user_id', 'is', null);
@@ -40,12 +39,12 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
   });
 
   const filteredCreators = creators?.filter((creator) => {
-    const fullName = `${creator.first_name || ''} ${creator.last_name || ''}`.toLowerCase().trim();
-    return fullName.includes(searchQuery.toLowerCase());
+    const name = creator.display_name.toLowerCase().trim();
+    return name.includes(searchQuery.toLowerCase());
   });
 
-  const getInitials = (firstName: string | null, lastName: string | null) => {
-    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+  const getInitials = (displayName: string) => {
+    return displayName.slice(0, 2).toUpperCase();
   };
 
   return (
@@ -79,8 +78,7 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   onClick={() => {
                     onSelect(
                       creator.user_id,
-                      creator.first_name || '',
-                      creator.last_name || '',
+                      creator.display_name,
                       creator.profile_image_url
                     );
                     onClose();
@@ -89,12 +87,12 @@ const CreatorSelectionModal = ({ isOpen, onClose, onSelect }: CreatorSelectionMo
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={creator.profile_image_url || ""} />
                     <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
-                      {getInitials(creator.first_name, creator.last_name)}
+                      {getInitials(creator.display_name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {creator.first_name} {creator.last_name}
+                      {creator.display_name}
                     </p>
                   </div>
                 </div>

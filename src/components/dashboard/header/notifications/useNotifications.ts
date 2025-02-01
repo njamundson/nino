@@ -21,8 +21,8 @@ export const useNotifications = () => {
         .from('messages')
         .select(`
           *,
-          sender:profiles(first_name, last_name),
-          receiver:profiles(first_name, last_name)
+          sender:profiles(display_name),
+          receiver:profiles(display_name)
         `)
         .eq('receiver_id', user.id)
         .eq('read', false)
@@ -38,7 +38,7 @@ export const useNotifications = () => {
       const messageNotifications = (messages || []).map(message => ({
         id: message.id,
         type: 'message',
-        content: `New message from ${message.sender?.first_name || ''} ${message.sender?.last_name || ''}`,
+        content: `New message from ${message.sender?.display_name || 'Unknown'}`,
         created_at: message.created_at,
         read: message.read,
         action_url: '/messages'
@@ -49,17 +49,11 @@ export const useNotifications = () => {
         .from('applications')
         .select(`
           *,
-          creator:creators (
-            first_name,
-            last_name
-          ),
-          opportunity:opportunities (
-            title
-          )
+          creator:creators(display_name),
+          opportunity:opportunities(title)
         `)
         .eq('status', 'pending')
-        .order('created_at', { ascending: false })
-        .limit(5);
+        .order('created_at', { ascending: false });
 
       if (applicationsError) {
         console.error('Error fetching applications:', applicationsError);
@@ -70,7 +64,7 @@ export const useNotifications = () => {
       const applicationNotifications = (applications || []).map(application => ({
         id: application.id,
         type: 'application',
-        content: `New proposal from ${application.creator?.first_name || ''} ${application.creator?.last_name || ''} for "${application.opportunity?.title}"`,
+        content: `New proposal from ${application.creator?.display_name || 'Unknown'} for "${application.opportunity?.title}"`,
         created_at: application.created_at,
         read: false,
         action_url: '/brand/proposals'
@@ -78,17 +72,15 @@ export const useNotifications = () => {
 
       // Combine and sort all notifications by date
       return [...messageNotifications, ...applicationNotifications]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 5);
     },
-    staleTime: 1000 * 60, // 1 minute
-    gcTime: 1000 * 60 * 5, // 5 minutes
     retry: 1,
-    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
   });
 
   const dismissNotification = useMutation({
     mutationFn: async (notification: { id: string, type: string }) => {
-      if (notification.type === 'message') {
+      if (notification.type === 'message' || notification.type === 'invitation') {
         const { error } = await supabase
           .from('messages')
           .update({ read: true })

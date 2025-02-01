@@ -12,6 +12,11 @@ const ProfileAvatar = ({ profile }: ProfileAvatarProps) => {
     return 'profile_image_url' in profile ? profile.profile_image_url || "" : "";
   };
 
+  const getInitials = () => {
+    if (!profile?.display_name) return "";
+    return profile.display_name.slice(0, 2).toUpperCase();
+  };
+
   return (
     <Avatar className="w-10 h-10 ring-2 ring-nino-primary/20 cursor-pointer hover:ring-nino-primary/40 transition-all duration-200">
       <AvatarImage 
@@ -19,7 +24,7 @@ const ProfileAvatar = ({ profile }: ProfileAvatarProps) => {
         alt="Profile" 
       />
       <AvatarFallback className="bg-nino-primary text-nino-white">
-        {profile?.first_name?.[0]}{profile?.last_name?.[0]}
+        {getInitials()}
       </AvatarFallback>
     </Avatar>
   );

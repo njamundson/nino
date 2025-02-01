@@ -13,14 +13,12 @@ import { useProfileData } from "./user-menu/useProfileData";
 export interface BrandProfile {
   company_name: string | null;
   profile_image_url: string | null;
-  first_name: string;
-  last_name: string;
+  display_name: string;
 }
 
 export interface UserProfile {
   id: string;
-  first_name: string | null;
-  last_name: string | null;
+  display_name: string;
   created_at: string;
   updated_at: string;
 }
