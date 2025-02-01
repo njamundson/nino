@@ -21,14 +21,8 @@ export const useNotifications = () => {
         .from('messages')
         .select(`
           *,
-          sender:profiles!messages_sender_profile_id_fkey(
-            first_name,
-            last_name
-          ),
-          receiver:profiles!messages_receiver_profile_id_fkey(
-            first_name,
-            last_name
-          )
+          sender:profiles!sender_profile_id(display_name),
+          receiver:profiles!receiver_profile_id(display_name)
         `)
         .eq('receiver_id', user.id)
         .eq('read', false)
@@ -43,7 +37,7 @@ export const useNotifications = () => {
       const messageNotifications = (messages || []).map(message => ({
         id: message.id,
         type: message.message_type === 'invitation' ? 'invitation' : 'message',
-        content: message.content,
+        content: `New message from ${message.sender?.display_name || 'Unknown'}`,
         created_at: message.created_at,
         read: message.read,
         action_url: message.message_type === 'invitation' ? '/creator/projects' : '/messages'
@@ -54,15 +48,8 @@ export const useNotifications = () => {
         .from('applications')
         .select(`
           *,
-          creator:creators (
-            profile:profiles (
-              first_name,
-              last_name
-            )
-          ),
-          opportunity:opportunities (
-            title
-          )
+          creator:creators(display_name),
+          opportunity:opportunities(title)
         `)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
@@ -76,7 +63,7 @@ export const useNotifications = () => {
       const applicationNotifications = (applications || []).map(application => ({
         id: application.id,
         type: 'application',
-        content: `New proposal from ${application.creator.profile.first_name} ${application.creator.profile.last_name} for "${application.opportunity.title}"`,
+        content: `New proposal from ${application.creator?.display_name || 'Unknown'} for "${application.opportunity?.title}"`,
         created_at: application.created_at,
         read: false,
         action_url: '/brand/proposals'
@@ -85,7 +72,7 @@ export const useNotifications = () => {
       // Combine and sort all notifications by date
       return [...messageNotifications, ...applicationNotifications]
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 5); // Limit to 5 most recent notifications
+        .slice(0, 5);
     },
     retry: 1,
   });
