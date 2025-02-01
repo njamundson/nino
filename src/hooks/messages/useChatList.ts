@@ -28,6 +28,7 @@ export const useChatList = (currentUserId: string | undefined) => {
       if (!currentUserId) return;
 
       try {
+        // First, get all messages
         const { data: messages, error } = await supabase
           .from('messages')
           .select(`
@@ -36,42 +37,46 @@ export const useChatList = (currentUserId: string | undefined) => {
             created_at,
             sender_id,
             receiver_id,
-            read,
-            sender:creators!sender_id(
-              id,
-              display_name,
-              profile_image_url
-            ),
-            receiver:creators!receiver_id(
-              id,
-              display_name,
-              profile_image_url
-            )
+            read
           `)
           .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        if (mounted) {
+        if (mounted && messages) {
+          // Get unique user IDs from messages (excluding current user)
+          const uniqueUserIds = [...new Set(messages.map(msg => 
+            msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id
+          ))];
+
+          // Fetch creator information for these users
+          const { data: creators, error: creatorsError } = await supabase
+            .from('creators')
+            .select('user_id, display_name, profile_image_url')
+            .in('user_id', uniqueUserIds);
+
+          if (creatorsError) throw creatorsError;
+
+          // Create a map of user_id to creator info for easy lookup
+          const creatorMap = new Map(
+            creators?.map(creator => [creator.user_id, creator]) || []
+          );
+
           const conversationsMap = new Map();
           
-          messages?.forEach((msg: any) => {
+          messages.forEach((msg) => {
             const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
-            const otherUser = msg.sender_id === currentUserId ? msg.receiver : msg.sender;
+            const creatorInfo = creatorMap.get(otherUserId);
             
-            // Get creator info directly from the creator object
-            const display_name = otherUser?.display_name || 'Creator';
-            const profileImage = otherUser?.profile_image_url;
-
             if (!conversationsMap.has(otherUserId) || 
                 new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
               conversationsMap.set(otherUserId, {
                 ...msg,
                 otherUser: {
                   id: otherUserId,
-                  display_name,
-                  profileImage
+                  display_name: creatorInfo?.display_name || 'Creator',
+                  profileImage: creatorInfo?.profile_image_url
                 }
               });
             }
