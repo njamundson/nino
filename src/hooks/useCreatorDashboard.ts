@@ -27,8 +27,7 @@ export const useCreatorDashboard = () => {
       .from('creators')
       .select(`
         id,
-        first_name,
-        last_name,
+        display_name,
         bio,
         location,
         instagram,

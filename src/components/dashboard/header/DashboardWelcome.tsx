@@ -2,14 +2,14 @@ import { memo } from "react";
 import PageHeader from "@/components/shared/PageHeader";
 
 interface DashboardWelcomeProps {
-  firstName?: string | null;
+  display_name?: string | null;
 }
 
-const DashboardWelcome = ({ firstName }: DashboardWelcomeProps) => {
+const DashboardWelcome = ({ display_name }: DashboardWelcomeProps) => {
   return (
     <PageHeader 
       title="Dashboard" 
-      description={`Welcome back${firstName ? `, ${firstName}` : ''}! Here's an overview of your activity`}
+      description={`Welcome back${display_name ? `, ${display_name}` : ''}! Here's an overview of your activity`}
     />
   );
 };
