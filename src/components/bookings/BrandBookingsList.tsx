@@ -61,10 +61,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           .select(`
             *,
             opportunity:opportunities(*),
-            creator:creators(
-              *,
-              profile:profiles(*)
-            )
+            creator:creators(*)
           `)
           .eq('status', 'accepted')
           .eq('opportunity.brand_id', brand.id)
@@ -87,7 +84,6 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
     staleTime: 1000 * 60, // Consider data stale after 1 minute
   });
 
-  // Set up real-time subscription for booking updates
   useEffect(() => {
     const applicationsChannel = supabase
       .channel('bookings-applications')
@@ -130,9 +126,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       <Card className="p-12 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm">
         <div className="text-center text-gray-500">
           <p className="text-lg font-medium mb-2">Error loading bookings</p>
-          <p className="text-sm">
-            Please try refreshing the page
-          </p>
+          <p className="text-sm">Please try refreshing the page</p>
         </div>
       </Card>
     );
@@ -170,6 +164,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       {bookings.map((booking: any) => (
         <BookingDetailsCard
           key={booking.id}
+          creator={booking.creator}
           booking={booking}
           onChatClick={() => onChatClick(booking.creator.user_id)}
           onViewCreator={() => onViewCreator(booking.creator)}
