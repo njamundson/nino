@@ -25,15 +25,13 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
     <div
       className={cn(
         "group relative flex max-w-[85%] items-end gap-2",
-        isCurrentUser ? "ml-auto" : "mr-auto"
+        !isCurrentUser ? "ml-auto" : "mr-auto" // Reversed the condition here
       )}
     >
       <div
         className={cn(
           "relative rounded-lg px-3 py-2",
-          isCurrentUser
-            ? "bg-nino-primary text-white"
-            : "bg-gray-100 text-gray-900"
+          !isCurrentUser ? "bg-nino-primary text-white" : "bg-gray-100 text-gray-900" // Reversed here too
         )}
       >
         {isImage ? (
@@ -52,9 +50,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
         <div
           className={cn(
             "pointer-events-none absolute bottom-0 h-2 w-2",
-            isCurrentUser
-              ? "-right-1 -translate-y-1/2 rotate-45 bg-nino-primary"
-              : "-left-1 -translate-y-1/2 rotate-45 bg-gray-100"
+            !isCurrentUser ? "-right-1 -translate-y-1/2 rotate-45 bg-nino-primary" : "-left-1 -translate-y-1/2 rotate-45 bg-gray-100" // Reversed here as well
           )}
         />
       </div>
@@ -73,7 +69,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
               }
               setShowEmojiPicker(false);
             }}
-            position={isCurrentUser ? "left" : "right"}
+            position={!isCurrentUser ? "left" : "right"} // Reversed here too
           />
         )}
       </div>
