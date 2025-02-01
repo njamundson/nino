@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react";
+import { memo } from "react";
 import { useCreatorDashboard } from "@/hooks/useCreatorDashboard";
 import DashboardLoading from "./states/DashboardLoading";
 import DashboardError from "./states/DashboardError";
@@ -11,17 +11,6 @@ import DashboardSections from "./sections/DashboardSections";
 const CreatorDashboard = () => {
   const { data: creator, isLoading, error } = useCreatorDashboard();
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (error) {
-      console.error("Dashboard error:", error);
-      toast({
-        title: "Error loading dashboard",
-        description: "Please try refreshing the page",
-        variant: "destructive",
-      });
-    }
-  }, [error, toast]);
 
   if (isLoading) {
     return <DashboardLoading />;
@@ -38,7 +27,7 @@ const CreatorDashboard = () => {
       transition={{ duration: 0.3, ease: "easeOut" }}
       layout
     >
-      <DashboardWelcome firstName={creator.first_name} />
+      <DashboardWelcome firstName={creator.display_name} />
       <div className="space-y-6 md:space-y-8">
         <DashboardStats />
         <DashboardSections />
