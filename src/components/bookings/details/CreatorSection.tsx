@@ -16,9 +16,11 @@ import { useState } from "react";
 
 interface CreatorSectionProps {
   creator: {
-    first_name: string;
-    last_name: string | null;
+    id: string;
+    first_name?: string;
+    last_name?: string | null;
     profile_image_url: string | null;
+    display_name: string;
   };
   onChatClick: () => void;
   onViewCreator: () => void;
@@ -27,9 +29,7 @@ interface CreatorSectionProps {
 const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
-  const creatorName = creator.last_name 
-    ? `${creator.first_name} ${creator.last_name}`
-    : creator.first_name;
+  const creatorName = creator.display_name;
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border-t pt-4">
@@ -59,7 +59,7 @@ const CreatorSection = ({ creator, onChatClick, onViewCreator }: CreatorSectionP
             ) : (
               <div className="w-12 h-12 rounded-full bg-nino-primary/10 flex items-center justify-center ring-2 ring-white">
                 <span className="text-lg font-medium text-nino-primary">
-                  {creator.first_name[0].toUpperCase()}
+                  {creatorName[0].toUpperCase()}
                 </span>
               </div>
             )}
