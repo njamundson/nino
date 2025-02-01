@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import BookingDetailsCard from "./BookingDetailsCard";
 import { Creator } from "@/types/creator";
+import { mapCreatorData } from "@/utils/creatorUtils";
 
 interface BrandBookingsListProps {
   onChatClick: (creatorId: string) => void;
@@ -20,7 +21,12 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         .select("*, creator:creators(*), opportunity:opportunities(*)");
 
       if (error) throw error;
-      return data;
+      
+      // Map the creator data to match our Creator type
+      return data?.map(booking => ({
+        ...booking,
+        creator: mapCreatorData(booking.creator)
+      }));
     }
   });
 

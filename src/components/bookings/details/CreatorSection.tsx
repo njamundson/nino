@@ -13,15 +13,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import BookedCreatorProfile from "./BookedCreatorProfile";
+import { Creator } from "@/types/creator";
 
 interface CreatorSectionProps {
-  creator: {
-    id: string;
-    first_name?: string;
-    last_name?: string | null;
-    profile_image_url: string | null;
-    display_name: string;
-  };
+  creator: Creator;
   onChatClick: () => void;
   onViewCreator: () => void;
   onCancelBooking?: () => void;
