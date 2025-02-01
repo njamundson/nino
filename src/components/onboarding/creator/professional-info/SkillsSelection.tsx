@@ -5,10 +5,12 @@ import { CREATOR_SPECIALTIES } from "@/types/creator";
 export interface SkillsSelectionProps {
   skills: string[];
   onUpdateSkills: (skills: string[]) => void;
+  disabled?: boolean;
 }
 
-const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
+const SkillsSelection = ({ skills, onUpdateSkills, disabled = false }: SkillsSelectionProps) => {
   const toggleSkill = (skill: string) => {
+    if (disabled) return;
     const updatedSkills = skills.includes(skill)
       ? skills.filter((s) => s !== skill)
       : [...skills, skill];
@@ -22,6 +24,7 @@ const SkillsSelection = ({ skills, onUpdateSkills }: SkillsSelectionProps) => {
           key={skill}
           variant="outline"
           onClick={() => toggleSkill(skill)}
+          disabled={disabled}
           className={`
             rounded-full px-6 py-3 h-auto text-base transition-all duration-200
             ${
