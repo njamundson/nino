@@ -1,98 +1,69 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import PageHeader from "@/components/shared/PageHeader";
-import { BrandChatContainer } from "@/components/messages/brand/BrandChatContainer";
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
 import ChatList from "@/components/messages/ChatList";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { BrandChatContainer } from "@/components/messages/brand/BrandChatContainer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Messages = () => {
-  const [searchParams] = useSearchParams();
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(
-    searchParams.get("userId")
-  );
+  const isMobile = useIsMobile();
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [selectedDisplayName, setSelectedDisplayName] = useState<string | null>(null);
   const [selectedProfileImage, setSelectedProfileImage] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
-  const isMobile = useIsMobile();
+  const [showMobileChat, setShowMobileChat] = useState(false);
 
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        setIsLoading(true);
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error) throw error;
-        setCurrentUser(user);
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load user data",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getUser();
-  }, [toast]);
-
-  const handleSelectChat = async (
+  const handleChatSelect = (
     userId: string, 
     displayName: string,
     profileImage: string | null
   ) => {
-    setSelectedUserId(userId);
+    setSelectedChat(userId);
     setSelectedDisplayName(displayName);
     setSelectedProfileImage(profileImage);
+    if (isMobile) {
+      setShowMobileChat(true);
+    }
   };
 
-  if (isLoading) {
+  const handleMobileBack = () => {
+    setShowMobileChat(false);
+    setSelectedChat(null);
+  };
+
+  if (isMobile) {
     return (
-      <div className="h-[calc(100vh-6rem)] flex flex-col">
-        <PageHeader
-          title="Messages"
-          description="Connect and communicate with creators."
-        />
-        <div className="flex-1 flex items-center justify-center">
-          <LoadingSpinner />
-        </div>
+      <div className="h-full">
+        {!showMobileChat ? (
+          <ChatList onChatSelect={handleChatSelect} />
+        ) : (
+          <BrandChatContainer
+            selectedChat={selectedChat}
+            selectedDisplayName={selectedDisplayName || null}
+            selectedProfileImage={selectedProfileImage}
+            currentUserId={selectedChat}
+            onMobileBack={handleMobileBack}
+          />
+        )}
       </div>
     );
   }
 
   return (
-    <div className="h-[calc(100vh-6rem)] flex flex-col overflow-hidden">
-      <PageHeader
-        title="Messages"
-        description="Connect and communicate with creators."
-      />
-      
-      <div className="flex-1 container px-0 pb-6 overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-14rem)]">
-          <div className="md:col-span-1 bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
-            <ChatList 
-              onSelectChat={handleSelectChat}
-              selectedUserId={selectedUserId}
-            />
+    <div className="grid grid-cols-[350px_1fr] gap-6 h-full">
+      <ChatList onChatSelect={handleChatSelect} />
+      <Card className="bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
+        {selectedChat ? (
+          <BrandChatContainer
+            selectedChat={selectedChat}
+            selectedDisplayName={selectedDisplayName || null}
+            selectedProfileImage={selectedProfileImage}
+            currentUserId={selectedChat}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            Select a conversation to start messaging
           </div>
-          
-          <div className="md:col-span-2">
-            <BrandChatContainer
-              selectedChat={selectedUserId}
-              selectedFirstName={selectedDisplayName}
-              selectedLastName={null}
-              selectedProfileImage={selectedProfileImage}
-              currentUserId={currentUser?.id}
-              onMobileBack={isMobile ? () => setSelectedUserId(null) : undefined}
-            />
-          </div>
-        </div>
-      </div>
+        )}
+      </Card>
     </div>
   );
 };

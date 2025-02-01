@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,8 +12,7 @@ const CreatorProfileSettings = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [profileData, setProfileData] = useState({
-    firstName: "",
-    lastName: "",
+    display_name: "",
     bio: "",
     location: "",
     instagram: "",
@@ -48,14 +46,14 @@ const CreatorProfileSettings = () => {
       if (creatorError) throw creatorError;
 
       setProfileData({
-        firstName: profileData?.first_name || "",
-        lastName: profileData?.last_name || "",
+        display_name: profileData?.display_name || "",
         bio: creatorData?.bio || "",
         location: creatorData?.location || "",
         instagram: creatorData?.instagram || "",
         website: creatorData?.website || "",
         skills: creatorData?.specialties || [],
       });
+      setProfileImage(creatorData?.profile_image_url);
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast({
@@ -64,6 +62,10 @@ const CreatorProfileSettings = () => {
         description: "Failed to load profile data",
       });
     }
+  };
+
+  const handleUpdateField = (field: string, value: any) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
@@ -75,15 +77,23 @@ const CreatorProfileSettings = () => {
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
-          first_name: profileData.firstName,
-          last_name: profileData.lastName,
+          display_name: profileData.display_name,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
 
       if (profileError) throw profileError;
 
-      const { error: creatorError } = await supabase
+      const { data: creator, error: creatorError } = await supabase
+        .from('creators')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (creatorError) throw creatorError;
+      if (!creator) throw new Error('Creator profile not found');
+
+      const { error: updateError } = await supabase
         .from('creators')
         .update({
           bio: profileData.bio,
@@ -91,35 +101,31 @@ const CreatorProfileSettings = () => {
           instagram: profileData.instagram,
           website: profileData.website,
           specialties: profileData.skills,
+          profile_image_url: profileImage,
           updated_at: new Date().toISOString(),
         })
-        .eq('user_id', user.id);
+        .eq('id', creator.id);
 
-      if (creatorError) throw creatorError;
+      if (updateError) throw updateError;
 
-      setIsEditing(false);
       toast({
         title: "Success",
         description: "Profile updated successfully",
       });
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error in handleSave:', error);
       toast({
-        variant: "destructive",
         title: "Error",
-        description: "Failed to update profile",
+        description: "Failed to save changes. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateField = (field: string, value: any) => {
-    setProfileData(prev => ({ ...prev, [field]: value }));
-  };
-
   return (
-    <Card className="p-6 bg-white/50 backdrop-blur-xl border-0 shadow-sm space-y-8">
+    <div className="space-y-6">
       <ProfileImageSection 
         profileImage={profileImage} 
         setProfileImage={setProfileImage}
@@ -167,7 +173,7 @@ const CreatorProfileSettings = () => {
           </Button>
         )}
       </div>
-    </Card>
+    </div>
   );
 };
 

@@ -48,17 +48,3 @@ export interface Creator {
   onboarding_completed?: boolean;
   notifications_enabled?: boolean;
 }
-
-export const validateInstagramHandle = (handle: string): boolean => {
-  const username = handle.startsWith('@') ? handle.slice(1) : handle;
-  return /^[a-zA-Z0-9._]{1,30}$/.test(username);
-};
-
-export const validateWebsiteUrl = (url: string): boolean => {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-};
