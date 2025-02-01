@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 
 interface ChatListProps {
-  onSelectChat: (userId: string, firstName: string, lastName: string, profileImage: string | null) => void;
+  onSelectChat: (userId: string, displayName: string, profileImage: string | null) => void;
   selectedUserId?: string;
 }
 
@@ -56,7 +56,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   }, [toast]);
 
   const filteredChats = chats?.filter((chat) =>
-    `${chat.otherUser.firstName} ${chat.otherUser.lastName}`
+    chat.otherUser.displayName
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
@@ -108,8 +108,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             currentUserId={currentUser?.id}
             onSelect={() => onSelectChat(
               chat.otherUser.id,
-              chat.otherUser.firstName,
-              chat.otherUser.lastName,
+              chat.otherUser.displayName,
               chat.otherUser.profileImage
             )}
           />

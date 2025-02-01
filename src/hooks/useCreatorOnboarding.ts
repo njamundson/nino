@@ -8,9 +8,8 @@ export const useCreatorOnboarding = () => {
   const [currentStep, setCurrentStep] = useState<'basic' | 'professional' | 'social'>('basic');
   const [creatorData, setCreatorData] = useState<CreatorData>({
     id: crypto.randomUUID(),
-    user_id: '', // This will be set when saving to the database
-    firstName: "",
-    lastName: "",
+    user_id: '',
+    display_name: "",
     bio: "",
     specialties: [],
     instagram: "",
@@ -78,8 +77,7 @@ export const useCreatorOnboarding = () => {
           creator_type: creatorData.creatorType,
           profile_image_url: creatorData.profileImage,
           onboarding_completed: true,
-          first_name: creatorData.firstName,
-          last_name: creatorData.lastName
+          display_name: creatorData.display_name
         })
         .eq('user_id', session.user.id);
 
