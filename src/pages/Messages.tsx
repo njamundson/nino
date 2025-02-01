@@ -33,7 +33,7 @@ const Messages = () => {
 
   if (isMobile) {
     return (
-      <div className="h-full">
+      <div className="h-[calc(100vh-4rem)] p-4">
         {!showMobileChat ? (
           <>
             <PageHeader
@@ -59,19 +59,20 @@ const Messages = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="h-[calc(100vh-4rem)] p-4 flex flex-col">
       <PageHeader
         title="Messages"
         description="Chat with creators and manage your conversations"
+        className="flex-shrink-0 mb-4"
       />
-      <Card className="grid grid-cols-[350px_1fr] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
-        <div className="border-r border-gray-100">
+      <Card className="flex-1 grid grid-cols-[350px_1fr] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
+        <div className="border-r border-gray-100 overflow-hidden">
           <ChatList 
             onSelectChat={handleChatSelect} 
             selectedUserId={selectedChat}
           />
         </div>
-        <div>
+        <div className="overflow-hidden">
           {selectedChat ? (
             <BrandChatContainer
               selectedChat={selectedChat}

@@ -47,7 +47,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -55,15 +55,22 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   if (!chats || chats.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
-        <div className="rounded-full bg-gray-100 p-3">
-          <MessageSquare className="w-6 h-6 text-gray-400" />
-        </div>
-        <div className="space-y-2">
-          <h3 className="font-medium">No messages yet</h3>
-          <p className="text-sm text-gray-500">
-            Start a conversation with a creator
-          </p>
+      <div className="h-full flex flex-col">
+        <ChatListHeader 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onNewChat={() => setIsModalOpen(true)}
+        />
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-4">
+          <div className="rounded-full bg-gray-100 p-3">
+            <MessageSquare className="w-6 h-6 text-gray-400" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="font-medium">No messages yet</h3>
+            <p className="text-sm text-gray-500">
+              Start a conversation with a creator
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -76,7 +83,6 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
         setSearchQuery={setSearchQuery}
         onNewChat={() => setIsModalOpen(true)}
       />
-
       <div className="flex-1 overflow-y-auto">
         {filteredChats?.map((chat) => (
           <ChatListItem

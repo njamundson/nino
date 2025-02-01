@@ -1,7 +1,6 @@
 import ChatHeader from "@/components/messages/ChatHeader";
 import BrandChatMessages from "@/components/messages/brand/BrandChatMessages";
 import BrandChatInput from "@/components/messages/brand/BrandChatInput";
-import { Message } from "@/types/message";
 import { useMessages } from "@/hooks/useMessages";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
