@@ -41,6 +41,7 @@ const ChatHeader = ({
           specialties,
           creator_type,
           profile_image_url,
+          user_id,
           profile:profiles(
             display_name
           )

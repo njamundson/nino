@@ -56,7 +56,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
   }, [toast]);
 
   const filteredChats = chats?.filter((chat) =>
-    chat.otherUser.displayName
+    chat.otherUser.display_name
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
@@ -108,7 +108,7 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
             currentUserId={currentUser?.id}
             onSelect={() => onSelectChat(
               chat.otherUser.id,
-              chat.otherUser.displayName,
+              chat.otherUser.display_name,
               chat.otherUser.profileImage
             )}
           />

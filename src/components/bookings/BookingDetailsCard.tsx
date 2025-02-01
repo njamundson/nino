@@ -12,13 +12,15 @@ interface BookingDetailsCardProps {
   onCancel?: () => void;
   onDelete?: () => void;
   status?: string;
+  booking?: any; // Add this to match BrandBookingsList usage
 }
 
 export const BookingDetailsCard = ({
   creator,
   onCancel,
   onDelete,
-  status = "pending"
+  status = "pending",
+  booking
 }: BookingDetailsCardProps) => {
   return (
     <Card className="p-6 space-y-6">
