@@ -24,7 +24,7 @@ export const ChatListItem = ({
   currentUserId,
   onSelect,
 }: ChatListItemProps) => {
-  const displayName = chat.otherUser.display_name;
+  const displayName = chat.otherUser.display_name || "Creator";
   const initials = displayName
     .split(' ')
     .map(part => part[0])
