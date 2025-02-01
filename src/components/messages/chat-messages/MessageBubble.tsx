@@ -1,18 +1,7 @@
-import { cn } from "@/lib/utils";
 import { Message } from "@/types/message";
-import { Button } from "@/components/ui/button";
-import { Smile } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
-
-const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { EmojiPicker } from "./EmojiPicker";
 
 interface MessageBubbleProps {
   message: Message;
@@ -21,224 +10,72 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProps) => {
-  const [reactions, setReactions] = useState<{ emoji: string; count: number }[]>([]);
-  const [userReaction, setUserReaction] = useState<string | null>(null);
-  const { toast } = useToast();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  useEffect(() => {
-    fetchReactions();
-    subscribeToReactions();
-  }, [message.id]);
+  const isImage = message.content.startsWith('![Image]') || message.content.includes('supabase.co/storage');
 
-  const fetchReactions = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await supabase
-      .from('message_reactions')
-      .select('emoji, user_id')
-      .eq('message_id', message.id);
-
-    if (error) {
-      console.error('Error fetching reactions:', error);
-      return;
+  const getImageUrl = (content: string) => {
+    if (content.startsWith('![Image]')) {
+      return content.match(/\((.*?)\)/)?.[1] || '';
     }
-
-    // Find user's current reaction if any
-    if (user) {
-      const userCurrentReaction = data.find(r => r.user_id === user.id);
-      setUserReaction(userCurrentReaction?.emoji || null);
-    }
-
-    // Count reactions
-    const reactionCounts = data.reduce((acc: { [key: string]: number }, reaction) => {
-      acc[reaction.emoji] = (acc[reaction.emoji] || 0) + 1;
-      return acc;
-    }, {});
-
-    setReactions(
-      Object.entries(reactionCounts).map(([emoji, count]) => ({
-        emoji,
-        count,
-      }))
-    );
-  };
-
-  const subscribeToReactions = () => {
-    const channel = supabase
-      .channel(`message_reactions:${message.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'message_reactions',
-          filter: `message_id=eq.${message.id}`,
-        },
-        () => {
-          fetchReactions();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  };
-
-  const handleReaction = async (emoji: string) => {
-    // If user already has a reaction and it's different, remove the old one first
-    if (userReaction && userReaction !== emoji) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Remove old reaction from database
-      await supabase
-        .from('message_reactions')
-        .delete()
-        .match({ 
-          message_id: message.id,
-          user_id: user.id 
-        });
-    }
-
-    // If selecting the same emoji, do nothing
-    if (userReaction === emoji) return;
-
-    // Optimistically update the UI
-    const existingReaction = reactions.find(r => r.emoji === emoji);
-    let updatedReactions = reactions;
-
-    if (userReaction) {
-      // Remove old reaction count
-      updatedReactions = updatedReactions.map(r => 
-        r.emoji === userReaction 
-          ? { ...r, count: Math.max(0, r.count - 1) }
-          : r
-      ).filter(r => r.count > 0);
-    }
-
-    updatedReactions = existingReaction
-      ? updatedReactions.map(r => 
-          r.emoji === emoji 
-            ? { ...r, count: r.count + 1 }
-            : r
-        )
-      : [...updatedReactions, { emoji, count: 1 }];
-    
-    setReactions(updatedReactions);
-    setUserReaction(emoji);
-
-    if (onReaction) {
-      try {
-        await onReaction(message.id, emoji);
-        toast({
-          title: "Reaction updated",
-          description: `You reacted with ${emoji}`,
-        });
-      } catch (error) {
-        // Revert optimistic update on error
-        setReactions(reactions);
-        setUserReaction(userReaction);
-        toast({
-          title: "Error",
-          description: "Failed to update reaction",
-          variant: "destructive",
-        });
-      }
-    }
+    return content;
   };
 
   return (
-    <div className={cn(
-      "group relative max-w-[65%] animate-fadeIn mb-6",
-      isCurrentUser ? "ml-auto" : "mr-auto"
-    )}>
+    <div
+      className={cn(
+        "group relative flex max-w-[85%] items-end gap-2",
+        isCurrentUser ? "ml-auto" : "mr-auto"
+      )}
+    >
       <div
         className={cn(
-          "px-3.5 py-2 shadow-sm transition-all duration-200 text-[15px] leading-[1.35]",
-          isCurrentUser 
-            ? "bg-[#0B84FE] text-white rounded-[16px] rounded-tr-[4px]" 
-            : "bg-[#E9E9EB] text-[#1C1C1E] rounded-[16px] rounded-tl-[4px]"
+          "relative rounded-lg px-3 py-2",
+          isCurrentUser
+            ? "bg-nino-primary text-white"
+            : "bg-gray-100 text-gray-900"
         )}
       >
-        {message.content}
-        <p className={cn(
-          "text-[11px] mt-0.5 select-none",
-          isCurrentUser ? "text-white/70" : "text-[#8E8E93]"
-        )}>
-          {new Date(message.created_at).toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true 
-          })}
-        </p>
-      </div>
-
-      <AnimatePresence>
-        {reactions.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
-            className={cn(
-              "absolute -bottom-5 flex gap-1 items-center",
-              isCurrentUser ? "right-2" : "left-2"
-            )}
-          >
-            <motion.div 
-              layout
-              className="bg-white rounded-full px-2 py-0.5 shadow-md flex items-center gap-1"
-            >
-              {reactions.map(({ emoji, count }, index) => (
-                <motion.span
-                  key={index}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="text-xs"
-                >
-                  {emoji}{count > 1 && count}
-                </motion.span>
-              ))}
-            </motion.div>
-          </motion.div>
+        {isImage ? (
+          <img 
+            src={getImageUrl(message.content)} 
+            alt="Shared image"
+            className="max-w-sm rounded-lg"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+            }}
+          />
+        ) : (
+          <p className="whitespace-pre-wrap break-words">{message.content}</p>
         )}
-      </AnimatePresence>
-
-      <div className={cn(
-        "absolute bottom-0 translate-y-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-1 pt-1.5 z-10",
-        isCurrentUser ? "left-0" : "right-0"
-      )}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="h-7 w-7 rounded-full bg-white shadow-md hover:bg-gray-50"
-            >
-              <Smile className="h-3.5 w-3.5 text-gray-600" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align={isCurrentUser ? "start" : "end"}
-            className="p-1 flex gap-1 min-w-0"
-            sideOffset={5}
-          >
-            {REACTION_EMOJIS.map((emoji) => (
-              <Button
-                key={emoji}
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-7 w-7 hover:bg-gray-100 rounded-full",
-                  userReaction === emoji && "bg-gray-100"
-                )}
-                onClick={() => handleReaction(emoji)}
-              >
-                {emoji}
-              </Button>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div
+          className={cn(
+            "pointer-events-none absolute bottom-0 h-2 w-2",
+            isCurrentUser
+              ? "-right-1 -translate-y-1/2 rotate-45 bg-nino-primary"
+              : "-left-1 -translate-y-1/2 rotate-45 bg-gray-100"
+          )}
+        />
+      </div>
+      <div className="relative">
+        <button
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          className="opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          😊
+        </button>
+        {showEmojiPicker && (
+          <EmojiPicker
+            onEmojiSelect={(emoji) => {
+              if (onReaction) {
+                onReaction(message.id, emoji);
+              }
+              setShowEmojiPicker(false);
+            }}
+            position={isCurrentUser ? "left" : "right"}
+          />
+        )}
       </div>
     </div>
   );
