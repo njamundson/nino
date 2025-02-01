@@ -35,7 +35,9 @@ const UserMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <ProfileAvatar profile={profile} />
+        <div className="cursor-pointer">
+          <ProfileAvatar profile={profile} />
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         className="w-56 mt-2 bg-white/80 backdrop-blur-xl border-none shadow-lg rounded-xl animate-in fade-in-0 zoom-in-95"
