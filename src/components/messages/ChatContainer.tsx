@@ -32,6 +32,7 @@ export const ChatContainer = ({
     handleSendMessage,
     handleDeleteMessage,
     handleReaction,
+    isLoading
   } = useMessages(selectedChat || '');
 
   useEffect(() => {
@@ -68,6 +69,7 @@ export const ChatContainer = ({
           currentUserId={currentUserId}
           selectedChat={selectedChat}
           onReaction={handleReaction}
+          isLoading={isLoading}
         />
       </div>
       <ChatInput

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface ChatMessagesProps {
   messages: Message[];
@@ -14,6 +15,7 @@ export interface ChatMessagesProps {
   currentUserId?: string;
   onReaction?: (messageId: string, emoji: string) => void;
   selectedChat?: string | null;
+  isLoading?: boolean;
 }
 
 const ChatMessages = ({
@@ -21,7 +23,8 @@ const ChatMessages = ({
   isTyping,
   currentUserId,
   onReaction = () => {},
-  selectedChat
+  selectedChat,
+  isLoading
 }: ChatMessagesProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
@@ -112,6 +115,34 @@ const ChatMessages = ({
     groups[date].push(message);
     return groups;
   }, {});
+
+  if (isLoading) {
+    return (
+      <div className="h-full overflow-y-auto px-4 py-6 flex flex-col space-y-6">
+        {[1, 2, 3].map((_, index) => (
+          <div key={index} className="space-y-4">
+            <div className="flex justify-center mb-4">
+              <Skeleton className="h-6 w-24 rounded-full" />
+            </div>
+            <div className="space-y-4">
+              {[1, 2, 3].map((_, msgIndex) => (
+                <div
+                  key={msgIndex}
+                  className={`flex ${msgIndex % 2 === 0 ? 'justify-end' : 'justify-start'}`}
+                >
+                  <Skeleton 
+                    className={`h-[60px] w-[200px] rounded-2xl ${
+                      msgIndex % 2 === 0 ? 'ml-12' : 'mr-12'
+                    }`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div 
