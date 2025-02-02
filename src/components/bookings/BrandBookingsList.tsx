@@ -33,6 +33,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           return [];
         }
 
+        // Changed from .single() to .maybeSingle() to handle no results gracefully
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
