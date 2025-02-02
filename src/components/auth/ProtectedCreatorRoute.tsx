@@ -25,9 +25,14 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         return { isAuth: true, onboarding: false };
       }
 
+      // If no creator profile exists, they need to complete onboarding
+      if (!creator) {
+        return { isAuth: true, onboarding: false };
+      }
+
       return { 
         isAuth: true, 
-        onboarding: creator?.onboarding_completed || false 
+        onboarding: creator.onboarding_completed || false 
       };
     } catch (error) {
       console.error('Error in checkCreatorProfile:', error);
