@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
-import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, User, RefreshCw, X } from "lucide-react";
+import { Creator } from "@/types/creator";
+import { Calendar, MapPin, MessageSquare, X } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,30 +16,29 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
 
-export interface BookingCardProps {
-  creator?: Creator;
+interface BookingCardProps {
+  creator: Creator;
+  opportunity: {
+    title: string;
+    description: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    location: string | null;
+    payment_details: string | null;
+    compensation_details: string | null;
+  } | null;
+  onMessageClick: () => void;
+  onViewCreator: () => void;
   onCancel?: () => void;
-  onDelete?: () => void;
-  status?: string;
-  booking?: any;
-  onMessageClick?: () => void;
-  onViewCreator?: () => void;
-  onRefresh?: () => void;
 }
 
-export const BookingCard = ({
-  creator,
-  onCancel,
-  onDelete,
-  status = "pending",
-  booking,
-  onMessageClick,
-  onViewCreator,
-  onRefresh
-}: BookingCardProps) => {
+const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCancel }: BookingCardProps) => {
   const { toast } = useToast();
+
+  if (!opportunity) {
+    return null;
+  }
 
   const handleCancel = () => {
     if (onCancel) {
@@ -50,178 +50,113 @@ export const BookingCard = ({
     }
   };
 
-  const buttonVariants = {
-    hover: { 
-      scale: 1.05,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 10
-      }
-    },
-    tap: { scale: 0.95 }
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-        mass: 0.8
-      }}
-    >
-      <Card className="p-6 bg-white/50 backdrop-blur-sm border border-gray-100 hover:border-gray-200 transition-all duration-200">
-        <div className="space-y-6">
-          <div className="flex items-start justify-between">
-            <motion.div 
-              className="flex items-center gap-4"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              {creator?.profileImage ? (
-                <motion.img
-                  src={creator.profileImage}
-                  alt={creator?.display_name}
-                  className="w-12 h-12 rounded-full object-cover ring-2 ring-white"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                />
-              ) : (
-                <motion.div 
-                  className="w-12 h-12 rounded-full bg-nino-primary/10 flex items-center justify-center ring-2 ring-white"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <span className="text-lg font-medium text-nino-primary">
-                    {creator?.display_name?.[0]?.toUpperCase() || 'C'}
-                  </span>
-                </motion.div>
-              )}
-              <div className="space-y-1">
-                <h3 className="font-semibold text-gray-900">
-                  {creator?.display_name || "Unknown Creator"}
-                </h3>
-                <Badge 
-                  variant="secondary" 
-                  className="capitalize bg-nino-primary/10 text-nino-primary hover:bg-nino-primary/20"
-                >
-                  {status}
-                </Badge>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="flex items-center gap-2"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              {onRefresh && (
-                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onRefresh}
-                    className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
-                  >
-                    <RefreshCw className="h-5 w-5" />
-                  </Button>
-                </motion.div>
-              )}
-              {onMessageClick && (
-                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onMessageClick}
-                    className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                  </Button>
-                </motion.div>
-              )}
-              {onViewCreator && (
-                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onViewCreator}
-                    className="rounded-full hover:bg-nino-primary/10 hover:text-nino-primary"
-                  >
-                    <User className="h-5 w-5" />
-                  </Button>
-                </motion.div>
-              )}
-              {onCancel && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full hover:bg-red-50 hover:text-red-500"
-                      >
-                        <X className="h-5 w-5" />
-                      </Button>
-                    </motion.div>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to cancel this booking? This action cannot be undone and the brand will be notified.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>No, keep booking</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={handleCancel}
-                        className="bg-red-500 hover:bg-red-600"
-                      >
-                        Yes, cancel booking
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
-            </motion.div>
-          </div>
-
-          {booking?.details && (
-            <motion.div 
-              className="text-sm text-gray-500"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <p>{booking.details}</p>
-            </motion.div>
-          )}
-
-          {onDelete && (
-            <motion.div 
-              className="flex justify-end gap-2 pt-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
+    <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-6 space-y-6">
+      <div className="flex justify-between items-start">
+        <div className="space-y-1">
+          <h3 className="text-xl font-semibold text-gray-900 tracking-tight">
+            {opportunity.title}
+          </h3>
+          <Badge 
+            variant="secondary" 
+            className="bg-nino-primary/10 text-nino-primary hover:bg-nino-primary/20"
+          >
+            Active Booking
+          </Badge>
+        </div>
+        {onCancel && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
               <Button
                 variant="ghost"
-                onClick={onDelete}
-                className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                size="icon"
+                className="rounded-full hover:bg-red-50 hover:text-red-500"
               >
-                Delete
+                <X className="h-5 w-5" />
               </Button>
-            </motion.div>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to cancel this booking? This action cannot be undone and the brand will be notified.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>No, keep booking</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleCancel}
+                  className="bg-red-500 hover:bg-red-600"
+                >
+                  Yes, cancel booking
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        {opportunity.description && (
+          <p className="text-gray-600 text-sm line-clamp-2">
+            {opportunity.description}
+          </p>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-500">
+          {(opportunity.start_date || opportunity.end_date) && (
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <span>
+                {opportunity.start_date && formatDate(opportunity.start_date)}
+                {opportunity.start_date && opportunity.end_date && " - "}
+                {opportunity.end_date && formatDate(opportunity.end_date)}
+              </span>
+            </div>
+          )}
+
+          {opportunity.location && (
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-gray-400" />
+              <span>{opportunity.location}</span>
+            </div>
           )}
         </div>
-      </Card>
-    </motion.div>
+
+        <div className="flex flex-wrap gap-2">
+          {opportunity.payment_details && (
+            <Badge variant="outline" className="rounded-full border-gray-200">
+              💰 {opportunity.payment_details}
+            </Badge>
+          )}
+          {opportunity.compensation_details && (
+            <Badge variant="outline" className="rounded-full border-gray-200">
+              🎁 {opportunity.compensation_details}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      <div className="flex gap-3">
+        <Button
+          variant="default"
+          size="sm"
+          onClick={onMessageClick}
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white flex items-center gap-2"
+        >
+          <MessageSquare className="w-4 h-4" />
+          Message Brand
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onViewCreator}
+          className="border-gray-200 hover:bg-gray-50"
+        >
+          View Details
+        </Button>
+      </div>
+    </Card>
   );
 };
 

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -16,7 +16,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  const { data: bookings, refetch, isLoading } = useQuery({
+  const { data: bookings, refetch } = useQuery({
     queryKey: ['bookings'],
     queryFn: async () => {
       try {
@@ -98,105 +98,21 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
     };
   }, [refetch]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-        duration: 0.3,
-        ease: [0.4, 0, 0.2, 1]
-      }
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        when: "afterChildren",
-        staggerChildren: 0.05,
-        staggerDirection: -1,
-        duration: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { 
-      opacity: 0,
-      y: 20,
-      scale: 0.95
-    },
-    visible: { 
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-        mass: 0.8
-      }
-    },
-    exit: {
-      opacity: 0,
-      y: -10,
-      scale: 0.95,
-      transition: {
-        duration: 0.2
-      }
-    }
-  };
-
-  const loadingVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { 
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: [0.4, 0, 0.2, 1]
-      }
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="px-8 -mt-4">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={loadingVariants}
-          className="space-y-4"
-        >
-          {[1, 2, 3].map((index) => (
-            <Card key={index} className="p-8 bg-white/50 backdrop-blur-sm border-none shadow-sm animate-pulse">
-              <div className="h-24" />
-            </Card>
-          ))}
-        </motion.div>
-      </div>
-    );
-  }
-
   if (!bookings || bookings.length === 0) {
     return (
       <div className="px-8 -mt-4">
         <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          variants={containerVariants}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
         >
           <Card className="p-8 bg-white/50 backdrop-blur-sm border-none shadow-sm">
-            <motion.div 
-              className="text-center text-muted-foreground py-8"
-              variants={itemVariants}
-            >
+            <div className="text-center text-muted-foreground py-8">
               <p className="text-lg font-medium">No active bookings yet</p>
               <p className="text-sm mt-2">
                 When you get accepted for projects, they will appear here
               </p>
-            </motion.div>
+            </div>
           </Card>
         </motion.div>
       </div>
@@ -205,37 +121,34 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
 
   return (
     <div className="px-8 -mt-4">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key="bookings-list"
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          variants={containerVariants}
-        >
-          <div className={`grid ${
-            isMobile 
-              ? 'grid-cols-1 gap-4' 
-              : 'grid-cols-1 gap-6'
-          }`}>
-            {bookings.map((booking: any) => (
-              <motion.div
-                key={booking.id}
-                variants={itemVariants}
-                layout
-              >
-                <BookingCard
-                  creator={booking.creator}
-                  opportunity={booking.opportunity}
-                  onMessageClick={() => onChatClick(booking.creator.user_id)}
-                  onViewCreator={() => onViewCreator(booking.creator)}
-                  onCancel={() => handleCancelBooking(booking.id)}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className={`grid ${
+          isMobile 
+            ? 'grid-cols-1 gap-4' 
+            : 'grid-cols-1 gap-6'
+        }`}>
+          {bookings.map((booking: any) => (
+            <motion.div
+              key={booking.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <BookingCard
+                creator={booking.creator}
+                opportunity={booking.opportunity}
+                onMessageClick={() => onChatClick(booking.creator.user_id)}
+                onViewCreator={() => onViewCreator(booking.creator)}
+                onCancel={() => handleCancelBooking(booking.id)}
+              />
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 };
