@@ -9,7 +9,10 @@ interface ProfileAvatarProps {
 const ProfileAvatar = ({ profile }: ProfileAvatarProps) => {
   const getProfileImage = () => {
     if (!profile) return "";
-    return 'profile_image_url' in profile ? profile.profile_image_url || "" : "";
+    if ('profile_image_url' in profile) {
+      return profile.profile_image_url || "";
+    }
+    return "";
   };
 
   const getInitials = () => {

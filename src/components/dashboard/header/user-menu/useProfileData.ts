@@ -40,18 +40,25 @@ export const useProfileData = () => {
         } as BrandProfile;
       }
       
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+      // For creators, fetch from creators table instead of profiles
+      const { data: creatorData, error: creatorError } = await supabase
+        .from('creators')
+        .select('profile_image_url, display_name')
+        .eq('user_id', user.id)
         .maybeSingle();
       
-      if (error) {
-        console.error('Error fetching profile:', error);
+      if (creatorError) {
+        console.error('Error fetching creator profile:', creatorError);
         return null;
       }
       
-      return data as UserProfile;
+      return {
+        id: user.id,
+        display_name: creatorData?.display_name || '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        profile_image_url: creatorData?.profile_image_url || null,
+      } as UserProfile;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes

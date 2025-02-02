@@ -20,6 +20,7 @@ export interface UserProfile {
   display_name: string;
   created_at: string;
   updated_at: string;
+  profile_image_url?: string | null;
 }
 
 const UserMenu = () => {
