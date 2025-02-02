@@ -17,6 +17,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
   const checkCreatorProfile = useCallback(async (userId: string) => {
     try {
+      console.log("Checking creator profile for user:", userId);
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id, onboarding_completed')
@@ -38,7 +39,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         return { isAuth: true, onboarding: false };
       }
 
-      console.log("Creator found:", creator);
+      console.log("Creator profile found:", creator);
       return { 
         isAuth: true, 
         onboarding: creator.onboarding_completed || false 
@@ -64,6 +65,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         return { isAuth: false, onboarding: false };
       }
 
+      console.log("Session found, checking creator profile...");
       return await checkCreatorProfile(session.user.id);
     } catch (error) {
       console.error('Error in checkAuth:', error);
@@ -88,10 +90,8 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
       }
     };
 
-    // Initial check
     initializeAuth();
 
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event);
       if (event === 'SIGNED_OUT') {
@@ -124,7 +124,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="flex items-center justify-center min-h-screen"
+          className="flex items-center justify-center min-h-[50vh]"
         >
           <LoadingSpinner />
         </motion.div>
@@ -147,7 +147,7 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="flex items-center justify-center min-h-screen"
+        className="flex items-center justify-center min-h-[50vh]"
       >
         <LoadingSpinner />
       </motion.div>

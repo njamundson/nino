@@ -17,6 +17,7 @@ const CreatorDashboard = () => {
   }
 
   if (error || !creator) {
+    console.error("Dashboard error:", error);
     return <DashboardError />;
   }
 

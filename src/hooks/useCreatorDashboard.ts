@@ -10,6 +10,7 @@ export const useCreatorDashboard = () => {
   const { toast } = useToast();
 
   const fetchCreatorProfile = useCallback(async () => {
+    console.log("Fetching creator profile...");
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError) {
@@ -63,17 +64,17 @@ export const useCreatorDashboard = () => {
       return null;
     }
 
+    console.log("Creator profile loaded successfully");
     return creator as Creator;
   }, [navigate, toast]);
 
   return useQuery({
     queryKey: ['creator-profile'],
     queryFn: fetchCreatorProfile,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
-    retry: 2,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
-    refetchInterval: 1000 * 60 * 10 // Refetch every 10 minutes
+    staleTime: 1000 * 30, // 30 seconds
+    gcTime: 1000 * 60 * 5, // 5 minutes
+    retry: 1,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true
   });
 };
