@@ -26,7 +26,7 @@ const MessageBubble = ({ message, isCurrentUser }: MessageBubbleProps) => {
     >
       <div
         className={cn(
-          "relative rounded-lg px-3 py-2 max-w-[85%]",
+          "relative rounded-[20px] px-4 py-2 max-w-[85%]",
           !isCurrentUser
             ? "bg-nino-primary text-white"
             : "bg-gray-100 text-gray-900"
@@ -36,7 +36,7 @@ const MessageBubble = ({ message, isCurrentUser }: MessageBubbleProps) => {
           <img 
             src={getImageUrl(message.content)} 
             alt="Shared image"
-            className="max-w-sm rounded-lg"
+            className="max-w-sm rounded-[20px]"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.style.display = 'none';
