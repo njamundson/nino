@@ -5,7 +5,6 @@ import { Archive } from "lucide-react";
 import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/integrations/supabase/types/opportunity";
-import { Creator } from "@/integrations/supabase/types/creator";
 
 const CompletedProjectsList = () => {
   const { toast } = useToast();
@@ -18,17 +17,18 @@ const CompletedProjectsList = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
-        const { data: brand } = await supabase
-          .from('brands')
+        const { data: creator } = await supabase
+          .from('creators')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (!brand) {
-          console.log("No brand profile found");
+        if (!creator) {
+          console.log("No creator profile found");
           return [];
         }
 
+        // Get all opportunities where the creator has an accepted application
         const { data: opportunities, error: oppsError } = await supabase
           .from('opportunities')
           .select(`
@@ -50,7 +50,7 @@ const CompletedProjectsList = () => {
               created_at,
               updated_at
             ),
-            applications (
+            applications!inner (
               id,
               status,
               opportunity_id,
@@ -58,12 +58,11 @@ const CompletedProjectsList = () => {
               cover_letter,
               created_at,
               updated_at,
-              initiated_by,
-              creator:creators (*)
+              initiated_by
             )
           `)
-          .eq('brand_id', brand.id)
           .eq('status', 'completed')
+          .eq('applications.creator_id', creator.id)
           .eq('applications.status', 'accepted');
 
         if (oppsError) {
@@ -71,18 +70,8 @@ const CompletedProjectsList = () => {
           throw oppsError;
         }
 
-        if (!opportunities) {
-          console.log("No completed opportunities found");
-          return [];
-        }
-
-        // Filter opportunities to only include those with accepted applications
-        const completedWithAcceptedCreator = opportunities.filter(opp => 
-          opp.applications?.some(app => app.status === 'accepted')
-        );
-
-        console.log("Fetched completed projects:", completedWithAcceptedCreator);
-        return completedWithAcceptedCreator as Opportunity[];
+        console.log("Fetched completed projects:", opportunities);
+        return opportunities as Opportunity[];
       } catch (error) {
         console.error("Error in query:", error);
         throw error;
