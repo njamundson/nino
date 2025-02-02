@@ -18,7 +18,7 @@ export const useActiveBookings = () => {
 
         if (!brand) return 0;
 
-        // Count opportunities that have an accepted application and are active
+        // Count opportunities that are active and have an accepted application
         const { data: opportunities, error } = await supabase
           .from('opportunities')
           .select(`
@@ -40,7 +40,7 @@ export const useActiveBookings = () => {
         console.log('Active bookings count:', count);
         return count;
       } catch (error) {
-        console.error('Error fetching active bookings:', error);
+        console.error('Error in useActiveBookings:', error);
         return 0;
       }
     },
