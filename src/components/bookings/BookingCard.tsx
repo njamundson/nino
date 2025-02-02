@@ -2,8 +2,20 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Creator } from "@/types/creator";
-import { Calendar, MapPin, MessageSquare } from "lucide-react";
+import { Calendar, MapPin, MessageSquare, X } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface BookingCardProps {
   creator: Creator;
@@ -18,16 +30,28 @@ interface BookingCardProps {
   } | null;
   onMessageClick: () => void;
   onViewCreator: () => void;
+  onCancel?: () => void;
 }
 
-const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator }: BookingCardProps) => {
+const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCancel }: BookingCardProps) => {
+  const { toast } = useToast();
+
   if (!opportunity) {
     return null;
   }
 
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+      toast({
+        title: "Booking cancelled",
+        description: "The brand has been notified of this cancellation.",
+      });
+    }
+  };
+
   return (
     <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-6 space-y-6">
-      {/* Status Badge */}
       <div className="flex justify-between items-start">
         <div className="space-y-1">
           <h3 className="text-xl font-semibold text-gray-900 tracking-tight">
@@ -40,9 +64,38 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator }: Bo
             Active Booking
           </Badge>
         </div>
+        {onCancel && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-red-50 hover:text-red-500"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to cancel this booking? This action cannot be undone and the brand will be notified.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>No, keep booking</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleCancel}
+                  className="bg-red-500 hover:bg-red-600"
+                >
+                  Yes, cancel booking
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
 
-      {/* Project Details */}
       <div className="space-y-4">
         {opportunity.description && (
           <p className="text-gray-600 text-sm line-clamp-2">
@@ -70,7 +123,6 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator }: Bo
           )}
         </div>
 
-        {/* Compensation Details */}
         <div className="flex flex-wrap gap-2">
           {opportunity.payment_details && (
             <Badge variant="outline" className="rounded-full border-gray-200">
@@ -85,7 +137,6 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator }: Bo
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex gap-3">
         <Button
           variant="default"

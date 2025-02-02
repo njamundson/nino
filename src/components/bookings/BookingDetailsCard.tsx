@@ -2,7 +2,19 @@ import { Card } from "@/components/ui/card";
 import { Creator } from "@/types/creator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, User, RefreshCw } from "lucide-react";
+import { MessageCircle, User, RefreshCw, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 export interface BookingDetailsCardProps {
   creator?: Creator;
@@ -25,6 +37,18 @@ export const BookingDetailsCard = ({
   onViewCreator,
   onRefresh
 }: BookingDetailsCardProps) => {
+  const { toast } = useToast();
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+      toast({
+        title: "Booking cancelled",
+        description: "The brand has been notified of this cancellation.",
+      });
+    }
+  };
+
   return (
     <Card className="p-6 bg-white/50 backdrop-blur-sm border border-gray-100 hover:border-gray-200 transition-all duration-200">
       <div className="space-y-6">
@@ -87,6 +111,36 @@ export const BookingDetailsCard = ({
                 <User className="h-5 w-5" />
               </Button>
             )}
+            {onCancel && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full hover:bg-red-50 hover:text-red-500"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to cancel this booking? This action cannot be undone and the brand will be notified.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>No, keep booking</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleCancel}
+                      className="bg-red-500 hover:bg-red-600"
+                    >
+                      Yes, cancel booking
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </div>
         </div>
 
@@ -96,26 +150,15 @@ export const BookingDetailsCard = ({
           </div>
         )}
 
-        {(onCancel || onDelete) && (
+        {onDelete && (
           <div className="flex justify-end gap-2 pt-2">
-            {onCancel && (
-              <Button
-                variant="ghost"
-                onClick={onCancel}
-                className="text-red-500 hover:text-red-600 hover:bg-red-50"
-              >
-                Cancel
-              </Button>
-            )}
-            {onDelete && (
-              <Button
-                variant="ghost"
-                onClick={onDelete}
-                className="text-red-500 hover:text-red-600 hover:bg-red-50"
-              >
-                Delete
-              </Button>
-            )}
+            <Button
+              variant="ghost"
+              onClick={onDelete}
+              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+            >
+              Delete
+            </Button>
           </div>
         )}
       </div>

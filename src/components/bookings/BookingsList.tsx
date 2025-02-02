@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BookingCard from './BookingCard';
+import { useToast } from "@/hooks/use-toast";
 
 interface BookingsListProps {
   onChatClick: (userId: string) => void;
@@ -13,6 +14,7 @@ interface BookingsListProps {
 
 const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   
   const { data: bookings, refetch } = useQuery({
     queryKey: ['bookings'],
@@ -53,6 +55,26 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       }
     }
   });
+
+  const handleCancelBooking = async (bookingId: string) => {
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ status: 'cancelled' })
+        .eq('id', bookingId);
+
+      if (error) throw error;
+
+      refetch();
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel booking. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     const channel = supabase
@@ -121,6 +143,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
                 opportunity={booking.opportunity}
                 onMessageClick={() => onChatClick(booking.creator.user_id)}
                 onViewCreator={() => onViewCreator(booking.creator)}
+                onCancel={() => handleCancelBooking(booking.id)}
               />
             </motion.div>
           ))}
