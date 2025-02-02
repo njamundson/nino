@@ -18,16 +18,15 @@ export const useActiveBookings = () => {
 
         if (!brand) return 0;
 
-        // Count opportunities that are active AND have an accepted application
+        // Count opportunities that have an accepted application and haven't ended yet
         const { count } = await supabase
           .from('opportunities')
           .select('*', { count: 'exact', head: true })
           .eq('brand_id', brand.id)
           .eq('status', 'active')
-          .not('id', 'in', (sb) => 
-            sb.from('applications')
-              .select('opportunity_id')
-              .eq('status', 'completed')
+          .exists(
+            'applications',
+            (query) => query.eq('status', 'accepted')
           );
 
         console.log('Active bookings count:', count);

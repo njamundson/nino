@@ -18,12 +18,17 @@ export const useCompletedProjects = () => {
 
         if (!brand) return 0;
 
-        // Count opportunities that are explicitly marked as completed
+        // Count opportunities that have passed their end date and had an accepted application
         const { count } = await supabase
           .from('opportunities')
           .select('*', { count: 'exact', head: true })
           .eq('brand_id', brand.id)
-          .eq('status', 'completed');
+          .eq('status', 'completed')
+          .lt('end_date', new Date().toISOString())
+          .exists(
+            'applications',
+            (query) => query.eq('status', 'accepted')
+          );
 
         console.log('Completed projects count:', count);
         return count || 0;
