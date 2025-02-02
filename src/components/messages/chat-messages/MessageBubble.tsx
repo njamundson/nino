@@ -20,13 +20,13 @@ const MessageBubble = ({ message, isCurrentUser }: MessageBubbleProps) => {
   return (
     <div
       className={cn(
-        "relative flex max-w-[85%] items-end gap-2",
-        !isCurrentUser ? "ml-auto" : "mr-auto"
+        "relative flex items-end gap-2 w-full",
+        !isCurrentUser ? "justify-end" : "justify-start"
       )}
     >
       <div
         className={cn(
-          "relative rounded-lg px-3 py-2",
+          "relative rounded-lg px-3 py-2 max-w-[85%]",
           !isCurrentUser
             ? "bg-nino-primary text-white"
             : "bg-gray-100 text-gray-900"
