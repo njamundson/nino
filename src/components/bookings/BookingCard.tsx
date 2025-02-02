@@ -57,14 +57,14 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCa
     <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-6 space-y-6">
       <div className="flex justify-between items-start">
         <div className="space-y-1">
+          {opportunity.brand?.company_name && (
+            <p className="text-sm font-medium text-nino-primary">
+              {opportunity.brand.company_name}
+            </p>
+          )}
           <h3 className="text-xl font-semibold text-gray-900 tracking-tight">
             {opportunity.title}
           </h3>
-          {opportunity.brand?.company_name && (
-            <p className="text-sm text-gray-600">
-              by {opportunity.brand.company_name}
-            </p>
-          )}
           <Badge 
             variant="secondary" 
             className="bg-nino-primary/10 text-nino-primary hover:bg-nino-primary/20"
