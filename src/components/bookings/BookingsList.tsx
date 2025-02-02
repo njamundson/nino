@@ -1,40 +1,33 @@
-import { Card } from "@/components/ui/card";
-import BookingCard from "./BookingCard";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
-import { motion } from "framer-motion";
-import { Creator } from "@/types/creator";
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
+import { useMobile } from '@/hooks/use-mobile';
+import BookingCard from './BookingCard';
 
 interface BookingsListProps {
-  onChatClick: (creatorId: string) => void;
-  onViewCreator: (creator: Creator) => void;
+  onChatClick: (userId: string) => void;
+  onViewCreator: (creator: any) => void;
 }
 
 const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
-  const isMobile = useIsMobile();
-  const { toast } = useToast();
+  const isMobile = useMobile();
   
   const { data: bookings, refetch } = useQuery({
-    queryKey: ['active-bookings'],
+    queryKey: ['bookings'],
     queryFn: async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.log('No authenticated user found');
-          return [];
-        }
+        if (!user) return [];
 
         const { data: creator } = await supabase
           .from('creators')
           .select('id')
           .eq('user_id', user.id)
-          .maybeSingle();
+          .single();
 
         if (!creator) {
-          console.log('No creator profile found');
           return [];
         }
 
@@ -43,52 +36,27 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           .select(`
             *,
             opportunity:opportunities(*),
-            creator:creators(
-              id,
-              user_id,
-              bio,
-              location,
-              instagram,
-              website,
-              specialties,
-              creator_type,
-              profile_image_url,
-              display_name,
-              created_at,
-              updated_at,
-              profile_id,
-              notifications_enabled
-            )
+            creator:creators(*)
           `)
           .eq('creator_id', creator.id)
           .eq('status', 'accepted')
-          .in('opportunity.status', ['active', 'open']);
+          .order('created_at', { ascending: false });
 
         if (error) {
-          console.error('Error fetching bookings:', error);
           throw error;
         }
 
         return data || [];
       } catch (error) {
         console.error('Error fetching bookings:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load bookings. Please try again.",
-          variant: "destructive",
-        });
         return [];
       }
-    },
-    refetchInterval: 1000 * 60 * 5,
-    retry: 3,
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5
+    }
   });
 
   useEffect(() => {
     const channel = supabase
-      .channel('booking-updates')
+      .channel('bookings-changes')
       .on(
         'postgres_changes',
         {
@@ -110,7 +78,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
 
   if (!bookings || bookings.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-6">
+      <div className="max-w-[1400px] mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -130,7 +98,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="max-w-[1400px] mx-auto px-6">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -138,8 +106,8 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       >
         <div className={`grid ${
           isMobile 
-            ? 'grid-cols-1 gap-6' 
-            : 'grid-cols-1 xl:grid-cols-2 gap-8'
+            ? 'grid-cols-1 gap-4' 
+            : 'grid-cols-1 gap-6'
         }`}>
           {bookings.map((booking: any) => (
             <motion.div
