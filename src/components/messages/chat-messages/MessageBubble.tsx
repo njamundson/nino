@@ -1,7 +1,5 @@
 import { Message } from "@/types/message";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { EmojiPicker } from "./EmojiPicker";
 
 interface MessageBubbleProps {
   message: Message;
@@ -9,9 +7,7 @@ interface MessageBubbleProps {
   onReaction?: (messageId: string, emoji: string) => void;
 }
 
-const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProps) => {
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
+const MessageBubble = ({ message, isCurrentUser }: MessageBubbleProps) => {
   const isImage = message.content.startsWith('![Image]') || message.content.includes('supabase.co/storage');
 
   const getImageUrl = (content: string) => {
@@ -24,7 +20,7 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
   return (
     <div
       className={cn(
-        "group relative flex max-w-[85%] items-end gap-2",
+        "relative flex max-w-[85%] items-end gap-2",
         isCurrentUser ? "ml-auto" : "mr-auto"
       )}
     >
@@ -57,25 +53,6 @@ const MessageBubble = ({ message, isCurrentUser, onReaction }: MessageBubbleProp
               : "-left-1 -translate-y-1/2 rotate-45 bg-gray-100"
           )}
         />
-      </div>
-      <div className="relative">
-        <button
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          😊
-        </button>
-        {showEmojiPicker && (
-          <EmojiPicker
-            onEmojiSelect={(emoji) => {
-              if (onReaction) {
-                onReaction(message.id, emoji);
-              }
-              setShowEmojiPicker(false);
-            }}
-            position={isCurrentUser ? "left" : "right"}
-          />
-        )}
       </div>
     </div>
   );
