@@ -10,7 +10,7 @@ import { Creator } from "@/integrations/supabase/types/creator";
 const CompletedProjectsList = () => {
   const { toast } = useToast();
   
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects, isLoading, error } = useQuery({
     queryKey: ['completed-projects'],
     queryFn: async () => {
       try {
@@ -83,21 +83,21 @@ const CompletedProjectsList = () => {
 
         if (oppsError) {
           console.error("Error fetching opportunities:", oppsError);
-          toast({
-            title: "Error",
-            description: "Could not fetch completed projects",
-            variant: "destructive",
-          });
+          throw oppsError;
+        }
+
+        if (!opportunities) {
+          console.log("No completed opportunities found");
           return [];
         }
 
         // Filter opportunities to only include those with accepted applications
-        const completedWithAcceptedCreator = opportunities?.filter(opp => 
+        const completedWithAcceptedCreator = opportunities.filter(opp => 
           opp.applications?.some(app => app.status === 'accepted')
         );
 
         // Transform the data to match the Opportunity type
-        const transformedOpportunities = completedWithAcceptedCreator?.map(opp => ({
+        const transformedOpportunities = completedWithAcceptedCreator.map(opp => ({
           ...opp,
           brand: {
             ...opp.brand,
@@ -117,19 +117,26 @@ const CompletedProjectsList = () => {
         })) as Opportunity[];
 
         console.log("Fetched completed projects:", transformedOpportunities);
-        return transformedOpportunities || [];
+        return transformedOpportunities;
       } catch (error) {
         console.error("Error in query:", error);
-        toast({
-          title: "Error",
-          description: "Could not fetch completed projects",
-          variant: "destructive",
-        });
-        return [];
+        throw error;
       }
     },
-    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes to check for newly completed projects
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+    retry: 2,
+    refetchOnWindowFocus: false,
   });
+
+  if (error) {
+    toast({
+      title: "Error",
+      description: "Could not fetch completed projects",
+      variant: "destructive",
+    });
+    return null;
+  }
 
   if (isLoading) {
     return (
