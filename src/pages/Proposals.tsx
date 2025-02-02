@@ -8,7 +8,7 @@ import ProposalsList from "@/components/proposals/ProposalsList";
 
 const Proposals = () => {
   const { toast } = useToast();
-  const { data: applications, isLoading: isLoadingApplications, error } = useApplications();
+  const { data: applications = [], error } = useApplications();
 
   const handleUpdateApplicationStatus = async (applicationId: string, newStatus: 'accepted' | 'rejected') => {
     try {
@@ -42,20 +42,21 @@ const Proposals = () => {
   }
 
   // Filter for brand invitations (initiated by brand) that don't have a cover letter yet
-  // and ensure initiated_by is properly typed
-  const pendingInvitations = (applications || []).map(app => ({
-    ...app,
-    initiated_by: app.initiated_by as "creator" | "brand"
-  })).filter(app => 
-    app.initiated_by === 'brand' && !app.cover_letter
-  );
+  const pendingInvitations = applications
+    .map(app => ({
+      ...app,
+      initiated_by: app.initiated_by as "creator" | "brand"
+    }))
+    .filter(app => 
+      app.initiated_by === 'brand' && !app.cover_letter
+    );
 
   return (
     <motion.div 
       className="min-h-screen"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
     >
       <PageHeader 
         title="Pending Invitations" 
@@ -65,7 +66,7 @@ const Proposals = () => {
       <div className="mt-6">
         <ProposalsList
           applications={pendingInvitations}
-          isLoading={isLoadingApplications}
+          isLoading={false}
           onUpdateStatus={handleUpdateApplicationStatus}
           type="proposal"
         />

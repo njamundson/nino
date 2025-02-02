@@ -1,8 +1,7 @@
 import { Application } from "@/integrations/supabase/types/application";
 import ProposalCard from "./ProposalCard";
 import EmptyProposals from "./EmptyProposals";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ProposalsListProps {
   applications: Application[];
@@ -12,39 +11,50 @@ interface ProposalsListProps {
 }
 
 const ProposalsList = ({ 
-  applications, 
-  isLoading, 
+  applications = [], 
   onUpdateStatus, 
   type 
 }: ProposalsListProps) => {
-  if (isLoading) {
+  if (!applications || applications.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <LoadingSpinner />
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <EmptyProposals type={type} />
+      </motion.div>
     );
   }
 
-  if (!applications || applications.length === 0) {
-    return <EmptyProposals type={type} />;
-  }
-
   return (
-    <motion.div 
-      className="grid gap-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      {applications.map((application) => (
-        <ProposalCard
-          key={application.id}
-          application={application}
-          type={type}
-          onUpdateStatus={onUpdateStatus}
-        />
-      ))}
-    </motion.div>
+    <AnimatePresence mode="wait">
+      <motion.div 
+        className="grid gap-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        {applications.map((application, index) => (
+          <motion.div
+            key={application.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.1,
+              ease: [0.23, 1, 0.32, 1]
+            }}
+          >
+            <ProposalCard
+              application={application}
+              type={type}
+              onUpdateStatus={onUpdateStatus}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
