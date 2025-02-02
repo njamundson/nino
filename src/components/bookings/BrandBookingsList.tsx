@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { CalendarX } from "lucide-react";
 import BookingDetailsCard from "./details/BookingDetailsCard";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import BookedCreatorProfile from "./details/BookedCreatorProfile";
 import { Creator } from "@/types/creator";
 import { mapCreatorData } from "@/utils/creatorUtils";
@@ -23,7 +23,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   
-  const { data: bookings, isLoading, refetch, isError } = useQuery({
+  const { data: bookings = [], isLoading, refetch, isError } = useQuery({
     queryKey: ['brand-active-bookings-list'],
     queryFn: async () => {
       try {
@@ -81,8 +81,10 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         throw error;
       }
     },
-    refetchInterval: 1000 * 60 * 5,
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    gcTime: 1000 * 60 * 15, // Keep unused data for 15 minutes
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
+    initialData: [], // Start with empty array to prevent undefined
   });
 
   const handleDelete = async (applicationId: string) => {
@@ -209,6 +211,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent className="max-w-4xl h-[90vh] p-0">
+          <DialogTitle className="sr-only">Creator Profile</DialogTitle>
           {selectedCreator && (
             <BookedCreatorProfile
               creator={selectedCreator}
