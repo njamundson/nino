@@ -5,24 +5,37 @@ export const useActiveBookings = () => {
   const { data: activeBookings = 0 } = useQuery({
     queryKey: ['active-bookings'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return 0;
+      try {
+        console.log('Fetching active bookings count...');
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return 0;
 
-      const { data: brand } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        const { data: brand } = await supabase
+          .from('brands')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (!brand) return 0;
+        if (!brand) return 0;
 
-      const { count } = await supabase
-        .from('opportunities')
-        .select('*', { count: 'exact', head: true })
-        .eq('brand_id', brand.id)
-        .eq('status', 'active');
+        // Count opportunities that are active AND have an accepted application
+        const { count } = await supabase
+          .from('opportunities')
+          .select('*', { count: 'exact', head: true })
+          .eq('brand_id', brand.id)
+          .eq('status', 'active')
+          .not('id', 'in', (sb) => 
+            sb.from('applications')
+              .select('opportunity_id')
+              .eq('status', 'completed')
+          );
 
-      return count || 0;
+        console.log('Active bookings count:', count);
+        return count || 0;
+      } catch (error) {
+        console.error('Error fetching active bookings:', error);
+        return 0;
+      }
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     gcTime: 1000 * 60 * 15, // Keep unused data for 15 minutes
