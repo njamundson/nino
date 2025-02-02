@@ -13,15 +13,17 @@ StaticSidebar.displayName = 'StaticSidebar';
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
 
-// Optimized page transition component with better animation timing
+// Optimized page transition component
 const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
   <motion.div
-    initial={{ opacity: 0.95, y: 0 }}
+    initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0.95, y: 0 }}
+    exit={{ opacity: 0, y: 10 }}
     transition={{ 
-      duration: 0.15,
-      ease: [0.4, 0, 0.2, 1]
+      type: "spring",
+      stiffness: 260,
+      damping: 20,
+      duration: 0.3
     }}
     className="relative h-full"
   >
@@ -31,14 +33,17 @@ const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
 
 PageTransition.displayName = 'PageTransition';
 
-// Minimal loading fallback that maintains layout
-const MinimalLoadingFallback = () => (
+// Minimal loading state with smooth fade
+const LoadingFallback = () => (
   <motion.div 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="min-h-[200px]"
-  />
+    transition={{ duration: 0.2 }}
+    className="min-h-[200px] flex items-center justify-center"
+  >
+    <div className="w-6 h-6 border-2 border-nino-primary border-t-transparent rounded-full animate-spin" />
+  </motion.div>
 );
 
 const CreatorLayout = () => {
@@ -49,7 +54,6 @@ const CreatorLayout = () => {
   // Preload all creator pages immediately on mount
   useEffect(() => {
     const preloadRoutes = async () => {
-      // Preload all routes in parallel
       await Promise.all([
         import("@/pages/Dashboard"),
         import("@/pages/Projects"),
@@ -62,28 +66,29 @@ const CreatorLayout = () => {
       ]);
     };
 
-    // Start preloading immediately
     void preloadRoutes();
 
-    // Prefetch data for common routes
+    // Prefetch common data
     const prefetchData = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
 
-      // Prefetch creator profile
-      await supabase
-        .from('creators')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
+      await Promise.all([
+        // Prefetch creator profile
+        supabase
+          .from('creators')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .maybeSingle(),
 
-      // Prefetch recent messages
-      await supabase
-        .from('messages')
-        .select('*')
-        .or(`sender_id.eq.${session.user.id},receiver_id.eq.${session.user.id}`)
-        .order('created_at', { ascending: false })
-        .limit(10);
+        // Prefetch recent messages
+        supabase
+          .from('messages')
+          .select('*')
+          .or(`sender_id.eq.${session.user.id},receiver_id.eq.${session.user.id}`)
+          .order('created_at', { ascending: false })
+          .limit(10)
+      ]);
     };
 
     void prefetchData();
@@ -102,9 +107,9 @@ const CreatorLayout = () => {
         </div>
 
         <AnimatePresence mode="wait" initial={false}>
-          <PageTransition key={location.pathname.split("/").slice(0, 3).join("/")}>
+          <PageTransition key={location.pathname}>
             <main className="p-4 pt-28 md:p-8 md:pt-32">
-              <Suspense fallback={<MinimalLoadingFallback />}>
+              <Suspense fallback={<LoadingFallback />}>
                 <Outlet />
               </Suspense>
             </main>
