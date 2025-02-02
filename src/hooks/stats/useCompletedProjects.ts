@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useCompletedProjects = () => {
   const { data: completedProjects = 0 } = useQuery({
-    queryKey: ['completed-projects'],
+    queryKey: ['completed-projects-count'],
     queryFn: async () => {
       try {
         console.log('Fetching completed projects count...');
@@ -18,7 +18,7 @@ export const useCompletedProjects = () => {
 
         if (!brand) return 0;
 
-        // Count opportunities that are completed and had an accepted application
+        // Count opportunities that are completed and have an accepted application
         const { data: opportunities, error } = await supabase
           .from('opportunities')
           .select(`

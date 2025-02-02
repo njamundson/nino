@@ -11,9 +11,10 @@ const CompletedProjectsList = () => {
   const { toast } = useToast();
   
   const { data: projects = [], isLoading, error } = useQuery({
-    queryKey: ['completed-projects'],
+    queryKey: ['completed-projects-list'],
     queryFn: async () => {
       try {
+        console.log('Fetching completed projects list...');
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
@@ -58,28 +59,12 @@ const CompletedProjectsList = () => {
               created_at,
               updated_at,
               initiated_by,
-              creator:creators (
-                id,
-                user_id,
-                bio,
-                location,
-                instagram,
-                website,
-                specialties,
-                creator_type,
-                profile_image_url,
-                display_name,
-                created_at,
-                updated_at,
-                profile_id,
-                notifications_enabled
-              )
+              creator:creators (*)
             )
           `)
           .eq('brand_id', brand.id)
           .eq('status', 'completed')
-          .lt('end_date', new Date().toISOString())
-          .order('end_date', { ascending: false });
+          .eq('applications.status', 'accepted');
 
         if (oppsError) {
           console.error("Error fetching opportunities:", oppsError);
@@ -96,28 +81,8 @@ const CompletedProjectsList = () => {
           opp.applications?.some(app => app.status === 'accepted')
         );
 
-        // Transform the data to match the Opportunity type
-        const transformedOpportunities = completedWithAcceptedCreator.map(opp => ({
-          ...opp,
-          brand: opp.brand ? {
-            ...opp.brand,
-            sms_notifications_enabled: opp.brand.sms_notifications_enabled ?? true,
-            two_factor_enabled: opp.brand.two_factor_enabled ?? false,
-            created_at: opp.brand.created_at ?? opp.created_at,
-            updated_at: opp.brand.updated_at ?? opp.updated_at,
-          } : undefined,
-          applications: opp.applications?.map(app => ({
-            ...app,
-            opportunity_id: opp.id,
-            created_at: app.created_at || opp.created_at,
-            updated_at: app.updated_at || opp.updated_at,
-            initiated_by: app.initiated_by || 'creator',
-            creator: app.creator as Creator
-          }))
-        })) as Opportunity[];
-
-        console.log("Fetched completed projects:", transformedOpportunities);
-        return transformedOpportunities;
+        console.log("Fetched completed projects:", completedWithAcceptedCreator);
+        return completedWithAcceptedCreator as Opportunity[];
       } catch (error) {
         console.error("Error in query:", error);
         throw error;
@@ -125,8 +90,6 @@ const CompletedProjectsList = () => {
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
-    retry: 2,
-    refetchOnWindowFocus: false,
   });
 
   if (error) {
