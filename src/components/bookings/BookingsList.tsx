@@ -117,7 +117,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="space-y-8"
+        className="w-full"
       >
         <Card className="p-8 bg-white/50 backdrop-blur-sm border-none shadow-sm">
           <div className="text-center text-muted-foreground py-8">
@@ -136,7 +136,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="space-y-8"
+      className="w-full"
     >
       <div className={`grid ${
         isMobile 
