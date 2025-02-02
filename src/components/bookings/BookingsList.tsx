@@ -22,7 +22,10 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
     queryFn: async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return [];
+        if (!user) {
+          console.log('No authenticated user found');
+          return [];
+        }
 
         const { data: creator } = await supabase
           .from('creators')
@@ -30,8 +33,12 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (!creator) return [];
+        if (!creator) {
+          console.log('No creator profile found');
+          return [];
+        }
 
+        console.log('Fetching applications for creator:', creator.id);
         const { data, error } = await supabase
           .from('applications')
           .select(`
@@ -58,7 +65,12 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           .eq('status', 'accepted')
           .in('opportunity.status', ['active', 'open']);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching bookings:', error);
+          throw error;
+        }
+
+        console.log('Fetched bookings:', data);
         return data || [];
       } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -70,10 +82,10 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
         return [];
       }
     },
-    refetchInterval: 1000 * 60 * 5,
+    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
     retry: 3,
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5
+    staleTime: 1000 * 60 * 2, // Consider data stale after 2 minutes
+    gcTime: 1000 * 60 * 5 // Keep unused data for 5 minutes
   });
 
   useEffect(() => {
