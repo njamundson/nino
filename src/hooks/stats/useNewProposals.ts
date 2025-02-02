@@ -19,20 +19,27 @@ export const useNewProposals = () => {
         if (!brand) return 0;
 
         // Count pending applications for open opportunities
-        const { count } = await supabase
+        const { data: applications, error } = await supabase
           .from('applications')
-          .select('*', { count: 'exact', head: true })
+          .select(`
+            id,
+            opportunity:opportunities!inner (
+              brand_id,
+              status
+            )
+          `)
           .eq('status', 'pending')
-          .in('opportunity_id', (query) => 
-            query
-              .from('opportunities')
-              .select('id')
-              .eq('brand_id', brand.id)
-              .eq('status', 'open')
-          );
+          .eq('opportunity.brand_id', brand.id)
+          .eq('opportunity.status', 'open');
 
+        if (error) {
+          console.error('Error fetching new proposals:', error);
+          return 0;
+        }
+
+        const count = applications?.length || 0;
         console.log('New proposals count:', count);
-        return count || 0;
+        return count;
       } catch (error) {
         console.error('Error fetching new proposals:', error);
         return 0;

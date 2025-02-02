@@ -18,19 +18,27 @@ export const useActiveBookings = () => {
 
         if (!brand) return 0;
 
-        // Count opportunities that have an accepted application and haven't ended yet
-        const { count } = await supabase
+        // Count opportunities that have an accepted application and are active
+        const { data: opportunities, error } = await supabase
           .from('opportunities')
-          .select('*', { count: 'exact', head: true })
+          .select(`
+            id,
+            applications!inner (
+              status
+            )
+          `)
           .eq('brand_id', brand.id)
           .eq('status', 'active')
-          .exists(
-            'applications',
-            (query) => query.eq('status', 'accepted')
-          );
+          .eq('applications.status', 'accepted');
 
+        if (error) {
+          console.error('Error fetching active bookings:', error);
+          return 0;
+        }
+
+        const count = opportunities?.length || 0;
         console.log('Active bookings count:', count);
-        return count || 0;
+        return count;
       } catch (error) {
         console.error('Error fetching active bookings:', error);
         return 0;

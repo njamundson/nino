@@ -19,19 +19,27 @@ export const useCompletedProjects = () => {
         if (!brand) return 0;
 
         // Count opportunities that have passed their end date and had an accepted application
-        const { count } = await supabase
+        const { data: opportunities, error } = await supabase
           .from('opportunities')
-          .select('*', { count: 'exact', head: true })
+          .select(`
+            id,
+            applications!inner (
+              status
+            )
+          `)
           .eq('brand_id', brand.id)
           .eq('status', 'completed')
           .lt('end_date', new Date().toISOString())
-          .exists(
-            'applications',
-            (query) => query.eq('status', 'accepted')
-          );
+          .eq('applications.status', 'accepted');
 
+        if (error) {
+          console.error('Error fetching completed projects:', error);
+          return 0;
+        }
+
+        const count = opportunities?.length || 0;
         console.log('Completed projects count:', count);
-        return count || 0;
+        return count;
       } catch (error) {
         console.error('Error fetching completed projects:', error);
         return 0;
