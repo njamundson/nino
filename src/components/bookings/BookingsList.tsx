@@ -117,7 +117,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-5xl mx-auto px-4"
+        className="w-full max-w-6xl mx-auto px-6"
       >
         <Card className="p-8 bg-white/50 backdrop-blur-sm border-none shadow-sm">
           <div className="text-center text-muted-foreground py-8">
@@ -136,12 +136,12 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-7xl mx-auto px-4"
+      className="w-full max-w-[1200px] mx-auto px-6"
     >
       <div className={`grid ${
         isMobile 
-          ? 'grid-cols-1 gap-4' 
-          : 'md:grid-cols-2 lg:grid-cols-3 gap-6'
+          ? 'grid-cols-1 gap-6' 
+          : 'grid-cols-1 xl:grid-cols-2 gap-8'
       }`}>
         {bookings.map((booking: any) => (
           <motion.div
