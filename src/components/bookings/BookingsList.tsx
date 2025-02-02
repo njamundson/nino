@@ -70,13 +70,12 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
         return [];
       }
     },
-    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
+    refetchInterval: 1000 * 60 * 5,
     retry: 3,
-    staleTime: 1000 * 60 * 2, // Consider data stale after 2 minutes
-    gcTime: 1000 * 60 * 5 // Keep unused data in cache for 5 minutes
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5
   });
 
-  // Set up real-time subscription for booking updates
   useEffect(() => {
     const channel = supabase
       .channel('booking-updates')
@@ -106,8 +105,9 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
+        className="w-full max-w-5xl mx-auto"
       >
-        <Card className="p-8">
+        <Card className="p-8 bg-white/50 backdrop-blur-sm border-none shadow-sm">
           <div className="text-center text-muted-foreground py-8">
             <p className="text-lg font-medium">No active bookings yet</p>
             <p className="text-sm mt-2">
@@ -124,16 +124,26 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="space-y-6"
+      className="w-full max-w-7xl mx-auto"
     >
-      <div className={`grid grid-cols-1 ${isMobile ? 'gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
+      <div className={`grid ${
+        isMobile 
+          ? 'grid-cols-1 gap-4' 
+          : 'md:grid-cols-2 lg:grid-cols-3 gap-6'
+      }`}>
         {bookings.map((booking: any) => (
-          <BookingCard
+          <motion.div
             key={booking.id}
-            creator={booking.creator}
-            onMessageClick={() => onChatClick(booking.creator.user_id)}
-            onViewCreator={() => onViewCreator(booking.creator)}
-          />
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <BookingCard
+              creator={booking.creator}
+              onMessageClick={() => onChatClick(booking.creator.user_id)}
+              onViewCreator={() => onViewCreator(booking.creator)}
+            />
+          </motion.div>
         ))}
       </div>
     </motion.div>
