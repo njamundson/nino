@@ -2,81 +2,104 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Creator } from "@/types/creator";
-import { MessageSquare, User } from "lucide-react";
+import { Calendar, MapPin, MessageSquare } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 interface BookingCardProps {
   creator: Creator;
+  opportunity: {
+    title: string;
+    description: string | null;
+    start_date: string | null;
+    end_date: string | null;
+    location: string | null;
+    payment_details: string | null;
+    compensation_details: string | null;
+  };
   onMessageClick: () => void;
   onViewCreator: () => void;
 }
 
-const BookingCard = ({ creator, onMessageClick, onViewCreator }: BookingCardProps) => {
+const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator }: BookingCardProps) => {
   return (
-    <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]">
-      <div className="relative h-full w-full">
-        {/* Profile Image */}
-        <div className="h-[250px] w-full overflow-hidden">
-          {creator.profile_image_url ? (
-            <img
-              src={creator.profile_image_url}
-              alt={`${creator.display_name}'s profile`}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="h-full w-full bg-gray-100 flex items-center justify-center">
-              <User className="h-12 w-12 text-gray-400" />
-            </div>
-          )}
-        </div>
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-
-        {/* Status Badge */}
-        <div className="absolute top-4 right-4 z-10">
+    <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-6 space-y-6">
+      {/* Status Badge */}
+      <div className="flex justify-between items-start">
+        <div className="space-y-1">
+          <h3 className="text-xl font-semibold text-gray-900 tracking-tight">
+            {opportunity.title}
+          </h3>
           <Badge 
             variant="secondary" 
-            className="bg-green-100 text-green-800 border-0"
+            className="bg-nino-primary/10 text-nino-primary hover:bg-nino-primary/20"
           >
             Active Booking
           </Badge>
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="absolute bottom-6 left-6 right-6 text-white">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h3 className="text-xl font-semibold mb-2 line-clamp-2">
-                {creator.display_name}
-              </h3>
-              {creator.location && (
-                <p className="text-sm text-white/90 mb-1">
-                  📍 {creator.location}
-                </p>
-              )}
-            </div>
+      {/* Project Details */}
+      <div className="space-y-4">
+        {opportunity.description && (
+          <p className="text-gray-600 text-sm line-clamp-2">
+            {opportunity.description}
+          </p>
+        )}
 
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={onMessageClick}
-                className="bg-white/90 hover:bg-white text-gray-900 flex items-center gap-2"
-              >
-                <MessageSquare className="w-4 h-4" />
-                Message
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onViewCreator}
-                className="bg-transparent border-white/20 text-white hover:bg-white/20"
-              >
-                View Profile
-              </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-500">
+          {(opportunity.start_date || opportunity.end_date) && (
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-gray-400" />
+              <span>
+                {opportunity.start_date && formatDate(opportunity.start_date)}
+                {opportunity.start_date && opportunity.end_date && " - "}
+                {opportunity.end_date && formatDate(opportunity.end_date)}
+              </span>
             </div>
-          </div>
+          )}
+
+          {opportunity.location && (
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-gray-400" />
+              <span>{opportunity.location}</span>
+            </div>
+          )}
         </div>
+
+        {/* Compensation Details */}
+        <div className="flex flex-wrap gap-2">
+          {opportunity.payment_details && (
+            <Badge variant="outline" className="rounded-full border-gray-200">
+              💰 {opportunity.payment_details}
+            </Badge>
+          )}
+          {opportunity.compensation_details && (
+            <Badge variant="outline" className="rounded-full border-gray-200">
+              🎁 {opportunity.compensation_details}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-3">
+        <Button
+          variant="default"
+          size="sm"
+          onClick={onMessageClick}
+          className="bg-nino-primary hover:bg-nino-primary/90 text-white flex items-center gap-2"
+        >
+          <MessageSquare className="w-4 h-4" />
+          Message Brand
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onViewCreator}
+          className="border-gray-200 hover:bg-gray-50"
+        >
+          View Details
+        </Button>
       </div>
     </Card>
   );

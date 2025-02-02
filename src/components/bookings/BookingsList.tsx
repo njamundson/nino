@@ -140,6 +140,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           >
             <BookingCard
               creator={booking.creator}
+              opportunity={booking.opportunity}
               onMessageClick={() => onChatClick(booking.creator.user_id)}
               onViewCreator={() => onViewCreator(booking.creator)}
             />
