@@ -37,7 +37,12 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           .from('applications')
           .select(`
             *,
-            opportunity:opportunities(*),
+            opportunity:opportunities(
+              *,
+              brand:brands(
+                company_name
+              )
+            ),
             creator:creators(*)
           `)
           .eq('creator_id', creator.id)
@@ -48,6 +53,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           throw error;
         }
 
+        console.log('Fetched bookings:', data); // Debug log
         return data || [];
       } catch (error) {
         console.error('Error fetching bookings:', error);
