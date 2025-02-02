@@ -10,65 +10,80 @@ export const useProfileData = () => {
   return useQuery<BrandProfile | UserProfile | null>({
     queryKey: ['profile'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
 
-      if (isBrandDashboard) {
-        const { data: brandData, error: brandError } = await supabase
-          .from('brands')
-          .select('profile_image_url, company_name')
+        if (isBrandDashboard) {
+          const { data: brandData, error: brandError } = await supabase
+            .from('brands')
+            .select('profile_image_url, company_name')
+            .eq('user_id', user.id)
+            .maybeSingle();
+          
+          if (brandError) {
+            console.error('Error fetching brand profile:', brandError);
+            return null;
+          }
+
+          if (!brandData) {
+            console.log('No brand profile found');
+            return null;
+          }
+
+          let profileImageUrl = null;
+          if (brandData.profile_image_url) {
+            const { data: { publicUrl } } = supabase
+              .storage
+              .from('profile-images')
+              .getPublicUrl(brandData.profile_image_url);
+            profileImageUrl = publicUrl;
+          }
+          
+          return {
+            profile_image_url: profileImageUrl,
+            display_name: brandData.company_name || '',
+          } as BrandProfile;
+        }
+        
+        // For creators, fetch from creators table
+        const { data: creatorData, error: creatorError } = await supabase
+          .from('creators')
+          .select('profile_image_url, display_name')
           .eq('user_id', user.id)
           .maybeSingle();
         
-        if (brandError) {
-          console.error('Error fetching brand profile:', brandError);
+        if (creatorError) {
+          console.error('Error fetching creator profile:', creatorError);
           return null;
         }
 
-        if (!brandData) {
-          console.log('No brand profile found');
+        if (!creatorData) {
+          console.log('No creator profile found');
           return null;
         }
 
+        // If profile_image_url exists, get the public URL
         let profileImageUrl = null;
-        if (brandData?.profile_image_url) {
+        if (creatorData.profile_image_url) {
           const { data: { publicUrl } } = supabase
             .storage
             .from('profile-images')
-            .getPublicUrl(brandData.profile_image_url);
+            .getPublicUrl(creatorData.profile_image_url);
           profileImageUrl = publicUrl;
         }
         
         return {
+          id: user.id,
+          display_name: creatorData.display_name || '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
           profile_image_url: profileImageUrl,
-          display_name: brandData?.company_name || '',
-        } as BrandProfile;
-      }
-      
-      // For creators, fetch from creators table
-      const { data: creatorData, error: creatorError } = await supabase
-        .from('creators')
-        .select('profile_image_url, display_name')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (creatorError) {
-        console.error('Error fetching creator profile:', creatorError);
+        } as UserProfile;
+      } catch (error) {
+        console.error('Error in profile fetch:', error);
         return null;
       }
-
-      if (!creatorData) {
-        console.log('No creator profile found');
-        return null;
-      }
-      
-      return {
-        id: user.id,
-        display_name: creatorData?.display_name || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        profile_image_url: creatorData?.profile_image_url || null,
-      } as UserProfile;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
