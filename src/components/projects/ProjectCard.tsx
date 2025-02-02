@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -75,7 +75,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
   });
   
   // Subscribe to real-time updates for applications
-  useState(() => {
+  useEffect(() => {
     const channel = supabase
       .channel('application-updates')
       .on(
