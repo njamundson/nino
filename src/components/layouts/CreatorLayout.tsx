@@ -4,6 +4,7 @@ import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 // Static components that never re-render
 const StaticSidebar = memo(() => <Sidebar />, () => true);
