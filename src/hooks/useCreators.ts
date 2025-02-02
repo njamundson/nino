@@ -33,7 +33,8 @@ export const useCreators = () => {
     },
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
     gcTime: 1000 * 60 * 10, // Keep unused data in cache for 10 minutes
-    retry: 2,
-    refetchOnWindowFocus: false,
+    refetchOnMount: false, // Don't refetch on mount if data exists
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    initialData: [], // Start with empty array to prevent undefined
   });
 };

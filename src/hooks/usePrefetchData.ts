@@ -33,8 +33,7 @@ export const usePrefetchData = () => {
                 creator_type,
                 instagram,
                 website,
-                profile_image_url,
-                profile:profiles(display_name)
+                profile_image_url
               `)
               .eq('onboarding_completed', true);
 
