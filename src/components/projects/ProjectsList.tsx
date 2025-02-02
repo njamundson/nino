@@ -5,6 +5,7 @@ import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
 import EmptyProjects from "./EmptyProjects";
 import { Opportunity } from "@/integrations/supabase/types/opportunity";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ProjectsList = () => {
   const { toast } = useToast();
@@ -94,11 +95,28 @@ const ProjectsList = () => {
 
   if (isLoading) {
     return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <motion.div 
+        className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="h-[400px] animate-pulse bg-gray-100" />
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.3,
+              delay: i * 0.1,
+              ease: [0.4, 0, 0.2, 1]
+            }}
+          >
+            <Card className="h-[400px] animate-pulse bg-gray-100" />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     );
   }
 
@@ -107,11 +125,32 @@ const ProjectsList = () => {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {projects.map((project) => (
-        <ProjectCard key={project.id} opportunity={project} />
-      ))}
-    </div>
+    <motion.div
+      className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <AnimatePresence mode="popLayout">
+        {projects.map((project, index) => (
+          <motion.div
+            key={project.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+              mass: 0.8,
+              delay: index * 0.1
+            }}
+          >
+            <ProjectCard opportunity={project} />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
