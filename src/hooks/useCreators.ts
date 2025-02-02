@@ -7,6 +7,7 @@ export const useCreators = () => {
   return useQuery({
     queryKey: ['creators'],
     queryFn: async () => {
+      console.log('Fetching creators data');
       const { data, error } = await supabase
         .from('creators')
         .select(`
@@ -23,11 +24,16 @@ export const useCreators = () => {
         `)
         .eq('onboarding_completed', true);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching creators:', error);
+        throw error;
+      }
       
       return data.map(creator => mapCreatorData(creator));
     },
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
     gcTime: 1000 * 60 * 10, // Keep unused data in cache for 10 minutes
+    retry: 2,
+    refetchOnWindowFocus: false,
   });
 };
