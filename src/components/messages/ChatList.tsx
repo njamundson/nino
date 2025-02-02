@@ -39,11 +39,12 @@ const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
 
   const { chats, isLoading } = useChatList(currentUser?.id);
 
-  const filteredChats = chats?.filter((chat) =>
-    chat.otherUser.display_name
+  const filteredChats = chats?.filter((chat) => {
+    if (!chat?.otherUser?.display_name) return false;
+    return chat.otherUser.display_name
       .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
+      .includes(searchQuery.toLowerCase());
+  });
 
   if (isLoading) {
     return (
