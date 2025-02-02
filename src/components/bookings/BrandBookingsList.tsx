@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { CalendarX } from "lucide-react";
 import BookingDetailsCard from "./details/BookingDetailsCard";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import BookedCreatorProfile from "./details/BookedCreatorProfile";
 import { Creator } from "@/types/creator";
 import { mapCreatorData } from "@/utils/creatorUtils";
@@ -23,13 +23,15 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   
-  const { data: bookings = [], isLoading, refetch, isError } = useQuery({
+  const { data: bookings = [], isLoading, refetch, isError, error } = useQuery({
     queryKey: ['brand-active-bookings-list'],
     queryFn: async () => {
       try {
-        console.log('Fetching brand active bookings list...');
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return [];
+        if (!user) {
+          console.error('No authenticated user found');
+          return [];
+        }
 
         const { data: brand, error: brandError } = await supabase
           .from('brands')
@@ -39,23 +41,15 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
         if (brandError) {
           console.error('Error fetching brand:', brandError);
-          toast({
-            title: "Error",
-            description: "Failed to fetch brand profile",
-            variant: "destructive",
-          });
-          return [];
+          throw brandError;
         }
 
         if (!brand) {
-          toast({
-            title: "No Brand Profile",
-            description: "Please complete your brand profile setup",
-            variant: "destructive",
-          });
+          console.error('No brand profile found');
           return [];
         }
 
+        console.log('Fetching active bookings for brand:', brand.id);
         const { data, error } = await supabase
           .from('opportunities')
           .select(`
@@ -77,14 +71,14 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         console.log('Fetched active bookings:', data);
         return data || [];
       } catch (error) {
-        console.error('Error fetching brand bookings:', error);
+        console.error('Error in bookings query:', error);
         throw error;
       }
     },
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
     gcTime: 1000 * 60 * 15, // Keep unused data for 15 minutes
-    refetchInterval: 1000 * 60 * 5, // Refetch every 5 minutes
-    initialData: [], // Start with empty array to prevent undefined
+    retry: 2,
+    initialData: [],
   });
 
   const handleDelete = async (applicationId: string) => {
@@ -97,11 +91,15 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       if (error) throw error;
       
       refetch();
+      toast({
+        title: "Success",
+        description: "Booking deleted successfully",
+      });
     } catch (error) {
       console.error('Error deleting booking:', error);
       toast({
         title: "Error",
-        description: "Failed to delete the campaign",
+        description: "Failed to delete the booking",
         variant: "destructive",
       });
     }
@@ -129,6 +127,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           table: 'applications'
         },
         () => {
+          console.log('Applications change detected, refetching...');
           refetch();
         }
       )
@@ -144,6 +143,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           table: 'opportunities'
         },
         () => {
+          console.log('Opportunities change detected, refetching...');
           refetch();
         }
       )
@@ -200,11 +200,11 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           <BookingDetailsCard
             key={booking.id}
             booking={booking}
-            creator={booking.creator}
-            onChatClick={() => onChatClick(booking.creator.user_id)}
-            onViewCreator={() => handleViewCreator(booking.creator)}
+            creator={booking.applications[0]?.creator}
+            onChatClick={() => onChatClick(booking.applications[0]?.creator.user_id)}
+            onViewCreator={() => handleViewCreator(booking.applications[0]?.creator)}
             onRefresh={refetch}
-            onDelete={() => handleDelete(booking.id)}
+            onDelete={() => handleDelete(booking.applications[0]?.id)}
           />
         ))}
       </div>
@@ -212,6 +212,9 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent className="max-w-4xl h-[90vh] p-0">
           <DialogTitle className="sr-only">Creator Profile</DialogTitle>
+          <DialogDescription className="sr-only">
+            View creator profile details
+          </DialogDescription>
           {selectedCreator && (
             <BookedCreatorProfile
               creator={selectedCreator}
