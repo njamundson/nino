@@ -78,7 +78,8 @@ const CompletedProjectsList = () => {
           `)
           .eq('brand_id', brand.id)
           .eq('status', 'completed')
-          .lt('end_date', new Date().toISOString());
+          .lt('end_date', new Date().toISOString())
+          .order('end_date', { ascending: false });
 
         if (oppsError) {
           console.error("Error fetching opportunities:", oppsError);
