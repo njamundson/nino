@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useCompletedProjects = () => {
-  const { data: completedProjects } = useQuery({
+  const { data: completedProjects = 0 } = useQuery({
     queryKey: ['completed-projects'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -23,8 +23,10 @@ export const useCompletedProjects = () => {
         .eq('status', 'completed');
 
       return count || 0;
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    gcTime: 1000 * 60 * 15, // Keep unused data for 15 minutes
   });
 
-  return completedProjects ?? 0;
+  return completedProjects;
 };
