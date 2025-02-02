@@ -24,9 +24,10 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   
   const { data: bookings, isLoading, refetch, isError } = useQuery({
-    queryKey: ['brand-active-bookings'],
+    queryKey: ['brand-active-bookings-list'],
     queryFn: async () => {
       try {
+        console.log('Fetching brand active bookings list...');
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return [];
 
@@ -56,17 +57,24 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         }
 
         const { data, error } = await supabase
-          .from('applications')
+          .from('opportunities')
           .select(`
             *,
-            opportunity:opportunities(*),
-            creator:creators(*)
+            applications!inner (
+              *,
+              creator:creators(*)
+            )
           `)
-          .eq('status', 'accepted')
-          .eq('opportunity.brand_id', brand.id)
-          .in('opportunity.status', ['active', 'open']);
+          .eq('brand_id', brand.id)
+          .eq('status', 'active')
+          .eq('applications.status', 'accepted');
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching active bookings:', error);
+          throw error;
+        }
+
+        console.log('Fetched active bookings:', data);
         return data || [];
       } catch (error) {
         console.error('Error fetching brand bookings:', error);
@@ -74,7 +82,6 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
       }
     },
     refetchInterval: 1000 * 60 * 5,
-    retry: 3,
     staleTime: 1000 * 60,
   });
 

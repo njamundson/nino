@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useActiveBookings = () => {
   const { data: activeBookings = 0 } = useQuery({
-    queryKey: ['active-bookings'],
+    queryKey: ['active-bookings-count'],
     queryFn: async () => {
       try {
         console.log('Fetching active bookings count...');
