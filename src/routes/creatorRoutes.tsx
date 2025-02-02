@@ -1,28 +1,34 @@
 import { lazy, Suspense } from "react";
 import ProtectedCreatorRoute from "@/components/auth/ProtectedCreatorRoute";
 import NinoWelcomeMessage from "@/components/onboarding/creator/NinoWelcomeMessage";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { motion } from "framer-motion";
 
-// Wrap each lazy-loaded component with Suspense and a loading fallback
+// Optimized loading fallback with smooth animation
+const LoadingFallback = () => (
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="flex items-center justify-center min-h-[200px]"
+  />
+);
+
+// Lazy load components with explicit chunk names and preload hints
+const Dashboard = lazy(() => import("@/pages/Dashboard" /* webpackChunkName: "creator-dashboard" */));
+const Projects = lazy(() => import("@/pages/Projects" /* webpackChunkName: "creator-projects" */));
+const Proposals = lazy(() => import("@/pages/Proposals" /* webpackChunkName: "creator-proposals" */));
+const Applications = lazy(() => import("@/pages/Applications" /* webpackChunkName: "creator-applications" */));
+const Bookings = lazy(() => import("@/pages/Bookings" /* webpackChunkName: "creator-bookings" */));
+const Messages = lazy(() => import("@/pages/Messages" /* webpackChunkName: "creator-messages" */));
+const Settings = lazy(() => import("@/pages/Settings" /* webpackChunkName: "creator-settings" */));
+const CompletedProjects = lazy(() => import("@/pages/CompletedProjects" /* webpackChunkName: "creator-completed" */));
+
+// Wrap lazy components with Suspense and minimal loading state
 const LazyComponent = (Component: React.LazyExoticComponent<() => JSX.Element>) => (
-  <Suspense fallback={
-    <div className="flex items-center justify-center min-h-screen">
-      <LoadingSpinner />
-    </div>
-  }>
+  <Suspense fallback={<LoadingFallback />}>
     <Component />
   </Suspense>
 );
-
-// Lazy load components with explicit chunknames
-const Dashboard = lazy(() => import("@/pages/Dashboard" /* webpackChunkName: "dashboard" */));
-const Projects = lazy(() => import("@/pages/Projects" /* webpackChunkName: "projects" */));
-const Proposals = lazy(() => import("@/pages/Proposals" /* webpackChunkName: "proposals" */));
-const Applications = lazy(() => import("@/pages/Applications" /* webpackChunkName: "applications" */));
-const Bookings = lazy(() => import("@/pages/Bookings" /* webpackChunkName: "bookings" */));
-const Messages = lazy(() => import("@/pages/Messages" /* webpackChunkName: "messages" */));
-const Settings = lazy(() => import("@/pages/Settings" /* webpackChunkName: "settings" */));
-const CompletedProjects = lazy(() => import("@/pages/CompletedProjects" /* webpackChunkName: "completed-projects" */));
 
 export const creatorRoutes = [
   {

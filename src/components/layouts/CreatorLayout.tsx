@@ -1,5 +1,5 @@
 import { Suspense, memo, useEffect } from "react";
-import { useLocation, Outlet } from "react-router-dom";
+import { useLocation, Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -12,15 +12,15 @@ StaticSidebar.displayName = 'StaticSidebar';
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
 
-// Optimized page transition component
+// Optimized page transition component with better animation timing
 const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
   <motion.div
-    initial={{ opacity: 0.85 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0.85 }}
+    initial={{ opacity: 0.95, y: 0 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0.95, y: 0 }}
     transition={{ 
       duration: 0.15,
-      ease: "linear"
+      ease: [0.4, 0, 0.2, 1]
     }}
     className="relative h-full"
   >
@@ -32,16 +32,23 @@ PageTransition.displayName = 'PageTransition';
 
 // Minimal loading fallback that maintains layout
 const MinimalLoadingFallback = () => (
-  <div className="min-h-[200px]" />
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="min-h-[200px]"
+  />
 );
 
 const CreatorLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   
   // Preload all creator pages immediately on mount
   useEffect(() => {
-    const preloadPages = async () => {
+    const preloadRoutes = async () => {
+      // Preload all routes in parallel
       await Promise.all([
         import("@/pages/Dashboard"),
         import("@/pages/Projects"),
@@ -49,11 +56,36 @@ const CreatorLayout = () => {
         import("@/pages/CompletedProjects"),
         import("@/pages/Bookings"),
         import("@/pages/Messages"),
-        import("@/pages/Settings")
+        import("@/pages/Settings"),
+        import("@/pages/Applications")
       ]);
     };
-    
-    void preloadPages();
+
+    // Start preloading immediately
+    void preloadRoutes();
+
+    // Prefetch data for common routes
+    const prefetchData = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+
+      // Prefetch creator profile
+      await supabase
+        .from('creators')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      // Prefetch recent messages
+      await supabase
+        .from('messages')
+        .select('*')
+        .or(`sender_id.eq.${session.user.id},receiver_id.eq.${session.user.id}`)
+        .order('created_at', { ascending: false })
+        .limit(10);
+    };
+
+    void prefetchData();
   }, []);
 
   return (

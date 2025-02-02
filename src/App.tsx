@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import BrandLayout from "./components/layouts/BrandLayout";
 import CreatorLayout from "./components/layouts/CreatorLayout";
@@ -12,16 +13,27 @@ import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
 import { adminRoutes } from "./routes/adminRoutes";
 
+// Optimize query client configuration for better caching
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 10,
-      refetchOnMount: true,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes
+      refetchOnMount: "always",
+      networkMode: "always"
     },
+  },
+});
+
+// Prefetch auth session
+queryClient.prefetchQuery({
+  queryKey: ['auth-session'],
+  queryFn: async () => {
+    const { data } = await supabase.auth.getSession();
+    return data.session;
   },
 });
 
