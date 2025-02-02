@@ -47,7 +47,7 @@ interface BookingDetailsCardProps {
       compensation_details: string | null;
       deliverables?: string[] | null;
       requirements?: string[] | null;
-    };
+    } | null;
   };
   onChatClick: () => void;
   onViewCreator: () => void;
@@ -75,6 +75,17 @@ const BookingDetailsCard = ({
       });
     }
   };
+
+  // Early return if booking or opportunity is null
+  if (!booking?.opportunity) {
+    return (
+      <Card className="p-6 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm">
+        <div className="text-center text-gray-500">
+          <p>Booking details not available</p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-6 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm space-y-6 relative">
