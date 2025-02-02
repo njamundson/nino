@@ -38,7 +38,6 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           return [];
         }
 
-        console.log('Fetching applications for creator:', creator.id);
         const { data, error } = await supabase
           .from('applications')
           .select(`
@@ -70,7 +69,6 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           throw error;
         }
 
-        console.log('Fetched bookings:', data);
         return data || [];
       } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -99,8 +97,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           table: 'applications',
           filter: 'status=eq.accepted'
         },
-        (payload) => {
-          console.log('Booking update detected:', payload);
+        () => {
           refetch();
         }
       )
@@ -113,53 +110,55 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
 
   if (!bookings || bookings.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full"
-      >
-        <Card className="p-8 bg-white/50 backdrop-blur-sm border-none shadow-sm">
-          <div className="text-center text-muted-foreground py-8">
-            <p className="text-lg font-medium">No active bookings yet</p>
-            <p className="text-sm mt-2">
-              When you get accepted for projects, they will appear here
-            </p>
-          </div>
-        </Card>
-      </motion.div>
+      <div className="container mx-auto px-4 py-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Card className="p-8 bg-white/50 backdrop-blur-sm border-none shadow-sm">
+            <div className="text-center text-muted-foreground py-8">
+              <p className="text-lg font-medium">No active bookings yet</p>
+              <p className="text-sm mt-2">
+                When you get accepted for projects, they will appear here
+              </p>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="w-full"
-    >
-      <div className={`grid ${
-        isMobile 
-          ? 'grid-cols-1 gap-6' 
-          : 'grid-cols-1 xl:grid-cols-2 gap-8'
-      }`}>
-        {bookings.map((booking: any) => (
-          <motion.div
-            key={booking.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <BookingCard
-              creator={booking.creator}
-              opportunity={booking.opportunity}
-              onMessageClick={() => onChatClick(booking.creator.user_id)}
-              onViewCreator={() => onViewCreator(booking.creator)}
-            />
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+    <div className="container mx-auto px-4 py-6">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className={`grid ${
+          isMobile 
+            ? 'grid-cols-1 gap-6' 
+            : 'grid-cols-1 xl:grid-cols-2 gap-8'
+        }`}>
+          {bookings.map((booking: any) => (
+            <motion.div
+              key={booking.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <BookingCard
+                creator={booking.creator}
+                opportunity={booking.opportunity}
+                onMessageClick={() => onChatClick(booking.creator.user_id)}
+                onViewCreator={() => onViewCreator(booking.creator)}
+              />
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
