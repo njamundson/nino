@@ -99,13 +99,13 @@ const CompletedProjectsList = () => {
         // Transform the data to match the Opportunity type
         const transformedOpportunities = completedWithAcceptedCreator.map(opp => ({
           ...opp,
-          brand: {
+          brand: opp.brand ? {
             ...opp.brand,
-            sms_notifications_enabled: opp.brand?.sms_notifications_enabled ?? true,
-            two_factor_enabled: opp.brand?.two_factor_enabled ?? false,
-            created_at: opp.brand?.created_at ?? opp.created_at,
-            updated_at: opp.brand?.updated_at ?? opp.updated_at,
-          },
+            sms_notifications_enabled: opp.brand.sms_notifications_enabled ?? true,
+            two_factor_enabled: opp.brand.two_factor_enabled ?? false,
+            created_at: opp.brand.created_at ?? opp.created_at,
+            updated_at: opp.brand.updated_at ?? opp.updated_at,
+          } : undefined,
           applications: opp.applications?.map(app => ({
             ...app,
             opportunity_id: opp.id,
@@ -148,7 +148,7 @@ const CompletedProjectsList = () => {
     );
   }
 
-  if (!projects || projects.length === 0) {
+  if (!Array.isArray(projects) || projects.length === 0) {
     return (
       <Card className="p-12">
         <div className="text-center space-y-4">
