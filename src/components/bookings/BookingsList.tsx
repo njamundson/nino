@@ -27,7 +27,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           .from('creators')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (!creator) {
           return [];
