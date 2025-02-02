@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { useMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 import BookingCard from './BookingCard';
 
 interface BookingsListProps {
@@ -12,7 +12,7 @@ interface BookingsListProps {
 }
 
 const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   
   const { data: bookings, refetch } = useQuery({
     queryKey: ['bookings'],
