@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 interface ChatUser {
   id: string;
@@ -16,18 +17,16 @@ interface ChatUser {
 }
 
 export const useChatList = (currentUserId: string | undefined) => {
-  const [chats, setChats] = useState<ChatUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    let mounted = true;
-    let subscription: any = null;
-
-    const fetchChats = async () => {
-      if (!currentUserId) return;
+  const { data: chats = [], isLoading } = useQuery({
+    queryKey: ['chat-list', currentUserId],
+    queryFn: async () => {
+      if (!currentUserId) return [];
 
       try {
+        console.log('Fetching chat list for user:', currentUserId);
+        
         // First, get all messages
         const { data: messages, error } = await supabase
           .from('messages')
@@ -44,46 +43,44 @@ export const useChatList = (currentUserId: string | undefined) => {
 
         if (error) throw error;
 
-        if (mounted && messages) {
-          // Get unique user IDs from messages (excluding current user)
-          const uniqueUserIds = [...new Set(messages.map(msg => 
-            msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id
-          ))];
+        // Get unique user IDs from messages (excluding current user)
+        const uniqueUserIds = [...new Set(messages.map(msg => 
+          msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id
+        ))];
 
-          // Fetch creator information for these users
-          const { data: creators, error: creatorsError } = await supabase
-            .from('creators')
-            .select('user_id, display_name, profile_image_url')
-            .in('user_id', uniqueUserIds);
+        // Fetch creator information for these users
+        const { data: creators, error: creatorsError } = await supabase
+          .from('creators')
+          .select('user_id, display_name, profile_image_url')
+          .in('user_id', uniqueUserIds);
 
-          if (creatorsError) throw creatorsError;
+        if (creatorsError) throw creatorsError;
 
-          // Create a map of user_id to creator info for easy lookup
-          const creatorMap = new Map(
-            creators?.map(creator => [creator.user_id, creator]) || []
-          );
+        // Create a map of user_id to creator info for easy lookup
+        const creatorMap = new Map(
+          creators?.map(creator => [creator.user_id, creator]) || []
+        );
 
-          const conversationsMap = new Map();
+        const conversationsMap = new Map();
+        
+        messages.forEach((msg) => {
+          const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
+          const creatorInfo = creatorMap.get(otherUserId);
           
-          messages.forEach((msg) => {
-            const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
-            const creatorInfo = creatorMap.get(otherUserId);
-            
-            if (!conversationsMap.has(otherUserId) || 
-                new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
-              conversationsMap.set(otherUserId, {
-                ...msg,
-                otherUser: {
-                  id: otherUserId,
-                  display_name: creatorInfo?.display_name || 'Creator',
-                  profileImage: creatorInfo?.profile_image_url
-                }
-              });
-            }
-          });
+          if (!conversationsMap.has(otherUserId) || 
+              new Date(msg.created_at) > new Date(conversationsMap.get(otherUserId).created_at)) {
+            conversationsMap.set(otherUserId, {
+              ...msg,
+              otherUser: {
+                id: otherUserId,
+                display_name: creatorInfo?.display_name || 'Creator',
+                profileImage: creatorInfo?.profile_image_url
+              }
+            });
+          }
+        });
 
-          setChats(Array.from(conversationsMap.values()));
-        }
+        return Array.from(conversationsMap.values());
       } catch (error) {
         console.error('Error fetching chats:', error);
         toast({
@@ -91,38 +88,14 @@ export const useChatList = (currentUserId: string | undefined) => {
           description: "Failed to load conversations",
           variant: "destructive",
         });
-      } finally {
-        if (mounted) setIsLoading(false);
+        return [];
       }
-    };
-
-    const setupSubscription = () => {
-      subscription = supabase
-        .channel('chat_updates')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'messages'
-          },
-          () => {
-            if (mounted) fetchChats();
-          }
-        )
-        .subscribe();
-    };
-
-    fetchChats();
-    setupSubscription();
-
-    return () => {
-      mounted = false;
-      if (subscription) {
-        supabase.removeChannel(subscription);
-      }
-    };
-  }, [currentUserId, toast]);
+    },
+    staleTime: 1000 * 30, // Consider data fresh for 30 seconds
+    gcTime: 1000 * 60 * 5, // Keep unused data for 5 minutes
+    retry: 2,
+    refetchInterval: 1000 * 30, // Refetch every 30 seconds
+  });
 
   return {
     chats,

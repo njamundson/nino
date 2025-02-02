@@ -5,6 +5,7 @@ import { BrandChatContainer } from "@/components/messages/brand/BrandChatContain
 import { useIsMobile } from "@/hooks/use-mobile";
 import PageHeader from "@/components/shared/PageHeader";
 import { MessagesSquare } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Messages = () => {
   const isMobile = useIsMobile();
@@ -33,7 +34,12 @@ const Messages = () => {
 
   if (isMobile) {
     return (
-      <div className="h-[calc(100vh-4rem)] p-4">
+      <motion.div 
+        className="h-[calc(100vh-4rem)] p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         {!showMobileChat ? (
           <>
             <PageHeader
@@ -53,12 +59,17 @@ const Messages = () => {
             onMobileBack={handleMobileBack}
           />
         )}
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="h-[calc(100vh-8rem)] p-4 flex flex-col">
+    <motion.div 
+      className="h-[calc(100vh-8rem)] p-4 flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <PageHeader
         title="Messages"
         description="Chat with creators and manage your conversations"
@@ -89,7 +100,7 @@ const Messages = () => {
           )}
         </div>
       </Card>
-    </div>
+    </motion.div>
   );
 };
 

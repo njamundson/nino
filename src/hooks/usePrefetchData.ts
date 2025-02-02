@@ -10,48 +10,46 @@ export const usePrefetchData = () => {
       console.log('Starting data prefetch...');
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        console.log('Checking brand access...');
-        const { data: brand } = await supabase
-          .from('brands')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (brand) {
-          // Prefetch active bookings
-          queryClient.prefetchQuery({
-            queryKey: ['brand-active-bookings-list'],
-            queryFn: async () => {
-              const { data } = await supabase
-                .from('opportunities')
-                .select(`
-                  *,
-                  applications!inner (
-                    *,
-                    creator:creators(*)
-                  )
-                `)
-                .eq('brand_id', brand.id)
-                .eq('status', 'active')
-                .eq('applications.status', 'accepted');
-              return data || [];
-            },
-            staleTime: 1000 * 60 * 5,
-          });
-
-          // Prefetch other necessary data
-          queryClient.prefetchQuery({
-            queryKey: ['other-query-key'], // Replace with actual query key
-            queryFn: async () => {
-              // Fetch other data as needed
-            },
-            staleTime: 1000 * 60 * 5,
-          });
+        if (!user) {
+          console.log('No authenticated user found during prefetch');
+          return;
         }
 
-        console.log('Data prefetching completed successfully');
+        // Prefetch chat list
+        queryClient.prefetchQuery({
+          queryKey: ['chat-list', user.id],
+          queryFn: async () => {
+            const { data: messages } = await supabase
+              .from('messages')
+              .select(`
+                id,
+                content,
+                created_at,
+                sender_id,
+                receiver_id,
+                read
+              `)
+              .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+              .order('created_at', { ascending: false })
+              .limit(20);
+            return messages || [];
+          },
+        });
+
+        // Prefetch notifications
+        queryClient.prefetchQuery({
+          queryKey: ['notifications'],
+          queryFn: async () => {
+            const { data: messages } = await supabase
+              .from('messages')
+              .select('*')
+              .eq('receiver_id', user.id)
+              .eq('read', false)
+              .order('created_at', { ascending: false });
+            return messages || [];
+          },
+        });
+
       } catch (error) {
         console.error('Error during data prefetch:', error);
       }
