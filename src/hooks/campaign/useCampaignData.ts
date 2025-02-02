@@ -12,7 +12,6 @@ type OpportunityPayload = RealtimePostgresChangesPayload<{
 export const useCampaignData = () => {
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription for campaign updates
   useEffect(() => {
     console.log('Setting up real-time subscription');
     const channel = supabase
@@ -44,7 +43,6 @@ export const useCampaignData = () => {
     queryFn: async () => {
       console.log('Executing campaign data fetch');
       
-      // Get current session and refresh if needed
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
@@ -57,14 +55,12 @@ export const useCampaignData = () => {
         throw new Error('No active session');
       }
 
-      // Refresh session to ensure token is valid
       const { error: refreshError } = await supabase.auth.refreshSession();
       if (refreshError) {
         console.error('Error refreshing session:', refreshError);
         throw refreshError;
       }
 
-      // Get the brand ID first
       const { data: brand, error: brandError } = await supabase
         .from('brands')
         .select('id')
@@ -82,7 +78,6 @@ export const useCampaignData = () => {
         return [];
       }
 
-      // Fetch campaigns with related data, excluding inactive ones
       const { data, error } = await supabase
         .from('opportunities')
         .select(`
@@ -121,7 +116,7 @@ export const useCampaignData = () => {
           )
         `)
         .eq('brand_id', brand.id)
-        .neq('status', 'inactive') // Filter out inactive campaigns
+        .neq('status', 'inactive')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -133,11 +128,7 @@ export const useCampaignData = () => {
       console.log(`Successfully fetched ${data?.length || 0} campaigns`);
       return data || [];
     },
-    staleTime: 0,
-    gcTime: 0,
-    retry: 2,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true
+    staleTime: 1000 * 60 * 2, // Consider data fresh for 2 minutes
+    gcTime: 1000 * 60 * 5, // Keep unused data in cache for 5 minutes
   });
 };
