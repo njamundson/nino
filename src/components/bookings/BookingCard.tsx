@@ -27,6 +27,9 @@ interface BookingCardProps {
     location: string | null;
     payment_details: string | null;
     compensation_details: string | null;
+    brand?: {
+      company_name: string | null;
+    } | null;
   } | null;
   onMessageClick: () => void;
   onViewCreator: () => void;
@@ -57,6 +60,11 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCa
           <h3 className="text-xl font-semibold text-gray-900 tracking-tight">
             {opportunity.title}
           </h3>
+          {opportunity.brand?.company_name && (
+            <p className="text-sm text-gray-600">
+              by {opportunity.brand.company_name}
+            </p>
+          )}
           <Badge 
             variant="secondary" 
             className="bg-nino-primary/10 text-nino-primary hover:bg-nino-primary/20"
