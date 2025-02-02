@@ -8,7 +8,7 @@ import { Opportunity } from "@/integrations/supabase/types/opportunity";
 import ProjectBadges from "./card/ProjectBadges";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ProjectCardProps {
@@ -22,6 +22,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const queryClient = useQueryClient();
 
   // Check if the current creator has already applied
   const { data: hasApplied } = useQuery({
@@ -70,9 +71,35 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
         return false;
       }
     },
-    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    staleTime: 0, // Set to 0 to ensure immediate updates
   });
   
+  // Subscribe to real-time updates for applications
+  useState(() => {
+    const channel = supabase
+      .channel('application-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'applications',
+          filter: `opportunity_id=eq.${opportunity.id}`,
+        },
+        () => {
+          // Invalidate the query to trigger a refresh
+          queryClient.invalidateQueries({
+            queryKey: ['application-status', opportunity.id],
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [opportunity.id, queryClient]);
+
   const handleViewDetails = () => {
     setIsLoading(true);
     try {
@@ -119,7 +146,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           <div className="absolute top-4 left-4 z-10">
             <Badge 
               variant="secondary" 
-              className="bg-green-100 text-green-800 border-0 flex items-center gap-1.5"
+              className="bg-green-100 text-green-800 border-0 flex items-center gap-1.5 animate-fadeIn"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               Applied
