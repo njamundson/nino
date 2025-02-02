@@ -78,7 +78,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
 
   if (!bookings || bookings.length === 0) {
     return (
-      <div className="max-w-[1400px] mx-auto px-6">
+      <div className="px-8 -mt-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -98,7 +98,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6">
+    <div className="px-8 -mt-4">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
