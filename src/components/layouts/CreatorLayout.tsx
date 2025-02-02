@@ -5,46 +5,48 @@ import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
-// Static components that never re-render
+// Optimized static components
 const StaticSidebar = memo(() => <Sidebar />, () => true);
 StaticSidebar.displayName = 'StaticSidebar';
 
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
 
-// Optimized page transition component
+// Enhanced loading animation component
+const LoadingFallback = () => (
+  <motion.div 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+    className="min-h-[200px] flex items-center justify-center"
+  >
+    <LoadingSpinner size="lg" className="text-nino-primary" />
+  </motion.div>
+);
+
+// Smooth page transition component
 const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 10 }}
+    exit={{ opacity: 0, y: 4 }}
     transition={{ 
       type: "spring",
-      stiffness: 260,
-      damping: 20,
+      stiffness: 300,
+      damping: 30,
+      mass: 0.5,
       duration: 0.3
     }}
-    className="relative h-full"
+    className="relative h-full w-full"
   >
     {children}
   </motion.div>
 ));
 
 PageTransition.displayName = 'PageTransition';
-
-// Minimal loading state with smooth fade
-const LoadingFallback = () => (
-  <motion.div 
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 0.2 }}
-    className="min-h-[200px] flex items-center justify-center"
-  >
-    <div className="w-6 h-6 border-2 border-nino-primary border-t-transparent rounded-full animate-spin" />
-  </motion.div>
-);
 
 const CreatorLayout = () => {
   const location = useLocation();
@@ -74,14 +76,12 @@ const CreatorLayout = () => {
       if (!session?.user) return;
 
       await Promise.all([
-        // Prefetch creator profile
         supabase
           .from('creators')
           .select('*')
           .eq('user_id', session.user.id)
           .maybeSingle(),
 
-        // Prefetch recent messages
         supabase
           .from('messages')
           .select('*')
@@ -100,7 +100,11 @@ const CreatorLayout = () => {
       
       <div className={`flex-1 ${isMobile ? 'w-full' : ''}`}>
         <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 px-4 md:px-8">
-          <div className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/95 to-transparent rounded-3xl" />
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/95 to-transparent rounded-3xl"
+          />
           <div className="relative">
             <StaticHeader />
           </div>
