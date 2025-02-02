@@ -15,12 +15,16 @@ interface BookingCardProps {
     location: string | null;
     payment_details: string | null;
     compensation_details: string | null;
-  };
+  } | null;
   onMessageClick: () => void;
   onViewCreator: () => void;
 }
 
 const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator }: BookingCardProps) => {
+  if (!opportunity) {
+    return null;
+  }
+
   return (
     <Card className="group relative overflow-hidden rounded-3xl border-0 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-6 space-y-6">
       {/* Status Badge */}
