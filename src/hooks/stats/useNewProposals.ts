@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useNewProposals = () => {
   const { data: newProposals = 0 } = useQuery({
-    queryKey: ['new-proposals'],
+    queryKey: ['new-proposals-count'],
     queryFn: async () => {
       try {
         console.log('Fetching new proposals count...');
@@ -18,26 +18,25 @@ export const useNewProposals = () => {
 
         if (!brand) return 0;
 
-        // Count pending applications for open opportunities
-        const { data: applications, error } = await supabase
-          .from('applications')
+        // Count pending applications for all brand opportunities
+        const { data, error } = await supabase
+          .from('opportunities')
           .select(`
             id,
-            opportunity:opportunities!inner (
-              brand_id,
+            applications!inner (
+              id,
               status
             )
           `)
-          .eq('status', 'pending')
-          .eq('opportunity.brand_id', brand.id)
-          .eq('opportunity.status', 'open');
+          .eq('brand_id', brand.id)
+          .eq('applications.status', 'pending');
 
         if (error) {
           console.error('Error fetching new proposals:', error);
           return 0;
         }
 
-        const count = applications?.length || 0;
+        const count = data?.length || 0;
         console.log('New proposals count:', count);
         return count;
       } catch (error) {
