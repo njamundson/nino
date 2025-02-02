@@ -35,7 +35,7 @@ const Messages = () => {
   if (isMobile) {
     return (
       <motion.div 
-        className="h-[calc(100vh-4rem)] p-4"
+        className="h-[calc(100vh-4rem)]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -65,7 +65,7 @@ const Messages = () => {
 
   return (
     <motion.div 
-      className="h-[calc(100vh-8rem)] p-4 flex flex-col"
+      className="h-[calc(100vh-8rem)] flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
