@@ -1,11 +1,13 @@
 import { Search, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import CreatorSelectionModal from "../CreatorSelectionModal";
 
 interface ChatListHeaderProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  onNewChat?: () => void;
+  onNewChat?: (userId: string, displayName: string, profileImage: string | null) => void;
 }
 
 export const ChatListHeader = ({ 
@@ -13,6 +15,15 @@ export const ChatListHeader = ({
   setSearchQuery,
   onNewChat
 }: ChatListHeaderProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCreatorSelect = (userId: string, displayName: string, profileImage: string | null) => {
+    if (onNewChat) {
+      onNewChat(userId, displayName, profileImage);
+    }
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="p-6 border-b border-gray-100">
       <div className="space-y-4">
@@ -27,14 +38,21 @@ export const ChatListHeader = ({
             />
           </div>
           {onNewChat && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0 h-9 w-9 rounded-full border-gray-200 hover:bg-gray-50 transition-colors duration-200"
-              onClick={onNewChat}
-            >
-              <Plus className="h-[15px] w-[15px] text-gray-600" />
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 h-9 w-9 rounded-full border-gray-200 hover:bg-gray-50 transition-colors duration-200"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Plus className="h-[15px] w-[15px] text-gray-600" />
+              </Button>
+              <CreatorSelectionModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSelect={handleCreatorSelect}
+              />
+            </>
           )}
         </div>
       </div>
