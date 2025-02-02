@@ -12,21 +12,19 @@ import { creatorRoutes } from "./routes/creatorRoutes";
 import { onboardingRoutes } from "./routes/onboardingRoutes";
 import { adminRoutes } from "./routes/adminRoutes";
 
-// Create a client with optimized configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2,
+      retry: 1,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes
-      refetchOnMount: 'always',
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 10,
+      refetchOnMount: true,
     },
   },
 });
 
-// Create an animated routes component
 const AnimatedRoutes = () => {
   const location = useLocation();
   
@@ -72,7 +70,6 @@ const AnimatedRoutes = () => {
   );
 };
 
-// Wrap the app with QueryClientProvider
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>

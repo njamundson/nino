@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { motion } from "framer-motion";
 
 interface ProtectedCreatorRouteProps {
@@ -9,13 +8,12 @@ interface ProtectedCreatorRouteProps {
 }
 
 const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
-  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
   const checkCreatorProfile = useCallback(async (userId: string) => {
     try {
-      console.log("Checking creator profile for user:", userId);
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id, onboarding_completed')
@@ -27,16 +25,9 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
         return { isAuth: true, onboarding: false };
       }
 
-      if (!creator) {
-        // No creator profile found - they need to complete onboarding
-        console.log('No creator profile found');
-        return { isAuth: true, onboarding: false };
-      }
-
-      console.log("Creator profile found:", creator);
       return { 
         isAuth: true, 
-        onboarding: creator.onboarding_completed || false 
+        onboarding: creator?.onboarding_completed || false 
       };
     } catch (error) {
       console.error('Error in checkCreatorProfile:', error);
@@ -46,20 +37,12 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
   const checkAuth = useCallback(async () => {
     try {
-      console.log("Checking authentication status...");
-      const { data: { session }, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error('Error checking auth status:', error);
-        return { isAuth: false, onboarding: false };
-      }
+      const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
-        console.log('No session found');
         return { isAuth: false, onboarding: false };
       }
 
-      console.log("Session found, checking creator profile...");
       return await checkCreatorProfile(session.user.id);
     } catch (error) {
       console.error('Error in checkAuth:', error);
@@ -68,24 +51,23 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
   }, [checkCreatorProfile]);
 
   useEffect(() => {
+    let mounted = true;
+
     const initializeAuth = async () => {
-      try {
-        const { isAuth, onboarding } = await checkAuth();
+      const { isAuth, onboarding } = await checkAuth();
+      
+      if (mounted) {
         setIsAuthenticated(isAuth);
         setOnboardingCompleted(onboarding);
-      } catch (error) {
-        console.error('Error in initializeAuth:', error);
-        setIsAuthenticated(false);
-        setOnboardingCompleted(false);
-      } finally {
-        setLoading(false);
+        setIsChecking(false);
       }
     };
 
-    initializeAuth();
+    void initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event);
+      if (!mounted) return;
+
       if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
         setOnboardingCompleted(false);
@@ -97,21 +79,19 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, [checkAuth, checkCreatorProfile]);
 
-  if (loading) {
+  if (isChecking) {
     return (
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 0.9 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="flex items-center justify-center min-h-[50vh]"
-      >
-        <LoadingSpinner />
-      </motion.div>
+        exit={{ opacity: 0.9 }}
+        transition={{ duration: 0.15 }}
+      />
     );
   }
 
@@ -121,20 +101,6 @@ const ProtectedCreatorRoute = ({ children }: ProtectedCreatorRouteProps) => {
 
   if (!onboardingCompleted) {
     return <Navigate to="/creator/welcome" replace />;
-  }
-
-  if (loading) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="flex items-center justify-center min-h-[50vh]"
-      >
-        <LoadingSpinner />
-      </motion.div>
-    );
   }
 
   return <>{children}</>;

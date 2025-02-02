@@ -5,23 +5,22 @@ import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 
-// Static sidebar wrapper that never re-renders
+// Static components that never re-render
 const StaticSidebar = memo(() => <Sidebar />, () => true);
 StaticSidebar.displayName = 'StaticSidebar';
 
-// Static header wrapper that never re-renders
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
 
-// Enhanced page transition component with improved fade animation
+// Optimized page transition component
 const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
   <motion.div
-    initial={{ opacity: 0 }}
+    initial={{ opacity: 0.85 }}
     animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
+    exit={{ opacity: 0.85 }}
     transition={{ 
-      duration: 0.2,
-      ease: "easeInOut"
+      duration: 0.15,
+      ease: "linear"
     }}
     className="relative h-full"
   >
@@ -31,35 +30,19 @@ const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
 
 PageTransition.displayName = 'PageTransition';
 
-// Loading component with fade animation
-const LoadingTransition = () => (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 0.2 }}
-    className="flex items-center justify-center h-[50vh]"
-  >
-    <div className="w-full max-w-md p-4">
-      <div className="space-y-4">
-        <div className="h-8 bg-gray-200 rounded-md animate-pulse" />
-        <div className="space-y-2">
-          <div className="h-4 bg-gray-200 rounded animate-pulse" />
-          <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6" />
-        </div>
-      </div>
-    </div>
-  </motion.div>
+// Minimal loading fallback that maintains layout
+const MinimalLoadingFallback = () => (
+  <div className="min-h-[200px]" />
 );
 
 const CreatorLayout = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
   
-  // Preload all creator pages
+  // Preload all creator pages immediately on mount
   useEffect(() => {
     const preloadPages = async () => {
-      const pages = [
+      await Promise.all([
         import("@/pages/Dashboard"),
         import("@/pages/Projects"),
         import("@/pages/Proposals"),
@@ -67,11 +50,10 @@ const CreatorLayout = () => {
         import("@/pages/Bookings"),
         import("@/pages/Messages"),
         import("@/pages/Settings")
-      ];
-      await Promise.all(pages);
+      ]);
     };
     
-    preloadPages();
+    void preloadPages();
   }, []);
 
   return (
@@ -89,7 +71,7 @@ const CreatorLayout = () => {
         <AnimatePresence mode="wait" initial={false}>
           <PageTransition key={location.pathname.split("/").slice(0, 3).join("/")}>
             <main className="p-4 pt-28 md:p-8 md:pt-32">
-              <Suspense fallback={<LoadingTransition />}>
+              <Suspense fallback={<MinimalLoadingFallback />}>
                 <Outlet />
               </Suspense>
             </main>
