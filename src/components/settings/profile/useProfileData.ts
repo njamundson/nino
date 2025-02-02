@@ -30,7 +30,9 @@ export const useProfileData = () => {
 
   const fetchProfileData = async () => {
     try {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
         toast({
           title: "Error",
@@ -40,39 +42,51 @@ export const useProfileData = () => {
         return;
       }
 
+      // First try to get profile data
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        return;
+      }
 
+      // Then try to get creator data
       const { data: creatorData, error: creatorError } = await supabase
         .from('creators')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (creatorError) throw creatorError;
+      if (creatorError) {
+        console.error('Error fetching creator:', creatorError);
+        return;
+      }
 
-      setProfileData({
-        display_name: profileData?.display_name || "",
-        bio: creatorData?.bio || "",
-        location: creatorData?.location || "",
-        instagram: creatorData?.instagram || "",
-        website: creatorData?.website || "",
-        skills: creatorData?.specialties || [],
-        creatorType: creatorData?.creator_type || "solo",
-        notifications_enabled: creatorData?.notifications_enabled,
-      });
+      if (profileData || creatorData) {
+        setProfileData({
+          display_name: profileData?.display_name || "",
+          bio: creatorData?.bio || "",
+          location: creatorData?.location || "",
+          instagram: creatorData?.instagram || "",
+          website: creatorData?.website || "",
+          skills: creatorData?.specialties || [],
+          creatorType: creatorData?.creator_type || "solo",
+          notifications_enabled: creatorData?.notifications_enabled ?? true,
+        });
+      }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('Error in fetchProfileData:', error);
       toast({
         title: "Error",
         description: "Failed to load profile data",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
