@@ -25,6 +25,11 @@ export const useProfileData = () => {
           return null;
         }
 
+        if (!brandData) {
+          console.log('No brand profile found');
+          return null;
+        }
+
         let profileImageUrl = null;
         if (brandData?.profile_image_url) {
           const { data: { publicUrl } } = supabase
@@ -40,7 +45,7 @@ export const useProfileData = () => {
         } as BrandProfile;
       }
       
-      // For creators, fetch from creators table instead of profiles
+      // For creators, fetch from creators table
       const { data: creatorData, error: creatorError } = await supabase
         .from('creators')
         .select('profile_image_url, display_name')
@@ -49,6 +54,11 @@ export const useProfileData = () => {
       
       if (creatorError) {
         console.error('Error fetching creator profile:', creatorError);
+        return null;
+      }
+
+      if (!creatorData) {
+        console.log('No creator profile found');
         return null;
       }
       
