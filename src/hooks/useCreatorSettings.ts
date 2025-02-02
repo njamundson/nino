@@ -28,33 +28,21 @@ export const useCreatorSettings = () => {
           return;
         }
 
-        // Get profile data
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('display_name')
-          .eq('id', user.id)
-          .single();
-
-        if (profileError) {
-          console.error('Error fetching profile:', profileError);
-          throw profileError;
-        }
-
-        // Get creator data
+        // Get creator data first
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (creatorError) {
           console.error('Error fetching creator:', creatorError);
           throw creatorError;
         }
 
-        if (profile && creator) {
+        if (creator) {
           setCreatorData({
-            display_name: profile.display_name || "",
+            display_name: creator.display_name || "",
             bio: creator.bio || "",
             location: creator.location || "",
             instagram: creator.instagram || "",
@@ -89,23 +77,12 @@ export const useCreatorSettings = () => {
         throw new Error('No authenticated user found');
       }
 
-      // Update profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          display_name: creatorData.display_name,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
-
-      if (profileError) throw profileError;
-
       // Get creator record
       const { data: creator, error: creatorError } = await supabase
         .from('creators')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (creatorError) throw creatorError;
       if (!creator) throw new Error('Creator profile not found');
@@ -114,6 +91,7 @@ export const useCreatorSettings = () => {
       const { error: updateError } = await supabase
         .from('creators')
         .update({
+          display_name: creatorData.display_name,
           bio: creatorData.bio,
           location: creatorData.location,
           instagram: creatorData.instagram,
