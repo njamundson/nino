@@ -10,7 +10,7 @@ import { Creator } from "@/integrations/supabase/types/creator";
 const CompletedProjectsList = () => {
   const { toast } = useToast();
   
-  const { data: projects, isLoading, error } = useQuery({
+  const { data: projects = [], isLoading, error } = useQuery({
     queryKey: ['completed-projects'],
     queryFn: async () => {
       try {
