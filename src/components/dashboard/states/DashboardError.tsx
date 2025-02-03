@@ -1,7 +1,16 @@
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-const DashboardError = () => {
+interface DashboardErrorProps {
+  message?: string;
+  onRetry?: () => void;
+}
+
+const DashboardError = ({ 
+  message = "There was a problem loading your dashboard",
+  onRetry 
+}: DashboardErrorProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -28,8 +37,17 @@ const DashboardError = () => {
       >
         <h3 className="text-lg font-medium">Error Loading Dashboard</h3>
         <p className="text-sm text-muted-foreground max-w-md">
-          There was a problem loading your dashboard. Please try refreshing the page or contact support if the issue persists.
+          {message}
         </p>
+        {onRetry && (
+          <Button 
+            onClick={onRetry}
+            variant="outline"
+            className="mt-4"
+          >
+            Try Again
+          </Button>
+        )}
       </motion.div>
     </motion.div>
   );

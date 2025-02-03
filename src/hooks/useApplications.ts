@@ -2,11 +2,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/types/application";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CreatorType } from "@/types/creator";
+import { useToast } from "@/hooks/use-toast";
 import { mapCreatorData } from "@/utils/creatorUtils";
 
 export const useApplications = (brandId?: string) => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   useEffect(() => {
     const applicationsChannel = supabase
@@ -36,7 +37,7 @@ export const useApplications = (brandId?: string) => {
 
       if (!user) {
         console.log('No authenticated user found');
-        return [];
+        throw new Error('Not authenticated');
       }
 
       if (brandId) {
@@ -53,11 +54,16 @@ export const useApplications = (brandId?: string) => {
 
         if (error) {
           console.error('Error fetching brand applications:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load applications. Please try again.",
+            variant: "destructive",
+          });
           throw error;
         }
 
-        console.log('Fetched brand applications:', data);
-        return data.map((app: any) => ({
+        console.log('Fetched brand applications:', data?.length);
+        return (data || []).map((app: any) => ({
           ...app,
           creator: mapCreatorData(app.creator)
         })) as Application[];
@@ -67,7 +73,7 @@ export const useApplications = (brandId?: string) => {
         .from('creators')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (creatorError) {
         console.error('Error fetching creator:', creatorError);
@@ -92,19 +98,21 @@ export const useApplications = (brandId?: string) => {
 
       if (error) {
         console.error('Error fetching creator applications:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load applications. Please try again.",
+          variant: "destructive",
+        });
         throw error;
       }
 
-      console.log('Fetched creator applications:', data);
-      const typedApplications = data?.map(app => ({
+      console.log('Fetched creator applications:', data?.length);
+      return (data || []).map(app => ({
         ...app,
         initiated_by: app.initiated_by as 'brand' | 'creator',
         is_invitation: app.initiated_by === 'brand',
         creator: mapCreatorData(app.creator)
-      })) || [];
-
-      console.log('Processed applications with flags:', typedApplications);
-      return typedApplications;
+      }));
     } catch (error) {
       console.error('Error in fetchApplications:', error);
       throw error;
@@ -113,6 +121,11 @@ export const useApplications = (brandId?: string) => {
 
   return useQuery({
     queryKey: ['applications', brandId],
-    queryFn: fetchApplications
+    queryFn: fetchApplications,
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    refetchOnWindowFocus: false
   });
 };

@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-const DashboardLoading = () => {
+interface DashboardLoadingProps {
+  message?: string;
+}
+
+const DashboardLoading = ({ message = "Loading your dashboard..." }: DashboardLoadingProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -20,7 +24,7 @@ const DashboardLoading = () => {
         transition={{ delay: 0.2 }}
         className="text-sm text-muted-foreground"
       >
-        Loading your dashboard...
+        {message}
       </motion.p>
     </motion.div>
   );
