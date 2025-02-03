@@ -1,76 +1,91 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CreatorSettings as CreatorSettingsComponent } from "@/components/settings/creator/CreatorSettings";
+import CreatorSettings from "@/components/settings/creator/CreatorSettings";
 import BrandSettings from "@/components/settings/brand/pages/BrandProfileSettings";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Settings = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [userType, setUserType] = useState<"brand" | "creator" | null>(null);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     const checkUserType = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        // Check if user is a brand
-        const { data: brand } = await supabase
-          .from("brands")
-          .select("id")
-          .eq("user_id", user.id)
-          .maybeSingle();
-
-        if (brand) {
-          setUserType("brand");
-          setLoading(false);
+        
+        if (!user) {
+          setIsLoading(false);
           return;
         }
 
-        // Check if user is a creator
-        const { data: creator } = await supabase
-          .from("creators")
-          .select("id")
-          .eq("user_id", user.id)
+        // Check for brand profile
+        const { data: brand, error: brandError } = await supabase
+          .from('brands')
+          .select('id')
+          .eq('user_id', user.id)
           .maybeSingle();
 
-        if (creator) {
-          setUserType("creator");
+        if (brandError) {
+          console.error('Error checking brand profile:', brandError);
+          throw brandError;
         }
+
+        if (brand) {
+          setUserType('brand');
+          setIsLoading(false);
+          return;
+        }
+
+        // Check for creator profile
+        const { data: creator, error: creatorError } = await supabase
+          .from('creators')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (creatorError) {
+          console.error('Error checking creator profile:', creatorError);
+          throw creatorError;
+        }
+
+        if (creator) {
+          setUserType('creator');
+        }
+
       } catch (error) {
-        console.error("Error checking user type:", error);
+        console.error('Error in checkUserType:', error);
         toast({
-          title: "Error",
-          description: "Failed to load settings. Please try again.",
+          title: "Error loading settings",
+          description: "Please try refreshing the page.",
           variant: "destructive",
         });
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    checkUserType();
+    void checkUserType();
   }, [toast]);
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner />
+      <div className="flex items-center justify-center min-h-[200px]">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
-  return (
-    <>
-      {userType === "brand" ? (
-        <BrandSettings onBack={() => {}} />
-      ) : (
-        <CreatorSettingsComponent />
-      )}
-    </>
-  );
+  if (!userType) {
+    return (
+      <div className="text-center p-4">
+        <p className="text-gray-600">Unable to load settings. Please try again later.</p>
+      </div>
+    );
+  }
+
+  return userType === 'brand' ? <BrandSettings /> : <CreatorSettings />;
 };
 
 export default Settings;

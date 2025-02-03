@@ -17,7 +17,7 @@ export const useAuthCheck = () => {
         setIsLoading(true);
         console.log("Checking brand access...");
 
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error("Session error:", sessionError);
@@ -28,7 +28,7 @@ export const useAuthCheck = () => {
           return false;
         }
 
-        if (!sessionData.session) {
+        if (!session) {
           console.log("No active session found");
           if (mounted) {
             setHasAccess(false);
@@ -37,13 +37,11 @@ export const useAuthCheck = () => {
           return false;
         }
 
-        console.log("Session found:", sessionData.session);
-
-        // Use maybeSingle() instead of single() to handle cases where no brand exists
+        // Use maybeSingle() instead of single()
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
-          .eq('user_id', sessionData.session.user.id)
+          .eq('user_id', session.user.id)
           .maybeSingle();
 
         if (brandError) {
@@ -51,7 +49,6 @@ export const useAuthCheck = () => {
           throw brandError;
         }
 
-        // If no brand exists, handle it gracefully
         if (!brand) {
           console.log("No brand profile found");
           if (mounted) {
@@ -78,7 +75,7 @@ export const useAuthCheck = () => {
     };
 
     // Initial check
-    checkBrandAccess();
+    void checkBrandAccess();
 
     // Set up auth state listener
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
