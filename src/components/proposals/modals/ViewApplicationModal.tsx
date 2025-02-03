@@ -117,15 +117,13 @@ const ViewApplicationModal = ({
     );
   }
 
-  const brandName = application.opportunity?.brand?.company_name || "Unnamed Brand";
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogTitle className="text-2xl font-semibold">
           {type === 'proposal' 
-            ? `Invitation from ${brandName}`
-            : `Application Details - ${brandName}`}
+            ? `Invitation from ${application.opportunity?.brand?.company_name}`
+            : `Application Details - ${application.opportunity?.brand?.company_name}`}
         </DialogTitle>
 
         <ProjectDetails application={application} />
