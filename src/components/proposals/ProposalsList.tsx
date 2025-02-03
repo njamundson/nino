@@ -3,7 +3,8 @@ import ProposalCard from "./ProposalCard";
 import EmptyProposals from "./EmptyProposals";
 import { motion, AnimatePresence } from "framer-motion";
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 interface ProposalsListProps {
   applications: Application[];
@@ -18,13 +19,26 @@ const ProposalsList = ({
   type 
 }: ProposalsListProps) => {
   const parentRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const rowVirtualizer = useVirtualizer({
     count: applications.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 200, // Estimate height of each row
-    overscan: 5, // Number of items to render outside of the visible area
+    estimateSize: () => 200,
+    overscan: 5,
   });
+
+  useEffect(() => {
+    // Handle any virtualization errors
+    if (!parentRef.current) {
+      console.error('Parent ref not found for virtualization');
+      toast({
+        title: "Display Error",
+        description: "There was an error displaying the applications. Please refresh the page.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   if (!applications || applications.length === 0) {
     return (
