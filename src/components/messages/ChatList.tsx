@@ -105,7 +105,7 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onNewChat={onNewChat}
-        isCreator={isCreator}
+        isCreator={true} // Force isCreator to true since we're on the creator route
       />
       
       <ScrollArea className="flex-1">
