@@ -8,12 +8,14 @@ interface ChatListHeaderProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   onNewChat?: (userId: string, displayName: string, profileImage: string | null) => void;
+  isCreator?: boolean;
 }
 
 export const ChatListHeader = ({ 
   searchQuery, 
   setSearchQuery,
-  onNewChat
+  onNewChat,
+  isCreator = false
 }: ChatListHeaderProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -37,7 +39,7 @@ export const ChatListHeader = ({
               className="pl-9 w-full h-9 rounded-full bg-gray-50/80 border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-200 focus:border-gray-300 transition-all duration-200"
             />
           </div>
-          {onNewChat && (
+          {onNewChat && !isCreator && (
             <>
               <Button
                 variant="outline"
