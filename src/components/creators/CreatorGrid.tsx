@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CreatorGridItem from "./grid/CreatorGridItem";
 import CreatorFilters from "./CreatorFilters";
 import { useCreators } from "./hooks/useCreators";
 import { Creator } from "@/types/creator";
 import { LoadingSpinner } from "../ui/loading-spinner";
+
+// Memoize the CreatorGridItem to prevent unnecessary re-renders
+const MemoizedCreatorGridItem = memo(CreatorGridItem);
 
 const CreatorGrid = () => {
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
@@ -32,15 +35,19 @@ const CreatorGrid = () => {
     );
   };
 
-  const filteredCreators = creators?.filter((creator) => {
-    const matchesType = !selectedCreatorType || creator.creator_type === selectedCreatorType;
-    const matchesSpecialties = selectedSpecialties.length === 0 || 
-      selectedSpecialties.every(specialty => creator.specialties?.includes(specialty));
-    const matchesLocation = selectedLocations.length === 0 || 
-      selectedLocations.some(location => creator.location?.includes(location));
+  // Memoize the filtered creators to prevent unnecessary recalculations
+  const filteredCreators = useMemo(() => {
+    console.log('Recalculating filtered creators');
+    return creators?.filter((creator) => {
+      const matchesType = !selectedCreatorType || creator.creator_type === selectedCreatorType;
+      const matchesSpecialties = selectedSpecialties.length === 0 || 
+        selectedSpecialties.every(specialty => creator.specialties?.includes(specialty));
+      const matchesLocation = selectedLocations.length === 0 || 
+        selectedLocations.some(location => creator.location?.includes(location));
 
-    return matchesType && matchesSpecialties && matchesLocation;
-  });
+      return matchesType && matchesSpecialties && matchesLocation;
+    });
+  }, [creators, selectedCreatorType, selectedSpecialties, selectedLocations]);
 
   const handleViewProfile = (creator: Creator) => {
     console.log("Viewing profile for:", creator);
@@ -94,7 +101,7 @@ const CreatorGrid = () => {
                 delay: index * 0.05 
               }}
             >
-              <CreatorGridItem
+              <MemoizedCreatorGridItem
                 creator={creator}
                 onViewProfile={handleViewProfile}
               />

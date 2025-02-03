@@ -7,6 +7,7 @@ export const useCreators = () => {
   return useQuery({
     queryKey: ['creators'],
     queryFn: async () => {
+      console.log('Fetching creators');
       const { data, error } = await supabase
         .from('creators')
         .select(`
@@ -25,8 +26,11 @@ export const useCreators = () => {
 
       if (error) throw error;
       
-      // Map the raw data to match the Creator type
       return data.map(creator => mapCreatorData(creator));
-    }
+    },
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    cacheTime: 30 * 60 * 1000, // Keep unused data in cache for 30 minutes
+    refetchOnWindowFocus: false, // Disable automatic refetch on window focus
+    refetchOnMount: false, // Disable automatic refetch on mount
   });
 };
