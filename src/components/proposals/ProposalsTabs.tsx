@@ -49,14 +49,15 @@ const ProposalsTabs = ({
   // Filter for brand invitations (initiated by brand) that haven't been responded to
   const pendingInvitations = pendingProposals.filter(app => 
     app.initiated_by === 'brand' && 
-    app.status === 'invited' &&
-    !app.cover_letter
+    !app.cover_letter &&
+    app.status === 'pending'
   );
   
   // Filter for submitted applications and responded invitations
   const activeApplications = myApplications.filter(app => 
-    (app.initiated_by === 'creator' && app.status === 'pending') || 
-    (app.initiated_by === 'brand' && app.cover_letter && app.status === 'pending')
+    app.cover_letter && 
+    app.status === 'pending' &&
+    (app.initiated_by === 'creator' || app.initiated_by === 'brand')
   );
 
   return (
