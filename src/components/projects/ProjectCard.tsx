@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -8,106 +8,26 @@ import { Opportunity } from "@/integrations/supabase/types/opportunity";
 import ProjectBadges from "./card/ProjectBadges";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2 } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 interface ProjectCardProps {
   opportunity: Opportunity & { current_creator_id?: string };
   isCompleted?: boolean;
+  onViewDetails?: () => void;
 }
 
-const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => {
+const ProjectCard = ({ opportunity, isCompleted = false, onViewDetails }: ProjectCardProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const queryClient = useQueryClient();
 
-  // Check if the current creator has already applied
-  const { data: hasApplied } = useQuery({
-    queryKey: ['application-status', opportunity.id],
-    queryFn: async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          console.log("No user found");
-          return false;
-        }
-
-        const { data: creator, error: creatorError } = await supabase
-          .from('creators')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (creatorError) {
-          console.error("Error fetching creator:", creatorError);
-          return false;
-        }
-
-        if (!creator) {
-          console.log("No creator record found");
-          return false;
-        }
-
-        const { data: application, error: applicationError } = await supabase
-          .from('applications')
-          .select('id')
-          .eq('opportunity_id', opportunity.id)
-          .eq('creator_id', creator.id)
-          .maybeSingle();
-
-        if (applicationError) {
-          console.error("Error checking application:", applicationError);
-          return false;
-        }
-
-        return !!application;
-      } catch (error) {
-        console.error("Error in hasApplied query:", error);
-        return false;
-      }
-    },
-    staleTime: 0,
-  });
-  
-  useEffect(() => {
-    const channel = supabase
-      .channel('application-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'applications',
-          filter: `opportunity_id=eq.${opportunity.id}`,
-        },
-        () => {
-          queryClient.invalidateQueries({
-            queryKey: ['application-status', opportunity.id],
-          });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [opportunity.id, queryClient]);
-
-  const handleViewDetails = () => {
-    setIsLoading(true);
-    try {
-      navigate(`/creator/projects/${opportunity.id}`);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Could not load project details. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+  const handleViewDetails = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click event
+    if (onViewDetails) {
+      onViewDetails();
+    } else {
+      setShowModal(true);
     }
   };
   
@@ -115,7 +35,6 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
     <>
       <Card 
         className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
-        onClick={() => setShowModal(true)}
       >
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-100 animate-pulse" />
@@ -137,19 +56,6 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           isCompleted={isCompleted}
           currentCreatorId={opportunity.current_creator_id}
         />
-
-        {/* Only show Applied badge if not completed */}
-        {hasApplied && !isCompleted && (
-          <div className="absolute top-4 left-4 z-10">
-            <Badge 
-              variant="secondary" 
-              className="bg-green-100 text-green-800 border-0 flex items-center gap-1.5 animate-fadeIn"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              Applied
-            </Badge>
-          </div>
-        )}
 
         <div className="absolute bottom-6 left-6 right-6 text-white">
           <div className="flex flex-col gap-4">
@@ -176,7 +82,7 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
         </div>
       </Card>
 
-      {showModal && (
+      {showModal && !onViewDetails && (
         <ProjectModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}

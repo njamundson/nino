@@ -5,9 +5,12 @@ import { Archive } from "lucide-react";
 import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/integrations/supabase/types/opportunity";
+import { useState } from "react";
+import ProjectModal from "./ProjectModal";
 
 const CompletedProjectsList = () => {
   const { toast } = useToast();
+  const [selectedProject, setSelectedProject] = useState<Opportunity | null>(null);
   
   const { data: projects = [], isLoading, error } = useQuery({
     queryKey: ['completed-projects-list'],
@@ -109,7 +112,7 @@ const CompletedProjectsList = () => {
             No completed projects yet
           </h3>
           <p className="text-gray-500">
-            When you complete projects with creators, they will appear here.
+            When you complete projects with brands, they will appear here.
           </p>
         </div>
       </Card>
@@ -117,15 +120,27 @@ const CompletedProjectsList = () => {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {projects.map((project) => (
-        <ProjectCard 
-          key={project.id} 
-          opportunity={project}
+    <>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project) => (
+          <ProjectCard 
+            key={project.id} 
+            opportunity={project}
+            isCompleted={true}
+            onViewDetails={() => setSelectedProject(project)}
+          />
+        ))}
+      </div>
+
+      {selectedProject && (
+        <ProjectModal
+          isOpen={!!selectedProject}
+          onClose={() => setSelectedProject(null)}
+          opportunity={selectedProject}
           isCompleted={true}
         />
-      ))}
-    </div>
+      )}
+    </>
   );
 };
 
