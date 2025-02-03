@@ -20,20 +20,31 @@ const ProjectCard = ({ opportunity, isCompleted = false, onViewDetails }: Projec
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const handleViewDetails = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent double triggering when clicking the button
+  const handleCardClick = () => {
     if (onViewDetails) {
       onViewDetails();
     } else {
       setShowModal(true);
     }
   };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent the event from reaching the card
+    handleCardClick();
+  };
   
   return (
     <>
       <Card 
         className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
-        onClick={handleViewDetails}
+        onClick={handleCardClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleCardClick();
+          }
+        }}
       >
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-100 animate-pulse" />
@@ -71,7 +82,7 @@ const ProjectCard = ({ opportunity, isCompleted = false, onViewDetails }: Projec
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={handleViewDetails}
+                onClick={handleButtonClick}
                 className="bg-white/90 hover:bg-white text-gray-900"
               >
                 View Details
