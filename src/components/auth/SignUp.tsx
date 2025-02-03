@@ -21,14 +21,13 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       
       console.log("Starting signup process for:", email);
 
-      // Sign up the user directly without checking existing account
+      // Sign up the user
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            first_name: data.firstName || 'Anonymous',
-            last_name: data.lastName || '',
+            display_name: data.firstName || 'Anonymous',
           },
         },
       });
@@ -36,7 +35,6 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       if (signUpError) {
         console.error('Signup error:', signUpError);
         
-        // Handle specific error cases
         if (signUpError.message.includes("already registered")) {
           toast({
             variant: "destructive",
@@ -58,9 +56,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
           .from('profiles')
           .upsert({
             id: authData.user.id,
-            first_name: data.firstName || 'Anonymous',
-            last_name: data.lastName || '',
-            display_name: `${data.firstName || 'Anonymous'} ${data.lastName || ''}`.trim()
+            display_name: data.firstName || 'Anonymous',
           });
 
         if (profileError) {
@@ -74,8 +70,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             .from('brands')
             .insert({
               user_id: authData.user.id,
-              first_name: data.firstName || 'Anonymous',
-              last_name: data.lastName || '',
+              company_name: data.firstName || 'Anonymous',
             });
 
           if (brandError) {
@@ -89,9 +84,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             .from('creators')
             .insert({
               user_id: authData.user.id,
-              first_name: data.firstName || 'Anonymous',
-              last_name: data.lastName || '',
-              display_name: `${data.firstName || 'Anonymous'} ${data.lastName || ''}`.trim()
+              display_name: data.firstName || 'Anonymous',
             });
 
           if (creatorError) {
