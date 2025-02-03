@@ -37,6 +37,7 @@ const ProposalsTabs = ({
         () => {
           // Refetch applications data when changes occur
           queryClient.invalidateQueries({ queryKey: ['applications'] });
+          queryClient.invalidateQueries({ queryKey: ['my-applications'] });
         }
       )
       .subscribe();
@@ -59,6 +60,9 @@ const ProposalsTabs = ({
     app.status === 'pending' &&
     (app.initiated_by === 'creator' || app.initiated_by === 'brand')
   );
+
+  console.log('Active Applications:', activeApplications);
+  console.log('Pending Invitations:', pendingInvitations);
 
   return (
     <Tabs defaultValue="invitations" className="w-full">
