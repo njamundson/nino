@@ -46,6 +46,14 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
             receiver:profiles!messages_receiver_profile_id_fkey(
               id,
               display_name
+            ),
+            sender_brand:brands!messages_sender_id_fkey(
+              id,
+              company_name
+            ),
+            receiver_brand:brands!messages_receiver_id_fkey(
+              id,
+              company_name
             )
           `)
           .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -60,11 +68,12 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
         const chatsByUser = messages.reduce((acc: Record<string, ChatData>, message: any) => {
           const otherUserId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
           const otherUser = message.sender_id === user.id ? message.receiver : message.sender;
+          const otherBrand = message.sender_id === user.id ? message.receiver_brand : message.sender_brand;
           
           if (!acc[otherUserId]) {
             acc[otherUserId] = {
               userId: otherUserId,
-              displayName: otherUser?.display_name || 'Unknown User',
+              displayName: otherBrand?.company_name || otherUser?.display_name || 'Unknown User',
               lastMessage: {
                 content: message.content,
                 created_at: message.created_at,
