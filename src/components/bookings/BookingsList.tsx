@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useIsMobile } from '@/hooks/use-mobile';
 import BookingCard from './BookingCard';
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface BookingsListProps {
   onChatClick: (userId: string) => void;
@@ -16,7 +17,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
-  const { data: bookings, refetch } = useQuery({
+  const { data: bookings, isLoading, refetch } = useQuery({
     queryKey: ['bookings'],
     queryFn: async () => {
       try {
@@ -107,6 +108,25 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       supabase.removeChannel(channel);
     };
   }, [refetch]);
+
+  if (isLoading) {
+    return (
+      <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 gap-6'}`}>
+        {[1, 2].map((i) => (
+          <Card key={i} className="p-6">
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+              <div className="flex gap-2 mt-4">
+                <Skeleton className="h-10 w-[100px]" />
+                <Skeleton className="h-10 w-[100px]" />
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   if (!bookings || bookings.length === 0) {
     return (
