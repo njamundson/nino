@@ -37,7 +37,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           .from('brands')
           .select('id')
           .eq('user_id', user.id)
-          .maybeSingle();
+          .maybeSingle(); // Changed from single() to maybeSingle()
 
         if (brandError) {
           console.error('Error fetching brand:', brandError);
@@ -45,7 +45,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
         }
 
         if (!brand) {
-          console.error('No brand profile found');
+          console.log('No brand profile found');
           return [];
         }
 
