@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { CreatorSettings } from "@/components/settings/creator/CreatorSettings";
+import { CreatorSettings as CreatorSettingsComponent } from "@/components/settings/creator/CreatorSettings";
 import BrandSettings from "@/components/settings/brand/pages/BrandProfileSettings";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -67,7 +67,7 @@ const Settings = () => {
       {userType === "brand" ? (
         <BrandSettings onBack={() => {}} />
       ) : (
-        <CreatorSettings />
+        <CreatorSettingsComponent />
       )}
     </>
   );
