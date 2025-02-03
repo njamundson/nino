@@ -50,21 +50,21 @@ const ProposalsTabs = ({
     };
   }, [queryClient]);
 
-  // Filter for brand invitations (initiated by brand) that haven't been responded to
+  // Filter for brand invitations that haven't been responded to yet
   const pendingInvitations = pendingProposals.filter(app => 
     app.initiated_by === 'brand' && 
     !app.cover_letter &&
     app.status === 'pending'
   );
   
-  // Filter for submitted applications (both direct applications and responded invitations)
+  // Filter for all submitted applications (includes both direct applications and responded invitations)
   const activeApplications = myApplications.filter(app => 
-    app.cover_letter && 
+    app.cover_letter !== null && 
     app.status === 'pending'
   );
 
-  console.log('Active Applications:', activeApplications);
   console.log('Pending Invitations:', pendingInvitations);
+  console.log('Active Applications:', activeApplications);
 
   return (
     <Tabs defaultValue="invitations" className="w-full">
