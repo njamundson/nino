@@ -25,6 +25,7 @@ const ProposalsTabs = ({
 
   // Set up real-time subscription for applications
   useEffect(() => {
+    console.log('Setting up real-time subscription for applications');
     const channel = supabase
       .channel('applications-changes')
       .on(
@@ -34,7 +35,8 @@ const ProposalsTabs = ({
           schema: 'public',
           table: 'applications'
         },
-        () => {
+        (payload) => {
+          console.log('Application change detected:', payload);
           // Refetch applications data when changes occur
           queryClient.invalidateQueries({ queryKey: ['applications'] });
           queryClient.invalidateQueries({ queryKey: ['my-applications'] });
@@ -43,6 +45,7 @@ const ProposalsTabs = ({
       .subscribe();
 
     return () => {
+      console.log('Cleaning up real-time subscription');
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
@@ -54,11 +57,10 @@ const ProposalsTabs = ({
     app.status === 'pending'
   );
   
-  // Filter for submitted applications and responded invitations
+  // Filter for submitted applications (both direct applications and responded invitations)
   const activeApplications = myApplications.filter(app => 
     app.cover_letter && 
-    app.status === 'pending' &&
-    (app.initiated_by === 'creator' || app.initiated_by === 'brand')
+    app.status === 'pending'
   );
 
   console.log('Active Applications:', activeApplications);
