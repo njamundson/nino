@@ -33,17 +33,23 @@ const ChatHeader = ({
   const hasSelectedChat = Boolean(senderUserId);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
-  const { data: profileData } = useQuery<ProfileWithBrands | null>({
+  const { data: profileData } = useQuery<ProfileWithBrands>({
     queryKey: ['profile-for-chat', senderUserId],
     queryFn: async () => {
-      if (!senderUserId) return null;
+      if (!senderUserId) {
+        return {
+          id: '',
+          display_name: '',
+          brands: null
+        };
+      }
 
       const { data, error } = await supabase
         .from('profiles')
         .select(`
           id,
           display_name,
-          brands(
+          brands (
             id,
             company_name
           )
@@ -53,7 +59,11 @@ const ChatHeader = ({
 
       if (error) {
         console.error('Error fetching profile:', error);
-        return null;
+        return {
+          id: '',
+          display_name: '',
+          brands: null
+        };
       }
 
       return data;
