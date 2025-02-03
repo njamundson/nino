@@ -89,6 +89,7 @@ const MyCampaigns = () => {
           )
         `)
         .eq('brand_id', brand.id)
+        .neq('status', 'completed') // Exclude completed campaigns
         .order('created_at', { ascending: false });
 
       if (campaignsError) throw campaignsError;
@@ -131,7 +132,7 @@ const MyCampaigns = () => {
       <div className="space-y-8">
         <PageHeader
           title="My Campaigns"
-          description="Manage and track all your creator campaigns."
+          description="Manage and track all your active creator campaigns."
         />
         <div className="mt-8 text-center py-12 bg-red-50 rounded-lg">
           <p className="text-red-600">
@@ -146,7 +147,7 @@ const MyCampaigns = () => {
     <div className="space-y-8">
       <PageHeader
         title="My Campaigns"
-        description="Manage and track all your creator campaigns."
+        description="Manage and track all your active creator campaigns."
       />
 
       {isLoading ? (
