@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import BrowseCreatorProfile from "./modal/BrowseCreatorProfile";
 import CampaignSelection from "./modal/CampaignSelection";
+import { toast } from "sonner";
 import { CreatorType } from "@/types/creator";
 import { mapCreatorData } from "@/utils/creatorUtils";
 
@@ -39,6 +40,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
+          toast.error("You must be logged in to view campaigns");
           return [];
         }
 
@@ -55,6 +57,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
         }
 
         if (creator) {
+          toast.error("Creators cannot invite other creators to campaigns");
           return [];
         }
 
@@ -67,11 +70,13 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
         if (brandError) {
           console.error('Error fetching brand:', brandError);
+          toast.error("Error fetching brand information");
           return [];
         }
 
         if (!brand) {
           console.log('No brand found for user');
+          toast.error("No brand profile found");
           return [];
         }
 
@@ -90,12 +95,14 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
         if (oppsError) {
           console.error('Error fetching opportunities:', oppsError);
+          toast.error("Error fetching campaigns");
           return [];
         }
 
         return opportunities || [];
       } catch (error) {
         console.error('Error in campaign query:', error);
+        toast.error("An unexpected error occurred");
         return [];
       }
     },
@@ -115,6 +122,7 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
       );
 
       if (existingApplication) {
+        toast.error("Creator has already applied to your campaign");
         return;
       }
 
@@ -130,13 +138,16 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
       if (inviteError) {
         console.error("Error inviting creator:", inviteError);
+        toast.error("Failed to invite creator");
         return;
       }
 
+      toast.success("Creator invited successfully!");
       setShowCampaigns(false);
       onClose();
     } catch (error) {
       console.error("Error in handleInvite:", error);
+      toast.error("An unexpected error occurred");
     } finally {
       setIsInviting(false);
     }
