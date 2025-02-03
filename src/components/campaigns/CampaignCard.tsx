@@ -93,16 +93,12 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   };
 
   const applications = campaign.applications || [];
-  console.log('All applications:', applications);
-  
   const validApplications = applications.filter(app => 
     app.status === 'pending' && (
       app.initiated_by === 'creator' || 
       (app.initiated_by === 'brand' && app.cover_letter)
     )
   );
-  console.log('Valid applications:', validApplications);
-
   const acceptedApplications = applications.filter(app => app.status === 'accepted');
   const isInactive = campaign.status === 'inactive';
   const isCompleted = campaign.status === 'completed';
@@ -139,14 +135,14 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   return (
     <>
       <Card className={`bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300 ${isMobile ? 'mx-0' : ''}`}>
-        <div className={`p-4 sm:p-6 space-y-4 sm:space-y-6 ${isMobile ? 'px-4' : ''}`}>
+        <div className={`p-4 ${isMobile ? 'space-y-3' : 'p-6 space-y-6'}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1 flex-1 min-w-0">
-              <h3 className="text-lg sm:text-xl font-semibold text-nino-text truncate pr-2">
+              <h3 className={`font-semibold text-nino-text truncate pr-2 ${isMobile ? 'text-base' : 'text-lg sm:text-xl'}`}>
                 {campaign.title}
               </h3>
               {campaign.location && (
-                <p className="text-nino-gray flex items-center gap-1.5 text-sm sm:text-base">
+                <p className={`text-nino-gray flex items-center gap-1.5 ${isMobile ? 'text-sm' : 'text-sm sm:text-base'}`}>
                   <Calendar className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">{campaign.location}</span>
                 </p>
@@ -175,15 +171,15 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
             )}
           </div>
 
-          <div className="space-y-4">
+          <div className={`space-y-${isMobile ? '3' : '4'}`}>
             <div>
-              <p className="text-nino-gray text-sm sm:text-base line-clamp-3">
+              <p className={`text-nino-gray ${isMobile ? 'text-sm line-clamp-2' : 'text-sm sm:text-base line-clamp-3'}`}>
                 {campaign.description}
               </p>
             </div>
 
             {(campaign.start_date || campaign.end_date) && (
-              <div className="flex items-center gap-2 text-nino-gray text-sm sm:text-base">
+              <div className={`flex items-center gap-2 text-nino-gray ${isMobile ? 'text-sm' : 'text-sm sm:text-base'}`}>
                 <Calendar className="h-4 w-4 flex-shrink-0" />
                 <span className="truncate">
                   {campaign.start_date && formatDate(campaign.start_date)}
@@ -200,7 +196,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
           </div>
 
           {!isCompleted && !isInactive && (
-            <div className="pt-4 border-t border-gray-100">
+            <div className={`pt-${isMobile ? '3' : '4'} border-t border-gray-100`}>
               <Collapsible
                 open={isExpanded}
                 onOpenChange={setIsExpanded}
@@ -229,7 +225,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                         <div
                           key={application.id}
                           onClick={() => handleViewCreator(application.creator, application)}
-                          className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+                          className={`flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors ${isMobile ? 'mx-0' : ''}`}
                         >
                           <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
                             {application.creator?.profile_image_url ? (
@@ -245,7 +241,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 truncate">
+                            <p className={`font-medium text-gray-900 truncate ${isMobile ? 'text-sm' : ''}`}>
                               {application.creator?.display_name}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -268,7 +264,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
       </Card>
 
       <Dialog open={!!selectedCreator} onOpenChange={handleCloseCreatorModal}>
-        <DialogContent className="max-w-4xl p-0 w-[95vw] sm:w-auto">
+        <DialogContent className={`max-w-4xl p-0 ${isMobile ? 'w-[95vw] h-[95vh] overflow-y-auto' : 'w-[95vw] sm:w-auto'}`}>
           <DialogTitle className="sr-only">Creator Profile</DialogTitle>
           <CreatorProfile
             creator={selectedCreator}
