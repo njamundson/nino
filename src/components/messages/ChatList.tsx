@@ -41,19 +41,13 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
             *,
             sender:profiles!messages_sender_profile_id_fkey(
               id,
-              display_name
+              display_name,
+              brands(id, company_name)
             ),
             receiver:profiles!messages_receiver_profile_id_fkey(
               id,
-              display_name
-            ),
-            sender_brand:brands!messages_sender_id_fkey(
-              id,
-              company_name
-            ),
-            receiver_brand:brands!messages_receiver_id_fkey(
-              id,
-              company_name
+              display_name,
+              brands(id, company_name)
             )
           `)
           .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
@@ -68,12 +62,14 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
         const chatsByUser = messages.reduce((acc: Record<string, ChatData>, message: any) => {
           const otherUserId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
           const otherUser = message.sender_id === user.id ? message.receiver : message.sender;
-          const otherBrand = message.sender_id === user.id ? message.receiver_brand : message.sender_brand;
+          const otherBrand = message.sender_id === user.id 
+            ? (otherUser?.brands?.[0]?.company_name || otherUser?.display_name)
+            : (otherUser?.brands?.[0]?.company_name || otherUser?.display_name);
           
           if (!acc[otherUserId]) {
             acc[otherUserId] = {
               userId: otherUserId,
-              displayName: otherBrand?.company_name || otherUser?.display_name || 'Unknown User',
+              displayName: otherBrand || 'Unknown User',
               lastMessage: {
                 content: message.content,
                 created_at: message.created_at,
@@ -114,7 +110,7 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onNewChat={onNewChat}
-        isCreator={true} // Force isCreator to true since we're on the creator route
+        isCreator={isCreator}
       />
       
       <ScrollArea className="flex-1">
