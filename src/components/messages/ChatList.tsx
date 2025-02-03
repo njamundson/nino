@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChatListHeader } from './chat-list/ChatListHeader';
+import ChatListHeader from './chat-list/ChatListHeader';
 import { ChatListItem } from './chat-list/ChatListItem';
 import { EmptyState } from './chat-list/EmptyState';
 import { useQuery } from '@tanstack/react-query';
@@ -109,7 +109,6 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
       <ChatListHeader 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onNewChat={onNewChat}
         isCreator={isCreator}
       />
       

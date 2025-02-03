@@ -30,7 +30,7 @@ const ChatHeader = ({ userId, onBack }: ChatHeaderProps) => {
         return {
           id: userId,
           display_name: 'Unknown User',
-        };
+        } as ProfileData;
       }
 
       return profileData as ProfileData;
