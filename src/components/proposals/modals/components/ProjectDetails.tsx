@@ -7,7 +7,8 @@ interface ProjectDetailsProps {
 }
 
 const ProjectDetails = ({ application }: ProjectDetailsProps) => {
-  const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
+  // Get the brand name directly from the opportunity's brand
+  const brandName = application.opportunity?.brand?.company_name || "Unnamed Brand";
   const brandLocation = application.opportunity?.brand?.location;
   const title = application.opportunity?.title || "Untitled Opportunity";
 
