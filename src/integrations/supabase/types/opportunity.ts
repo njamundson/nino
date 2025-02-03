@@ -14,11 +14,12 @@ export interface Opportunity {
   location: string | null;
   payment_details: string | null;
   compensation_details: string | null;
+  compensation_type: string | null;
+  compensation_amount: number | null;
   deliverables: string[] | null;
   image_url: string | null;
   created_at?: string;
   updated_at?: string;
-  brand?: Brand;
+  brand?: Partial<Brand>;
   applications?: Application[];
-  current_creator_id?: string;
 }
