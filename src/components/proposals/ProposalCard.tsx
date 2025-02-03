@@ -1,12 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/integrations/supabase/types/application";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useState } from "react";
-import { ProposalStatusBadge } from "./ProposalStatusBadge";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 interface ProposalCardProps {
   application: Application;
@@ -16,7 +13,7 @@ interface ProposalCardProps {
 
 const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) => {
   const [showModal, setShowModal] = useState(false);
-  const queryClient = useQueryClient();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // For brand invitations without a cover letter, show as 'invited'
   // For creator applications or responded invitations, show the actual status
@@ -24,80 +21,78 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
     ? 'invited'
     : application.status;
 
-  const handleUpdateStatus = async (status: 'accepted' | 'rejected') => {
-    try {
-      if (status === 'rejected') {
-        const { error } = await supabase
-          .from('applications')
-          .delete()
-          .eq('id', application.id);
-
-        if (error) throw error;
-
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['applications'] }),
-          queryClient.invalidateQueries({ queryKey: ['my-applications'] }),
-          queryClient.invalidateQueries({ queryKey: ['opportunities'] })
-        ]);
-        
-        toast.success("Application rejected");
-      } else {
-        await onUpdateStatus(application.id, status);
-      }
-      
-      setShowModal(false);
-    } catch (error) {
-      console.error('Error updating application status:', error);
-      toast.error("Failed to update application status");
-    }
-  };
-
   const handleViewDetails = () => {
     setShowModal(true);
   };
 
   return (
     <>
-      <Card className="group relative overflow-hidden rounded-xl border border-gray-100 shadow-sm cursor-pointer h-[260px] transition-all duration-300 hover:shadow-md">
-        <div className="relative h-full w-full">
-          <img
-            src={application.opportunity?.image_url || "/placeholder.svg"}
-            alt={application.opportunity?.title || "Project image"}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-          
-          <div className="absolute top-3 right-3 z-10">
-            <ProposalStatusBadge status={displayStatus} />
-          </div>
-          
-          <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-            <div className="flex flex-col gap-2">
-              <div>
-                <p className="text-sm text-white/90 mb-1">
-                  {application.opportunity?.brand?.company_name || "Unknown Brand"}
-                </p>
-                <h3 className="text-base font-semibold mb-2 line-clamp-2">
-                  {application.opportunity?.title || "Untitled Opportunity"}
-                </h3>
-              </div>
+      <Card 
+        className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
+        onClick={handleViewDetails}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleViewDetails();
+          }
+        }}
+      >
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+        )}
+        <img
+          src={application.opportunity?.image_url || "/placeholder.svg"}
+          alt={application.opportunity?.title || "Project image"}
+          className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setImageLoaded(true)}
+          loading="lazy"
+        />
 
-              {application.cover_letter && (
-                <p className="text-sm text-white/80 line-clamp-2">
-                  {application.cover_letter}
-                </p>
-              )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        
+        <div className="absolute top-4 right-4">
+          <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium
+            ${displayStatus === 'invited' ? 'bg-blue-100 text-blue-700' : 
+              displayStatus === 'accepted' ? 'bg-green-100 text-green-700' : 
+              displayStatus === 'rejected' ? 'bg-red-100 text-red-700' : 
+              'bg-gray-100 text-gray-700'}`}
+          >
+            {displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1)}
+          </span>
+        </div>
 
-              <div className="flex gap-2 mt-1">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleViewDetails}
-                  className="bg-white/90 hover:bg-white text-gray-900 text-sm"
-                >
-                  View Details
-                </Button>
-              </div>
+        <div className="absolute bottom-6 left-6 right-6 text-white">
+          <div className="flex flex-col gap-4">
+            <div>
+              <p className="text-sm text-white/90 mb-1">
+                {application.opportunity?.brand?.company_name || "Unknown Brand"}
+              </p>
+              <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                {application.opportunity?.title || "Untitled Opportunity"}
+              </h3>
+            </div>
+
+            {application.cover_letter && (
+              <p className="text-sm text-white/80 line-clamp-2">
+                {application.cover_letter}
+              </p>
+            )}
+
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleViewDetails();
+                }}
+                className="bg-white/90 hover:bg-white text-gray-900"
+              >
+                View Details
+              </Button>
             </div>
           </div>
         </div>
@@ -109,7 +104,7 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
           onClose={() => setShowModal(false)}
           application={application}
           type={type}
-          onUpdateStatus={handleUpdateStatus}
+          onUpdateStatus={onUpdateStatus}
         />
       )}
     </>
