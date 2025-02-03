@@ -14,13 +14,14 @@ interface ChatHeaderProps {
   onMobileBack?: () => void;
 }
 
-interface ProfileWithBrands {
+interface ProfileData {
   id: string;
   display_name: string;
-  brands: {
+  user_id: string;
+  brand?: {
     id: string;
-    company_name: string;
-  }[] | null;
+    company_name: string | null;
+  } | null;
 }
 
 const ChatHeader = ({
@@ -33,40 +34,47 @@ const ChatHeader = ({
   const hasSelectedChat = Boolean(senderUserId);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
-  const { data: profileData } = useQuery<ProfileWithBrands>({
+  const { data: profileData } = useQuery<ProfileData>({
     queryKey: ['profile-for-chat', senderUserId],
     queryFn: async () => {
       if (!senderUserId) {
         return {
           id: '',
           display_name: '',
-          brands: null
+          user_id: '',
+          brand: null
         };
       }
 
-      const { data, error } = await supabase
+      // First try to get brand information
+      const { data: brandData, error: brandError } = await supabase
+        .from('brands')
+        .select('id, company_name')
+        .eq('user_id', senderUserId)
+        .single();
+
+      // Then get profile information
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          display_name,
-          brands (
-            id,
-            company_name
-          )
-        `)
+        .select('id, display_name')
         .eq('id', senderUserId)
         .single();
 
-      if (error) {
-        console.error('Error fetching profile:', error);
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
         return {
           id: '',
           display_name: '',
-          brands: null
+          user_id: senderUserId,
+          brand: null
         };
       }
 
-      return data;
+      return {
+        ...profile,
+        user_id: senderUserId,
+        brand: brandData || null
+      };
     },
     enabled: Boolean(senderUserId),
   });
@@ -107,7 +115,7 @@ const ChatHeader = ({
   });
 
   const displayName = hasSelectedChat 
-    ? profileData?.brands?.[0]?.company_name || creatorData?.display_name || senderDisplayName || "Unknown User"
+    ? profileData?.brand?.company_name || creatorData?.display_name || senderDisplayName || "Unknown User"
     : "Select a conversation";
 
   return (
