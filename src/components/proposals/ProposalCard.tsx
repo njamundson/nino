@@ -30,6 +30,9 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
     onUpdateStatus(application.id, status);
   };
 
+  // Get the brand name from the opportunity's brand
+  const brandName = application.opportunity?.brand?.company_name;
+
   return (
     <>
       <Card 
@@ -73,10 +76,10 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
           <div className="flex flex-col gap-4">
             <div>
               <p className="text-sm text-white/90 mb-1">
-                {application.opportunity?.brand?.company_name || "Unknown Brand"}
+                {brandName || ""}
               </p>
               <h3 className="text-xl font-semibold mb-2 line-clamp-2">
-                {application.opportunity?.title || "Untitled Opportunity"}
+                {application.opportunity?.title || ""}
               </h3>
             </div>
 
