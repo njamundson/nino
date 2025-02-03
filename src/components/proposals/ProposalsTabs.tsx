@@ -61,10 +61,10 @@ const ProposalsTabs = ({
     return isPendingInvitation;
   });
 
-  // Filter for active applications (show all applications with a cover letter)
+  // Filter for active applications (show all applications that have been submitted)
   const activeApplications = myApplications.filter(app => {
     const isActiveApplication = app.cover_letter !== null;
-    console.log('Checking application:', app.id, 'isActiveApplication:', isActiveApplication, 'cover_letter:', app.cover_letter);
+    console.log('Checking application:', app.id, 'isActiveApplication:', isActiveApplication, 'cover_letter:', app.cover_letter, 'status:', app.status);
     return isActiveApplication;
   });
 
