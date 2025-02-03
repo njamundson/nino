@@ -1,110 +1,111 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { ChatListHeader } from "./chat-list/ChatListHeader";
-import { ChatListItem } from "./chat-list/ChatListItem";
-import CreatorSelectionModal from "./chat-list/CreatorSelectionModal";
-import { useChatList } from "@/hooks/messages/useChatList";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { MessageSquare } from "lucide-react";
+import { useState } from 'react';
+import { ChatListHeader } from './chat-list/ChatListHeader';
+import { ChatListItem } from './chat-list/ChatListItem';
+import { EmptyState } from './chat-list/EmptyState';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ChatListProps {
-  onSelectChat: (userId: string, displayName: string, profileImage: string | null) => void;
   selectedUserId?: string;
+  onSelectChat: (userId: string) => void;
+  onNewChat?: (userId: string, displayName: string, profileImage: string | null) => void;
+  isCreator?: boolean;
 }
 
-const ChatList = ({ onSelectChat, selectedUserId }: ChatListProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const { toast } = useToast();
+const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }: ChatListProps) => {
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const getUser = async () => {
+  const { data: chats, isLoading } = useQuery({
+    queryKey: ['chats'],
+    queryFn: async () => {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error) throw error;
-        setCurrentUser(user);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return [];
+
+        const { data: messages, error } = await supabase
+          .from('messages')
+          .select(`
+            *,
+            sender:profiles!messages_sender_id_fkey(
+              id,
+              display_name
+            ),
+            receiver:profiles!messages_receiver_id_fkey(
+              id,
+              display_name
+            )
+          `)
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching messages:', error);
+          return [];
+        }
+
+        // Group messages by chat participant
+        const chatsByUser = messages.reduce((acc: any, message: any) => {
+          const otherUserId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
+          const otherUser = message.sender_id === user.id ? message.receiver : message.sender;
+          
+          if (!acc[otherUserId]) {
+            acc[otherUserId] = {
+              userId: otherUserId,
+              displayName: otherUser?.display_name || 'Unknown User',
+              lastMessage: message,
+              unreadCount: message.sender_id !== user.id && !message.read ? 1 : 0
+            };
+          } else if (message.created_at > acc[otherUserId].lastMessage.created_at) {
+            acc[otherUserId].lastMessage = message;
+            if (message.sender_id !== user.id && !message.read) {
+              acc[otherUserId].unreadCount++;
+            }
+          }
+          return acc;
+        }, {});
+
+        return Object.values(chatsByUser);
       } catch (error) {
-        console.error('Error fetching user:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load user data",
-          variant: "destructive",
-        });
+        console.error('Error in chat query:', error);
+        return [];
       }
-    };
-    getUser();
-  }, [toast]);
-
-  const { chats, isLoading } = useChatList(currentUser?.id);
-
-  const filteredChats = chats?.filter((chat) => {
-    if (!chat?.otherUser?.display_name) return false;
-    return chat.otherUser.display_name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    }
   });
 
-  if (isLoading) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (!chats || chats.length === 0) {
-    return (
-      <div className="h-full flex flex-col">
-        <ChatListHeader 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onNewChat={() => setIsModalOpen(true)}
-        />
-        <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-4">
-          <div className="rounded-full bg-gray-100 p-3">
-            <MessageSquare className="w-6 h-6 text-gray-400" />
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-medium">No messages yet</h3>
-            <p className="text-sm text-gray-500">
-              Start a conversation with a creator
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const filteredChats = chats?.filter(chat => 
+    chat.displayName.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full border-r">
       <ChatListHeader 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onNewChat={() => setIsModalOpen(true)}
+        onNewChat={onNewChat}
+        isCreator={isCreator}
       />
-      <div className="flex-1 overflow-y-auto">
-        {filteredChats?.map((chat) => (
-          <ChatListItem
-            key={chat.otherUser.id}
-            chat={chat}
-            isSelected={selectedUserId === chat.otherUser.id}
-            currentUserId={currentUser?.id}
-            onSelect={() => onSelectChat(
-              chat.otherUser.id,
-              chat.otherUser.display_name,
-              chat.otherUser.profileImage
-            )}
-          />
-        ))}
-      </div>
-
-      <CreatorSelectionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSelect={onSelectChat}
-      />
+      
+      <ScrollArea className="flex-1">
+        <div className="px-3">
+          {!isLoading && filteredChats.length === 0 && (
+            <EmptyState searchQuery={searchQuery} />
+          )}
+          
+          {filteredChats.map((chat: any) => (
+            <ChatListItem
+              key={chat.userId}
+              userId={chat.userId}
+              displayName={chat.displayName}
+              lastMessage={chat.lastMessage.content}
+              timestamp={chat.lastMessage.created_at}
+              unreadCount={chat.unreadCount}
+              isSelected={selectedUserId === chat.userId}
+              onClick={() => onSelectChat(chat.userId)}
+            />
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 };
