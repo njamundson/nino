@@ -29,20 +29,20 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Dashboard Overview</h1>
+      <h1 className="text-2xl font-semibold text-[#282828]">Dashboard Overview</h1>
       
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
-            <Card key={card.name} className="p-6">
+            <Card key={card.name} className="p-6 bg-[#FFFFFF] border-[#737373]/10">
               <div className="flex items-center">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Icon className="h-6 w-6 text-primary" />
+                <div className="p-2 bg-[#A55549]/10 rounded-lg">
+                  <Icon className="h-6 w-6 text-[#A55549]" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">{card.name}</p>
-                  <p className="text-2xl font-semibold">{card.value}</p>
+                  <p className="text-sm font-medium text-[#737373]">{card.name}</p>
+                  <p className="text-2xl font-semibold text-[#282828]">{card.value}</p>
                 </div>
               </div>
             </Card>
