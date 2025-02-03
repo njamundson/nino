@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import CreatorSettings from "@/components/settings/creator/CreatorSettings";
+import { CreatorSettings } from "@/components/settings/creator/CreatorSettings";
 import BrandSettings from "@/components/settings/brand/pages/BrandProfileSettings";
 import { useToast } from "@/hooks/use-toast";
-import LoadingSpinner from "@/components/ui/loading-spinner";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const Settings = () => {
   const [userType, setUserType] = useState<"brand" | "creator" | null>(null);
