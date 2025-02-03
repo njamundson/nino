@@ -7,12 +7,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/integrations/supabase/types/opportunity";
 import { useState } from "react";
 import ProjectModal from "./ProjectModal";
+import { motion, AnimatePresence } from "framer-motion";
 
 const CompletedProjectsList = () => {
   const { toast } = useToast();
   const [selectedProject, setSelectedProject] = useState<Opportunity | null>(null);
   
-  const { data: projects = [], isLoading, error } = useQuery({
+  const { data: projects = [], isLoading } = useQuery({
     queryKey: ['completed-projects-list'],
     queryFn: async () => {
       try {
@@ -20,18 +21,19 @@ const CompletedProjectsList = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
-        const { data: creator } = await supabase
-          .from('creators')
+        // First get the brand ID for the current user
+        const { data: brand } = await supabase
+          .from('brands')
           .select('id')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (!creator) {
-          console.log("No creator profile found");
+        if (!brand) {
+          console.log("No brand profile found");
           return [];
         }
 
-        // Get all opportunities where the creator has an accepted application
+        // Get all opportunities that are completed and belong to this brand
         const { data: opportunities, error: oppsError } = await supabase
           .from('opportunities')
           .select(`
@@ -47,25 +49,16 @@ const CompletedProjectsList = () => {
               user_id,
               phone_number,
               support_email,
-              profile_image_url,
-              sms_notifications_enabled,
-              two_factor_enabled,
-              created_at,
-              updated_at
+              profile_image_url
             ),
             applications!inner (
               id,
               status,
-              opportunity_id,
-              creator_id,
-              cover_letter,
-              created_at,
-              updated_at,
-              initiated_by
+              creator:creators (*)
             )
           `)
+          .eq('brand_id', brand.id)
           .eq('status', 'completed')
-          .eq('applications.creator_id', creator.id)
           .eq('applications.status', 'accepted');
 
         if (oppsError) {
@@ -84,15 +77,6 @@ const CompletedProjectsList = () => {
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  if (error) {
-    toast({
-      title: "Error",
-      description: "Could not fetch completed projects",
-      variant: "destructive",
-    });
-    return null;
-  }
-
   if (isLoading) {
     return (
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -105,42 +89,53 @@ const CompletedProjectsList = () => {
 
   if (!Array.isArray(projects) || projects.length === 0) {
     return (
-      <Card className="p-12">
-        <div className="text-center space-y-4">
-          <Archive className="w-12 h-12 mx-auto text-gray-400" />
-          <h3 className="text-lg font-medium text-gray-900">
-            No completed projects yet
-          </h3>
-          <p className="text-gray-500">
-            When you complete projects with brands, they will appear here.
-          </p>
+      <Card className="p-12 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm">
+        <div className="flex flex-col items-center justify-center text-center space-y-4">
+          <div className="rounded-full bg-gray-100 p-4">
+            <Archive className="h-8 w-8 text-gray-400" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-medium text-gray-900">
+              No completed projects yet
+            </h3>
+            <p className="text-sm text-gray-500">
+              When you complete projects with brands, they will appear here.
+            </p>
+          </div>
         </div>
       </Card>
     );
   }
 
   return (
-    <>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <ProjectCard 
-            key={project.id} 
-            opportunity={project}
-            isCompleted={true}
-            onViewDetails={() => setSelectedProject(project)}
-          />
-        ))}
-      </div>
+    <AnimatePresence mode="wait">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => (
+            <ProjectCard 
+              key={project.id} 
+              opportunity={project}
+              isCompleted={true}
+              onViewDetails={() => setSelectedProject(project)}
+            />
+          ))}
+        </div>
 
-      {selectedProject && (
-        <ProjectModal
-          isOpen={!!selectedProject}
-          onClose={() => setSelectedProject(null)}
-          opportunity={selectedProject}
-          isCompleted={true}
-        />
-      )}
-    </>
+        {selectedProject && (
+          <ProjectModal
+            isOpen={!!selectedProject}
+            onClose={() => setSelectedProject(null)}
+            opportunity={selectedProject}
+            isCompleted={true}
+          />
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
