@@ -66,7 +66,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         .eq('user_id', data.user.id)
         .maybeSingle();
 
-      if (creatorError && creatorError.code !== 'PGRST116') {
+      if (creatorError) {
         console.error('Error fetching creator profile:', creatorError);
         throw creatorError;
       }
@@ -78,7 +78,7 @@ const SignIn = ({ onToggleAuth }: SignInProps) => {
         .eq('user_id', data.user.id)
         .maybeSingle();
 
-      if (brandError && brandError.code !== 'PGRST116') {
+      if (brandError) {
         console.error('Error fetching brand profile:', brandError);
         throw brandError;
       }

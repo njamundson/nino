@@ -50,10 +50,7 @@ export const useApplications = (brandId?: string) => {
         .from('applications')
         .select(`
           *,
-          opportunity:opportunities(
-            *,
-            brand:brands(*)
-          ),
+          opportunity:opportunities(*),
           creator:creators(*)
         `)
         .eq('opportunity.brand_id', brandId)
@@ -92,10 +89,7 @@ export const useApplications = (brandId?: string) => {
       .from('applications')
       .select(`
         *,
-        opportunity:opportunities(
-          *,
-          brand:brands(*)
-        ),
+        opportunity:opportunities(*),
         creator:creators(*)
       `)
       .eq('creator_id', creator.id)
