@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 
 // Optimized static components with explicit display names
 const StaticSidebar = memo(() => <Sidebar />, () => true);
@@ -10,6 +11,20 @@ StaticSidebar.displayName = 'StaticSidebar';
 
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
+
+// Page transition wrapper component
+const PageTransition = ({ children }: { children: React.ReactNode }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ 
+      duration: 0.3,
+      ease: [0.23, 1, 0.32, 1]
+    }}
+  >
+    {children}
+  </motion.div>
+);
 
 const CreatorLayout = () => {
   const isMobile = useIsMobile();
@@ -27,7 +42,9 @@ const CreatorLayout = () => {
         </div>
 
         <main className="p-4 pt-28 md:p-8 md:pt-32">
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </main>
       </div>
     </div>
