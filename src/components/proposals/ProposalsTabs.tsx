@@ -50,7 +50,7 @@ const ProposalsTabs = ({
     };
   }, [queryClient]);
 
-  // Filter for pending invitations from brands (no cover letter yet)
+  // Filter for pending invitations (only show brand invitations that haven't been responded to)
   const pendingInvitations = pendingProposals.filter(app => {
     const isPendingInvitation = 
       app.initiated_by === 'brand' && 
@@ -61,13 +61,10 @@ const ProposalsTabs = ({
     return isPendingInvitation;
   });
 
-  // Filter for all submitted applications (both direct and responses to invitations)
+  // Filter for active applications (show all applications with a cover letter)
   const activeApplications = myApplications.filter(app => {
-    const isActiveApplication = 
-      app.cover_letter && 
-      app.status === 'pending';
-    
-    console.log('Checking application:', app.id, 'isActiveApplication:', isActiveApplication);
+    const isActiveApplication = app.cover_letter !== null;
+    console.log('Checking application:', app.id, 'isActiveApplication:', isActiveApplication, 'cover_letter:', app.cover_letter);
     return isActiveApplication;
   });
 
