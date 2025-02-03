@@ -31,24 +31,48 @@ export const useBrandSettings = () => {
 
   const updateBrandSettings = useMutation({
     mutationFn: async (formData: FormData) => {
-      const updatedData = {
-        brand_type: String(formData.get("brand_type") || ""),
-        company_name: String(formData.get("company_name") || ""),
-        description: String(formData.get("description") || ""),
-        website: String(formData.get("website") || ""),
-        instagram: String(formData.get("instagram") || ""),
-        location: String(formData.get("location") || ""),
-        phone_number: String(formData.get("phone_number") || ""),
-        support_email: String(formData.get("support_email") || ""),
-      };
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase
-        .from("brands")
-        .update(updatedData)
-        .eq("user_id", (await supabase.auth.getUser()).data.user?.id);
+        const { data: brand, error: brandError } = await supabase
+          .from("brands")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (error) throw error;
-      return updatedData;
+        if (brandError) throw brandError;
+        if (!brand) {
+          toast({
+            title: "Error",
+            description: "Brand profile not found",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const updatedData = {
+          brand_type: String(formData.get("brand_type") || ""),
+          company_name: String(formData.get("company_name") || ""),
+          description: String(formData.get("description") || ""),
+          website: String(formData.get("website") || ""),
+          instagram: String(formData.get("instagram") || ""),
+          location: String(formData.get("location") || ""),
+          phone_number: String(formData.get("phone_number") || ""),
+          support_email: String(formData.get("support_email") || ""),
+        };
+
+        const { error } = await supabase
+          .from("brands")
+          .update(updatedData)
+          .eq("id", brand.id);
+
+        if (error) throw error;
+        return updatedData;
+      } catch (error) {
+        console.error("Error updating brand settings:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["brandSettings"] });

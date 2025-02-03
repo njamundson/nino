@@ -22,25 +22,31 @@ const LocationField = ({ location, onUpdateField, required = false, disabled = f
       const [country, region] = location.split(", ");
       setSelectedCountry(country || "");
       setSelectedRegion(region || "");
-    }
-  }, [location]);
 
-  useEffect(() => {
-    if (selectedCountry) {
-      // Check if country has states or cities
-      if (STATES_BY_COUNTRY[selectedCountry]) {
-        setAvailableRegions(STATES_BY_COUNTRY[selectedCountry]);
-      } else if (COUNTRIES_WITH_CITIES.includes(selectedCountry)) {
-        setAvailableRegions(CITIES_BY_COUNTRY[selectedCountry] || []);
-      } else {
-        setAvailableRegions([]);
+      // Update available regions based on country
+      if (country) {
+        if (STATES_BY_COUNTRY[country]) {
+          setAvailableRegions(STATES_BY_COUNTRY[country]);
+        } else if (COUNTRIES_WITH_CITIES.includes(country)) {
+          setAvailableRegions(CITIES_BY_COUNTRY[country] || []);
+        }
       }
     }
-  }, [selectedCountry]);
+  }, [location]);
 
   const handleCountryChange = (value: string) => {
     setSelectedCountry(value);
     setSelectedRegion("");
+    
+    // Update available regions
+    if (STATES_BY_COUNTRY[value]) {
+      setAvailableRegions(STATES_BY_COUNTRY[value]);
+    } else if (COUNTRIES_WITH_CITIES.includes(value)) {
+      setAvailableRegions(CITIES_BY_COUNTRY[value] || []);
+    } else {
+      setAvailableRegions([]);
+    }
+    
     onUpdateField("location", value);
   };
 
