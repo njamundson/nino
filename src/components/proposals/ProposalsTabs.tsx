@@ -37,7 +37,7 @@ const ProposalsTabs = ({
         },
         (payload) => {
           console.log('Application change detected:', payload);
-          // Refetch applications data when changes occur
+          // Refetch both queries to ensure all tabs are updated
           queryClient.invalidateQueries({ queryKey: ['applications'] });
           queryClient.invalidateQueries({ queryKey: ['my-applications'] });
         }
@@ -50,21 +50,30 @@ const ProposalsTabs = ({
     };
   }, [queryClient]);
 
-  // Filter for brand invitations that haven't been responded to yet
-  const pendingInvitations = pendingProposals.filter(app => 
-    app.initiated_by === 'brand' && 
-    !app.cover_letter &&
-    app.status === 'pending'
-  );
-  
-  // Filter for all submitted applications (includes both direct applications and responded invitations)
-  const activeApplications = myApplications.filter(app => 
-    app.cover_letter !== null && 
-    app.status === 'pending'
-  );
+  // Filter for pending invitations from brands (no cover letter yet)
+  const pendingInvitations = pendingProposals.filter(app => {
+    const isPendingInvitation = 
+      app.initiated_by === 'brand' && 
+      !app.cover_letter &&
+      app.status === 'pending';
+    
+    console.log('Checking invitation:', app.id, 'isPendingInvitation:', isPendingInvitation);
+    return isPendingInvitation;
+  });
 
-  console.log('Pending Invitations:', pendingInvitations);
-  console.log('Active Applications:', activeApplications);
+  // Filter for all submitted applications (both direct and responses to invitations)
+  const activeApplications = myApplications.filter(app => {
+    const isActiveApplication = 
+      app.cover_letter && 
+      app.status === 'pending';
+    
+    console.log('Checking application:', app.id, 'isActiveApplication:', isActiveApplication);
+    return isActiveApplication;
+  });
+
+  console.log('All applications:', myApplications);
+  console.log('Filtered - Pending Invitations:', pendingInvitations);
+  console.log('Filtered - Active Applications:', activeApplications);
 
   return (
     <Tabs defaultValue="invitations" className="w-full">
