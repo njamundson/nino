@@ -39,12 +39,13 @@ const ViewApplicationModal = ({
 
       if (error) throw error;
 
-      onClose();
+      // Invalidate both queries to ensure proper UI updates
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['applications'] }),
         queryClient.invalidateQueries({ queryKey: ['my-applications'] })
       ]);
-      
+
+      onClose();
       toast.success("Invitation declined");
     } catch (error) {
       console.error('Error declining invitation:', error);
@@ -65,12 +66,13 @@ const ViewApplicationModal = ({
 
       if (error) throw error;
 
-      onClose();
+      // Invalidate both queries to ensure proper UI updates
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['applications'] }),
         queryClient.invalidateQueries({ queryKey: ['my-applications'] })
       ]);
-      
+
+      onClose();
       toast.success("Application deleted successfully");
     } catch (error) {
       console.error('Error deleting application:', error);
@@ -83,11 +85,14 @@ const ViewApplicationModal = ({
   const handleApplicationSubmit = async () => {
     try {
       onClose();
+      
+      // Invalidate both queries to trigger UI updates
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['applications'] }),
         queryClient.invalidateQueries({ queryKey: ['my-applications'] }),
         queryClient.invalidateQueries({ queryKey: ['opportunities'] })
       ]);
+
       toast.success("Application submitted successfully");
     } catch (error) {
       console.error('Error handling application submit:', error);
@@ -105,6 +110,7 @@ const ViewApplicationModal = ({
             onBack={() => setShowApplicationForm(false)}
             onClose={handleApplicationSubmit}
             onModalClose={handleApplicationSubmit}
+            isInvitation={true}
           />
         </DialogContent>
       </Dialog>
