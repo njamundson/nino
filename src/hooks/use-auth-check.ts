@@ -43,7 +43,7 @@ export const useAuthCheck = () => {
           .from('brands')
           .select('id')
           .eq('user_id', sessionData.session.user.id)
-          .maybeSingle();
+          .maybeSingle(); // Changed from single() to maybeSingle()
 
         if (brandError) {
           console.error("Error checking brand profile:", brandError);
