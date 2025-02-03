@@ -155,14 +155,6 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCa
           <MessageSquare className="w-4 h-4" />
           Message Brand
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onViewCreator}
-          className="border-gray-200 hover:bg-gray-50"
-        >
-          View Details
-        </Button>
       </div>
     </Card>
   );
