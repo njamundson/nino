@@ -58,26 +58,26 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
 
   return (
     <>
-      <Card className="group relative overflow-hidden rounded-3xl border-0 cursor-pointer h-[280px] mb-6">
+      <Card className="group relative overflow-hidden rounded-xl border border-gray-100 shadow-sm cursor-pointer h-[260px] transition-all duration-300 hover:shadow-md">
         <div className="relative h-full w-full">
           <img
             src={application.opportunity?.image_url || "/placeholder.svg"}
             alt={application.opportunity?.title || "Project image"}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
           
-          <div className="absolute top-4 right-4 z-10">
+          <div className="absolute top-3 right-3 z-10">
             <ProposalStatusBadge status={displayStatus} />
           </div>
           
           <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               <div>
                 <p className="text-sm text-white/90 mb-1">
                   {application.opportunity?.brand?.company_name || "Unknown Brand"}
                 </p>
-                <h3 className="text-lg font-semibold mb-2 line-clamp-2">
+                <h3 className="text-base font-semibold mb-2 line-clamp-2">
                   {application.opportunity?.title || "Untitled Opportunity"}
                 </h3>
               </div>
@@ -88,12 +88,12 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
                 </p>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex gap-2 mt-1">
                 <Button
                   variant="secondary"
                   size="sm"
                   onClick={handleViewDetails}
-                  className="bg-white/90 hover:bg-white text-gray-900"
+                  className="bg-white/90 hover:bg-white text-gray-900 text-sm"
                 >
                   View Details
                 </Button>

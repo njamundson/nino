@@ -24,12 +24,11 @@ const ProposalsList = ({
   const rowVirtualizer = useVirtualizer({
     count: applications.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 200,
+    estimateSize: () => 280,
     overscan: 5,
   });
 
   useEffect(() => {
-    // Handle any virtualization errors
     if (!parentRef.current) {
       console.error('Parent ref not found for virtualization');
       toast({
@@ -56,6 +55,7 @@ const ProposalsList = ({
     <AnimatePresence mode="wait">
       <motion.div 
         ref={parentRef}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"
         style={{
           height: `600px`,
           overflow: 'auto',
@@ -64,47 +64,24 @@ const ProposalsList = ({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
       >
-        <div
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            width: '100%',
-            position: 'relative',
-          }}
-        >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-            const application = applications[virtualRow.index];
-            return (
-              <div
-                key={virtualRow.index}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.4,
-                    delay: virtualRow.index * 0.1,
-                    ease: [0.23, 1, 0.32, 1]
-                  }}
-                  className="mb-6"
-                >
-                  <ProposalCard
-                    application={application}
-                    type={type}
-                    onUpdateStatus={onUpdateStatus}
-                  />
-                </motion.div>
-              </div>
-            );
-          })}
-        </div>
+        {applications.map((application, index) => (
+          <motion.div
+            key={application.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: index * 0.1,
+              ease: [0.23, 1, 0.32, 1]
+            }}
+          >
+            <ProposalCard
+              application={application}
+              type={type}
+              onUpdateStatus={onUpdateStatus}
+            />
+          </motion.div>
+        ))}
       </motion.div>
     </AnimatePresence>
   );
