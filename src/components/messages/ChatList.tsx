@@ -39,11 +39,11 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
           .from('messages')
           .select(`
             *,
-            sender:profiles!messages_sender_id_fkey(
+            sender:profiles!messages_sender_profile_id_fkey(
               id,
               display_name
             ),
-            receiver:profiles!messages_receiver_id_fkey(
+            receiver:profiles!messages_receiver_profile_id_fkey(
               id,
               display_name
             )
