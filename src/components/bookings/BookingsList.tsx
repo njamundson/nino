@@ -53,7 +53,7 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
           throw error;
         }
 
-        console.log('Fetched bookings:', data); // Debug log
+        console.log('Fetched bookings:', data);
         return data || [];
       } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -72,6 +72,10 @@ const BookingsList = ({ onChatClick, onViewCreator }: BookingsListProps) => {
       if (error) throw error;
 
       refetch();
+      toast({
+        title: "Booking cancelled",
+        description: "The booking has been cancelled successfully.",
+      });
     } catch (error) {
       console.error('Error cancelling booking:', error);
       toast({
