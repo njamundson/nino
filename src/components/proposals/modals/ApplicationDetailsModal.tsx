@@ -27,7 +27,7 @@ interface ApplicationDetailsModalProps {
 
 const ApplicationDetailsModal = ({ isOpen, onClose, application }: ApplicationDetailsModalProps) => {
   // Add null checks and default values
-  const brandName = application.opportunity?.brand?.company_name || "Anonymous Brand";
+  const brandName = application.opportunity?.brand?.company_name || "Unnamed Brand";
   const brandLocation = application.opportunity?.brand?.location;
   const title = application.opportunity?.title || "Untitled Opportunity";
 
