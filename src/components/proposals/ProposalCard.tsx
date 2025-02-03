@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/integrations/supabase/types/application";
 import ViewApplicationModal from "./modals/ViewApplicationModal";
 import { useState } from "react";
 import { ProposalStatusBadge } from "./ProposalStatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface ProposalCardProps {
   application: Application;
@@ -59,7 +58,7 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
 
   return (
     <>
-      <Card className="group relative overflow-hidden rounded-3xl border-0 cursor-pointer h-[400px]">
+      <Card className="group relative overflow-hidden rounded-3xl border-0 cursor-pointer h-[280px] mb-6">
         <div className="relative h-full w-full">
           <img
             src={application.opportunity?.image_url || "/placeholder.svg"}
@@ -72,13 +71,13 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
             <ProposalStatusBadge status={displayStatus} />
           </div>
           
-          <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-            <div className="flex flex-col gap-4">
+          <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+            <div className="flex flex-col gap-3">
               <div>
                 <p className="text-sm text-white/90 mb-1">
                   {application.opportunity?.brand?.company_name || "Unknown Brand"}
                 </p>
-                <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                <h3 className="text-lg font-semibold mb-2 line-clamp-2">
                   {application.opportunity?.title || "Untitled Opportunity"}
                 </h3>
               </div>
