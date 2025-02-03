@@ -7,6 +7,8 @@ interface Campaign {
   id: string;
   title: string;
   description: string | null;
+  status: string;
+  end_date: string | null;
 }
 
 interface CampaignSelectionProps {
@@ -22,6 +24,24 @@ const CampaignSelection = ({ campaigns, onBack, onSelect, isLoading = false }: C
   const handleCreateCampaign = () => {
     navigate('/brand/campaigns/new');
   };
+
+  // Filter to only show active campaigns
+  const activeCampaigns = campaigns?.filter(campaign => {
+    // Check if campaign is open or active
+    if (campaign.status !== 'open' && campaign.status !== 'active') {
+      return false;
+    }
+
+    // Check if campaign has not ended
+    if (campaign.end_date) {
+      const endDate = new Date(campaign.end_date);
+      if (endDate < new Date()) {
+        return false;
+      }
+    }
+
+    return true;
+  });
 
   return (
     <div className="max-h-[70vh] overflow-y-auto">
@@ -40,9 +60,9 @@ const CampaignSelection = ({ campaigns, onBack, onSelect, isLoading = false }: C
       <div className="p-6 space-y-4">
         <h3 className="text-xl font-semibold text-nino-text">Select Campaign</h3>
         
-        {campaigns && campaigns.length > 0 ? (
+        {activeCampaigns && activeCampaigns.length > 0 ? (
           <div className="space-y-4">
-            {campaigns.map((campaign) => (
+            {activeCampaigns.map((campaign) => (
               <div
                 key={campaign.id}
                 className={`p-4 border-2 border-white bg-white/50 rounded-xl transition-all duration-300 ${
