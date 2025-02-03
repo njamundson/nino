@@ -59,15 +59,23 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCa
 
   const handleMessageClick = () => {
     if (!opportunity.brand?.user_id) {
-      toast({
-        title: "Error",
-        description: "Could not find brand information to start chat.",
-        variant: "destructive",
-      });
+      // Query the brand's user_id from the brands table using the brand_id
+      const brandId = opportunity.brand?.id;
+      if (!brandId) {
+        toast({
+          title: "Error",
+          description: "Could not find brand information to start chat.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Navigate to messages with brand's ID as a query parameter
+      navigate(`/messages?brandId=${brandId}`);
       return;
     }
 
-    // Navigate to messages with brand's user ID as a query parameter
+    // If we have the user_id, use it directly
     navigate(`/messages?userId=${opportunity.brand.user_id}`);
   };
 
