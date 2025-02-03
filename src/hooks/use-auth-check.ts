@@ -37,7 +37,6 @@ export const useAuthCheck = () => {
           return false;
         }
 
-        // Use maybeSingle() instead of single()
         const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
@@ -69,6 +68,11 @@ export const useAuthCheck = () => {
         if (mounted) {
           setIsLoading(false);
           setHasAccess(false);
+          toast({
+            title: "Authentication Error",
+            description: "Please try signing in again.",
+            variant: "destructive",
+          });
         }
         return false;
       }
@@ -92,7 +96,7 @@ export const useAuthCheck = () => {
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         const hasAccess = await checkBrandAccess();
-        if (!hasAccess) {
+        if (!hasAccess && mounted) {
           toast({
             title: "Access denied",
             description: "You need a brand profile to access this area.",
