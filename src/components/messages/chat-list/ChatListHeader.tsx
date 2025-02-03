@@ -1,28 +1,25 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import CreatorSelectionModal from "../CreatorSelectionModal";
 
 interface ChatListHeaderProps {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  onNewChat?: (userId: string, displayName: string, profileImage: string | null) => void;
+  onSearch?: (query: string) => void;
+  onNewChat?: (creatorId: string) => void;
   isCreator?: boolean;
 }
 
-export const ChatListHeader = ({ 
-  searchQuery, 
-  setSearchQuery,
-  onNewChat,
-  isCreator = false
-}: ChatListHeaderProps) => {
+const ChatListHeader = ({ onSearch, onNewChat, isCreator }: ChatListHeaderProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCreatorSelect = (userId: string, displayName: string, profileImage: string | null) => {
-    if (onNewChat) {
-      onNewChat(userId, displayName, profileImage);
-    }
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
+    onSearch?.(value);
+  };
+
+  const handleCreatorSelect = (creatorId: string) => {
+    onNewChat?.(creatorId);
     setIsModalOpen(false);
   };
 
@@ -34,11 +31,20 @@ export const ChatListHeader = ({
           <Input
             placeholder="Search messages..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="pl-9 w-full h-9 rounded-full bg-gray-50/80 border-gray-200 text-sm placeholder:text-gray-400 focus:ring-1 focus:ring-gray-200 focus:border-gray-300 transition-all duration-200"
           />
         </div>
+        {!isCreator && onNewChat && (
+          <CreatorSelectionModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSelect={handleCreatorSelect}
+          />
+        )}
       </div>
     </div>
   );
 };
+
+export default ChatListHeader;
