@@ -25,6 +25,11 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
     setShowModal(true);
   };
 
+  // Create a wrapper function to match the expected signature
+  const handleUpdateStatus = async (status: 'accepted' | 'rejected') => {
+    onUpdateStatus(application.id, status);
+  };
+
   return (
     <>
       <Card 
@@ -104,7 +109,7 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
           onClose={() => setShowModal(false)}
           application={application}
           type={type}
-          onUpdateStatus={onUpdateStatus}
+          onUpdateStatus={handleUpdateStatus}
         />
       )}
     </>
