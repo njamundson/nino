@@ -24,6 +24,34 @@ const ChatHeader = ({
   const hasSelectedChat = Boolean(senderUserId);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
+  const { data: profileData } = useQuery({
+    queryKey: ['profile-for-chat', senderUserId],
+    queryFn: async () => {
+      if (!senderUserId) return null;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          display_name,
+          brands(
+            id,
+            company_name
+          )
+        `)
+        .eq('id', senderUserId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+
+      return data;
+    },
+    enabled: Boolean(senderUserId),
+  });
+
   const { data: creatorData } = useQuery({
     queryKey: ['creator-for-chat', senderUserId],
     queryFn: async () => {
@@ -60,9 +88,7 @@ const ChatHeader = ({
   });
 
   const displayName = hasSelectedChat 
-    ? creatorData 
-      ? creatorData.display_name
-      : senderDisplayName
+    ? profileData?.brands?.[0]?.company_name || creatorData?.display_name || senderDisplayName || "Unknown User"
     : "Select a conversation";
 
   return (
