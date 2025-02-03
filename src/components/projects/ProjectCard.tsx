@@ -6,8 +6,6 @@ import ProjectModal from "./ProjectModal";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/integrations/supabase/types/opportunity";
 import ProjectBadges from "./card/ProjectBadges";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2 } from "lucide-react";
 
 interface ProjectCardProps {
   opportunity: Opportunity & { current_creator_id?: string };
@@ -23,7 +21,7 @@ const ProjectCard = ({ opportunity, isCompleted = false, onViewDetails }: Projec
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleViewDetails = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click event
+    e.stopPropagation(); // Prevent double triggering when clicking the button
     if (onViewDetails) {
       onViewDetails();
     } else {
@@ -35,6 +33,7 @@ const ProjectCard = ({ opportunity, isCompleted = false, onViewDetails }: Projec
     <>
       <Card 
         className="group relative overflow-hidden rounded-3xl border-0 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-[400px]"
+        onClick={handleViewDetails}
       >
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-100 animate-pulse" />
