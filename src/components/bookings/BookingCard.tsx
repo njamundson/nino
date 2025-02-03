@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface BookingCardProps {
   creator: Creator;
@@ -29,6 +30,8 @@ interface BookingCardProps {
     compensation_details: string | null;
     brand?: {
       company_name: string | null;
+      id?: string;
+      user_id?: string;
     } | null;
   } | null;
   onMessageClick: () => void;
@@ -38,6 +41,7 @@ interface BookingCardProps {
 
 const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCancel }: BookingCardProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   if (!opportunity) {
     return null;
@@ -51,6 +55,20 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCa
         description: "The brand has been notified of this cancellation.",
       });
     }
+  };
+
+  const handleMessageClick = () => {
+    if (!opportunity.brand?.user_id) {
+      toast({
+        title: "Error",
+        description: "Could not find brand information to start chat.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Navigate to messages with brand's user ID as a query parameter
+    navigate(`/messages?userId=${opportunity.brand.user_id}`);
   };
 
   return (
@@ -149,7 +167,7 @@ const BookingCard = ({ creator, opportunity, onMessageClick, onViewCreator, onCa
         <Button
           variant="default"
           size="sm"
-          onClick={onMessageClick}
+          onClick={handleMessageClick}
           className="bg-nino-primary hover:bg-nino-primary/90 text-white flex items-center gap-2"
         >
           <MessageSquare className="w-4 h-4" />
