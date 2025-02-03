@@ -43,9 +43,11 @@ const Applications = () => {
   }
 
   // Filter for applications that have a cover letter (meaning the creator has actually applied)
-  // and ensure initiated_by is properly typed
+  // and ensure initiated_by is properly typed, and most importantly - only show pending applications
   const userApplications = (applications || []).filter(app => 
-    app.cover_letter && (app.initiated_by === 'creator' || app.initiated_by === 'brand')
+    app.cover_letter && 
+    (app.initiated_by === 'creator' || app.initiated_by === 'brand') &&
+    app.status === 'pending' // Only show pending applications
   );
 
   if (isLoading) {
