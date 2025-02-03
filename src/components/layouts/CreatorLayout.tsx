@@ -98,8 +98,8 @@ const CreatorLayout = () => {
     <div className="flex min-h-screen bg-nino-bg">
       <StaticSidebar />
       
-      <div className={`flex-1 ${isMobile ? 'w-full' : ''}`}>
-        <div className="fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 px-4 md:px-8">
+      <div className={`flex-1 ${isMobile ? 'w-full px-4' : ''}`}>
+        <div className={`fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 ${isMobile ? 'px-4' : 'px-8'}`}>
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -112,7 +112,7 @@ const CreatorLayout = () => {
 
         <AnimatePresence mode="wait" initial={false}>
           <PageTransition key={location.pathname}>
-            <main className="p-4 pt-28 md:p-8 md:pt-32">
+            <main className={`pt-28 pb-8 ${isMobile ? 'px-0' : 'px-8'}`}>
               <Suspense fallback={<LoadingFallback />}>
                 <Outlet />
               </Suspense>

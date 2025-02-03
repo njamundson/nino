@@ -7,7 +7,7 @@ const DashboardSections = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className={`grid grid-cols-1 ${isMobile ? 'gap-6' : 'lg:grid-cols-2 gap-6'}`}>
+    <div className={`grid grid-cols-1 ${isMobile ? 'gap-6 px-4' : 'lg:grid-cols-2 gap-6'}`}>
       <Goals />
       <QuickNotes />
     </div>
