@@ -13,6 +13,18 @@ interface ChatListProps {
   isCreator?: boolean;
 }
 
+interface ChatData {
+  userId: string;
+  displayName: string;
+  lastMessage: {
+    content: string;
+    created_at: string;
+    sender_id: string;
+    read: boolean;
+  };
+  unreadCount: number;
+}
+
 const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }: ChatListProps) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -45,7 +57,7 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
         }
 
         // Group messages by chat participant
-        const chatsByUser = messages.reduce((acc: any, message: any) => {
+        const chatsByUser = messages.reduce((acc: Record<string, ChatData>, message: any) => {
           const otherUserId = message.sender_id === user.id ? message.receiver_id : message.sender_id;
           const otherUser = message.sender_id === user.id ? message.receiver : message.sender;
           
@@ -53,11 +65,21 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
             acc[otherUserId] = {
               userId: otherUserId,
               displayName: otherUser?.display_name || 'Unknown User',
-              lastMessage: message,
+              lastMessage: {
+                content: message.content,
+                created_at: message.created_at,
+                sender_id: message.sender_id,
+                read: message.read
+              },
               unreadCount: message.sender_id !== user.id && !message.read ? 1 : 0
             };
-          } else if (message.created_at > acc[otherUserId].lastMessage.created_at) {
-            acc[otherUserId].lastMessage = message;
+          } else if (new Date(message.created_at) > new Date(acc[otherUserId].lastMessage.created_at)) {
+            acc[otherUserId].lastMessage = {
+              content: message.content,
+              created_at: message.created_at,
+              sender_id: message.sender_id,
+              read: message.read
+            };
             if (message.sender_id !== user.id && !message.read) {
               acc[otherUserId].unreadCount++;
             }
@@ -73,9 +95,9 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
     }
   });
 
-  const filteredChats = chats?.filter(chat => 
+  const filteredChats = (chats || []).filter(chat => 
     chat.displayName.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  );
 
   return (
     <div className="flex flex-col h-full border-r">
@@ -92,7 +114,7 @@ const ChatList = ({ selectedUserId, onSelectChat, onNewChat, isCreator = false }
             <EmptyState searchQuery={searchQuery} />
           )}
           
-          {filteredChats.map((chat: any) => (
+          {filteredChats.map((chat) => (
             <ChatListItem
               key={chat.userId}
               userId={chat.userId}
