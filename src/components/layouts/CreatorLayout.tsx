@@ -1,23 +1,15 @@
-import { Suspense, memo } from "react";
+import { memo } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { LoadingSpinner } from "../ui/loading-spinner";
 
-// Optimized static components
+// Optimized static components with explicit display names
 const StaticSidebar = memo(() => <Sidebar />, () => true);
 StaticSidebar.displayName = 'StaticSidebar';
 
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
-
-// Simple loading fallback
-const LoadingFallback = () => (
-  <div className="min-h-[200px] flex items-center justify-center">
-    <LoadingSpinner size="lg" className="text-nino-primary" />
-  </div>
-);
 
 const CreatorLayout = () => {
   const isMobile = useIsMobile();
@@ -35,9 +27,7 @@ const CreatorLayout = () => {
         </div>
 
         <main className="p-4 pt-28 md:p-8 md:pt-32">
-          <Suspense fallback={<LoadingFallback />}>
-            <Outlet />
-          </Suspense>
+          <Outlet />
         </main>
       </div>
     </div>
