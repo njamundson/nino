@@ -37,7 +37,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
           .from('brands')
           .select('id')
           .eq('user_id', user.id)
-          .maybeSingle(); // Changed from single() to maybeSingle()
+          .maybeSingle();
 
         if (brandError) {
           console.error('Error fetching brand:', brandError);
