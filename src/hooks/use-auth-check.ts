@@ -39,18 +39,20 @@ export const useAuthCheck = () => {
 
         console.log("Session found:", sessionData.session);
 
-        const { data: brands, error: brandError } = await supabase
+        // Use maybeSingle() instead of single() to handle cases where no brand exists
+        const { data: brand, error: brandError } = await supabase
           .from('brands')
           .select('id')
           .eq('user_id', sessionData.session.user.id)
-          .maybeSingle(); // Changed from single() to maybeSingle()
+          .maybeSingle();
 
         if (brandError) {
           console.error("Error checking brand profile:", brandError);
           throw brandError;
         }
 
-        if (!brands) {
+        // If no brand exists, handle it gracefully
+        if (!brand) {
           console.log("No brand profile found");
           if (mounted) {
             setHasAccess(false);
@@ -59,7 +61,7 @@ export const useAuthCheck = () => {
           return false;
         }
 
-        console.log("Brand profile found:", brands);
+        console.log("Brand profile found:", brand);
         if (mounted) {
           setHasAccess(true);
           setIsLoading(false);
