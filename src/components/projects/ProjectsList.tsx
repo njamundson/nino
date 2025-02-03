@@ -5,6 +5,7 @@ import ProjectCard from "./ProjectCard";
 import { useToast } from "@/hooks/use-toast";
 import EmptyProjects from "./EmptyProjects";
 import { Opportunity } from "@/integrations/supabase/types/opportunity";
+import { motion } from "framer-motion";
 
 const ProjectsList = () => {
   const { toast } = useToast();
@@ -94,9 +95,9 @@ const ProjectsList = () => {
 
   if (isLoading) {
     return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="h-[400px] animate-pulse bg-gray-100" />
+          <Card key={i} className="h-[400px] animate-pulse bg-gray-50 rounded-[32px]" />
         ))}
       </div>
     );
@@ -107,9 +108,20 @@ const ProjectsList = () => {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {projects.map((project) => (
-        <ProjectCard key={project.id} opportunity={project} />
+    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project, index) => (
+        <motion.div
+          key={project.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 0.5,
+            delay: index * 0.1,
+            ease: [0.23, 1, 0.32, 1]
+          }}
+        >
+          <ProjectCard opportunity={project} />
+        </motion.div>
       ))}
     </div>
   );
