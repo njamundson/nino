@@ -35,7 +35,6 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           return false;
         }
 
-        // Get the creator record for the current user
         const { data: creator, error: creatorError } = await supabase
           .from('creators')
           .select('id')
@@ -52,7 +51,6 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           return false;
         }
 
-        // Check if there's an existing application
         const { data: application, error: applicationError } = await supabase
           .from('applications')
           .select('id')
@@ -71,10 +69,9 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
         return false;
       }
     },
-    staleTime: 0, // Set to 0 to ensure immediate updates
+    staleTime: 0,
   });
   
-  // Subscribe to real-time updates for applications
   useEffect(() => {
     const channel = supabase
       .channel('application-updates')
@@ -87,7 +84,6 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           filter: `opportunity_id=eq.${opportunity.id}`,
         },
         () => {
-          // Invalidate the query to trigger a refresh
           queryClient.invalidateQueries({
             queryKey: ['application-status', opportunity.id],
           });
@@ -142,7 +138,8 @@ const ProjectCard = ({ opportunity, isCompleted = false }: ProjectCardProps) => 
           currentCreatorId={opportunity.current_creator_id}
         />
 
-        {hasApplied && (
+        {/* Only show Applied badge if not completed */}
+        {hasApplied && !isCompleted && (
           <div className="absolute top-4 left-4 z-10">
             <Badge 
               variant="secondary" 
