@@ -7,9 +7,9 @@ export interface Application {
   creator_id: string;
   status: string;
   cover_letter: string | null;
-  created_at: string;
-  updated_at: string;
-  initiated_by: 'creator' | 'brand';
+  created_at?: string;
+  updated_at?: string;
+  initiated_by?: 'creator' | 'brand';
   creator?: Creator;
   opportunity?: Opportunity;
   is_invitation?: boolean;

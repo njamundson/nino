@@ -67,7 +67,7 @@ const CompletedProjectsList = () => {
         }
 
         console.log("Fetched completed projects:", opportunities);
-        return opportunities as Opportunity[];
+        return opportunities as unknown as Opportunity[];
       } catch (error) {
         console.error("Error in query:", error);
         throw error;
