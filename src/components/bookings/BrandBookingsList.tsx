@@ -157,7 +157,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
   if (isError) {
     return (
-      <Card className="p-12 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm">
+      <Card className={`p-12 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm ${isMobile ? 'mx-0 p-6' : ''}`}>
         <div className="text-center text-gray-500">
           <p className="text-lg font-medium mb-2">Error loading bookings</p>
           <p className="text-sm">Please try refreshing the page</p>
@@ -168,7 +168,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className={`space-y-6 ${isMobile ? 'px-0' : ''}`}>
         <Skeleton className="h-[300px] w-full rounded-2xl" />
         <Skeleton className="h-[300px] w-full rounded-2xl" />
       </div>
@@ -177,7 +177,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
   if (!bookings || bookings.length === 0) {
     return (
-      <Card className="p-12 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm">
+      <Card className={`p-12 border border-gray-100 rounded-2xl bg-white/50 backdrop-blur-sm ${isMobile ? 'mx-0 p-6' : ''}`}>
         <div className="flex flex-col items-center justify-center text-center space-y-4">
           <div className="rounded-full bg-nino-primary/10 p-4">
             <CalendarX className="h-8 w-8 text-nino-primary" />
@@ -195,7 +195,7 @@ const BrandBookingsList = ({ onChatClick, onViewCreator }: BrandBookingsListProp
 
   return (
     <>
-      <div className="space-y-6">
+      <div className={`space-y-6 ${isMobile ? 'px-0' : ''}`}>
         {bookings.map((booking: any) => (
           <BookingDetailsCard
             key={booking.id}

@@ -21,6 +21,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CampaignCardProps {
   campaign: {
@@ -44,6 +45,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const isMobile = useIsMobile();
   
   const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions({
     opportunityId: campaign.id,
@@ -93,9 +95,6 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   const applications = campaign.applications || [];
   console.log('All applications:', applications);
   
-  // Only show applications that are:
-  // 1. Initiated by creators (they applied directly)
-  // 2. OR invitations that have been responded to (have a cover letter)
   const validApplications = applications.filter(app => 
     app.status === 'pending' && (
       app.initiated_by === 'creator' || 
@@ -139,8 +138,8 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
 
   return (
     <>
-      <Card className="bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300">
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <Card className={`bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300 ${isMobile ? 'mx-0' : ''}`}>
+        <div className={`p-4 sm:p-6 space-y-4 sm:space-y-6 ${isMobile ? 'px-4' : ''}`}>
           <div className="flex items-start justify-between">
             <div className="space-y-1 flex-1 min-w-0">
               <h3 className="text-lg sm:text-xl font-semibold text-nino-text truncate pr-2">
