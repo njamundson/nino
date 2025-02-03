@@ -93,8 +93,14 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
   const applications = campaign.applications || [];
   console.log('All applications:', applications);
   
+  // Only show applications that are:
+  // 1. Initiated by creators (they applied directly)
+  // 2. OR invitations that have been responded to (have a cover letter)
   const validApplications = applications.filter(app => 
-    app.status === 'pending' || app.status === 'invited'
+    app.status === 'pending' && (
+      app.initiated_by === 'creator' || 
+      (app.initiated_by === 'brand' && app.cover_letter)
+    )
   );
   console.log('Valid applications:', validApplications);
 
@@ -244,7 +250,7 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
                               {application.creator?.display_name}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {application.status === 'invited' ? 'Invited' : 'Pending Review'}
+                              {application.initiated_by === 'creator' ? 'Applied' : 'Responded to Invitation'}
                             </p>
                           </div>
                         </div>
