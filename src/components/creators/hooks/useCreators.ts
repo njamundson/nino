@@ -29,7 +29,7 @@ export const useCreators = () => {
       return data.map(creator => mapCreatorData(creator));
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    cacheTime: 30 * 60 * 1000, // Keep unused data in cache for 30 minutes
+    gcTime: 30 * 60 * 1000, // Keep unused data in cache for 30 minutes (renamed from cacheTime)
     refetchOnWindowFocus: false, // Disable automatic refetch on window focus
     refetchOnMount: false, // Disable automatic refetch on mount
   });
