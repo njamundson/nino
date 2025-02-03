@@ -14,11 +14,14 @@ const Messages = () => {
   const [selectedProfileImage, setSelectedProfileImage] = useState<string | null>(null);
   const [showMobileChat, setShowMobileChat] = useState(false);
 
-  const handleChatSelect = (
-    userId: string,
-    displayName: string,
-    profileImage: string | null
-  ) => {
+  const handleChatSelect = (userId: string) => {
+    setSelectedChat(userId);
+    if (isMobile) {
+      setShowMobileChat(true);
+    }
+  };
+
+  const handleNewChat = (userId: string, displayName: string, profileImage: string | null) => {
     setSelectedChat(userId);
     setSelectedDisplayName(displayName);
     setSelectedProfileImage(profileImage);
@@ -47,7 +50,8 @@ const Messages = () => {
               description="Chat with creators and manage your conversations"
             />
             <ChatList 
-              onSelectChat={handleChatSelect} 
+              onSelectChat={handleChatSelect}
+              onNewChat={handleNewChat}
               selectedUserId={selectedChat}
             />
           </>
@@ -78,7 +82,8 @@ const Messages = () => {
       <Card className="flex-1 grid grid-cols-[350px_1fr] bg-white/80 backdrop-blur-xl border-0 shadow-lg rounded-3xl overflow-hidden">
         <div className="border-r border-gray-100 overflow-hidden">
           <ChatList 
-            onSelectChat={handleChatSelect} 
+            onSelectChat={handleChatSelect}
+            onNewChat={handleNewChat}
             selectedUserId={selectedChat}
           />
         </div>

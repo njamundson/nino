@@ -2,29 +2,24 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageIcon } from "lucide-react";
 
 interface ChatListItemProps {
-  chat: {
-    otherUser: {
-      id: string;
-      display_name: string;
-      profileImage: string | null;
-    };
-    content: string;
-    created_at: string;
-    sender_id: string;
-    read: boolean;
-  };
+  userId: string;
+  displayName: string;
+  lastMessage: string;
+  timestamp: string;
+  unreadCount: number;
   isSelected: boolean;
-  currentUserId?: string;
-  onSelect: () => void;
+  onClick: () => void;
 }
 
 export const ChatListItem = ({
-  chat,
+  userId,
+  displayName,
+  lastMessage,
+  timestamp,
+  unreadCount,
   isSelected,
-  currentUserId,
-  onSelect,
+  onClick,
 }: ChatListItemProps) => {
-  const displayName = chat.otherUser.display_name || "Creator";
   const initials = displayName
     .split(' ')
     .map(part => part[0])
@@ -53,14 +48,10 @@ export const ChatListItem = ({
       className={`group relative px-6 py-4 cursor-pointer hover:bg-gray-50/50 transition-colors ${
         isSelected ? "bg-gray-50/50" : ""
       }`}
-      onClick={onSelect}
+      onClick={onClick}
     >
       <div className="flex items-start space-x-3">
         <Avatar className="h-10 w-10">
-          <AvatarImage 
-            src={chat.otherUser.profileImage || ''} 
-            alt={displayName}
-          />
           <AvatarFallback className="bg-nino-primary/10 text-nino-primary">
             {initials}
           </AvatarFallback>
@@ -71,13 +62,13 @@ export const ChatListItem = ({
               {displayName}
             </span>
             <span className="text-xs text-gray-500">
-              {formatTime(chat.created_at)}
+              {formatTime(timestamp)}
             </span>
           </div>
           <p className={`text-sm truncate ${
-            !chat.read && chat.sender_id !== currentUserId ? "font-medium text-gray-900" : "text-gray-500"
+            unreadCount > 0 ? "font-medium text-gray-900" : "text-gray-500"
           }`}>
-            {getMessagePreview(chat.content)}
+            {getMessagePreview(lastMessage)}
           </p>
         </div>
       </div>
