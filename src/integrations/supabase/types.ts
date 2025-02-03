@@ -9,27 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admin_users: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["admin_role"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          role?: Database["public"]["Enums"]["admin_role"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["admin_role"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
       applications: {
         Row: {
           cover_letter: string | null
@@ -801,15 +780,9 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      is_admin: {
-        Args: {
-          user_id: string
-        }
-        Returns: boolean
-      }
     }
     Enums: {
-      admin_role: "super_admin" | "admin"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
