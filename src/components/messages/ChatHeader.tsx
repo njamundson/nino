@@ -14,6 +14,15 @@ interface ChatHeaderProps {
   onMobileBack?: () => void;
 }
 
+interface ProfileWithBrands {
+  id: string;
+  display_name: string;
+  brands: {
+    id: string;
+    company_name: string;
+  }[] | null;
+}
+
 const ChatHeader = ({
   senderDisplayName,
   senderProfileImage,
@@ -24,7 +33,7 @@ const ChatHeader = ({
   const hasSelectedChat = Boolean(senderUserId);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
 
-  const { data: profileData } = useQuery({
+  const { data: profileData } = useQuery<ProfileWithBrands | null>({
     queryKey: ['profile-for-chat', senderUserId],
     queryFn: async () => {
       if (!senderUserId) return null;
