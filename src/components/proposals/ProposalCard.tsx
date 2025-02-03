@@ -30,7 +30,7 @@ const ProposalCard = ({ application, type, onUpdateStatus }: ProposalCardProps) 
     onUpdateStatus(application.id, status);
   };
 
-  // Get the brand name from the opportunity's brand
+  // Get the brand name from the opportunity's brand, ensuring we have a fallback
   const brandName = application.opportunity?.brand?.company_name || "Unnamed Brand";
 
   return (
