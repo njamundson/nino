@@ -116,14 +116,28 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
       setIsInviting(true);
 
       // Check for existing application
-      const opportunity = campaigns?.find(c => c.id === opportunityId);
-      const existingApplication = opportunity?.applications?.find(
-        app => app.creator_id === creator.id
-      );
+      const { data: existingApplications, error: checkError } = await supabase
+        .from('applications')
+        .select('id, status')
+        .eq('opportunity_id', opportunityId)
+        .eq('creator_id', creator.id)
+        .maybeSingle();
 
-      if (existingApplication) {
-        toast.error("Creator has already applied to your campaign");
+      if (checkError) {
+        console.error("Error checking existing application:", checkError);
+        toast.error("Failed to check existing application");
         return;
+      }
+
+      if (existingApplications) {
+        if (existingApplications.status === 'invited' || existingApplications.status === 'pending') {
+          toast.error("Creator has already been invited to this campaign");
+          return;
+        } else if (existingApplications.status === 'accepted') {
+          toast.error("Creator is already part of this campaign");
+          return;
+        }
+        // If application exists but was rejected, we'll allow a new invitation
       }
 
       // Create the invitation
@@ -138,7 +152,11 @@ const CreatorModal = ({ creator, isOpen, onClose, onMessageClick }: CreatorModal
 
       if (inviteError) {
         console.error("Error inviting creator:", inviteError);
-        toast.error("Failed to invite creator");
+        if (inviteError.code === '23505') {
+          toast.error("Creator has already been invited to this campaign");
+        } else {
+          toast.error("Failed to invite creator");
+        }
         return;
       }
 

@@ -810,6 +810,7 @@ export type Database = {
     }
     Enums: {
       admin_role: "super_admin" | "admin"
+      application_status: "pending" | "accepted" | "rejected" | "invited"
     }
     CompositeTypes: {
       [_ in never]: never
