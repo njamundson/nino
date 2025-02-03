@@ -19,26 +19,9 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       setLoading(true);
       const { email, password, userType } = data;
       
-      // Log signup data for debugging
-      console.log("Signup data:", data);
+      console.log("Starting signup process for:", email);
 
-      // Check if user exists first
-      const { data: existingUser } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (existingUser?.user) {
-        toast({
-          variant: "destructive",
-          title: "Account already exists",
-          description: "Please sign in instead.",
-        });
-        onToggleAuth(); // Switch to sign in form
-        return;
-      }
-
-      // Sign up the user
+      // Sign up the user directly without checking existing account
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -51,20 +34,26 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       });
 
       if (signUpError) {
+        console.error('Signup error:', signUpError);
+        
+        // Handle specific error cases
         if (signUpError.message.includes("already registered")) {
           toast({
             variant: "destructive",
             title: "Account already exists",
             description: "Please sign in instead.",
           });
-          onToggleAuth(); // Switch to sign in form
+          onToggleAuth();
           return;
         }
+        
         throw signUpError;
       }
 
       if (authData.user) {
-        // Create profile first
+        console.log("User created successfully, creating profile...");
+        
+        // Create profile
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
@@ -74,9 +63,12 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
             display_name: `${data.firstName || 'Anonymous'} ${data.lastName || ''}`.trim()
           });
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          throw profileError;
+        }
 
-        // Create initial profile based on user type
+        // Create user type specific profile
         if (userType === 'brand') {
           const { error: brandError } = await supabase
             .from('brands')
@@ -86,7 +78,10 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
               last_name: data.lastName || '',
             });
 
-          if (brandError) throw brandError;
+          if (brandError) {
+            console.error('Brand profile creation error:', brandError);
+            throw brandError;
+          }
           
           navigate('/onboarding/brand');
         } else {
@@ -99,7 +94,10 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
               display_name: `${data.firstName || 'Anonymous'} ${data.lastName || ''}`.trim()
             });
 
-          if (creatorError) throw creatorError;
+          if (creatorError) {
+            console.error('Creator profile creation error:', creatorError);
+            throw creatorError;
+          }
           
           navigate('/onboarding/creator');
         }
@@ -114,7 +112,7 @@ const SignUp = ({ onToggleAuth }: SignUpProps) => {
       toast({
         variant: "destructive",
         title: "Error signing up",
-        description: error instanceof Error ? error.message : "Please try again.",
+        description: "Please try again. If the problem persists, contact support.",
       });
     } finally {
       setLoading(false);
