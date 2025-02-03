@@ -1,6 +1,8 @@
 import { Calendar, MapPin } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { Application } from "@/integrations/supabase/types/application";
+import BrandInfo from "@/components/projects/modal/BrandInfo";
+import ProjectCompensation from "@/components/projects/modal/ProjectCompensation";
 
 interface ProjectDetailsProps {
   application: Application;
@@ -14,10 +16,21 @@ const ProjectDetails = ({ application }: ProjectDetailsProps) => {
 
   return (
     <div className="space-y-6 py-4">
+      {/* Brand Information */}
+      {application.opportunity?.brand && (
+        <BrandInfo
+          company_name={application.opportunity.brand.company_name || ""}
+          brand_type={application.opportunity.brand.brand_type || ""}
+          location={application.opportunity.brand.location}
+          description={application.opportunity.brand.description || ""}
+          website={application.opportunity.brand.website || ""}
+          instagram={application.opportunity.brand.instagram || ""}
+        />
+      )}
+
       {/* Project Overview */}
       <div className="space-y-2">
         <h3 className="text-xl font-medium">{title}</h3>
-        <p className="text-muted-foreground">{brandName}</p>
       </div>
 
       {/* Location and Dates */}
@@ -38,6 +51,14 @@ const ProjectDetails = ({ application }: ProjectDetailsProps) => {
           </div>
         )}
       </div>
+
+      {/* Compensation Details */}
+      {(application.opportunity?.payment_details || application.opportunity?.compensation_details) && (
+        <ProjectCompensation
+          paymentDetails={application.opportunity.payment_details}
+          compensationDetails={application.opportunity.compensation_details}
+        />
+      )}
 
       {/* Project Details */}
       <div className="space-y-4">
@@ -82,7 +103,7 @@ const ProjectDetails = ({ application }: ProjectDetailsProps) => {
           </div>
         )}
 
-        {/* Your Proposal - Moved to bottom and renamed */}
+        {/* Your Proposal */}
         {application.cover_letter && (
           <div className="space-y-2 mt-6">
             <h5 className="font-medium">Your Proposal</h5>
