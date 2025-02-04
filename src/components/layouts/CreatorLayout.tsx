@@ -14,6 +14,20 @@ StaticSidebar.displayName = 'StaticSidebar';
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
 
+// Logo component
+const Logo = memo(() => (
+  <img 
+    src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
+    alt="NINO" 
+    className="h-8"
+    loading="eager"
+    fetchPriority="high"
+    decoding="sync"
+  />
+));
+
+Logo.displayName = 'Logo';
+
 // Enhanced loading animation component
 const LoadingFallback = () => (
   <motion.div 
@@ -106,7 +120,17 @@ const CreatorLayout = () => {
             className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/95 to-transparent rounded-3xl"
           />
           <div className="relative">
-            <StaticHeader />
+            {isMobile ? (
+              <div className="flex items-center justify-between">
+                <div className="w-8" /> {/* Spacer to balance the header */}
+                <div className="flex-1 flex justify-center">
+                  <Logo />
+                </div>
+                <StaticHeader />
+              </div>
+            ) : (
+              <StaticHeader />
+            )}
           </div>
         </div>
 
