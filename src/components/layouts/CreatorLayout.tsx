@@ -1,5 +1,6 @@
 import { Suspense, memo, useEffect } from "react";
 import { useLocation, Outlet, useNavigate } from "react-router-dom";
+import { Menu } from "lucide-react";
 import Sidebar from "../dashboard/Sidebar";
 import DashboardHeader from "../dashboard/header/DashboardHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -125,12 +126,14 @@ const CreatorLayout = () => {
           />
           <div className="relative py-8">
             {isMobile ? (
-              <div className="flex items-center justify-between h-12">
-                <div className="w-12" /> {/* Spacer to balance the header */}
-                <div className="flex-1 flex justify-center">
+              <div className="flex items-center justify-between h-16">
+                <div className="w-12 flex items-center justify-center">
+                  <Menu className="h-6 w-6 text-nino-text" />
+                </div>
+                <div className="flex-1 flex justify-center items-center">
                   <Logo />
                 </div>
-                <div className="w-12 flex justify-end">
+                <div className="w-12 flex items-center justify-center">
                   <StaticHeader />
                 </div>
               </div>
