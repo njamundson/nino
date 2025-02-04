@@ -2,130 +2,66 @@ import { Creator } from "@/types/creator";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorImage from "./profile/CreatorImage";
 import CreatorSocialLinks from "./profile/CreatorSocialLinks";
-import { Application } from "@/integrations/supabase/types/application";
-import ActionButtons from "@/components/campaigns/modals/profile/ActionButtons";
-import AcceptDialog from "@/components/campaigns/modals/profile/AcceptDialog";
-import { useState } from "react";
-import { useApplicationActions } from "@/hooks/useApplicationActions";
-import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CreatorProfileProps {
   creator: Creator;
   onClose?: () => void;
   onInviteClick?: () => void;
   onMessageClick?: () => void;
-  application?: Application | null;
+  application?: any;
 }
 
-const CreatorProfile = ({ creator, onClose, onInviteClick, onMessageClick, application }: CreatorProfileProps) => {
-  const [showAcceptDialog, setShowAcceptDialog] = useState(false);
-  const { handleAcceptApplication, handleRejectApplication, isProcessing } = useApplicationActions({
-    opportunityId: application?.opportunity_id || '',
-  });
-
+const CreatorProfile = ({ 
+  creator, 
+  onClose, 
+  onInviteClick, 
+  onMessageClick,
+  application 
+}: CreatorProfileProps) => {
+  const isMobile = useIsMobile();
+  
   if (!creator) return null;
 
   const fullName = creator.display_name || 'Creator';
 
-  const onAccept = () => {
-    setShowAcceptDialog(true);
-  };
-
-  const onReject = async () => {
-    if (!application?.id) return;
-    const success = await handleRejectApplication(application.id);
-    if (success) {
-      toast.success("Application rejected successfully");
-      onClose?.();
-    }
-  };
-
-  const onConfirmAccept = async () => {
-    if (!application?.id) return;
-    const success = await handleAcceptApplication(application.id);
-    if (success) {
-      toast.success("Application accepted successfully");
-      onClose?.();
-    }
-    setShowAcceptDialog(false);
-  };
-
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-6 flex-grow overflow-y-auto">
-        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-6">
-          <div className="relative h-full">
-            <CreatorImage 
-              profileImageUrl={creator.profile_image_url} 
-              fullName={fullName} 
-            />
-          </div>
-          
-          <div className="flex flex-col h-full">
-            <div className="flex-grow space-y-6">
-              <CreatorBio 
-                bio={creator.bio}
-                specialties={creator.specialties}
-                location={creator.location}
-                instagram={creator.instagram}
-                website={creator.website}
-                onMessageClick={onMessageClick}
-                fullName={fullName}
-              />
-              <CreatorSocialLinks 
-                instagram={creator.instagram}
-                website={creator.website}
-              />
-            </div>
-          </div>
-        </div>
-
-        {application && (
-          <div className="mt-6">
-            <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Application Details</h3>
-              
-              <div className="space-y-3">
-                {application.opportunity?.title && (
-                  <p className="text-sm text-gray-500">
-                    Submitted for: {application.opportunity.title}
-                  </p>
-                )}
-                {application.status === 'invited' ? (
-                  <p className="text-sm text-gray-600">
-                    This creator has been invited to apply
-                  </p>
-                ) : application.cover_letter ? (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-700">Cover Letter:</p>
-                    <div className="text-sm text-gray-600 whitespace-pre-wrap bg-white rounded-lg p-4 border border-gray-100">
-                      {application.cover_letter}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {(application?.status === 'pending' || application?.status === 'invited') && (
-        <div className="p-6 border-t border-gray-100 mt-auto">
-          <ActionButtons
-            onAccept={onAccept}
-            onReject={onReject}
-            isProcessing={isProcessing}
+    <div className={`h-full ${isMobile ? 'p-4' : 'p-6'}`}>
+      <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-[1.2fr_1fr] gap-6'} h-full`}>
+        <div className="relative h-full max-h-[400px] md:max-h-none">
+          <CreatorImage 
+            profileImageUrl={creator.profile_image_url} 
+            fullName={fullName} 
           />
         </div>
-      )}
+        
+        <div className={`flex flex-col h-full ${isMobile ? 'overflow-y-auto' : ''}`}>
+          <div className="flex-grow space-y-6">
+            <CreatorBio 
+              bio={creator.bio}
+              specialties={creator.specialties}
+              location={creator.location}
+              instagram={creator.instagram}
+              website={creator.website}
+              onMessageClick={onMessageClick}
+              fullName={fullName}
+            />
+            <CreatorSocialLinks 
+              instagram={creator.instagram}
+              website={creator.website}
+            />
+          </div>
 
-      <AcceptDialog
-        isOpen={showAcceptDialog}
-        onOpenChange={setShowAcceptDialog}
-        onConfirm={onConfirmAccept}
-        creatorName={fullName}
-        isProcessing={isProcessing}
-      />
+          {onInviteClick && (
+            <button
+              onClick={onInviteClick}
+              className={`mt-4 w-full bg-white/80 backdrop-blur-sm text-nino-primary border border-nino-primary/20 px-6 py-3 rounded-2xl hover:bg-white hover:shadow-md transition-all duration-300 font-medium text-sm ${isMobile ? 'sticky bottom-0' : ''}`}
+            >
+              Invite to Campaign
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
