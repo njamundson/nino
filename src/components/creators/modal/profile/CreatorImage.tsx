@@ -9,7 +9,7 @@ const CreatorImage = ({ profileImageUrl, fullName }: CreatorImageProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className={`relative w-full h-full ${isMobile ? 'max-h-[300px]' : ''} rounded-2xl overflow-hidden bg-gray-100`}>
+    <div className={`relative w-full ${isMobile ? 'h-[400px]' : 'h-[500px]'} rounded-3xl overflow-hidden bg-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.12)]`}>
       {profileImageUrl ? (
         <img
           src={profileImageUrl}
