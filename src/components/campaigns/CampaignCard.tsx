@@ -134,11 +134,11 @@ const CampaignCard = ({ campaign, onEdit, onDelete }: CampaignCardProps) => {
 
   return (
     <>
-      <Card className={`bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300 ${isMobile ? 'mx-0' : ''}`}>
+      <Card className={`bg-white border border-gray-100/50 shadow-[0_2px_8px_0_rgba(0,0,0,0.04)] rounded-3xl overflow-hidden hover:shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] transition-all duration-300 ${isMobile ? 'mx-4' : ''}`}>
         <div className={`p-4 ${isMobile ? 'space-y-3' : 'p-6 space-y-6'}`}>
-          <div className="flex items-start justify-between">
-            <div className="space-y-1 flex-1 min-w-0">
-              <h3 className={`font-semibold text-nino-text truncate pr-2 ${isMobile ? 'text-base' : 'text-lg sm:text-xl'}`}>
+          <div className="flex items-start justify-between gap-2">
+            <div className="space-y-1 flex-1 min-w-0 pr-2">
+              <h3 className={`font-semibold text-nino-text truncate ${isMobile ? 'text-base' : 'text-lg sm:text-xl'}`}>
                 {campaign.title}
               </h3>
               {campaign.location && (
