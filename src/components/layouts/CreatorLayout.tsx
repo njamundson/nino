@@ -6,20 +6,19 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "../ui/loading-spinner";
+import { Menu } from "lucide-react";
 
-// Optimized static components
 const StaticSidebar = memo(() => <Sidebar />, () => true);
 StaticSidebar.displayName = 'StaticSidebar';
 
 const StaticHeader = memo(() => <DashboardHeader />, () => true);
 StaticHeader.displayName = 'StaticHeader';
 
-// Logo component
 const Logo = memo(() => (
   <img 
     src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
     alt="NINO" 
-    className="h-16 w-auto"
+    className="h-20 w-auto"
     loading="eager"
     fetchPriority="high"
     decoding="sync"
@@ -32,7 +31,6 @@ const Logo = memo(() => (
 
 Logo.displayName = 'Logo';
 
-// Enhanced loading animation component
 const LoadingFallback = () => (
   <motion.div 
     initial={{ opacity: 0 }}
@@ -125,12 +123,14 @@ const CreatorLayout = () => {
           />
           <div className="relative py-8">
             {isMobile ? (
-              <div className="flex items-center justify-between h-12">
-                <div className="w-12" /> {/* Spacer to balance the header */}
-                <div className="flex-1 flex justify-center">
+              <div className="flex items-center justify-between h-20">
+                <div className="flex items-center justify-center w-12">
+                  <Menu className="h-6 w-6 text-nino-text" />
+                </div>
+                <div className="flex-1 flex justify-center items-center">
                   <Logo />
                 </div>
-                <div className="w-12 flex justify-end">
+                <div className="w-12 flex items-center justify-end">
                   <StaticHeader />
                 </div>
               </div>
