@@ -22,20 +22,26 @@ const CompensationDetails = ({
         {payment_details && (
           <Badge 
             variant="outline" 
-            className={`rounded-full border-gray-200 ${isMobile ? 'w-full justify-start' : ''}`}
+            className={`rounded-full border-gray-200 inline-flex items-center ${
+              isMobile ? 'w-full justify-start' : 'max-w-fit'
+            }`}
           >
-            <span className={`inline-block ${isMobile ? 'w-full' : ''}`}>
-              💰 {payment_details}
+            <span className="inline-flex items-center gap-1.5">
+              <span className="flex-shrink-0">💰</span>
+              <span className="truncate">{payment_details}</span>
             </span>
           </Badge>
         )}
         {compensation_details && (
           <Badge 
             variant="outline" 
-            className={`rounded-full border-gray-200 ${isMobile ? 'w-full justify-start' : ''}`}
+            className={`rounded-full border-gray-200 inline-flex items-center ${
+              isMobile ? 'w-full justify-start' : 'max-w-fit'
+            }`}
           >
-            <span className={`inline-block ${isMobile ? 'w-full' : ''}`}>
-              🎁 {compensation_details}
+            <span className="inline-flex items-center gap-1.5">
+              <span className="flex-shrink-0">🎁</span>
+              <span className="truncate">{compensation_details}</span>
             </span>
           </Badge>
         )}
@@ -49,13 +55,11 @@ const CompensationDetails = ({
               <Badge 
                 key={index}
                 variant="secondary"
-                className={`rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80 ${
-                  isMobile ? 'w-full justify-start' : ''
+                className={`rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80 inline-flex items-center ${
+                  isMobile ? 'w-full justify-start' : 'max-w-fit'
                 }`}
               >
-                <span className={`inline-block ${isMobile ? 'w-full' : ''}`}>
-                  {deliverable}
-                </span>
+                <span className="truncate">{deliverable}</span>
               </Badge>
             ))}
           </div>
@@ -70,13 +74,11 @@ const CompensationDetails = ({
               <Badge 
                 key={index}
                 variant="secondary"
-                className={`rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80 ${
-                  isMobile ? 'w-full justify-start' : ''
+                className={`rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80 inline-flex items-center ${
+                  isMobile ? 'w-full justify-start' : 'max-w-fit'
                 }`}
               >
-                <span className={`inline-block ${isMobile ? 'w-full' : ''}`}>
-                  {requirement}
-                </span>
+                <span className="truncate">{requirement}</span>
               </Badge>
             ))}
           </div>
