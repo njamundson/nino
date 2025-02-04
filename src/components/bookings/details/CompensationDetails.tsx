@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CompensationDetailsProps {
   payment_details: string | null;
@@ -13,17 +14,29 @@ const CompensationDetails = ({
   deliverables, 
   requirements 
 }: CompensationDetailsProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      <div className={`flex flex-wrap gap-2 ${isMobile ? 'flex-col items-start w-full' : ''}`}>
         {payment_details && (
-          <Badge variant="outline" className="rounded-full border-gray-200">
-            💰 {payment_details}
+          <Badge 
+            variant="outline" 
+            className={`rounded-full border-gray-200 ${isMobile ? 'w-full justify-start' : ''}`}
+          >
+            <span className={`inline-block ${isMobile ? 'w-full' : ''}`}>
+              💰 {payment_details}
+            </span>
           </Badge>
         )}
         {compensation_details && (
-          <Badge variant="outline" className="rounded-full border-gray-200">
-            🎁 {compensation_details}
+          <Badge 
+            variant="outline" 
+            className={`rounded-full border-gray-200 ${isMobile ? 'w-full justify-start' : ''}`}
+          >
+            <span className={`inline-block ${isMobile ? 'w-full' : ''}`}>
+              🎁 {compensation_details}
+            </span>
           </Badge>
         )}
       </div>
@@ -31,14 +44,18 @@ const CompensationDetails = ({
       {deliverables && deliverables.length > 0 && (
         <div className="space-y-2">
           <h5 className="text-sm font-medium text-gray-900">Deliverables</h5>
-          <div className="flex flex-wrap gap-2">
+          <div className={`flex flex-wrap gap-2 ${isMobile ? 'flex-col items-start w-full' : ''}`}>
             {deliverables.map((deliverable, index) => (
               <Badge 
                 key={index}
                 variant="secondary"
-                className="rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+                className={`rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80 ${
+                  isMobile ? 'w-full justify-start' : ''
+                }`}
               >
-                {deliverable}
+                <span className={`inline-block ${isMobile ? 'w-full' : ''}`}>
+                  {deliverable}
+                </span>
               </Badge>
             ))}
           </div>
@@ -48,14 +65,18 @@ const CompensationDetails = ({
       {requirements && requirements.length > 0 && (
         <div className="space-y-2">
           <h5 className="text-sm font-medium text-gray-900">Requirements</h5>
-          <div className="flex flex-wrap gap-2">
+          <div className={`flex flex-wrap gap-2 ${isMobile ? 'flex-col items-start w-full' : ''}`}>
             {requirements.map((requirement, index) => (
               <Badge 
                 key={index}
                 variant="secondary"
-                className="rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+                className={`rounded-full bg-gray-100/80 text-gray-600 hover:bg-gray-200/80 ${
+                  isMobile ? 'w-full justify-start' : ''
+                }`}
               >
-                {requirement}
+                <span className={`inline-block ${isMobile ? 'w-full' : ''}`}>
+                  {requirement}
+                </span>
               </Badge>
             ))}
           </div>
