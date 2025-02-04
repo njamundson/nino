@@ -19,10 +19,14 @@ const Logo = memo(() => (
   <img 
     src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
     alt="NINO" 
-    className="h-8"
+    className="h-12 w-auto"
     loading="eager"
     fetchPriority="high"
     decoding="sync"
+    style={{ 
+      imageRendering: 'crisp-edges',
+      willChange: 'transform'
+    }}
   />
 ));
 
@@ -113,20 +117,22 @@ const CreatorLayout = () => {
       <StaticSidebar />
       
       <div className={`flex-1 ${isMobile ? 'w-full px-4' : ''}`}>
-        <div className={`fixed top-0 right-0 left-0 lg:left-64 z-20 py-6 ${isMobile ? 'px-4' : 'px-8'}`}>
+        <div className={`fixed top-0 right-0 left-0 lg:left-64 z-20 ${isMobile ? 'px-4' : 'px-8'}`}>
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/95 to-transparent rounded-3xl"
           />
-          <div className="relative">
+          <div className="relative py-8">
             {isMobile ? (
-              <div className="flex items-center justify-between">
-                <div className="w-8" /> {/* Spacer to balance the header */}
+              <div className="flex items-center justify-between h-12">
+                <div className="w-12" /> {/* Spacer to balance the header */}
                 <div className="flex-1 flex justify-center">
                   <Logo />
                 </div>
-                <StaticHeader />
+                <div className="w-12 flex justify-end">
+                  <StaticHeader />
+                </div>
               </div>
             ) : (
               <StaticHeader />
@@ -136,7 +142,7 @@ const CreatorLayout = () => {
 
         <AnimatePresence mode="wait" initial={false}>
           <PageTransition key={location.pathname}>
-            <main className={`pt-28 pb-8 ${isMobile ? 'px-0' : 'px-8'}`}>
+            <main className={`pt-32 pb-8 ${isMobile ? 'px-0' : 'px-8'}`}>
               <Suspense fallback={<LoadingFallback />}>
                 <Outlet />
               </Suspense>
