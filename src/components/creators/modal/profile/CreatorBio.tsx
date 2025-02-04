@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
 import { CreatorSpecialties } from "@/components/campaigns/card/creator/CreatorSpecialties";
 import { useIsMobile } from "@/hooks/use-mobile";
+import SocialLinks from "./social/SocialLinks";
 
 interface CreatorBioProps {
   bio?: string | null;
@@ -16,6 +17,8 @@ const CreatorBio = ({
   bio,
   specialties,
   location,
+  instagram,
+  website,
   onMessageClick,
   fullName,
 }: CreatorBioProps) => {
@@ -35,6 +38,12 @@ const CreatorBio = ({
         )}
       </div>
 
+      <SocialLinks 
+        instagram={instagram}
+        website={website}
+        onMessageClick={onMessageClick}
+      />
+
       {bio && (
         <p className={`text-nino-text leading-relaxed ${isMobile ? 'text-base' : 'text-lg'}`}>
           {bio}
@@ -48,15 +57,6 @@ const CreatorBio = ({
           </h3>
           <CreatorSpecialties specialties={specialties} />
         </div>
-      )}
-
-      {onMessageClick && (
-        <button
-          onClick={onMessageClick}
-          className="w-full bg-white text-nino-primary border border-nino-primary/20 px-6 py-3.5 rounded-2xl hover:bg-nino-primary/5 transition-all duration-300 font-medium text-base"
-        >
-          Message
-        </button>
       )}
     </div>
   );
