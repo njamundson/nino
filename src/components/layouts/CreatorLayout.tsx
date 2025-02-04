@@ -123,10 +123,12 @@ const CreatorLayout = () => {
             animate={{ opacity: 1 }}
             className="absolute inset-0 bg-gradient-to-b from-nino-bg via-nino-bg/95 to-transparent rounded-3xl"
           />
-          <div className="relative py-8">
+          <div className="relative py-4">
             {isMobile ? (
-              <div className="flex items-center h-16">
-                <div className="w-16" /> {/* Spacer for visual balance */}
+              <div className="flex items-center justify-between h-20">
+                <div className="w-16 flex items-center justify-center">
+                  <StaticSidebar />
+                </div>
                 <div className="flex-1 flex justify-center items-center">
                   <Logo />
                 </div>
