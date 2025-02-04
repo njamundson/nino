@@ -18,7 +18,7 @@ const Logo = memo(() => (
   <img 
     src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
     alt="NINO" 
-    className="h-20 w-auto"
+    className="h-24 w-auto"
     loading="eager"
     fetchPriority="high"
     decoding="sync"
@@ -43,7 +43,6 @@ const LoadingFallback = () => (
   </motion.div>
 );
 
-// Smooth page transition component
 const PageTransition = memo(({ children }: { children: React.ReactNode }) => (
   <motion.div
     initial={{ opacity: 0, y: 8 }}
@@ -123,14 +122,14 @@ const CreatorLayout = () => {
           />
           <div className="relative py-8">
             {isMobile ? (
-              <div className="flex items-center justify-between h-20">
-                <div className="flex items-center justify-center w-12">
-                  <Menu className="h-6 w-6 text-nino-text" />
+              <div className="flex items-center justify-between h-24">
+                <div className="flex items-center justify-center w-16">
+                  <Menu className="h-8 w-8 text-nino-text" />
                 </div>
                 <div className="flex-1 flex justify-center items-center">
                   <Logo />
                 </div>
-                <div className="w-12 flex items-center justify-end">
+                <div className="w-16 flex items-center justify-end">
                   <StaticHeader />
                 </div>
               </div>
