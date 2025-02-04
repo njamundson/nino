@@ -19,7 +19,7 @@ const Logo = memo(() => (
   <img 
     src="/lovable-uploads/750e93fc-c7bd-41ae-bd2f-42877db3bd66.png" 
     alt="NINO" 
-    className="h-12 w-auto"
+    className="h-16 w-auto"
     loading="eager"
     fetchPriority="high"
     decoding="sync"
