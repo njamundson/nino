@@ -1,7 +1,6 @@
 import { Creator } from "@/types/creator";
 import CreatorBio from "../../creators/modal/profile/CreatorBio";
 import CreatorImage from "../../creators/modal/profile/CreatorImage";
-import CreatorSocialLinks from "../../creators/modal/profile/CreatorSocialLinks";
 
 interface BookedCreatorProfileProps {
   creator: Creator;
@@ -40,10 +39,6 @@ const BookedCreatorProfile = ({
               website={creator.website}
               onMessageClick={onMessageClick}
               fullName={fullName}
-            />
-            <CreatorSocialLinks 
-              instagram={creator.instagram}
-              website={creator.website}
             />
           </div>
 

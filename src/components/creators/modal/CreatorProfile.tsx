@@ -1,7 +1,6 @@
 import { Creator } from "@/types/creator";
 import CreatorBio from "./profile/CreatorBio";
 import CreatorImage from "./profile/CreatorImage";
-import CreatorSocialLinks from "./profile/CreatorSocialLinks";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CreatorProfileProps {
@@ -45,10 +44,6 @@ const CreatorProfile = ({
               website={creator.website}
               onMessageClick={onMessageClick}
               fullName={fullName}
-            />
-            <CreatorSocialLinks 
-              instagram={creator.instagram}
-              website={creator.website}
             />
           </div>
 
