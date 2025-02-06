@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
@@ -13,8 +14,17 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      storage: localStorage,
-      storageKey: 'supabase.auth.token'
+      storage: typeof window !== 'undefined' ? localStorage : undefined,
+      storageKey: 'supabase.auth.token',
+      debug: import.meta.env.DEV
     }
   }
 );
+
+// Add a listener for auth state changes
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+    // Clear any auth data from localStorage
+    localStorage.removeItem('supabase.auth.token');
+  }
+});
